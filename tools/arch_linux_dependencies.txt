@@ -1,0 +1,5 @@
+Vulkan:
+sudo pacman -S vulkan-devel
+
+GLFW:
+sudo pacman -S glfw-wayland # glfw-x11 for X11 users
