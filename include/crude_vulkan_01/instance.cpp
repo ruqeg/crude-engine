@@ -6,18 +6,22 @@
 namespace crude_vulkan_01
 {
   
-InstanceCreateInfo::InstanceCreateInfo(const Application&              application,
+InstanceCreateInfo::InstanceCreateInfo(
 #ifdef VK_EXT_debug_utils
                                        PFN_vkDebugUtilsMessengerCallbackEXT debugUtilsCallback,
 #endif // VK_EXT_debug_utils
-                                       VkInstanceCreateFlags           flags,
+                                       const Application&              application,
                                        const std::vector<const char*>& enabledExtensions,
-                                       const std::vector<const char*>& enabledLayers)
+                                       const std::vector<const char*>& enabledLayers,
+                                       VkInstanceCreateFlags           flags)
   :
+#ifdef VK_EXT_debug_utils
+    debugUtilsCallback(debugUtilsCallback),
+#endif // VK_EXT_debug_utils
     application(application),
-    flags(flags),
     enabledExtensions(enabledExtensions),
-    enabledLayers(enabledLayers)
+    enabledLayers(enabledLayers),
+    flags(flags)
 {}
   
 Instance::Instance(const InstanceCreateInfo& createInfo)

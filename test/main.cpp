@@ -1,23 +1,12 @@
 #define VK_EXT_debug_utils
 #include "../include/crude_vulkan_01/instance.hpp"
+#include "../include/crude_vulkan_01/debug_utils_messenger.hpp"
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
 #include <iostream>
 #include <memory>
-
-VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT       messageSeverity,
-                                             VkDebugUtilsMessageTypeFlagsEXT              messageType,
-                                             const VkDebugUtilsMessengerCallbackDataEXT*  pCallbackData,
-                                             void*                                        pUserData) 
-{
-  if (messageSeverity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT) {
-    std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
-  }
-  return VK_FALSE;
-}
-
 
 class Test_Application
 {
@@ -55,29 +44,19 @@ private:
     app->m_framebufferResized = true; 
   }
 
-
   void initVulkan() 
   {
-    initInstance();
-  }
-  
-  void initInstance()
-  {
-    crude_vulkan_01::Application application{};
-    application.pApplicationName   = "test";
-    application.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-    application.pEngineName        = "test";
-    application.engineVersion      = VK_MAKE_VERSION(1, 0, 0);
-    application.apiVersion         = VK_API_VERSION_1_0;
-
-    crude_vulkan_01::InstanceCreateInfo instanceInfo{};
-    instanceInfo.application        = application;
-    instanceInfo.debugUtilsCallback = debugCallback;
+    // Initialize instance
+    crude_vulkan_01::InstanceCreateInfo instanceInfo(debugCallback);
     instanceInfo.enabledExtensions  = getRequiredExtensions();
     instanceInfo.enabledLayers      = {"VK_LAYER_KHRONOS_validation"};
-    instanceInfo.flags              = 0u;
 
     m_instance = std::make_shared<crude_vulkan_01::Instance>(instanceInfo);
+    
+    // Initialize debugCallback
+    m_debugUtilsMessenger = std::make_shared<crude_vulkan_01::Debug_Utils_Messenger>(crude_vulkan_01::DebugUtilsMessengerCreateInfo(
+      m_instance,
+      debugCallback));
   }
 
   std::vector<const char*> getRequiredExtensions()
@@ -99,10 +78,22 @@ private:
     glfwTerminate(); 
   }
 
+  static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT       messageSeverity,
+                                                      VkDebugUtilsMessageTypeFlagsEXT              messageType,
+                                                      const VkDebugUtilsMessengerCallbackDataEXT*  pCallbackData,
+                                                      void*                                        pUserData) 
+  {
+    if (messageSeverity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT) {
+      std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
+    }
+    return VK_FALSE;
+  }
+
 private:
   GLFWwindow* m_window;
-  bool m_framebufferResized = false;
   std::shared_ptr<crude_vulkan_01::Instance> m_instance;
+  std::shared_ptr<crude_vulkan_01::Debug_Utils_Messenger> m_debugUtilsMessenger;
+  bool m_framebufferResized = false;
 };
 
 

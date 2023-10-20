@@ -9,14 +9,14 @@ SOURCEDIR = $(ROOT_DIR)test/
 SOURCESLIST = $(SOURCEDIR)main.cpp
 
 LIBDIR = $(ROOT_DIR)include/crude_vulkan_01/
-LIBSOURCELIST = $(LIBDIR)instance.cpp $(LIBDIR)application.cpp
+LIBSOURCELIST = $(LIBDIR)debug_utils_messenger.cpp $(LIBDIR)instance.cpp $(LIBDIR)application.cpp
 
 OUTPUTNAME = test_vulkan
 
 .PHONY: test clean
 
 test_vulkan: $(SOURCESLIST) $(LIBSOURCELIST)
-	g++ $(CFLAGS) $(INC) -o $(OUTPUTNAME) $(SOURCESLIST) $(LIBSOURCELIST) $(LDFLAGS)
+	g++ $(CFLAGS) $(INC) -o $(OUTPUTNAME) $(LIBSOURCELIST) $(SOURCESLIST) $(LDFLAGS)
 
 test: $(OUTPUTNAME)
 	./$(OUTPUTNAME)

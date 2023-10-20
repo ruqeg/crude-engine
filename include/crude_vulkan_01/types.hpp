@@ -3,6 +3,9 @@
 #include <cstdint>
 #include <uchar.h>
 
+namespace crude_vulkan_01 
+{
+
 using int8  = int8_t;
 using int16 = int16_t;
 using int32 = int32_t;
@@ -18,3 +21,5 @@ using float64 = double;
 
 using char8  = char;
 using char32 = wchar_t;
+
+}

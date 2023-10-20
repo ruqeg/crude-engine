@@ -1,6 +1,6 @@
 #pragma once
 
-#include "core/core.hpp"
+#include "core.hpp"
 #include "object.hpp"
 #include "include_vulkan.hpp"
 #include "application.hpp"
@@ -9,7 +9,8 @@
 namespace crude_vulkan_01
 {
 
-struct InstanceCreateInfo {
+struct InstanceCreateInfo
+{
   Application               application;
 #ifdef VK_EXT_debug_utils
   PFN_vkDebugUtilsMessengerCallbackEXT debugUtilsCallback;
@@ -18,14 +19,14 @@ struct InstanceCreateInfo {
   std::vector<const char*>  enabledExtensions;
   std::vector<const char*>  enabledLayers;
 
-  InstanceCreateInfo() = default;
-  InstanceCreateInfo(const Application&               application,
+  explicit InstanceCreateInfo(
 #ifdef VK_EXT_debug_utils
-                     PFN_vkDebugUtilsMessengerCallbackEXT debugUtilsCallback,
+                              PFN_vkDebugUtilsMessengerCallbackEXT  debugUtilsCallback,
 #endif // VK_EXT_debug_utils
-                     VkInstanceCreateFlags            flags,
-                     const std::vector<const char*>&  enabledExtensions,
-                     const std::vector<const char*>&  enabledLayers);
+                              const Application&                    application        = Application(),
+                              const std::vector<const char*>&       enabledExtensions  = {},
+                              const std::vector<const char*>&       enabledLayers      = {},
+                              VkInstanceCreateFlags                 flags              = 0u);
 };
 
 class Instance : public TObject<VkInstance>
