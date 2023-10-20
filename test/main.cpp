@@ -46,9 +46,17 @@ private:
 
   void initVulkan() 
   {
+    const auto& xcbSurfaceExtensions = crude_vulkan_01::XCB_Surface::requiredExtensions();
+    const auto& debugUtilsExtensions = crude_vulkan_01::Debug_Utils_Messenger::requiredExtensions();
+
+    std::vector<const char*> enabledExtensions;
+    enabledExtensions.reserve(xcbSurfaceExtensions.size() + debugUtilsExtensions.size());
+    enabledExtensions.insert(enabledExtensions.end(), xcbSurfaceExtensions.begin(), xcbSurfaceExtensions.end());
+    enabledExtensions.insert(enabledExtensions.end(), debugUtilsExtensions.begin(), debugUtilsExtensions.end());
+
     // Initialize instance
     crude_vulkan_01::InstanceCreateInfo instanceInfo(debugCallback);
-    instanceInfo.enabledExtensions  = {"VK_KHR_xcb_surface", "VK_KHR_surface", VK_EXT_DEBUG_UTILS_EXTENSION_NAME};
+    instanceInfo.enabledExtensions  = enabledExtensions;
     instanceInfo.enabledLayers      = {"VK_LAYER_KHRONOS_validation"};
 
     m_instance = std::make_shared<crude_vulkan_01::Instance>(instanceInfo);

@@ -3,7 +3,7 @@
 #include "core.hpp"
 #include "include_vulkan.hpp"
 #include "object.hpp"
-#include <memory>
+#include "requiring_extensions.hpp"
 
 namespace crude_vulkan_01
 {
@@ -40,19 +40,20 @@ struct DebugUtilsMessengerCreateInfo
                                          VkDebugUtilsMessengerCreateFlagsEXT   flags           = 0u);
 };
 
-class Debug_Utils_Messenger : public TObject<VkDebugUtilsMessengerEXT>
+class Debug_Utils_Messenger : public TObject<VkDebugUtilsMessengerEXT>, public Requiring_Extensions
 {
 public:
   Debug_Utils_Messenger(const DebugUtilsMessengerCreateInfo& createInfo);
   ~Debug_Utils_Messenger();
+  static const std::vector<const char*>& requiredExtensions();
 private:
-  static VkResult createDebugUtilsMessengerEXT(VkInstance instance,
-                                               const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
-                                               const VkAllocationCallbacks* pAllocator,
-                                               VkDebugUtilsMessengerEXT* pDebugMessenger);
-  static void destroyDebugUtilsMessengerEXT(VkInstance instance, 
-                                            VkDebugUtilsMessengerEXT debugMessenger, 
-                                            const VkAllocationCallbacks* pAllocator);
+  void destroyDebugUtilsMessengerEXT(VkInstance instance, 
+                                     VkDebugUtilsMessengerEXT debugMessenger, 
+                                     const VkAllocationCallbacks* pAllocator);
+  VkResult createDebugUtilsMessengerEXT(VkInstance instance,
+                                        const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
+                                        const VkAllocationCallbacks* pAllocator,
+                                        VkDebugUtilsMessengerEXT* pDebugMessenger);
 private:
   std::shared_ptr<const Instance> m_instance;
 };

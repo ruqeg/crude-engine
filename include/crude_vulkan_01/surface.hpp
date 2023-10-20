@@ -3,7 +3,7 @@
 #include "core.hpp"
 #include "object.hpp"
 #include "include_vulkan.hpp"
-#include <memory>
+#include "requiring_extensions.hpp"
 
 namespace crude_vulkan_01
 {
@@ -46,30 +46,30 @@ struct XCBSurfaceCreateInfo
   {}
 };
 
-class XCB_Surface : public Surface
+class XCB_Surface : public Surface, public Requiring_Extensions
 {
 public:
   XCB_Surface(const XCBSurfaceCreateInfo& createInfoXCB)
-  :
-  Surface(SurfaceCreateInfo(createInfoXCB.instance)),
-  m_window(createInfoXCB.window),
-  m_pConnection(createInfoXCB.pConnection)
-{
-  VkXcbSurfaceCreateInfoKHR vkCreateInfo;
-  vkCreateInfo.sType       = VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR;
-  vkCreateInfo.connection  = createInfoXCB.pConnection;
-  vkCreateInfo.window      = createInfoXCB.window;
-  vkCreateInfo.flags       = createInfoXCB.flags;
-  vkCreateInfo.pNext       = nullptr;
+    :
+    Surface(SurfaceCreateInfo(createInfoXCB.instance)),
+    m_window(createInfoXCB.window),
+    m_pConnection(createInfoXCB.pConnection)
+  {
+    VkXcbSurfaceCreateInfoKHR vkCreateInfo;
+    vkCreateInfo.sType       = VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR;
+    vkCreateInfo.connection  = createInfoXCB.pConnection;
+    vkCreateInfo.window      = createInfoXCB.window;
+    vkCreateInfo.flags       = createInfoXCB.flags;
+    vkCreateInfo.pNext       = nullptr;
 
-  const VkResult result = vkCreateXcbSurfaceKHR(
-    CRUDE_VULKAN_01_HANDLE(m_instance),
-    &vkCreateInfo, 
-    nullptr, 
-    &m_handle); 
+    const VkResult result = vkCreateXcbSurfaceKHR(
+      CRUDE_VULKAN_01_HANDLE(m_instance),
+      &vkCreateInfo, 
+      nullptr, 
+      &m_handle); 
 
-  CRUDE_VULKAN_01_HANDLE_RESULT(result, "failed to create xcb surface");
-}
+    CRUDE_VULKAN_01_HANDLE_RESULT(result, "failed to create xcb surface");
+  }
   
   const xcb_connection_t* getConnection() const
   {
@@ -79,6 +79,12 @@ public:
   xcb_window_t getWindow() const
   {
     return m_window;
+  }
+  
+  static const std::vector<const char*>& requiredExtensions()
+  {
+    static std::vector<const char*> extensions = {"VK_KHR_xcb_surface", "VK_KHR_surface"};
+    return extensions;
   }
 private:
   const xcb_connection_t* m_pConnection;

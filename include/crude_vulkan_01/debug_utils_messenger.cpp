@@ -76,5 +76,11 @@ Debug_Utils_Messenger::~Debug_Utils_Messenger()
     m_handle, 
     nullptr);
 }
+  
+const std::vector<const char*>& Debug_Utils_Messenger::requiredExtensions()
+{
+  static std::vector<const char*> extensions = {VK_EXT_DEBUG_UTILS_EXTENSION_NAME};
+  return extensions;
+}
 
 }
