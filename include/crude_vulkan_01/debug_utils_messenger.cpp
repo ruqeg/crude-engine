@@ -65,6 +65,8 @@ Debug_Utils_Messenger::Debug_Utils_Messenger(const DebugUtilsMessengerCreateInfo
     &vkCreateInfo,
     pAllocator, 
     &m_handle);
+  
+  CRUDE_VULKAN_01_HANDLE_RESULT(result, "failed to create debug utils messenger");
 }
 
 Debug_Utils_Messenger::~Debug_Utils_Messenger()

@@ -1,12 +1,12 @@
-#define VK_EXT_debug_utils
+#include <xcb/xcb.h>
+
+#define VK_USE_PLATFORM_XCB_KHR
 #include "../include/crude_vulkan_01/instance.hpp"
 #include "../include/crude_vulkan_01/debug_utils_messenger.hpp"
+#include "../include/crude_vulkan_01/surface.hpp"
 
-#define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
-
-#include <iostream>
 #include <memory>
+#include <iostream>
 
 class Test_Application
 {
@@ -20,35 +20,35 @@ public:
 private:
   void initWindow()
   {
-    glfwInit();
-    
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+    m_pConnection = xcb_connect(NULL, NULL);
+            
+    const xcb_setup_t*     pSetup  = xcb_get_setup (m_pConnection);
+    xcb_screen_iterator_t  iter    = xcb_setup_roots_iterator (pSetup);
+    xcb_screen_t*          pScreen = iter.data;
 
-    m_window = glfwCreateWindow(800, 600, "Test_Application", nullptr, nullptr);
 
-    if (m_window == nullptr)
-    {
-      throw std::runtime_error("Failed to glfwCreateWindow");
-    }
+    const uint32_t x = 0u, y = 0u, width = 800u, height = 600u, borderWidth = 10u;
 
-    glfwSetWindowAttrib(m_window, GLFW_RESIZABLE, GLFW_TRUE);
-
-    glfwSetWindowUserPointer(m_window, this);
-    glfwSetFramebufferSizeCallback(m_window, framebufferResizeCallback);
-  }
-
-  static void framebufferResizeCallback(GLFWwindow* window, int width, int height)
-  {
-    auto app = reinterpret_cast<Test_Application*>(glfwGetWindowUserPointer(window));
-    app->m_framebufferResized = true; 
+    m_window = xcb_generate_id(m_pConnection);
+    xcb_create_window (m_pConnection,
+                       XCB_COPY_FROM_PARENT,
+                       m_window,
+                       pScreen->root,
+                       x, y,
+                       width, height,
+                       borderWidth,
+                       XCB_WINDOW_CLASS_INPUT_OUTPUT,
+                       pScreen->root_visual,
+                       0, NULL );
+    xcb_map_window (m_pConnection, m_window);
+    xcb_flush (m_pConnection);
   }
 
   void initVulkan() 
   {
     // Initialize instance
     crude_vulkan_01::InstanceCreateInfo instanceInfo(debugCallback);
-    instanceInfo.enabledExtensions  = getRequiredExtensions();
+    instanceInfo.enabledExtensions  = {"VK_KHR_xcb_surface", "VK_KHR_surface", VK_EXT_DEBUG_UTILS_EXTENSION_NAME};
     instanceInfo.enabledLayers      = {"VK_LAYER_KHRONOS_validation"};
 
     m_instance = std::make_shared<crude_vulkan_01::Instance>(instanceInfo);
@@ -57,25 +57,17 @@ private:
     m_debugUtilsMessenger = std::make_shared<crude_vulkan_01::Debug_Utils_Messenger>(crude_vulkan_01::DebugUtilsMessengerCreateInfo(
       m_instance,
       debugCallback));
-  }
 
-  std::vector<const char*> getRequiredExtensions()
-  {
-    crude_vulkan_01::uint32 glfwExtensionCount = 0;
-    const char** glfwExtensions;
-    glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-
-    std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
-
-    extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-
-    return extensions;
+    // Initialize surface
+    m_surface = std::make_shared<crude_vulkan_01::XCB_Surface>(crude_vulkan_01::XCBSurfaceCreateInfo(
+      m_instance,
+      m_pConnection,
+      m_window));
   }
 
   void cleanup() 
   {
-    glfwDestroyWindow(m_window);
-    glfwTerminate(); 
+    xcb_disconnect (m_pConnection);
   }
 
   static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT       messageSeverity,
@@ -90,9 +82,11 @@ private:
   }
 
 private:
-  GLFWwindow* m_window;
+  xcb_connection_t* m_pConnection;
+  xcb_window_t m_window;
   std::shared_ptr<crude_vulkan_01::Instance> m_instance;
   std::shared_ptr<crude_vulkan_01::Debug_Utils_Messenger> m_debugUtilsMessenger;
+  std::shared_ptr<crude_vulkan_01::Surface> m_surface;
   bool m_framebufferResized = false;
 };
 

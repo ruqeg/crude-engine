@@ -1,5 +1,5 @@
 CFLAGS = -std=c++20 -O2
-LDFLAGS = -lglfw -lvulkan -ldl -lpthread -lX11 -lXxf86vm -lXrandr -lXi
+LDFLAGS = -lvulkan  -lxcb -ldl -lpthread # -lX11 -lXxf86vm -lXrandr -lXi
 
 ROOT_DIR := $(dir $(realpath $(lastword $(MAKEFILE_LIST))))
 
@@ -9,7 +9,7 @@ SOURCEDIR = $(ROOT_DIR)test/
 SOURCESLIST = $(SOURCEDIR)main.cpp
 
 LIBDIR = $(ROOT_DIR)include/crude_vulkan_01/
-LIBSOURCELIST = $(LIBDIR)debug_utils_messenger.cpp $(LIBDIR)instance.cpp $(LIBDIR)application.cpp
+LIBSOURCELIST = $(LIBDIR)surface.cpp $(LIBDIR)debug_utils_messenger.cpp $(LIBDIR)instance.cpp $(LIBDIR)application.cpp
 
 OUTPUTNAME = test_vulkan
 
