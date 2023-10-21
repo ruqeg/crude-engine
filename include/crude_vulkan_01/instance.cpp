@@ -1,7 +1,8 @@
 #include "instance.hpp"
 #include "application.hpp"
-#include <stdexcept>
-#include <vulkan/vulkan_core.h>
+#include "physical_device.hpp"
+#include <memory>
+#include <vector>
 
 namespace crude_vulkan_01
 {
@@ -93,6 +94,34 @@ Instance::~Instance()
 {
   VkAllocationCallbacks* pAllocator = nullptr;
   vkDestroyInstance(m_handle, pAllocator);
+}
+  
+std::vector<std::shared_ptr<Physical_Device>> Instance::getPhysicalDevices()
+{
+  uint32 vkPhysicalDeviceCount = 0u;
+  vkEnumeratePhysicalDevices(
+    m_handle, 
+    &vkPhysicalDeviceCount, 
+    nullptr);
+  
+  if (vkPhysicalDeviceCount == 0u) 
+  {
+    return {};
+  }
+
+  std::vector<VkPhysicalDevice> vkPhysicalDevices(vkPhysicalDeviceCount);
+  vkEnumeratePhysicalDevices(
+      m_handle, 
+      &vkPhysicalDeviceCount,
+      vkPhysicalDevices.data());
+
+  std::vector<std::shared_ptr<Physical_Device>> physicaDevices(vkPhysicalDeviceCount);
+  for (uint32 i = 0u; i < vkPhysicalDeviceCount; ++i) 
+  {
+    physicaDevices[i] = std::make_shared<Physical_Device>(PhysicalDeviceCreateInfo(vkPhysicalDevices[i]));
+  }
+  
+  return physicaDevices;
 }
 
 }

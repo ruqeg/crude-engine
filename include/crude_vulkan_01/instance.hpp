@@ -4,10 +4,13 @@
 #include "object.hpp"
 #include "include_vulkan.hpp"
 #include "application.hpp"
+#include <memory>
 #include <vector>
 
 namespace crude_vulkan_01
 {
+
+class Physical_Device;
 
 struct InstanceCreateInfo
 {
@@ -34,8 +37,7 @@ class Instance : public TObject<VkInstance>
 public:
   explicit Instance(const InstanceCreateInfo& createInfo);
   ~Instance();
-private:
-  
+  std::vector<std::shared_ptr<Physical_Device>> getPhysicalDevices();
 };
 
 }

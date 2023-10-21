@@ -9,7 +9,7 @@ SOURCEDIR = $(ROOT_DIR)test/
 SOURCESLIST = $(SOURCEDIR)main.cpp
 
 LIBDIR = $(ROOT_DIR)include/crude_vulkan_01/
-LIBSOURCELIST = $(LIBDIR)surface.cpp $(LIBDIR)debug_utils_messenger.cpp $(LIBDIR)instance.cpp $(LIBDIR)application.cpp
+LIBSOURCELIST = $(LIBDIR)physical_device.cpp $(LIBDIR)surface.cpp $(LIBDIR)debug_utils_messenger.cpp $(LIBDIR)instance.cpp $(LIBDIR)application.cpp
 
 OUTPUTNAME = test_vulkan
 
