@@ -19,7 +19,7 @@ struct PhysicalDeviceCreateInfo
 class Physical_Device : public TObject<VkPhysicalDevice>
 {
 public:
-  Physical_Device(const PhysicalDeviceCreateInfo& createInfo);
+  explicit Physical_Device(const PhysicalDeviceCreateInfo& createInfo);
   bool getSupportSurface(std::shared_ptr<const Surface> surface, uint32 queueFamilyIndex) const;
   VkSurfaceCapabilitiesKHR getSurfaceCapabilitis(std::shared_ptr<const Surface> surface) const;
   std::vector<VkSurfaceFormatKHR> getSurfaceFormats(std::shared_ptr<const Surface> surface);

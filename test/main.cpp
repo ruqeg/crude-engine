@@ -7,6 +7,7 @@
 #include "../include/crude_vulkan_01/debug_utils_messenger.hpp"
 #include "../include/crude_vulkan_01/surface.hpp"
 #include "../include/crude_vulkan_01/physical_device.hpp"
+#include "../include/crude_vulkan_01/device.hpp"
 
 #include <set>
 #include <memory>
@@ -107,6 +108,17 @@ private:
     {
       throw std::runtime_error("failed to find suitable physical device");
     }
+
+    // Initialize logic device
+    const Queue_Family_Indices queueIndices = findQueueFamilies(*m_physicalDevice);
+    m_device = std::make_shared<crude_vulkan_01::Device>(crude_vulkan_01::DeviceCreateInfo(
+      m_physicalDevice,
+      {
+        crude_vulkan_01::DeviceQueueCreateInfo(queueIndices.graphicsFamily.value()), 
+        crude_vulkan_01::DeviceQueueCreateInfo(queueIndices.presentFamily.value())},
+      {},
+      {VK_KHR_SWAPCHAIN_EXTENSION_NAME},
+      {"VK_LAYER_KHRONOS_validation"}));
   }
 
   Queue_Family_Indices findQueueFamilies(crude_vulkan_01::Physical_Device& physicalDevice) {
@@ -170,6 +182,7 @@ private:
   std::shared_ptr<crude_vulkan_01::Debug_Utils_Messenger> m_debugUtilsMessenger;
   std::shared_ptr<crude_vulkan_01::Surface> m_surface;
   std::shared_ptr<crude_vulkan_01::Physical_Device> m_physicalDevice;
+  std::shared_ptr<crude_vulkan_01::Device> m_device;
   bool m_framebufferResized = false;
 };
 
