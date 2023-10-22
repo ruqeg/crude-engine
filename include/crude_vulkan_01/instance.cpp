@@ -1,8 +1,6 @@
 #include "instance.hpp"
 #include "application.hpp"
 #include "physical_device.hpp"
-#include <memory>
-#include <vector>
 
 namespace crude_vulkan_01
 {

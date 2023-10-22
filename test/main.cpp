@@ -1,8 +1,14 @@
 #include <optional>
 #include <stdexcept>
-#include <xcb/xcb.h>
 
+#ifdef __linux__ 
 #define VK_USE_PLATFORM_XCB_KHR
+#include <xcb/xcb.h>
+#elif _WIN32
+#define VK_USE_PLATFORM_WIN32_KHR
+#include <Windows.h>
+#endif
+
 #include "../include/crude_vulkan_01/instance.hpp"
 #include "../include/crude_vulkan_01/debug_utils_messenger.hpp"
 #include "../include/crude_vulkan_01/surface.hpp"
@@ -27,47 +33,116 @@ public:
     }
   };
 public:
-  void run()
+  void run(
+#ifdef _WIN32 
+    HINSTANCE  hinstance
+#endif
+  )
   {
-    initWindow();
+    initWindow(
+#ifdef _WIN32 
+      hinstance
+#endif
+    );
     initVulkan();
     cleanup();
   }
 private:
-  void initWindow()
+  void initWindow(
+#ifdef _WIN32 
+    HINSTANCE  hinstance
+#endif
+  )
+  {
+#ifdef __linux__ 
+    createXCBWindow();
+#elif _WIN32
+    m_hinstance = hinstance;
+    createWin32Window();
+#endif
+  }
+
+#ifdef __linux__ 
+  // UNTESTED
+  void createXCBWindow()
   {
     m_pConnection = xcb_connect(NULL, NULL);
-            
-    const xcb_setup_t*     pSetup  = xcb_get_setup (m_pConnection);
-    xcb_screen_iterator_t  iter    = xcb_setup_roots_iterator (pSetup);
-    xcb_screen_t*          pScreen = iter.data;
 
-
-    const uint32_t x = 0u, y = 0u, width = 800u, height = 600u, borderWidth = 10u;
+    const xcb_setup_t* pSetup = xcb_get_setup(m_pConnection);
+    xcb_screen_iterator_t  iter = xcb_setup_roots_iterator(pSetup);
+    xcb_screen_t* pScreen = iter.data;
 
     m_window = xcb_generate_id(m_pConnection);
-    xcb_create_window (m_pConnection,
-                       XCB_COPY_FROM_PARENT,
-                       m_window,
-                       pScreen->root,
-                       x, y,
-                       width, height,
-                       borderWidth,
-                       XCB_WINDOW_CLASS_INPUT_OUTPUT,
-                       pScreen->root_visual,
-                       0, NULL );
-    xcb_map_window (m_pConnection, m_window);
-    xcb_flush (m_pConnection);
+    xcb_create_window(m_pConnection,
+      XCB_COPY_FROM_PARENT,
+      m_window,
+      pScreen->root,
+      0u, 0u,
+      m_width, m_height,
+      10u,
+      XCB_WINDOW_CLASS_INPUT_OUTPUT,
+      pScreen->root_visual,
+      0, NULL);
+    xcb_map_window(m_pConnection, m_window);
+    xcb_flush(m_pConnection);
+#elif _WIN32
+  void createWin32Window()
+  {
+    WNDCLASSEX wc{};
+    wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
+    wc.lpfnWndProc = WindowProc; // !TODO
+    wc.cbClsExtra = 0;
+    wc.cbWndExtra = 0;
+    wc.hInstance = m_hinstance;
+    wc.hIcon = NULL;
+    wc.hIconSm = NULL;
+    wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+    wc.hbrBackground = NULL;
+    wc.lpszMenuName = NULL;
+    wc.lpszClassName = m_windowClassWide.c_str();
+    wc.cbSize = sizeof(WNDCLASSEX);
+
+    if (!RegisterClassEx(&wc))
+    {
+      throw std::runtime_error("Failed to register window class!");
+    }
+
+    m_hwnd = CreateWindowEx(
+      NULL,
+      m_windowClassWide.c_str(),
+      m_titileWide.c_str(),
+      WS_OVERLAPPEDWINDOW,
+      CW_USEDEFAULT, CW_USEDEFAULT,
+      m_width, m_height,
+      NULL,
+      NULL,
+      m_hinstance,
+      NULL);
+
+    if (m_hwnd == NULL)
+    {
+      throw std::runtime_error("failed to create win32 window");
+    }
   }
+
+  static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+  {
+    return DefWindowProc(hwnd, uMsg, wParam, lParam);
+  }
+#endif
 
   void initVulkan() 
   {
-    const auto& xcbSurfaceExtensions = crude_vulkan_01::XCB_Surface::requiredExtensions();
+#ifdef __linux__ 
+    const auto& surfaceExtensions = crude_vulkan_01::XCB_Surface::requiredExtensions();
+#elif _WIN32
+    const auto& surfaceExtensions = crude_vulkan_01::Win32_Surface::requiredExtensions();
+#endif
     const auto& debugUtilsExtensions = crude_vulkan_01::Debug_Utils_Messenger::requiredExtensions();
 
     std::vector<const char*> enabledExtensions;
-    enabledExtensions.reserve(xcbSurfaceExtensions.size() + debugUtilsExtensions.size());
-    enabledExtensions.insert(enabledExtensions.end(), xcbSurfaceExtensions.begin(), xcbSurfaceExtensions.end());
+    enabledExtensions.reserve(surfaceExtensions.size() + debugUtilsExtensions.size());
+    enabledExtensions.insert(enabledExtensions.end(), surfaceExtensions.begin(), surfaceExtensions.end());
     enabledExtensions.insert(enabledExtensions.end(), debugUtilsExtensions.begin(), debugUtilsExtensions.end());
 
     // Initialize instance
@@ -83,10 +158,17 @@ private:
       debugCallback));
 
     // Initialize surface
+#ifdef __linux__ 
     m_surface = std::make_shared<crude_vulkan_01::XCB_Surface>(crude_vulkan_01::XCBSurfaceCreateInfo(
       m_instance,
       m_pConnection,
       m_window));
+#elif _WIN32
+    m_surface = std::make_shared<crude_vulkan_01::Win32_Surface>(crude_vulkan_01::Win32SurfaceCreateInfo(
+      m_instance,
+      m_hinstance,
+      m_hwnd));
+#endif
 
     // Pick physical device
     for (auto& physicalDevice : m_instance->getPhysicalDevices())
@@ -161,7 +243,12 @@ private:
 
   void cleanup() 
   {
-    xcb_disconnect (m_pConnection);
+#ifdef __linux__ 
+    xcb_disconnect(m_pConnection);
+#elif _WIN32
+    UnregisterClass(m_windowClassWide.c_str(), m_hinstance);
+    DestroyWindow(m_hwnd);
+#endif
   }
 
   static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT       messageSeverity,
@@ -176,27 +263,70 @@ private:
   }
 
 private:
-  xcb_connection_t* m_pConnection;
-  xcb_window_t m_window;
-  std::shared_ptr<crude_vulkan_01::Instance> m_instance;
-  std::shared_ptr<crude_vulkan_01::Debug_Utils_Messenger> m_debugUtilsMessenger;
-  std::shared_ptr<crude_vulkan_01::Surface> m_surface;
-  std::shared_ptr<crude_vulkan_01::Physical_Device> m_physicalDevice;
-  std::shared_ptr<crude_vulkan_01::Device> m_device;
+#ifdef __linux__
+  xcb_connection_t*  m_pConnection;
+  xcb_window_t       m_window;
+#elif _WIN32
+  HWND       m_hwnd;
+  HINSTANCE  m_hinstance;
+#endif
+  std::shared_ptr<crude_vulkan_01::Instance>               m_instance;
+  std::shared_ptr<crude_vulkan_01::Debug_Utils_Messenger>  m_debugUtilsMessenger;
+  std::shared_ptr<crude_vulkan_01::Surface>                m_surface;
+  std::shared_ptr<crude_vulkan_01::Physical_Device>        m_physicalDevice;
+  std::shared_ptr<crude_vulkan_01::Device>                 m_device;
+
+  uint32_t m_width = 800u;
+  uint32_t m_height = 600u;
   bool m_framebufferResized = false;
+
+  const std::string   m_titile = "test";
+  const std::wstring  m_titileWide = L"test";
+  const std::wstring  m_windowClassWide = L"test_class";
 };
 
-
-int main() 
+#ifdef __linux__
+int main()
 {
   Test_Application testApp;
 
-  try {
+  try 
+  {
     testApp.run();
-  } catch (const std::exception& e) {
+  }
+  catch (const std::exception& e)
+  {
     std::cerr << e.what() << std::endl;
     return EXIT_FAILURE;
   }
 
   return 0;
 }
+#elif _WIN32
+int APIENTRY wWinMain(
+  _In_ HINSTANCE hInstance,
+  _In_opt_ HINSTANCE hPrevInstance,
+  _In_ LPWSTR lpCmdLine,
+  _In_ int nCmdShow)
+{
+  // init console
+  AllocConsole();
+  FILE* dummy;
+  auto s = freopen_s(&dummy, "CONOUT$", "w", stdout);
+
+  Test_Application testApp;
+  try
+  {
+    testApp.run(hInstance);
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << e.what() << std::endl;
+    return EXIT_FAILURE;
+  }
+
+  system("pause");
+
+  return 0;
+}
+#endif

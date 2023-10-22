@@ -4,7 +4,6 @@
 #include "object.hpp"
 #include "include_vulkan.hpp"
 #include "application.hpp"
-#include <memory>
 #include <vector>
 
 namespace crude_vulkan_01

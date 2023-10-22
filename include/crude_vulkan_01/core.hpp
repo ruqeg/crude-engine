@@ -1,7 +1,7 @@
 #pragma once
 
 #include "types.hpp"
-#include <exception>
+#include <stdexcept>
 #include <memory>
 
 namespace crude_vulkan_01 
