@@ -14,6 +14,7 @@
 #include "../include/crude_vulkan_01/surface.hpp"
 #include "../include/crude_vulkan_01/physical_device.hpp"
 #include "../include/crude_vulkan_01/device.hpp"
+#include "../include/crude_vulkan_01/queue.hpp"
 
 #include <set>
 #include <memory>
@@ -202,6 +203,9 @@ private:
       {},
       {VK_KHR_SWAPCHAIN_EXTENSION_NAME},
       {"VK_LAYER_KHRONOS_validation"}));
+
+    m_graphicsQueue = m_device->getQueue(queueIndices.graphicsFamily.value(), 0u);
+    m_presentQueue = m_device->getQueue(queueIndices.presentFamily.value(), 0u);
   }
 
   Queue_Family_Indices findQueueFamilies(crude_vulkan_01::Physical_Device& physicalDevice) {
@@ -277,6 +281,8 @@ private:
   std::shared_ptr<crude_vulkan_01::Surface>                m_surface;
   std::shared_ptr<crude_vulkan_01::Physical_Device>        m_physicalDevice;
   std::shared_ptr<crude_vulkan_01::Device>                 m_device;
+  std::shared_ptr<crude_vulkan_01::Queue>                  m_graphicsQueue;
+  std::shared_ptr<crude_vulkan_01::Queue>                  m_presentQueue;
 
   uint32_t m_width = 800u;
   uint32_t m_height = 600u;

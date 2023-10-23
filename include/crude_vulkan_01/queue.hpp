@@ -21,6 +21,7 @@ class Queue : public TObject<VkQueue>
 {
 public:
   explicit Queue(const QueueCreateInfo& createInfo);
+  ~Queue() = default;
 private:
   const uint32  m_familyIndex;
   const uint32  m_index;
