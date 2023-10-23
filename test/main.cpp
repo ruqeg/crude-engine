@@ -1,6 +1,3 @@
-#include <optional>
-#include <stdexcept>
-
 #ifdef __linux__ 
 #define VK_USE_PLATFORM_XCB_KHR
 #include <xcb/xcb.h>
@@ -15,10 +12,15 @@
 #include "../include/crude_vulkan_01/physical_device.hpp"
 #include "../include/crude_vulkan_01/device.hpp"
 #include "../include/crude_vulkan_01/queue.hpp"
+#include "../include/crude_vulkan_01/swap_chain.hpp"
 
+#include <algorithm>
 #include <set>
 #include <memory>
 #include <iostream>
+#include <optional>
+#include <stdexcept>
+#include <limits>
 
 class Test_Application
 {
@@ -206,6 +208,36 @@ private:
 
     m_graphicsQueue = m_device->getQueue(queueIndices.graphicsFamily.value(), 0u);
     m_presentQueue = m_device->getQueue(queueIndices.presentFamily.value(), 0u);
+
+    // Initialize swapchain
+    VkSurfaceCapabilitiesKHR surfaceCapabilites = m_physicalDevice->getSurfaceCapabilitis(m_surface);
+    const VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(m_physicalDevice->getSurfaceFormats(m_surface));
+    const VkPresentModeKHR presentMode = chooseSwapPresentMode(m_physicalDevice->getSurfacePresentModes(m_surface));
+    const VkExtent2D extent = chooseSwapExtent(surfaceCapabilites);
+
+    uint32_t imageCount = surfaceCapabilites.minImageCount + 1u;
+    if (surfaceCapabilites.maxImageCount > 0u && imageCount > surfaceCapabilites.maxImageCount) {
+      imageCount = surfaceCapabilites.maxImageCount;
+    }
+
+    std::vector<uint32_t> queueFamilyIndices = {queueIndices.graphicsFamily.value(), queueIndices.presentFamily.value()};
+
+    m_swapchain = std::make_shared<crude_vulkan_01::Swap_Chain>(crude_vulkan_01::SwapChainCreateInfo(
+      m_device,
+      m_surface,
+      surfaceFormat,
+      extent,
+      VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+      imageCount,
+      1u,
+      VK_SHARING_MODE_CONCURRENT,
+      queueFamilyIndices,
+      surfaceCapabilites.currentTransform,
+      VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
+      presentMode,
+      VK_TRUE,
+      0u,
+      nullptr));
   }
 
   Queue_Family_Indices findQueueFamilies(crude_vulkan_01::Physical_Device& physicalDevice) {
@@ -247,6 +279,42 @@ private:
     return !physicalDevice.getSurfaceFormats(surface).empty() && !physicalDevice.getSurfacePresentModes(surface).empty();
   }
 
+  VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) {
+    for (const auto& availableFormat : availableFormats) {
+      if (availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
+        return availableFormat;
+      }
+    }
+
+    return availableFormats[0];
+  }
+
+  VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) {
+    for (const auto& availablePresentMode : availablePresentModes) {
+      if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
+        return availablePresentMode;
+      }
+    }
+
+    return VK_PRESENT_MODE_FIFO_KHR;
+  }
+
+  VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) {
+    if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) {
+      return capabilities.currentExtent;
+    }
+
+    VkExtent2D actualExtent = {
+      static_cast<uint32_t>(m_width),
+      static_cast<uint32_t>(m_height)
+    };
+
+    actualExtent.width = std::clamp(actualExtent.width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width);
+    actualExtent.height = std::clamp(actualExtent.height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height);
+
+    return actualExtent;
+  }
+
   void cleanup() 
   {
 #ifdef __linux__ 
@@ -283,6 +351,7 @@ private:
   std::shared_ptr<crude_vulkan_01::Device>                 m_device;
   std::shared_ptr<crude_vulkan_01::Queue>                  m_graphicsQueue;
   std::shared_ptr<crude_vulkan_01::Queue>                  m_presentQueue;
+  std::shared_ptr<crude_vulkan_01::Swap_Chain>             m_swapchain;
 
   uint32_t m_width = 800u;
   uint32_t m_height = 600u;

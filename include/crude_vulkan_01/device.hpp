@@ -33,7 +33,7 @@ struct DeviceCreateInfo
                             const std::vector<const char*>&            enabledLayers = {});
 };
 
-class Device : TObject<VkDevice>
+class Device : public TObject<VkDevice>
 {
 public:
   explicit Device(const DeviceCreateInfo& createinfo);
