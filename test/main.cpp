@@ -85,6 +85,7 @@ private:
       0, NULL);
     xcb_map_window(m_pConnection, m_window);
     xcb_flush(m_pConnection);
+  };
 #elif _WIN32
   void createWin32Window()
   {
@@ -223,7 +224,8 @@ private:
     return indices;
   }
 
-  bool checkDeviceExtensionSupport(crude_vulkan_01::Physical_Device& physicalDevice) {
+  bool checkDeviceExtensionSupport(crude_vulkan_01::Physical_Device& physicalDevice) 
+  {
     static const std::vector<const char*> deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
     
     const auto& availableExtensions = physicalDevice.getExtensionProperties();

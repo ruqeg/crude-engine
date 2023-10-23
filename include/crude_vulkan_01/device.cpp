@@ -1,11 +1,21 @@
 #include "device.hpp"
 #include "core.hpp"
-#include "device_queue_create_info.hpp"
 #include "physical_device.hpp"
-#include <vulkan/vulkan_core.h>
+#include "queue.hpp"
 
 namespace crude_vulkan_01
 {
+
+DeviceQueueCreateInfo::DeviceQueueCreateInfo(uint32                       queueFamilyIndex,
+                                             const std::vector<float32>&  queuePriorities)
+{
+  this->sType            = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+  this->pQueuePriorities = queuePriorities.data();
+  this->queueCount       = queuePriorities.size();
+  this->pNext            = nullptr;
+  this->flags            = 0u;
+  this->queueFamilyIndex = queueFamilyIndex;
+}
 
 DeviceCreateInfo::DeviceCreateInfo(std::shared_ptr<const Physical_Device>     physicalDevice,
                                    const std::vector<DeviceQueueCreateInfo>&  queueDescriptors,
@@ -53,6 +63,19 @@ Device::~Device()
 std::shared_ptr<const Physical_Device> Device::getPhysicalDevice() const
 {
   return m_physicalDevice;
+}
+  
+std::shared_ptr<Queue> Device::getQueue(uint32 queueFamilyIndex, uint32 queueIndex) const
+{
+  std::shared_ptr<Queue> queue = std::make_shared<Queue>(QueueCreateInfo(
+    queueFamilyIndex, 
+    queueIndex));
+  vkGetDeviceQueue(
+    m_handle, 
+    queueFamilyIndex, 
+    queueIndex, 
+    &CRUDE_VULKAN_01_HANDLE(queue));
+  return queue;
 }
 
 }
