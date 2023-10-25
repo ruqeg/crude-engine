@@ -11,14 +11,16 @@ ImageCreateInfo::ImageCreateInfo(std::shared_ptr<const Device> device,
                                  VkFormat                      format,
                                  VkColorSpaceKHR               colorSpace,
                                  VkExtent2D                    extent,
-                                 VkImageUsageFlags             usage)
+                                 VkImageUsageFlags             usage,
+                                 VkImageType                   type)
   :
   device(device),
   handle(handle),
   format(format),
   colorSpace(colorSpace),
   extent(extent),
-  usage(usage)
+  usage(usage),
+  type(type)
 {}
   
 Image::Image(const ImageCreateInfo& createInfo)
@@ -29,6 +31,7 @@ Image::Image(const ImageCreateInfo& createInfo)
   m_colorSpace  = createInfo.colorSpace;
   m_extent      = createInfo.extent;
   m_usage       = createInfo.usage;
+  m_type        = createInfo.type;
 }
   
 Image::~Image()
@@ -37,6 +40,11 @@ Image::~Image()
     CRUDE_VULKAN_01_HANDLE(m_device), 
     m_handle, 
     nullptr);
+}
+  
+VkImageType Image::getType() const
+{
+  return m_type;
 }
 
 }

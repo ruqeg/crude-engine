@@ -13,7 +13,7 @@ SwapChainImageCreateInfo::SwapChainImageCreateInfo(std::shared_ptr<const Device>
                                                    VkExtent2D                     extent,
                                                    VkImageUsageFlags              usage)
   :
-  ImageCreateInfo(device, handle, format, colorSpace, extent, usage)
+  ImageCreateInfo(device, handle, format, colorSpace, extent, usage, VK_IMAGE_TYPE_2D)
 {}
 
 Swap_Chain_Image::Swap_Chain_Image(const SwapChainImageCreateInfo& createInfo)

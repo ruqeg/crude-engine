@@ -13,6 +13,8 @@
 #include "../include/crude_vulkan_01/device.hpp"
 #include "../include/crude_vulkan_01/queue.hpp"
 #include "../include/crude_vulkan_01/swap_chain.hpp"
+#include "../include/crude_vulkan_01/image_view.hpp"
+#include "../include/crude_vulkan_01/swap_chain_image.hpp"
 
 #include <algorithm>
 #include <set>
@@ -239,9 +241,21 @@ private:
       0u,
       nullptr));
 
-    const auto& images = m_swapchain->getSwapchainImages();
-    std::cout << images.size() << std::endl;
-
+    m_swapchainImages = m_swapchain->getSwapchainImages();
+    m_swapchainImagesViews.resize(m_swapchainImages.size());
+    for (uint32_t i = 0; i < m_swapchainImages.size(); ++i)
+    {
+      m_swapchainImagesViews[i] = std::make_shared<crude_vulkan_01::Image_View>(crude_vulkan_01::ImageViewCreateInfo(
+        m_device,
+        m_swapchainImages[i],
+        surfaceFormat.format,
+        {},
+        VK_IMAGE_ASPECT_COLOR_BIT,
+        0u,
+        0u,
+        1u,
+        1u));
+    }
   }
 
   Queue_Family_Indices findQueueFamilies(crude_vulkan_01::Physical_Device& physicalDevice) {
@@ -348,15 +362,16 @@ private:
   HWND       m_hwnd;
   HINSTANCE  m_hinstance;
 #endif
-  std::shared_ptr<crude_vulkan_01::Instance>               m_instance;
-  std::shared_ptr<crude_vulkan_01::Debug_Utils_Messenger>  m_debugUtilsMessenger;
-  std::shared_ptr<crude_vulkan_01::Surface>                m_surface;
-  std::shared_ptr<crude_vulkan_01::Physical_Device>        m_physicalDevice;
-  std::shared_ptr<crude_vulkan_01::Device>                 m_device;
-  std::shared_ptr<crude_vulkan_01::Queue>                  m_graphicsQueue;
-  std::shared_ptr<crude_vulkan_01::Queue>                  m_presentQueue;
-  std::shared_ptr<crude_vulkan_01::Swap_Chain>             m_swapchain;
-
+  std::shared_ptr<crude_vulkan_01::Instance>                       m_instance;
+  std::shared_ptr<crude_vulkan_01::Debug_Utils_Messenger>          m_debugUtilsMessenger;
+  std::shared_ptr<crude_vulkan_01::Surface>                        m_surface;
+  std::shared_ptr<crude_vulkan_01::Physical_Device>                m_physicalDevice;
+  std::shared_ptr<crude_vulkan_01::Device>                         m_device;
+  std::shared_ptr<crude_vulkan_01::Queue>                          m_graphicsQueue;
+  std::shared_ptr<crude_vulkan_01::Queue>                          m_presentQueue;
+  std::shared_ptr<crude_vulkan_01::Swap_Chain>                     m_swapchain;
+  std::vector<std::shared_ptr<crude_vulkan_01::Swap_Chain_Image>>  m_swapchainImages;
+  std::vector<std::shared_ptr<crude_vulkan_01::Image_View>>        m_swapchainImagesViews;
   uint32_t m_width = 800u;
   uint32_t m_height = 600u;
   bool m_framebufferResized = false;
