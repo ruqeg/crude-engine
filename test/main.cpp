@@ -238,6 +238,10 @@ private:
       VK_TRUE,
       0u,
       nullptr));
+
+    const auto& images = m_swapchain->getSwapchainImages();
+    std::cout << images.size() << std::endl;
+
   }
 
   Queue_Family_Indices findQueueFamilies(crude_vulkan_01::Physical_Device& physicalDevice) {

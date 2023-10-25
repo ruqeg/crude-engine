@@ -1,8 +1,7 @@
 #include "swap_chain.hpp"
-#include "core.hpp"
 #include "device.hpp"
 #include "surface.hpp"
-#include <vulkan/vulkan_core.h>
+#include "swap_chain_image.hpp"
 
 
 namespace crude_vulkan_01
@@ -44,7 +43,10 @@ SwapChainCreateInfo::SwapChainCreateInfo(std::shared_ptr<const Device>   device,
 Swap_Chain::Swap_Chain(const SwapChainCreateInfo& createInfo)
   :
   m_device(createInfo.device),
-  m_surface(createInfo.surface)
+  m_surface(createInfo.surface),
+  m_imageUsage(createInfo.imageUsage),
+  m_surfaceFormat(createInfo.surfaceFormat),
+  m_extent(createInfo.extent)
 {
   VkSwapchainCreateInfoKHR vkCreateInfo{};
   vkCreateInfo.sType                  = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
@@ -87,6 +89,48 @@ Swap_Chain::~Swap_Chain()
     CRUDE_VULKAN_01_HANDLE(m_device), 
     m_handle, 
     nullptr);
+}
+  
+const std::vector<std::shared_ptr<Swap_Chain_Image>>& Swap_Chain::getSwapchainImages()
+{
+  if (!m_swapChainImages.empty())
+  {
+    return m_swapChainImages;
+  }
+
+  uint32 imageCount = 0u;
+  vkGetSwapchainImagesKHR(
+    CRUDE_VULKAN_01_HANDLE(m_device), 
+    m_handle, 
+    &imageCount, 
+    nullptr);
+  
+  if (imageCount == 0u)
+  {
+    return m_swapChainImages;
+  }
+
+  std::vector<VkImage> vkSwapchainImages(imageCount);
+
+  vkGetSwapchainImagesKHR(
+    CRUDE_VULKAN_01_HANDLE(m_device), 
+    m_handle, 
+    &imageCount, 
+    vkSwapchainImages.data());
+
+  m_swapChainImages.resize(imageCount);
+  for (uint32 i = 0; i < imageCount; ++i)
+  {
+    m_swapChainImages[i] = std::make_shared<Swap_Chain_Image>(SwapChainImageCreateInfo(
+      m_device,
+      vkSwapchainImages[i],
+      m_surfaceFormat.format,
+      m_surfaceFormat.colorSpace,
+      m_extent,
+      m_imageUsage));
+  }
+
+  return m_swapChainImages;
 }
 
 }

@@ -5,6 +5,7 @@
 #include "object.hpp"
 #include <memory>
 #include <vector>
+#include <vulkan/vulkan_core.h>
 
 namespace crude_vulkan_01
 {
@@ -12,6 +13,7 @@ namespace crude_vulkan_01
 class Surface;
 class Device;
 class Swap_Chain;
+class Swap_Chain_Image;
 
 struct SwapChainCreateInfo
 {
@@ -53,9 +55,15 @@ class Swap_Chain : public TObject<VkSwapchainKHR>
 public:
   explicit Swap_Chain(const SwapChainCreateInfo& createInfo);
   ~Swap_Chain();
+  const std::vector<std::shared_ptr<Swap_Chain_Image>>& getSwapchainImages();
 private:
-  std::shared_ptr<const Device>   m_device;
-  std::shared_ptr<const Surface>  m_surface;
+  std::shared_ptr<const Device> m_device;
+  std::shared_ptr<const Surface> m_surface;
+  std::vector<std::shared_ptr<Swap_Chain_Image>> m_swapChainImages;
+
+  const VkImageUsageFlags m_imageUsage;
+  const VkSurfaceFormatKHR m_surfaceFormat;
+  const VkExtent2D m_extent;
 };
 
 }
