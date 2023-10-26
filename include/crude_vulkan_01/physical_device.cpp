@@ -120,6 +120,13 @@ std::vector<VkExtensionProperties> Physical_Device::getExtensionProperties() con
   return extensions;
 }
   
+VkFormatProperties Physical_Device::getFormatProperties(VkFormat format) const
+{
+  VkFormatProperties properties;
+  vkGetPhysicalDeviceFormatProperties(m_handle, format, &properties);
+  return properties;
+}
+  
 VkPhysicalDeviceProperties Physical_Device::getProperties() const
 {
   VkPhysicalDeviceProperties properties;

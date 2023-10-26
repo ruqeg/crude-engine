@@ -1,3 +1,4 @@
+#include <vulkan/vulkan_core.h>
 #ifdef __linux__ 
 #define VK_USE_PLATFORM_XCB_KHR
 #include <xcb/xcb.h>
@@ -15,6 +16,7 @@
 #include "../include/crude_vulkan_01/swap_chain.hpp"
 #include "../include/crude_vulkan_01/image_view.hpp"
 #include "../include/crude_vulkan_01/swap_chain_image.hpp"
+#include "../include/crude_vulkan_01/render_pass.hpp"
 
 #include <algorithm>
 #include <set>
@@ -256,6 +258,56 @@ private:
         1u,
         1u));
     }
+
+    crude_vulkan_01::AttachmentDescription colorAttachment(
+      surfaceFormat.format,
+      VK_SAMPLE_COUNT_1_BIT,
+      VK_ATTACHMENT_LOAD_OP_CLEAR,
+      VK_ATTACHMENT_STORE_OP_STORE,
+      VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+      VK_ATTACHMENT_STORE_OP_DONT_CARE,
+      VK_IMAGE_LAYOUT_UNDEFINED,
+      VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+
+    VkAttachmentReference colorAttachmentRef;
+    colorAttachmentRef.attachment = 0u;
+    colorAttachmentRef.layout     = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+    crude_vulkan_01::AttachmentDescription depthAttachment(
+      findDepthFormat(),
+      VK_SAMPLE_COUNT_1_BIT,
+      VK_ATTACHMENT_LOAD_OP_CLEAR,
+      VK_ATTACHMENT_STORE_OP_STORE,
+      VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+      VK_ATTACHMENT_STORE_OP_DONT_CARE,
+      VK_IMAGE_LAYOUT_UNDEFINED,
+      VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
+
+    VkAttachmentReference depthAttachmentRef;
+    depthAttachmentRef.attachment  = 1u;
+    depthAttachmentRef.layout      = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+    crude_vulkan_01::SubpassDescription subpass(
+      VK_PIPELINE_BIND_POINT_GRAPHICS,
+      {},
+      {colorAttachmentRef},
+      depthAttachmentRef,
+      {});
+
+    crude_vulkan_01::SubpassDependency subpassDependency(
+      VK_SUBPASS_EXTERNAL,
+      0u,
+      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
+      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
+      0u,
+      VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
+      0u);
+
+    m_renderPass = std::make_shared<crude_vulkan_01::Render_Pass>(crude_vulkan_01::RenderPassCreateInfo(
+      m_device,
+      {subpass},
+      {subpassDependency},
+      {colorAttachment, depthAttachment}));
   }
 
   Queue_Family_Indices findQueueFamilies(crude_vulkan_01::Physical_Device& physicalDevice) {
@@ -333,6 +385,27 @@ private:
     return actualExtent;
   }
 
+  VkFormat findDepthFormat() {
+    return findSupportedFormat(
+      {VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT},
+      VK_IMAGE_TILING_OPTIMAL,
+      VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
+  }
+
+  VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) {
+    for (VkFormat format : candidates) {
+      VkFormatProperties props = m_physicalDevice->getFormatProperties(format);
+      
+      if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features) {
+        return format;
+      } else if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features) {
+        return format;
+      }
+    }
+
+    throw std::runtime_error("failed to find supported format!");
+  }
+
   void cleanup() 
   {
 #ifdef __linux__ 
@@ -372,6 +445,7 @@ private:
   std::shared_ptr<crude_vulkan_01::Swap_Chain>                     m_swapchain;
   std::vector<std::shared_ptr<crude_vulkan_01::Swap_Chain_Image>>  m_swapchainImages;
   std::vector<std::shared_ptr<crude_vulkan_01::Image_View>>        m_swapchainImagesViews;
+  std::shared_ptr<crude_vulkan_01::Render_Pass>                    m_renderPass;
   uint32_t m_width = 800u;
   uint32_t m_height = 600u;
   bool m_framebufferResized = false;

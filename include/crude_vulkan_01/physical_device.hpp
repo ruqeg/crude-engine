@@ -26,6 +26,7 @@ public:
   std::vector<VkPresentModeKHR> getSurfacePresentModes(std::shared_ptr<const Surface> surface);
   std::vector<VkQueueFamilyProperties> getQueueFamilyProperties() const;
   std::vector<VkExtensionProperties> getExtensionProperties() const;
+  VkFormatProperties getFormatProperties(VkFormat format) const;
   VkPhysicalDeviceProperties getProperties() const;
   VkPhysicalDeviceFeatures getFeatures() const;
 private:
