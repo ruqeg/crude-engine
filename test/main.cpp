@@ -17,6 +17,7 @@
 #include "../include/crude_vulkan_01/image_view.hpp"
 #include "../include/crude_vulkan_01/swap_chain_image.hpp"
 #include "../include/crude_vulkan_01/render_pass.hpp"
+#include "../include/crude_vulkan_01/descriptor_set_layout.hpp"
 
 #include <algorithm>
 #include <set>
@@ -308,6 +309,22 @@ private:
       {subpass},
       {subpassDependency},
       {colorAttachment, depthAttachment}));
+
+    VkDescriptorSetLayoutBinding uboLayoutBinding{};
+    uboLayoutBinding.descriptorType   = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    uboLayoutBinding.binding          = 0;
+    uboLayoutBinding.descriptorCount  = 1;
+    uboLayoutBinding.stageFlags       = VK_SHADER_STAGE_VERTEX_BIT;
+
+    VkDescriptorSetLayoutBinding samplerLayoutBinding{};
+    samplerLayoutBinding.descriptorType    = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    samplerLayoutBinding.binding           = 1;
+    samplerLayoutBinding.descriptorCount   = 1;
+    samplerLayoutBinding.stageFlags        = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+    m_descriptorSetLayout = std::make_shared<crude_vulkan_01::Descriptor_Set_Layout>(crude_vulkan_01::DescriptorSetLayoutCreateInfo(
+      m_device,
+      {uboLayoutBinding, samplerLayoutBinding}));
   }
 
   Queue_Family_Indices findQueueFamilies(crude_vulkan_01::Physical_Device& physicalDevice) {
@@ -446,6 +463,7 @@ private:
   std::vector<std::shared_ptr<crude_vulkan_01::Swap_Chain_Image>>  m_swapchainImages;
   std::vector<std::shared_ptr<crude_vulkan_01::Image_View>>        m_swapchainImagesViews;
   std::shared_ptr<crude_vulkan_01::Render_Pass>                    m_renderPass;
+  std::shared_ptr<crude_vulkan_01::Descriptor_Set_Layout>          m_descriptorSetLayout;
   uint32_t m_width = 800u;
   uint32_t m_height = 600u;
   bool m_framebufferResized = false;
