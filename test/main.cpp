@@ -18,6 +18,7 @@
 #include "../include/crude_vulkan_01/swap_chain_image.hpp"
 #include "../include/crude_vulkan_01/render_pass.hpp"
 #include "../include/crude_vulkan_01/descriptor_set_layout.hpp"
+#include "../include/crude_vulkan_01/shader_module.hpp"
 
 #include <algorithm>
 #include <set>
@@ -26,6 +27,7 @@
 #include <optional>
 #include <stdexcept>
 #include <limits>
+#include <fstream>
 
 class Test_Application
 {
@@ -325,6 +327,32 @@ private:
     m_descriptorSetLayout = std::make_shared<crude_vulkan_01::Descriptor_Set_Layout>(crude_vulkan_01::DescriptorSetLayoutCreateInfo(
       m_device,
       {uboLayoutBinding, samplerLayoutBinding}));
+
+    const auto vertShaderCode = readFile("test/shader.vert.spv");
+    const auto fragShaderCode = readFile("test/shader.frag.spv");
+    auto vertShaderModule = std::make_shared<crude_vulkan_01::Shader_Module>(crude_vulkan_01::Shader_Module_Create_Info(
+      m_device,
+      vertShaderCode));
+    auto fragShaderModule = std::make_shared<crude_vulkan_01::Shader_Module>(crude_vulkan_01::Shader_Module_Create_Info(
+      m_device,
+      fragShaderCode));
+  }
+
+  static std::vector<char> readFile(const std::string& filename) {
+    std::ifstream file(filename, std::ios::ate | std::ios::binary);
+
+    if (!file.is_open()) {
+      throw std::runtime_error("failed to open file!");
+    }
+
+    size_t fileSize = (size_t) file.tellg();
+    std::vector<char> buffer(fileSize);
+
+    file.seekg(0);
+    file.read(buffer.data(), fileSize);
+    file.close();
+
+    return buffer;
   }
 
   Queue_Family_Indices findQueueFamilies(crude_vulkan_01::Physical_Device& physicalDevice) {
