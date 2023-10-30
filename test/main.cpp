@@ -19,6 +19,7 @@
 #include "../include/crude_vulkan_01/render_pass.hpp"
 #include "../include/crude_vulkan_01/descriptor_set_layout.hpp"
 #include "../include/crude_vulkan_01/shader_module.hpp"
+#include "../include/crude_vulkan_01/vertex_input_state_create_info.hpp"
 
 #include <algorithm>
 #include <set>
@@ -28,6 +29,41 @@
 #include <stdexcept>
 #include <limits>
 #include <fstream>
+
+struct Vertex {
+  float pos[3];
+  float color[3];
+  float texcoord[2];
+
+  static const VkVertexInputBindingDescription& getBindingDescription() {
+    static VkVertexInputBindingDescription bindingDescription{};
+    bindingDescription.binding   = 0u;
+    bindingDescription.stride    = sizeof(Vertex);
+    bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+    return bindingDescription;
+  }
+
+  static const std::array<VkVertexInputAttributeDescription, 3>& getAttributeDescriptions() {
+    static std::array<VkVertexInputAttributeDescription, 3> attributeDescriptions{};
+    attributeDescriptions[0].binding  = 0u;
+    attributeDescriptions[0].location = 0u;
+    attributeDescriptions[0].format   = VK_FORMAT_R32G32B32_SFLOAT;
+    attributeDescriptions[0].offset   = offsetof(Vertex, pos);
+
+    attributeDescriptions[1].binding  = 0u;
+    attributeDescriptions[1].location = 1u;
+    attributeDescriptions[1].format   = VK_FORMAT_R32G32B32_SFLOAT;
+    attributeDescriptions[1].offset   = offsetof(Vertex, color);
+
+    attributeDescriptions[2].binding  = 0u;
+    attributeDescriptions[2].location = 2u;
+    attributeDescriptions[2].format   = VK_FORMAT_R32G32_SFLOAT;
+    attributeDescriptions[2].offset   = offsetof(Vertex, texcoord);
+
+    return attributeDescriptions;
+  }
+};
+
 
 class Test_Application
 {
@@ -336,6 +372,10 @@ private:
     auto fragShaderModule = std::make_shared<crude_vulkan_01::Shader_Module>(crude_vulkan_01::Shader_Module_Create_Info(
       m_device,
       fragShaderCode));
+
+    std::vector<VkVertexInputBindingDescription> bindings = {Vertex::getBindingDescription()};
+    std::vector<VkVertexInputAttributeDescription> attributes(Vertex::getAttributeDescriptions().begin(), Vertex::getAttributeDescriptions().end());
+    auto vertexInputStateInfo = crude_vulkan_01::Vertex_Input_State_Create_Info(bindings, attributes);
   }
 
   static std::vector<char> readFile(const std::string& filename) {
