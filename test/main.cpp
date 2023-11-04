@@ -29,6 +29,7 @@
 #include "../include/crude_vulkan_01/depth_stencil_state_create_info.hpp"
 #include "../include/crude_vulkan_01/color_blend_state_create_info.hpp"
 #include "../include/crude_vulkan_01/dynamic_state_create_info.hpp"
+#include "../include/crude_vulkan_01/pipeline_layout.hpp"
 
 #include <algorithm>
 #include <set>
@@ -442,6 +443,11 @@ private:
       VK_LOGIC_OP_COPY);
 
     auto dynamicState = crude_vulkan_01::Dynamic_State_Create_Info({ VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR });
+
+    m_pipelineLayout = std::make_shared<crude_vulkan_01::Pipeline_Layout>(crude_vulkan_01::Pipeline_Layout_Create_Info(
+      m_device, 
+      { m_descriptorSetLayout }, 
+      {}));
   }
 
   static std::vector<char> readFile(const std::string& filename) {
@@ -598,6 +604,7 @@ private:
   std::vector<std::shared_ptr<crude_vulkan_01::Image_View>>        m_swapchainImagesViews;
   std::shared_ptr<crude_vulkan_01::Render_Pass>                    m_renderPass;
   std::shared_ptr<crude_vulkan_01::Descriptor_Set_Layout>          m_descriptorSetLayout;
+  std::shared_ptr<crude_vulkan_01::Pipeline_Layout>                m_pipelineLayout;
   uint32_t m_width = 800u;
   uint32_t m_height = 600u;
   bool m_framebufferResized = false;
