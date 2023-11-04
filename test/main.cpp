@@ -28,6 +28,7 @@
 #include "../include/crude_vulkan_01/multisample_state_create_info.hpp"
 #include "../include/crude_vulkan_01/depth_stencil_state_create_info.hpp"
 #include "../include/crude_vulkan_01/color_blend_state_create_info.hpp"
+#include "../include/crude_vulkan_01/dynamic_state_create_info.hpp"
 
 #include <algorithm>
 #include <set>
@@ -186,7 +187,7 @@ private:
   }
 #endif
 
-  void initVulkan() 
+  void initVulkan()
   {
 #ifdef __linux__ 
     const auto& surfaceExtensions = crude_vulkan_01::XCB_Surface::requiredExtensions();
@@ -202,11 +203,11 @@ private:
 
     // Initialize instance
     crude_vulkan_01::Instance_Create_Info instanceInfo(debugCallback);
-    instanceInfo.enabledExtensions  = enabledExtensions;
-    instanceInfo.enabledLayers      = {"VK_LAYER_KHRONOS_validation"};
+    instanceInfo.enabledExtensions = enabledExtensions;
+    instanceInfo.enabledLayers = { "VK_LAYER_KHRONOS_validation" };
 
     m_instance = std::make_shared<crude_vulkan_01::Instance>(instanceInfo);
-    
+
     // Initialize debugCallback
     m_debugUtilsMessenger = std::make_shared<crude_vulkan_01::Debug_Utils_Messenger>(crude_vulkan_01::DebugUtilsMessengerCreateInfo(
       m_instance,
@@ -251,11 +252,11 @@ private:
     m_device = std::make_shared<crude_vulkan_01::Device>(crude_vulkan_01::Device_Create_Info(
       m_physicalDevice,
       {
-        crude_vulkan_01::Device_Queue_Create_Info(queueIndices.graphicsFamily.value()), 
-        crude_vulkan_01::Device_Queue_Create_Info(queueIndices.presentFamily.value())},
+        crude_vulkan_01::Device_Queue_Create_Info(queueIndices.graphicsFamily.value()),
+        crude_vulkan_01::Device_Queue_Create_Info(queueIndices.presentFamily.value()) },
       {},
-      {VK_KHR_SWAPCHAIN_EXTENSION_NAME},
-      {"VK_LAYER_KHRONOS_validation"}));
+      { VK_KHR_SWAPCHAIN_EXTENSION_NAME },
+      { "VK_LAYER_KHRONOS_validation" }));
 
     m_graphicsQueue = m_device->getQueue(queueIndices.graphicsFamily.value(), 0u);
     m_presentQueue = m_device->getQueue(queueIndices.presentFamily.value(), 0u);
@@ -271,7 +272,7 @@ private:
       imageCount = surfaceCapabilites.maxImageCount;
     }
 
-    std::vector<uint32_t> queueFamilyIndices = {queueIndices.graphicsFamily.value(), queueIndices.presentFamily.value()};
+    std::vector<uint32_t> queueFamilyIndices = { queueIndices.graphicsFamily.value(), queueIndices.presentFamily.value() };
 
     m_swapchain = std::make_shared<crude_vulkan_01::Swap_Chain>(crude_vulkan_01::Swap_Chain_Create_Info(
       m_device,
@@ -318,7 +319,7 @@ private:
 
     VkAttachmentReference colorAttachmentRef;
     colorAttachmentRef.attachment = 0u;
-    colorAttachmentRef.layout     = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+    colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
     crude_vulkan_01::Attachment_Description depthAttachment(
       findDepthFormat(),
@@ -331,13 +332,13 @@ private:
       VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
 
     VkAttachmentReference depthAttachmentRef;
-    depthAttachmentRef.attachment  = 1u;
-    depthAttachmentRef.layout      = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+    depthAttachmentRef.attachment = 1u;
+    depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
     crude_vulkan_01::Subpass_Description subpass(
       VK_PIPELINE_BIND_POINT_GRAPHICS,
       {},
-      {colorAttachmentRef},
+      { colorAttachmentRef },
       depthAttachmentRef,
       {});
 
@@ -352,25 +353,25 @@ private:
 
     m_renderPass = std::make_shared<crude_vulkan_01::Render_Pass>(crude_vulkan_01::Render_Pass_Create_Info(
       m_device,
-      {subpass},
-      {subpassDependency},
-      {colorAttachment, depthAttachment}));
+      { subpass },
+      { subpassDependency },
+      { colorAttachment, depthAttachment }));
 
     VkDescriptorSetLayoutBinding uboLayoutBinding{};
-    uboLayoutBinding.descriptorType   = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    uboLayoutBinding.binding          = 0;
-    uboLayoutBinding.descriptorCount  = 1;
-    uboLayoutBinding.stageFlags       = VK_SHADER_STAGE_VERTEX_BIT;
+    uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    uboLayoutBinding.binding = 0;
+    uboLayoutBinding.descriptorCount = 1;
+    uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 
     VkDescriptorSetLayoutBinding samplerLayoutBinding{};
-    samplerLayoutBinding.descriptorType    = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    samplerLayoutBinding.binding           = 1;
-    samplerLayoutBinding.descriptorCount   = 1;
-    samplerLayoutBinding.stageFlags        = VK_SHADER_STAGE_FRAGMENT_BIT;
+    samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    samplerLayoutBinding.binding = 1;
+    samplerLayoutBinding.descriptorCount = 1;
+    samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
     m_descriptorSetLayout = std::make_shared<crude_vulkan_01::Descriptor_Set_Layout>(crude_vulkan_01::Descriptor_Set_Layout_Create_Info(
       m_device,
-      {uboLayoutBinding, samplerLayoutBinding}));
+      { uboLayoutBinding, samplerLayoutBinding }));
 
     std::string vertShaderPathA;
     std::string fragShaderPathA;
@@ -391,7 +392,7 @@ private:
       m_device,
       fragShaderCode));
 
-    std::vector<VkVertexInputBindingDescription> bindings = {Vertex::getBindingDescription()};
+    std::vector<VkVertexInputBindingDescription> bindings = { Vertex::getBindingDescription() };
     std::vector<VkVertexInputAttributeDescription> attributes(Vertex::getAttributeDescriptions().begin(), Vertex::getAttributeDescriptions().end());
     auto vertexInputStateInfo = crude_vulkan_01::Vertex_Input_State_Create_Info(bindings, attributes);
     auto inputAssembly = crude_vulkan_01::Input_Assembly_State_Create_Info(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FALSE);
@@ -425,20 +426,22 @@ private:
       1.0f);
 
     VkPipelineColorBlendAttachmentState colorBlendAttachment{};
-    colorBlendAttachment.colorWriteMask      = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-    colorBlendAttachment.blendEnable         = VK_FALSE;
+    colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+    colorBlendAttachment.blendEnable = VK_FALSE;
     colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;
     colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ZERO;
-    colorBlendAttachment.colorBlendOp        = VK_BLEND_OP_ADD;
+    colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
     colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
     colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
-    colorBlendAttachment.alphaBlendOp        = VK_BLEND_OP_ADD;
+    colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
 
     auto colorBlending = crude_vulkan_01::Color_Blend_State_Create_Info(
       { colorBlendAttachment },
       { 0.f, 0.f, 0.f, 0.f },
       VK_FALSE,
       VK_LOGIC_OP_COPY);
+
+    auto dynamicState = crude_vulkan_01::Dynamic_State_Create_Info({ VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR });
   }
 
   static std::vector<char> readFile(const std::string& filename) {
