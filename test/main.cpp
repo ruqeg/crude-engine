@@ -22,6 +22,7 @@
 #include "../include/crude_vulkan_01/vertex_input_state_create_info.hpp"
 #include "../include/crude_vulkan_01/input_assembly_state_create_info.hpp"
 #include "../include/crude_vulkan_01/viewport_state_create_info.hpp"
+#include "../include/crude_vulkan_01/rasterization_state_create_info.hpp"
 
 #include <algorithm>
 #include <set>
@@ -380,6 +381,17 @@ private:
     auto vertexInputStateInfo = crude_vulkan_01::Vertex_Input_State_Create_Info(bindings, attributes);
     auto inputAssembly = crude_vulkan_01::Input_Assembly_State_Create_Info(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FALSE);
     auto viewportState = crude_vulkan_01::Viewport_State_Create_Info(1u, 1u);
+    auto rasterizer = crude_vulkan_01::Rasterization_State_Create_Info(
+      VK_FALSE,
+      VK_FALSE,
+      VK_POLYGON_MODE_FILL,
+      VK_CULL_MODE_BACK_BIT,
+      VK_FRONT_FACE_CLOCKWISE,
+      VK_FALSE,
+      0.0f,
+      0.0f,
+      0.0f,
+      1.f);
   }
 
   static std::vector<char> readFile(const std::string& filename) {
