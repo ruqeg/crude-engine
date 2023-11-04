@@ -17,6 +17,7 @@ Rasterization_State_Create_Info::Rasterization_State_Create_Info(VkBool32       
   this->sType                     = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
   this->flags                     = 0u;
   this->pNext                     = nullptr;
+
   this->depthClampEnable          = depthClampEnable;
   this->rasterizerDiscardEnable   = rasterizerDiscardEnable;
   this->polygonMode               = polygonMode;

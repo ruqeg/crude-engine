@@ -4,10 +4,10 @@
 namespace crude_vulkan_01
 {
 
-Color_Blend_State_Create_Info::Color_Blend_State_Create_Info(VkBool32                                                 logicOpEnable,
-                                                             VkLogicOp                                                logicOp,
-                                                             const std::vector<VkPipelineColorBlendAttachmentState>&  attachments,
-                                                             const std::array<float32, 4>&                            blendConstants)
+Color_Blend_State_Create_Info::Color_Blend_State_Create_Info(const std::vector<VkPipelineColorBlendAttachmentState>& attachments,
+                                                             const std::array<float32, 4>&                            blendConstants,
+                                                             VkBool32                                                 logicOpEnable,
+                                                             VkLogicOp                                                logicOp)
 {
   copy(attachments.data(), attachments.size(), blendConstants.data(), logicOpEnable, logicOp);
 }
@@ -17,7 +17,7 @@ Color_Blend_State_Create_Info::Color_Blend_State_Create_Info(const Color_Blend_S
   copy(other.pAttachments, other.attachmentCount, other.blendConstants, other.logicOpEnable, other.logicOp);
 }
 
-Color_Blend_State_Create_Info::Color_Blend_State_Create_Info(Color_Blend_State_Create_Info&& other)
+Color_Blend_State_Create_Info::Color_Blend_State_Create_Info(Color_Blend_State_Create_Info&& other) noexcept
 {
   move(other);
 }
@@ -28,7 +28,7 @@ Color_Blend_State_Create_Info& Color_Blend_State_Create_Info::operator=(const Co
   return *this;
 }
   
-Color_Blend_State_Create_Info& Color_Blend_State_Create_Info::operator=(Color_Blend_State_Create_Info&& other)
+Color_Blend_State_Create_Info& Color_Blend_State_Create_Info::operator=(Color_Blend_State_Create_Info&& other) noexcept
 {
   move(other);
   return *this;
@@ -48,8 +48,8 @@ void Color_Blend_State_Create_Info::copy(const VkPipelineColorBlendAttachmentSta
                                          VkBool32                                   logicOpEnable,
                                          VkLogicOp                                  logicOp)
 {
-  const uint32 attachmentsbsize                       = attachmentsCount * sizeof(VkPipelineColorBlendAttachmentState);
-  VkPipelineColorBlendAttachmentState* npAttachments  = nullptr;
+  const uint32                          attachmentsbsize  = attachmentsCount * sizeof(VkPipelineColorBlendAttachmentState);
+  VkPipelineColorBlendAttachmentState*  npAttachments     = nullptr;
 
   //=========
   // !MALLOC
@@ -58,33 +58,35 @@ void Color_Blend_State_Create_Info::copy(const VkPipelineColorBlendAttachmentSta
   
   if (attachmentsCount > 0u)  CRUDE_VULKAN_01_COPY_MEMORY(npAttachments, pAttachments, attachmentsbsize); 
 
-  this->sType                            = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-  this->pNext                            = nullptr;
-  this->flags                            = 0u;
-  this->pAttachments                     = npAttachments;
-  this->attachmentCount                  = attachmentCount;
-  this->blendConstants[0]                = pBlendConstants[0];
-  this->blendConstants[1]                = pBlendConstants[1];
-  this->blendConstants[2]                = pBlendConstants[2];
-  this->blendConstants[3]                = pBlendConstants[3];
-  this->logicOpEnable                    = logicOpEnable;
-  this->logicOp                          = logicOp;
+  this->sType              = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+  this->pNext              = nullptr;
+  this->flags              = 0u;
+
+  this->pAttachments       = npAttachments;
+  this->attachmentCount    = attachmentCount;
+  this->blendConstants[0]  = pBlendConstants[0];
+  this->blendConstants[1]  = pBlendConstants[1];
+  this->blendConstants[2]  = pBlendConstants[2];
+  this->blendConstants[3]  = pBlendConstants[3];
+  this->logicOpEnable      = logicOpEnable;
+  this->logicOp            = logicOp;
 }
 
 void Color_Blend_State_Create_Info::move(Color_Blend_State_Create_Info& other)
 {
-  this->sType                            = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-  this->pNext                            = nullptr;
-  this->flags                            = 0u;
-  this->pAttachments                     = other.pAttachments;
-  this->attachmentCount                  = other.attachmentCount;
-  this->blendConstants[0]                = other.blendConstants[0];
-  this->blendConstants[1]                = other.blendConstants[1];
-  this->blendConstants[2]                = other.blendConstants[2];
-  this->blendConstants[3]                = other.blendConstants[3];
-  this->logicOpEnable                    = other.logicOpEnable;
-  this->logicOp                          = other.logicOp;
-  other.pAttachments                     = nullptr;
+  this->sType              = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+  this->pNext              = nullptr;
+  this->flags              = 0u;
+
+  this->pAttachments       = other.pAttachments;
+  this->attachmentCount    = other.attachmentCount;
+  this->blendConstants[0]  = other.blendConstants[0];
+  this->blendConstants[1]  = other.blendConstants[1];
+  this->blendConstants[2]  = other.blendConstants[2];
+  this->blendConstants[3]  = other.blendConstants[3];
+  this->logicOpEnable      = other.logicOpEnable;
+  this->logicOp            = other.logicOp;
+  other.pAttachments       = nullptr;
 }
 
 }

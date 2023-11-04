@@ -121,7 +121,7 @@ const std::vector<std::shared_ptr<Swap_Chain_Image>>& Swap_Chain::getSwapchainIm
   m_swapChainImages.resize(imageCount);
   for (uint32 i = 0; i < imageCount; ++i)
   {
-    m_swapChainImages[i] = std::make_shared<Swap_Chain_Image>(SwapChainImageCreateInfo(
+    m_swapChainImages[i] = std::make_shared<Swap_Chain_Image>(Swap_Chain_Image_Create_Info(
       m_device,
       vkSwapchainImages[i],
       m_surfaceFormat.format,

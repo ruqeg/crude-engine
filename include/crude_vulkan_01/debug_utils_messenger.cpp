@@ -59,22 +59,13 @@ Debug_Utils_Messenger::Debug_Utils_Messenger(const DebugUtilsMessengerCreateInfo
   m_instance = createInfo.instance;
 
   const VkAllocationCallbacks* pAllocator = nullptr;
-
-  const VkResult result = createDebugUtilsMessengerEXT(
-    CRUDE_VULKAN_01_HANDLE(m_instance),
-    &vkCreateInfo,
-    pAllocator, 
-    &m_handle);
-  
+  const VkResult result = createDebugUtilsMessengerEXT(CRUDE_VULKAN_01_HANDLE(m_instance), &vkCreateInfo, pAllocator, &m_handle);
   CRUDE_VULKAN_01_HANDLE_RESULT(result, "failed to create debug utils messenger");
 }
 
 Debug_Utils_Messenger::~Debug_Utils_Messenger()
 {
-  destroyDebugUtilsMessengerEXT(
-    CRUDE_VULKAN_01_HANDLE(m_instance),
-    m_handle, 
-    nullptr);
+  destroyDebugUtilsMessengerEXT(CRUDE_VULKAN_01_HANDLE(m_instance), m_handle, nullptr);
 }
   
 const std::vector<const char*>& Debug_Utils_Messenger::requiredExtensions()

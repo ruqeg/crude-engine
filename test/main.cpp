@@ -6,6 +6,7 @@
 #elif _WIN32
 #define VK_USE_PLATFORM_WIN32_KHR
 #include <Windows.h>
+#undef max
 #endif
 
 #include "../include/crude_vulkan_01/instance.hpp"
@@ -200,7 +201,7 @@ private:
     enabledExtensions.insert(enabledExtensions.end(), debugUtilsExtensions.begin(), debugUtilsExtensions.end());
 
     // Initialize instance
-    crude_vulkan_01::InstanceCreateInfo instanceInfo(debugCallback);
+    crude_vulkan_01::Instance_Create_Info instanceInfo(debugCallback);
     instanceInfo.enabledExtensions  = enabledExtensions;
     instanceInfo.enabledLayers      = {"VK_LAYER_KHRONOS_validation"};
 
@@ -247,11 +248,11 @@ private:
 
     // Initialize logic device
     const Queue_Family_Indices queueIndices = findQueueFamilies(*m_physicalDevice);
-    m_device = std::make_shared<crude_vulkan_01::Device>(crude_vulkan_01::DeviceCreateInfo(
+    m_device = std::make_shared<crude_vulkan_01::Device>(crude_vulkan_01::Device_Create_Info(
       m_physicalDevice,
       {
-        crude_vulkan_01::DeviceQueueCreateInfo(queueIndices.graphicsFamily.value()), 
-        crude_vulkan_01::DeviceQueueCreateInfo(queueIndices.presentFamily.value())},
+        crude_vulkan_01::Device_Queue_Create_Info(queueIndices.graphicsFamily.value()), 
+        crude_vulkan_01::Device_Queue_Create_Info(queueIndices.presentFamily.value())},
       {},
       {VK_KHR_SWAPCHAIN_EXTENSION_NAME},
       {"VK_LAYER_KHRONOS_validation"}));
@@ -293,7 +294,7 @@ private:
     m_swapchainImagesViews.resize(m_swapchainImages.size());
     for (uint32_t i = 0; i < m_swapchainImages.size(); ++i)
     {
-      m_swapchainImagesViews[i] = std::make_shared<crude_vulkan_01::Image_View>(crude_vulkan_01::ImageViewCreateInfo(
+      m_swapchainImagesViews[i] = std::make_shared<crude_vulkan_01::Image_View>(crude_vulkan_01::Image_View_Create_Info(
         m_device,
         m_swapchainImages[i],
         surfaceFormat.format,
@@ -305,7 +306,7 @@ private:
         1u));
     }
 
-    crude_vulkan_01::AttachmentDescription colorAttachment(
+    crude_vulkan_01::Attachment_Description colorAttachment(
       surfaceFormat.format,
       VK_SAMPLE_COUNT_1_BIT,
       VK_ATTACHMENT_LOAD_OP_CLEAR,
@@ -319,7 +320,7 @@ private:
     colorAttachmentRef.attachment = 0u;
     colorAttachmentRef.layout     = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
-    crude_vulkan_01::AttachmentDescription depthAttachment(
+    crude_vulkan_01::Attachment_Description depthAttachment(
       findDepthFormat(),
       VK_SAMPLE_COUNT_1_BIT,
       VK_ATTACHMENT_LOAD_OP_CLEAR,
@@ -333,14 +334,14 @@ private:
     depthAttachmentRef.attachment  = 1u;
     depthAttachmentRef.layout      = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
-    crude_vulkan_01::SubpassDescription subpass(
+    crude_vulkan_01::Subpass_Description subpass(
       VK_PIPELINE_BIND_POINT_GRAPHICS,
       {},
       {colorAttachmentRef},
       depthAttachmentRef,
       {});
 
-    crude_vulkan_01::SubpassDependency subpassDependency(
+    crude_vulkan_01::Subpass_Dependency subpassDependency(
       VK_SUBPASS_EXTERNAL,
       0u,
       VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
@@ -349,7 +350,7 @@ private:
       VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
       0u);
 
-    m_renderPass = std::make_shared<crude_vulkan_01::Render_Pass>(crude_vulkan_01::RenderPassCreateInfo(
+    m_renderPass = std::make_shared<crude_vulkan_01::Render_Pass>(crude_vulkan_01::Render_Pass_Create_Info(
       m_device,
       {subpass},
       {subpassDependency},
@@ -367,12 +368,22 @@ private:
     samplerLayoutBinding.descriptorCount   = 1;
     samplerLayoutBinding.stageFlags        = VK_SHADER_STAGE_FRAGMENT_BIT;
 
-    m_descriptorSetLayout = std::make_shared<crude_vulkan_01::Descriptor_Set_Layout>(crude_vulkan_01::DescriptorSetLayoutCreateInfo(
+    m_descriptorSetLayout = std::make_shared<crude_vulkan_01::Descriptor_Set_Layout>(crude_vulkan_01::Descriptor_Set_Layout_Create_Info(
       m_device,
       {uboLayoutBinding, samplerLayoutBinding}));
 
-    const auto vertShaderCode = readFile("test/shader.vert.spv");
-    const auto fragShaderCode = readFile("test/shader.frag.spv");
+    std::string vertShaderPathA;
+    std::string fragShaderPathA;
+#ifdef __linux__ 
+    vertShaderPathA = "test/shader.vert.spv";
+    fragShaderPathA = "test/shader.frag.spv";
+#elif _WIN32
+    vertShaderPathA = "../../../test/shader.vert.spv";
+    fragShaderPathA = "../../../test/shader.frag.spv";
+#endif
+
+    const auto vertShaderCode = readFile(vertShaderPathA);
+    const auto fragShaderCode = readFile(fragShaderPathA);
     auto vertShaderModule = std::make_shared<crude_vulkan_01::Shader_Module>(crude_vulkan_01::Shader_Module_Create_Info(
       m_device,
       vertShaderCode));
@@ -424,10 +435,10 @@ private:
     colorBlendAttachment.alphaBlendOp        = VK_BLEND_OP_ADD;
 
     auto colorBlending = crude_vulkan_01::Color_Blend_State_Create_Info(
+      { colorBlendAttachment },
+      { 0.f, 0.f, 0.f, 0.f },
       VK_FALSE,
-      VK_LOGIC_OP_COPY,
-      {colorBlendAttachment},
-      {0.f, 0.f, 0.f, 0.f});
+      VK_LOGIC_OP_COPY);
   }
 
   static std::vector<char> readFile(const std::string& filename) {
@@ -629,12 +640,13 @@ int APIENTRY wWinMain(
   }
   catch (const std::exception& e)
   {
-    std::cerr << e.what() << std::endl;
+    std::cerr << "exception: " << e.what() << std::endl;
+    system("pause");
     return EXIT_FAILURE;
   }
 
   system("pause");
 
-  return 0;
+  return EXIT_SUCCESS;
 }
 #endif

@@ -5,7 +5,7 @@
 namespace crude_vulkan_01
 {
   
-InstanceCreateInfo::InstanceCreateInfo(
+Instance_Create_Info::Instance_Create_Info(
 #ifdef VK_EXT_debug_utils
                                        PFN_vkDebugUtilsMessengerCallbackEXT debugUtilsCallback,
 #endif // VK_EXT_debug_utils
@@ -23,14 +23,14 @@ InstanceCreateInfo::InstanceCreateInfo(
     flags(flags)
 {}
   
-Instance::Instance(const InstanceCreateInfo& createInfo)
+Instance::Instance(const Instance_Create_Info& createInfo)
 {
   VkInstanceCreateInfo vkInstanceCreateInfo{};
-  vkInstanceCreateInfo.sType                   = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-  vkInstanceCreateInfo.pApplicationInfo        = &createInfo.application;
-  vkInstanceCreateInfo.flags                   = createInfo.flags;
-  vkInstanceCreateInfo.ppEnabledExtensionNames = createInfo.enabledExtensions.data();
-  vkInstanceCreateInfo.enabledExtensionCount   = createInfo.enabledExtensions.size();
+  vkInstanceCreateInfo.sType                    = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+  vkInstanceCreateInfo.pApplicationInfo         = &createInfo.application;
+  vkInstanceCreateInfo.flags                    = createInfo.flags;
+  vkInstanceCreateInfo.ppEnabledExtensionNames  = createInfo.enabledExtensions.data();
+  vkInstanceCreateInfo.enabledExtensionCount    = createInfo.enabledExtensions.size();
 
   const uint32 ebabledLayersCount = createInfo.enabledLayers.size();
 
@@ -46,13 +46,13 @@ Instance::Instance(const InstanceCreateInfo& createInfo)
 #ifdef VK_EXT_debug_utils
     void* pDebugNext      = nullptr;
     void* pDebugUserData  = nullptr;
-    uint32 debugFlags    = 0u;
+    uint32 debugFlags     = 0u;
 
-    vkDebugCreateInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-    vkDebugCreateInfo.pNext           = pDebugNext;
-    vkDebugCreateInfo.flags           = debugFlags;
-    vkDebugCreateInfo.pfnUserCallback = createInfo.debugUtilsCallback;
-    vkDebugCreateInfo.pUserData       = pDebugUserData;
+    vkDebugCreateInfo.sType            = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+    vkDebugCreateInfo.pNext            = pDebugNext;
+    vkDebugCreateInfo.flags            = debugFlags;
+    vkDebugCreateInfo.pfnUserCallback  = createInfo.debugUtilsCallback;
+    vkDebugCreateInfo.pUserData        = pDebugUserData;
 
     vkDebugCreateInfo.messageSeverity =
       VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
@@ -116,7 +116,7 @@ std::vector<std::shared_ptr<Physical_Device>> Instance::getPhysicalDevices()
   std::vector<std::shared_ptr<Physical_Device>> physicaDevices(vkPhysicalDeviceCount);
   for (uint32 i = 0u; i < vkPhysicalDeviceCount; ++i) 
   {
-    physicaDevices[i] = std::make_shared<Physical_Device>(PhysicalDeviceCreateInfo(vkPhysicalDevices[i]));
+    physicaDevices[i] = std::make_shared<Physical_Device>(Physical_Device_Create_Info(vkPhysicalDevices[i]));
   }
   
   return physicaDevices;

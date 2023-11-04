@@ -11,32 +11,32 @@ namespace crude_vulkan_01
 class Queue;
 class Physical_Device;
 
-struct DeviceQueueCreateInfo final : public VkDeviceQueueCreateInfo
+struct Device_Queue_Create_Info final : public VkDeviceQueueCreateInfo
 {
 public:
-  explicit DeviceQueueCreateInfo(uint32                       queueFamilyIndex,
-                                 const std::vector<float32>&  queuePriorities = {1.f});
+  explicit Device_Queue_Create_Info(uint32                       queueFamilyIndex,
+                                    const std::vector<float32>&  queuePriorities = {1.f});
 };
 
-struct DeviceCreateInfo
+struct Device_Create_Info
 {
-  std::shared_ptr<const Physical_Device> physicalDevice;
-  VkPhysicalDeviceFeatures               enabledFeatures;
-  std::vector<const char*>               enabledExtensions;
-  std::vector<const char*>               enabledLayers;
-  std::vector<DeviceQueueCreateInfo>     queueDescriptors;
+  std::shared_ptr<const Physical_Device>  physicalDevice;
+  VkPhysicalDeviceFeatures                enabledFeatures;
+  std::vector<const char*>                enabledExtensions;
+  std::vector<const char*>                enabledLayers;
+  std::vector<Device_Queue_Create_Info>   queueDescriptors;
 
-  explicit DeviceCreateInfo(std::shared_ptr<const Physical_Device>     physicalDevice,
-                            const std::vector<DeviceQueueCreateInfo>&  queueDescriptors,
-                            const VkPhysicalDeviceFeatures&            enabledFeatures = {},
-                            const std::vector<const char*>&            enabledExtensions = {},
-                            const std::vector<const char*>&            enabledLayers = {});
+  explicit Device_Create_Info(std::shared_ptr<const Physical_Device>        physicalDevice,
+                              const std::vector<Device_Queue_Create_Info>&  queueDescriptors,
+                              const VkPhysicalDeviceFeatures&               enabledFeatures = {},
+                              const std::vector<const char*>&               enabledExtensions = {},
+                              const std::vector<const char*>&               enabledLayers = {});
 };
 
 class Device : public TObject<VkDevice>
 {
 public:
-  explicit Device(const DeviceCreateInfo& createinfo);
+  explicit Device(const Device_Create_Info& createinfo);
   ~Device();
   std::shared_ptr<const Physical_Device> getPhysicalDevice() const;
   std::shared_ptr<Queue> getQueue(uint32 queueFamilyIndex, uint32 queueIndex) const;

@@ -5,15 +5,15 @@
 namespace crude_vulkan_01
 {
   
-ImageViewCreateInfo::ImageViewCreateInfo(std::shared_ptr<const Device>  device,
-                                         std::shared_ptr<const Image>   image,
-                                         VkFormat                       format,
-                                         VkComponentMapping             components,
-                                         VkImageAspectFlags             aspectMask,
-                                         uint32                         baseArrayLayer,
-                                         uint32                         baseMipLevel,
-                                         uint32                         levelCount,
-                                         uint32                         layerCount)
+Image_View_Create_Info::Image_View_Create_Info(std::shared_ptr<const Device>  device,
+                                               std::shared_ptr<const Image>   image,
+                                               VkFormat                       format,
+                                               VkComponentMapping             components,
+                                               VkImageAspectFlags             aspectMask,
+                                               uint32                         baseArrayLayer,
+                                               uint32                         baseMipLevel,
+                                               uint32                         levelCount,
+                                               uint32                         layerCount)
   :
   device(device),
   image(image),
@@ -26,13 +26,16 @@ ImageViewCreateInfo::ImageViewCreateInfo(std::shared_ptr<const Device>  device,
   layerCount(layerCount)
 {}
 
-Image_View::Image_View(const ImageViewCreateInfo& createInfo)
+Image_View::Image_View(const Image_View_Create_Info& createInfo)
 {
   m_device = createInfo.device;
   m_image = createInfo.image;
 
   VkImageViewCreateInfo vkCreateInfo{};
   vkCreateInfo.sType                            = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+  vkCreateInfo.pNext                            = nullptr;
+  vkCreateInfo.flags                            = 0u;
+
   vkCreateInfo.viewType                         = imageToViewType(m_image->getType());
   vkCreateInfo.image                            = CRUDE_VULKAN_01_HANDLE(createInfo.image);
   vkCreateInfo.components                       = createInfo.components;
@@ -42,24 +45,14 @@ Image_View::Image_View(const ImageViewCreateInfo& createInfo)
   vkCreateInfo.subresourceRange.baseMipLevel    = createInfo.baseMipLevel;
   vkCreateInfo.subresourceRange.layerCount      = createInfo.layerCount;
   vkCreateInfo.subresourceRange.levelCount      = createInfo.levelCount;
-  vkCreateInfo.pNext                            = nullptr;
-  vkCreateInfo.flags                            = 0u;
 
-  VkResult result = vkCreateImageView(
-    CRUDE_VULKAN_01_HANDLE(m_device), 
-    &vkCreateInfo, 
-    nullptr,
-    &m_handle);
-
+  VkResult result = vkCreateImageView(CRUDE_VULKAN_01_HANDLE(m_device), &vkCreateInfo, nullptr, &m_handle);
   CRUDE_VULKAN_01_HANDLE_RESULT(result, "failed to create image view");
 }
 
 Image_View::~Image_View()
 {
-  vkDestroyImageView(
-    CRUDE_VULKAN_01_HANDLE(m_device), 
-    m_handle,
-    nullptr);
+  vkDestroyImageView(CRUDE_VULKAN_01_HANDLE(m_device), m_handle, nullptr);
 }
   
 VkImageViewType Image_View::imageToViewType(VkImageType imageType)

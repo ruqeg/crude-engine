@@ -1,18 +1,16 @@
 #include "image.hpp"
-#include "core.hpp"
 #include "device.hpp"
-#include <vulkan/vulkan_core.h>
 
 namespace crude_vulkan_01 
 {
 
-ImageCreateInfo::ImageCreateInfo(std::shared_ptr<const Device> device,
-                                 VkImage                       handle,
-                                 VkFormat                      format,
-                                 VkColorSpaceKHR               colorSpace,
-                                 VkExtent2D                    extent,
-                                 VkImageUsageFlags             usage,
-                                 VkImageType                   type)
+Image_Create_Info::Image_Create_Info(std::shared_ptr<const Device>  device,
+                                     VkImage                        handle,
+                                     VkFormat                       format,
+                                     VkColorSpaceKHR                colorSpace,
+                                     VkExtent2D                     extent,
+                                     VkImageUsageFlags              usage,
+                                     VkImageType                    type)
   :
   device(device),
   handle(handle),
@@ -23,7 +21,7 @@ ImageCreateInfo::ImageCreateInfo(std::shared_ptr<const Device> device,
   type(type)
 {}
   
-Image::Image(const ImageCreateInfo& createInfo)
+Image::Image(const Image_Create_Info& createInfo)
 {
   m_handle      = createInfo.handle;
   m_device      = createInfo.device;
@@ -36,10 +34,7 @@ Image::Image(const ImageCreateInfo& createInfo)
   
 Image::~Image()
 {
-  vkDestroyImage(
-    CRUDE_VULKAN_01_HANDLE(m_device), 
-    m_handle, 
-    nullptr);
+  vkDestroyImage(CRUDE_VULKAN_01_HANDLE(m_device), m_handle, nullptr);
 }
   
 VkImageType Image::getType() const

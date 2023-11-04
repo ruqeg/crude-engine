@@ -11,7 +11,7 @@ namespace crude_vulkan_01
 class Device;
 class Image;
 
-struct ImageViewCreateInfo
+struct Image_View_Create_Info
 {
   std::shared_ptr<const Device>  device;
   std::shared_ptr<const Image>   image;
@@ -22,21 +22,21 @@ struct ImageViewCreateInfo
   uint32                         baseMipLevel;
   uint32                         levelCount;
   uint32                         layerCount;
-  explicit ImageViewCreateInfo(std::shared_ptr<const Device>  device,
-                               std::shared_ptr<const Image>   image,
-                               VkFormat                       format,
-                               VkComponentMapping             components,
-                               VkImageAspectFlags             aspectMask,
-                               uint32                         baseArrayLayer,
-                               uint32                         baseMipLevel,
-                               uint32                         levelCount,
-                               uint32                         layerCount);
+  explicit Image_View_Create_Info(std::shared_ptr<const Device>  device,
+                                  std::shared_ptr<const Image>   image,
+                                  VkFormat                       format,
+                                  VkComponentMapping             components,
+                                  VkImageAspectFlags             aspectMask,
+                                  uint32                         baseArrayLayer,
+                                  uint32                         baseMipLevel,
+                                  uint32                         levelCount,
+                                  uint32                         layerCount);
 };
 
 class Image_View : public TObject<VkImageView>
 {
 public:
-  explicit Image_View(const ImageViewCreateInfo& createInfo);
+  explicit Image_View(const Image_View_Create_Info& createInfo);
   ~Image_View();
 private:
   VkImageViewType imageToViewType(VkImageType imageType);

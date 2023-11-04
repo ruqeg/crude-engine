@@ -9,14 +9,14 @@ namespace crude_vulkan_01
 
 class Swap_Chain;
 
-struct SwapChainImageCreateInfo : public ImageCreateInfo
+struct Swap_Chain_Image_Create_Info : public Image_Create_Info
 {
-  explicit SwapChainImageCreateInfo(std::shared_ptr<const Device>  device,
-                                    VkImage                        handle,
-                                    VkFormat                       format,
-                                    VkColorSpaceKHR                colorSpace,
-                                    VkExtent2D                     extent,
-                                    VkImageUsageFlags              usage);
+  explicit Swap_Chain_Image_Create_Info(std::shared_ptr<const Device>  device,
+                                       VkImage                        handle,
+                                       VkFormat                       format,
+                                       VkColorSpaceKHR                colorSpace,
+                                       VkExtent2D                     extent,
+                                       VkImageUsageFlags              usage);
 };
 
 //struct SwapChainImageCreateControlledInfo
@@ -27,7 +27,7 @@ struct SwapChainImageCreateInfo : public ImageCreateInfo
 class Swap_Chain_Image : public Image
 {
 public:
-  explicit Swap_Chain_Image(const SwapChainImageCreateInfo& createInfo);
+  explicit Swap_Chain_Image(const Swap_Chain_Image_Create_Info& createInfo);
   ~Swap_Chain_Image();
 };
 

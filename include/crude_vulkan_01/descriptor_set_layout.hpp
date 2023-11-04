@@ -10,18 +10,18 @@ namespace crude_vulkan_01
 
 class Device;
 
-struct DescriptorSetLayoutCreateInfo
+struct Descriptor_Set_Layout_Create_Info
 {
   std::shared_ptr<const Device>              device;
   std::vector<VkDescriptorSetLayoutBinding>  bindings;
-  explicit DescriptorSetLayoutCreateInfo(std::shared_ptr<const Device>                     device,
-                                         const std::vector<VkDescriptorSetLayoutBinding>&  bindings);
+  explicit Descriptor_Set_Layout_Create_Info(std::shared_ptr<const Device>                     device,
+                                             const std::vector<VkDescriptorSetLayoutBinding>&  bindings);
 };
 
 class Descriptor_Set_Layout : public TObject<VkDescriptorSetLayout>
 {
 public:
-  explicit Descriptor_Set_Layout(const DescriptorSetLayoutCreateInfo& createInfo);
+  explicit Descriptor_Set_Layout(const Descriptor_Set_Layout_Create_Info& createInfo);
   ~Descriptor_Set_Layout();
 private:
   std::shared_ptr<const Device>  m_device;

@@ -1,16 +1,15 @@
 #include "physical_device.hpp"
-#include "core.hpp"
 #include "surface.hpp"
 
 namespace crude_vulkan_01
 {
 
-PhysicalDeviceCreateInfo::PhysicalDeviceCreateInfo(VkPhysicalDevice vkPhysicalDevice)
+Physical_Device_Create_Info::Physical_Device_Create_Info(VkPhysicalDevice vkPhysicalDevice)
   :
   vkPhysicalDevice(vkPhysicalDevice)
 {}
   
-Physical_Device::Physical_Device(const PhysicalDeviceCreateInfo& createInfo)
+Physical_Device::Physical_Device(const Physical_Device_Create_Info& createInfo)
 {
   m_handle = createInfo.vkPhysicalDevice;
 }

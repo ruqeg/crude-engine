@@ -1,36 +1,16 @@
 #pragma once
 
-#include "core.hpp"
-#include "include_vulkan.hpp"
-#include "object.hpp"
+#include "subpass_description.hpp"
 #include <algorithm>
-#include <optional>
-#include <vector>
-#include <vulkan/vulkan_core.h>
 
 namespace crude_vulkan_01
 {
 
 class Device;
 
-struct SubpassDescription final : public VkSubpassDescription
+struct Subpass_Dependency final : public VkSubpassDependency
 {
-  explicit SubpassDescription(VkPipelineBindPoint                          pipelineBindPoint,
-                              const std::vector<VkAttachmentReference>&    inputAttachments,
-                              const std::vector<VkAttachmentReference>&    colorAttachments,
-                              //!TODO const std::vector<Attachment_Reference>&  resolveAttachments,
-                              const std::optional<VkAttachmentReference>&  depthStencilAttachment,
-                              const std::vector<uint32>&                   preserveAttachments);
-  ~SubpassDescription();
-  SubpassDescription(const SubpassDescription& other);
-  SubpassDescription& operator=(const SubpassDescription& other);
-  SubpassDescription(SubpassDescription&& other);
-  SubpassDescription& operator=(SubpassDescription&& other);
-};
-
-struct SubpassDependency final : public VkSubpassDependency
-{
-  explicit SubpassDependency(uint32                srcSubpass,
+  explicit Subpass_Dependency(uint32                srcSubpass,
                              uint32                dstSubpass,
                              VkPipelineStageFlags  srcStageMask,
                              VkPipelineStageFlags  dstStageMask,
@@ -39,9 +19,9 @@ struct SubpassDependency final : public VkSubpassDependency
                              VkDependencyFlags     dependencyFlags);
 };
 
-struct AttachmentDescription final : public VkAttachmentDescription
+struct Attachment_Description final : public VkAttachmentDescription
 {
-  AttachmentDescription(VkFormat               format,
+  Attachment_Description(VkFormat               format,
                         VkSampleCountFlagBits  samples,
                         VkAttachmentLoadOp     loadOp,
                         VkAttachmentStoreOp    storeOp,
@@ -51,22 +31,22 @@ struct AttachmentDescription final : public VkAttachmentDescription
                         VkImageLayout          finalLayout);
 };
 
-struct RenderPassCreateInfo 
+struct Render_Pass_Create_Info
 {
   std::shared_ptr<const Device>       device;
-  std::vector<SubpassDescription>     subpasses;
-  std::vector<SubpassDependency>      subpassesDependencies;
-  std::vector<AttachmentDescription>  attachments;
-  explicit RenderPassCreateInfo(std::shared_ptr<const Device>              device,
-                                const std::vector<SubpassDescription>&     subpasses,
-                                const std::vector<SubpassDependency>&      subpassesDependencies,
-                                const std::vector<AttachmentDescription>&  attachments);
+  std::vector<Subpass_Description>     subpasses;
+  std::vector<Subpass_Dependency>      subpassesDependencies;
+  std::vector<Attachment_Description>  attachments;
+  explicit Render_Pass_Create_Info(std::shared_ptr<const Device>              device,
+                                const std::vector<Subpass_Description>&     subpasses,
+                                const std::vector<Subpass_Dependency>&      subpassesDependencies,
+                                const std::vector<Attachment_Description>&  attachments);
 };
 
 class Render_Pass : public TObject<VkRenderPass>
 {
 public:
-  explicit Render_Pass(const RenderPassCreateInfo& createInfo);
+  explicit Render_Pass(const Render_Pass_Create_Info& createInfo);
   ~Render_Pass();
 private:
   std::shared_ptr<const Device>  m_device;

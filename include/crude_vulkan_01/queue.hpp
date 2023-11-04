@@ -9,18 +9,18 @@ namespace crude_vulkan_01
 
 class Device;
 
-struct QueueCreateInfo
+struct Queue_Create_Info
 {
   uint32  familyIndex;
   uint32  index;
 
-  explicit QueueCreateInfo(uint32 familyIndex, uint32 index);
+  explicit Queue_Create_Info(uint32 familyIndex, uint32 index);
 };
 
 class Queue : public TObject<VkQueue>
 {
 public:
-  explicit Queue(const QueueCreateInfo& createInfo);
+  explicit Queue(const Queue_Create_Info& createInfo);
   ~Queue() = default;
 private:
   const uint32  m_familyIndex;
