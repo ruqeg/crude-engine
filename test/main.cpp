@@ -23,6 +23,7 @@
 #include "../include/crude_vulkan_01/input_assembly_state_create_info.hpp"
 #include "../include/crude_vulkan_01/viewport_state_create_info.hpp"
 #include "../include/crude_vulkan_01/rasterization_state_create_info.hpp"
+#include "../include/crude_vulkan_01/multisample_state_create_info.hpp"
 
 #include <algorithm>
 #include <set>
@@ -392,6 +393,12 @@ private:
       0.0f,
       0.0f,
       1.f);
+    auto multisampling = crude_vulkan_01::Multisample_State_Create_Info(
+      VK_SAMPLE_COUNT_1_BIT,
+      VK_FALSE,
+      1.0f,
+      VK_FALSE,
+      VK_FALSE);
   }
 
   static std::vector<char> readFile(const std::string& filename) {
