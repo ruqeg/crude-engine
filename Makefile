@@ -9,7 +9,7 @@ SOURCEDIR = $(ROOT_DIR)test/
 SOURCESLIST = $(SOURCEDIR)main.cpp
 
 LIBDIR = $(ROOT_DIR)include/crude_vulkan_01/
-LIBSOURCELIST = $(LIBDIR)multisample_state_create_info.cpp $(LIBDIR)rasterization_state_create_info.cpp $(LIBDIR)viewport_state_create_info.cpp $(LIBDIR)input_assembly_state_create_info.cpp $(LIBDIR)vertex_input_state_create_info.cpp $(LIBDIR)shader_module.cpp $(LIBDIR)descriptor_set_layout.cpp $(LIBDIR)render_pass.cpp $(LIBDIR)image_view.cpp $(LIBDIR)image.cpp $(LIBDIR)swap_chain_image.cpp $(LIBDIR)swap_chain.cpp $(LIBDIR)device.cpp $(LIBDIR)queue.cpp $(LIBDIR)physical_device.cpp $(LIBDIR)surface.cpp $(LIBDIR)debug_utils_messenger.cpp $(LIBDIR)instance.cpp $(LIBDIR)application.cpp
+LIBSOURCELIST = $(LIBDIR)depth_stencil_state_create_info.cpp $(LIBDIR)multisample_state_create_info.cpp $(LIBDIR)rasterization_state_create_info.cpp $(LIBDIR)viewport_state_create_info.cpp $(LIBDIR)input_assembly_state_create_info.cpp $(LIBDIR)vertex_input_state_create_info.cpp $(LIBDIR)shader_module.cpp $(LIBDIR)descriptor_set_layout.cpp $(LIBDIR)render_pass.cpp $(LIBDIR)image_view.cpp $(LIBDIR)image.cpp $(LIBDIR)swap_chain_image.cpp $(LIBDIR)swap_chain.cpp $(LIBDIR)device.cpp $(LIBDIR)queue.cpp $(LIBDIR)physical_device.cpp $(LIBDIR)surface.cpp $(LIBDIR)debug_utils_messenger.cpp $(LIBDIR)instance.cpp $(LIBDIR)application.cpp
 
 OUTPUTNAME = test_vulkan
 

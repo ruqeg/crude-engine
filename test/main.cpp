@@ -24,6 +24,7 @@
 #include "../include/crude_vulkan_01/viewport_state_create_info.hpp"
 #include "../include/crude_vulkan_01/rasterization_state_create_info.hpp"
 #include "../include/crude_vulkan_01/multisample_state_create_info.hpp"
+#include "../include/crude_vulkan_01/depth_stencil_state_create_info.hpp"
 
 #include <algorithm>
 #include <set>
@@ -399,6 +400,16 @@ private:
       1.0f,
       VK_FALSE,
       VK_FALSE);
+    auto depthStencil =crude_vulkan_01::Depth_Stencil_State_Create_Info(
+      VK_TRUE,
+      VK_TRUE,
+      VK_COMPARE_OP_LESS,
+      VK_FALSE,
+      VK_FALSE,
+      {},
+      {},
+      0.0f,
+      1.0f);
   }
 
   static std::vector<char> readFile(const std::string& filename) {
