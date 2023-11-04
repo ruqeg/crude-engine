@@ -45,8 +45,8 @@ void Vertex_Input_State_Create_Info::copy(const VkVertexInputBindingDescription*
                                           uint32                                    bindingsCount,
                                           uint32                                    attributesCount)
 {
-  const uint32 bindingbsize                         = bindingsCount * sizeof(VkVertexInputBindingDescription*);
-  const uint32 attributesbsize                      = attributesCount * sizeof(VkVertexInputAttributeDescription*);
+  const uint32 bindingbsize                         = bindingsCount * sizeof(VkVertexInputBindingDescription);
+  const uint32 attributesbsize                      = attributesCount * sizeof(VkVertexInputAttributeDescription);
   VkVertexInputBindingDescription*    npBindings    = nullptr;
   VkVertexInputAttributeDescription*  npAttributes  = nullptr;
 

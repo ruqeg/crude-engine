@@ -1,3 +1,4 @@
+#include <array>
 #include <vulkan/vulkan_core.h>
 #ifdef __linux__ 
 #define VK_USE_PLATFORM_XCB_KHR
@@ -25,6 +26,7 @@
 #include "../include/crude_vulkan_01/rasterization_state_create_info.hpp"
 #include "../include/crude_vulkan_01/multisample_state_create_info.hpp"
 #include "../include/crude_vulkan_01/depth_stencil_state_create_info.hpp"
+#include "../include/crude_vulkan_01/color_blend_state_create_info.hpp"
 
 #include <algorithm>
 #include <set>
@@ -400,7 +402,7 @@ private:
       1.0f,
       VK_FALSE,
       VK_FALSE);
-    auto depthStencil =crude_vulkan_01::Depth_Stencil_State_Create_Info(
+    auto depthStencil = crude_vulkan_01::Depth_Stencil_State_Create_Info(
       VK_TRUE,
       VK_TRUE,
       VK_COMPARE_OP_LESS,
@@ -410,6 +412,22 @@ private:
       {},
       0.0f,
       1.0f);
+
+    VkPipelineColorBlendAttachmentState colorBlendAttachment{};
+    colorBlendAttachment.colorWriteMask      = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+    colorBlendAttachment.blendEnable         = VK_FALSE;
+    colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;
+    colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ZERO;
+    colorBlendAttachment.colorBlendOp        = VK_BLEND_OP_ADD;
+    colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+    colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
+    colorBlendAttachment.alphaBlendOp        = VK_BLEND_OP_ADD;
+
+    auto colorBlending = crude_vulkan_01::Color_Blend_State_Create_Info(
+      VK_FALSE,
+      VK_LOGIC_OP_COPY,
+      {colorBlendAttachment},
+      {0.f, 0.f, 0.f, 0.f});
   }
 
   static std::vector<char> readFile(const std::string& filename) {
