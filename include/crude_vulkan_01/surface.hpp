@@ -10,16 +10,16 @@ namespace crude_vulkan_01
 
 class Instance;
 
-struct SurfaceCreateInfo
+struct Surface_Create_Info
 {
   std::shared_ptr<const Instance>  instance;
-  explicit SurfaceCreateInfo(std::shared_ptr<const Instance>  instance);
+  explicit Surface_Create_Info(std::shared_ptr<const Instance>  instance);
 };
 
 class Surface : public TObject<VkSurfaceKHR>
 {
 public:
-  explicit Surface(const SurfaceCreateInfo& createInfo);
+  explicit Surface(const Surface_Create_Info& createInfo);
   ~Surface();
 protected:
   std::shared_ptr<const Instance> m_instance;
@@ -27,19 +27,18 @@ protected:
 
 #ifdef VK_KHR_win32_surface
 
-struct Win32SurfaceCreateInfo
+struct Win32_Surface_Create_Info : public Surface_Create_Info
 {
-  std::shared_ptr<const Instance>  instance;
   HINSTANCE                        hinstance;
   HWND                             hwnd;
   VkWin32SurfaceCreateFlagsKHR     flags;
 
-  explicit Win32SurfaceCreateInfo(std::shared_ptr<const Instance>  instance,
-    HINSTANCE                        hinstance,
-    HWND                             hwnd,
-    VkWin32SurfaceCreateFlagsKHR     flags = 0u)
+  explicit Win32_Surface_Create_Info(std::shared_ptr<const Instance>  instance,
+                                     HINSTANCE                        hinstance,
+                                     HWND                             hwnd,
+                                     VkWin32SurfaceCreateFlagsKHR     flags = 0u)
     :
-    instance(instance),
+    Surface_Create_Info(instance),
     hinstance(hinstance),
     hwnd(hwnd),
     flags(flags)
@@ -49,25 +48,21 @@ struct Win32SurfaceCreateInfo
 class Win32_Surface : public Surface, public Requiring_Extensions
 {
 public:
-  Win32_Surface(const Win32SurfaceCreateInfo& createInfoWin32)
+  Win32_Surface(const Win32_Surface_Create_Info& createInfoWin32)
     :
-    Surface(SurfaceCreateInfo(createInfoWin32.instance)),
+    Surface(createInfoWin32),
     m_hwnd(createInfoWin32.hwnd),
     m_hinstance(createInfoWin32.hinstance)
   {
-    VkWin32SurfaceCreateInfoKHR vkCreateInfo;
-    vkCreateInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
-    vkCreateInfo.hinstance = createInfoWin32.hinstance;
-    vkCreateInfo.hwnd = createInfoWin32.hwnd;
-    vkCreateInfo.flags = createInfoWin32.flags;
-    vkCreateInfo.pNext = nullptr;
+    VkWin32SurfaceCreateInfoKHR vkCreateInfo{};
+    vkCreateInfo.sType      = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
+    vkCreateInfo.pNext      = nullptr;
 
-    const VkResult result = vkCreateWin32SurfaceKHR(
-      CRUDE_VULKAN_01_HANDLE(m_instance),
-      &vkCreateInfo,
-      nullptr,
-      &m_handle);
+    vkCreateInfo.hinstance  = createInfoWin32.hinstance;
+    vkCreateInfo.hwnd       = createInfoWin32.hwnd;
+    vkCreateInfo.flags      = createInfoWin32.flags;
 
+    const VkResult result = vkCreateWin32SurfaceKHR(CRUDE_VULKAN_01_HANDLE(m_instance), &vkCreateInfo, nullptr, &m_handle);
     CRUDE_VULKAN_01_HANDLE_RESULT(result, "failed to create win32 surface");
   }
 
@@ -95,19 +90,18 @@ private:
 
 #ifdef VK_KHR_xcb_surface
 
-struct XCBSurfaceCreateInfo
+struct XCB_Surface_CreateInfo : public Surface_Create_Info
 {
-  std::shared_ptr<const Instance>  instance;
   xcb_connection_t*                pConnection;
   xcb_window_t                     window;
   VkXcbSurfaceCreateFlagsKHR       flags;
 
-  explicit XCBSurfaceCreateInfo(std::shared_ptr<const Instance>  instance,
-                                xcb_connection_t*                pConnection,
-                                xcb_window_t                     window,
-                                VkXcbSurfaceCreateFlagsKHR       flags = 0u)
+  explicit XCB_Surface_CreateInfo(std::shared_ptr<const Instance>  instance,
+                                  xcb_connection_t*                pConnection,
+                                  xcb_window_t                     window,
+                                  VkXcbSurfaceCreateFlagsKHR       flags = 0u)
     :
-    instance(instance),
+    Surface_Create_Info(instance),
     pConnection(pConnection),
     window(window),
     flags(flags)
@@ -117,25 +111,21 @@ struct XCBSurfaceCreateInfo
 class XCB_Surface : public Surface, public Requiring_Extensions
 {
 public:
-  XCB_Surface(const XCBSurfaceCreateInfo& createInfoXCB)
+  XCB_Surface(const XCB_Surface_CreateInfo& createInfoXCB)
     :
-    Surface(SurfaceCreateInfo(createInfoXCB.instance)),
+    Surface(createInfoXCB),
     m_window(createInfoXCB.window),
     m_pConnection(createInfoXCB.pConnection)
   {
     VkXcbSurfaceCreateInfoKHR vkCreateInfo;
     vkCreateInfo.sType       = VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR;
+    vkCreateInfo.pNext       = nullptr;
+
     vkCreateInfo.connection  = createInfoXCB.pConnection;
     vkCreateInfo.window      = createInfoXCB.window;
     vkCreateInfo.flags       = createInfoXCB.flags;
-    vkCreateInfo.pNext       = nullptr;
 
-    const VkResult result = vkCreateXcbSurfaceKHR(
-      CRUDE_VULKAN_01_HANDLE(m_instance),
-      &vkCreateInfo, 
-      nullptr, 
-      &m_handle); 
-
+    const VkResult result = vkCreateXcbSurfaceKHR(CRUDE_VULKAN_01_HANDLE(m_instance), &vkCreateInfo, nullptr, &m_handle); 
     CRUDE_VULKAN_01_HANDLE_RESULT(result, "failed to create xcb surface");
   }
   

@@ -84,6 +84,12 @@
     <ClCompile Include="..\..\..\include\crude_vulkan_01\subpass_description.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\include\crude_vulkan_01\subpass_dependency.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\include\crude_vulkan_01\attachment_description.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\include\crude_vulkan_01\application.hpp">
@@ -165,6 +171,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\crude_vulkan_01\subpass_description.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\crude_vulkan_01\subpass_dependency.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\crude_vulkan_01\attachment_description.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

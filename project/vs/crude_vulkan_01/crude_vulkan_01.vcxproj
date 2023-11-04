@@ -144,6 +144,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\include\crude_vulkan_01\application.cpp" />
+    <ClCompile Include="..\..\..\include\crude_vulkan_01\attachment_description.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\color_blend_state_create_info.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\core.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\debug_utils_messenger.cpp" />
@@ -160,6 +161,7 @@
     <ClCompile Include="..\..\..\include\crude_vulkan_01\rasterization_state_create_info.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\render_pass.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\shader_module.cpp" />
+    <ClCompile Include="..\..\..\include\crude_vulkan_01\subpass_dependency.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\subpass_description.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\surface.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\swap_chain.cpp" />
@@ -169,6 +171,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\include\crude_vulkan_01\application.hpp" />
+    <ClInclude Include="..\..\..\include\crude_vulkan_01\attachment_description.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\color_blend_state_create_info.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\core.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\debug_utils_messenger.hpp" />
@@ -188,6 +191,7 @@
     <ClInclude Include="..\..\..\include\crude_vulkan_01\render_pass.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\requiring_extensions.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\shader_module.hpp" />
+    <ClInclude Include="..\..\..\include\crude_vulkan_01\subpass_dependency.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\subpass_description.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\surface.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\swap_chain.hpp" />

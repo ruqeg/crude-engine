@@ -7,21 +7,21 @@
 namespace crude_vulkan_01
 {
 
-SwapChainCreateInfo::SwapChainCreateInfo(std::shared_ptr<const Device>   device,
-                                        std::shared_ptr<const Surface>  surface,
-                                        const VkSurfaceFormatKHR&       surfaceFormat,
-                                        const VkExtent2D&               extent,
-                                        VkImageUsageFlags               imageUsage,
-                                        uint32_t                        minImageCount,
-                                        uint32_t                        imageArrayLayers,
-                                        VkSharingMode                   imageSharingMode,
-                                        const std::vector<uint32>&      queueFamilyIndices,
-                                        VkSurfaceTransformFlagBitsKHR   preTransform,
-                                        VkCompositeAlphaFlagBitsKHR     compositeAlpha,
-                                        VkPresentModeKHR                presentMode,
-                                        VkBool32                        clipped,
-                                        VkSwapchainCreateFlagsKHR       flags,
-                                        std::shared_ptr<Swap_Chain>     oldSwapchain)
+Swap_Chain_Create_Info::Swap_Chain_Create_Info(std::shared_ptr<const Device>   device,
+                                               std::shared_ptr<const Surface>  surface,
+                                               const VkSurfaceFormatKHR&       surfaceFormat,
+                                               const VkExtent2D&               extent,
+                                               VkImageUsageFlags               imageUsage,
+                                               uint32_t                        minImageCount,
+                                               uint32_t                        imageArrayLayers,
+                                               VkSharingMode                   imageSharingMode,
+                                               const std::vector<uint32>&      queueFamilyIndices,
+                                               VkSurfaceTransformFlagBitsKHR   preTransform,
+                                               VkCompositeAlphaFlagBitsKHR     compositeAlpha,
+                                               VkPresentModeKHR                presentMode,
+                                               VkBool32                        clipped,
+                                               VkSwapchainCreateFlagsKHR       flags,
+                                               std::shared_ptr<Swap_Chain>     oldSwapchain)
   :
   device(device),
   surface(surface),
@@ -40,7 +40,7 @@ SwapChainCreateInfo::SwapChainCreateInfo(std::shared_ptr<const Device>   device,
   oldSwapchain(oldSwapchain)
 {}
   
-Swap_Chain::Swap_Chain(const SwapChainCreateInfo& createInfo)
+Swap_Chain::Swap_Chain(const Swap_Chain_Create_Info& createInfo)
   :
   m_device(createInfo.device),
   m_surface(createInfo.surface),
@@ -50,6 +50,8 @@ Swap_Chain::Swap_Chain(const SwapChainCreateInfo& createInfo)
 {
   VkSwapchainCreateInfoKHR vkCreateInfo{};
   vkCreateInfo.sType                  = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+  vkCreateInfo.pNext                  = nullptr;
+
   vkCreateInfo.flags                  = createInfo.flags;
   vkCreateInfo.surface                = CRUDE_VULKAN_01_HANDLE(m_surface);
   vkCreateInfo.minImageCount          = createInfo.minImageCount;
@@ -74,21 +76,13 @@ Swap_Chain::Swap_Chain(const SwapChainCreateInfo& createInfo)
     vkCreateInfo.oldSwapchain         = VK_NULL_HANDLE;
   }
 
-  VkResult result = vkCreateSwapchainKHR(
-    CRUDE_VULKAN_01_HANDLE(m_device), 
-    &vkCreateInfo, 
-    nullptr, 
-    &m_handle);
-
+  VkResult result = vkCreateSwapchainKHR(CRUDE_VULKAN_01_HANDLE(m_device), &vkCreateInfo, nullptr, &m_handle);
   CRUDE_VULKAN_01_HANDLE_RESULT(result, "failed to create swapchain");
 }
 
 Swap_Chain::~Swap_Chain()
 {
-  vkDestroySwapchainKHR(
-    CRUDE_VULKAN_01_HANDLE(m_device), 
-    m_handle, 
-    nullptr);
+  vkDestroySwapchainKHR(CRUDE_VULKAN_01_HANDLE(m_device), m_handle, nullptr);
 }
   
 const std::vector<std::shared_ptr<Swap_Chain_Image>>& Swap_Chain::getSwapchainImages()
@@ -99,11 +93,7 @@ const std::vector<std::shared_ptr<Swap_Chain_Image>>& Swap_Chain::getSwapchainIm
   }
 
   uint32 imageCount = 0u;
-  vkGetSwapchainImagesKHR(
-    CRUDE_VULKAN_01_HANDLE(m_device), 
-    m_handle, 
-    &imageCount, 
-    nullptr);
+  vkGetSwapchainImagesKHR(CRUDE_VULKAN_01_HANDLE(m_device), m_handle, &imageCount, nullptr);
   
   if (imageCount == 0u)
   {
@@ -111,12 +101,7 @@ const std::vector<std::shared_ptr<Swap_Chain_Image>>& Swap_Chain::getSwapchainIm
   }
 
   std::vector<VkImage> vkSwapchainImages(imageCount);
-
-  vkGetSwapchainImagesKHR(
-    CRUDE_VULKAN_01_HANDLE(m_device), 
-    m_handle, 
-    &imageCount, 
-    vkSwapchainImages.data());
+  vkGetSwapchainImagesKHR(CRUDE_VULKAN_01_HANDLE(m_device), m_handle, &imageCount, vkSwapchainImages.data());
 
   m_swapChainImages.resize(imageCount);
   for (uint32 i = 0; i < imageCount; ++i)

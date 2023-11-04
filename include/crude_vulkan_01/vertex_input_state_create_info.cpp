@@ -14,7 +14,7 @@ Vertex_Input_State_Create_Info::Vertex_Input_State_Create_Info(const Vertex_Inpu
   copy(other.pVertexBindingDescriptions, other.pVertexAttributeDescriptions, other.vertexBindingDescriptionCount, other.vertexAttributeDescriptionCount);
 }
 
-Vertex_Input_State_Create_Info::Vertex_Input_State_Create_Info(Vertex_Input_State_Create_Info&& other)
+Vertex_Input_State_Create_Info::Vertex_Input_State_Create_Info(Vertex_Input_State_Create_Info&& other) noexcept
 {
   move(other);
 }
@@ -25,7 +25,7 @@ Vertex_Input_State_Create_Info& Vertex_Input_State_Create_Info::operator=(const 
   return *this;
 }
 
-Vertex_Input_State_Create_Info& Vertex_Input_State_Create_Info::operator=(Vertex_Input_State_Create_Info&& other)
+Vertex_Input_State_Create_Info& Vertex_Input_State_Create_Info::operator=(Vertex_Input_State_Create_Info&& other) noexcept
 {
   move(other);
   return *this;
@@ -45,10 +45,10 @@ void Vertex_Input_State_Create_Info::copy(const VkVertexInputBindingDescription*
                                           uint32                                    bindingsCount,
                                           uint32                                    attributesCount)
 {
-  const uint32 bindingbsize                         = bindingsCount * sizeof(VkVertexInputBindingDescription);
-  const uint32 attributesbsize                      = attributesCount * sizeof(VkVertexInputAttributeDescription);
-  VkVertexInputBindingDescription*    npBindings    = nullptr;
-  VkVertexInputAttributeDescription*  npAttributes  = nullptr;
+  const uint32                        bindingbsize     = bindingsCount * sizeof(VkVertexInputBindingDescription);
+  const uint32                        attributesbsize  = attributesCount * sizeof(VkVertexInputAttributeDescription);
+  VkVertexInputBindingDescription*    npBindings       = nullptr;
+  VkVertexInputAttributeDescription*  npAttributes     = nullptr;
 
   //=========
   // !MALLOC

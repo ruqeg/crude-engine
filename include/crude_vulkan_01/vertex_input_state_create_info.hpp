@@ -15,9 +15,9 @@ public:
   explicit Vertex_Input_State_Create_Info(std::vector<VkVertexInputBindingDescription>&    bindingDescriptions,
                                           std::vector<VkVertexInputAttributeDescription>&  attributeDescriptions);
   Vertex_Input_State_Create_Info(const Vertex_Input_State_Create_Info& other);
-  Vertex_Input_State_Create_Info(Vertex_Input_State_Create_Info&& other);
+  Vertex_Input_State_Create_Info(Vertex_Input_State_Create_Info&& other) noexcept;
   Vertex_Input_State_Create_Info& operator=(const Vertex_Input_State_Create_Info& other);
-  Vertex_Input_State_Create_Info& operator=(Vertex_Input_State_Create_Info&& other);
+  Vertex_Input_State_Create_Info& operator=(Vertex_Input_State_Create_Info&& other) noexcept;
   ~Vertex_Input_State_Create_Info();
 private:
   void copy(const VkVertexInputBindingDescription*    pBindings,

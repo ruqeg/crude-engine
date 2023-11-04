@@ -219,7 +219,7 @@ private:
       m_pConnection,
       m_window));
 #elif _WIN32
-    m_surface = std::make_shared<crude_vulkan_01::Win32_Surface>(crude_vulkan_01::Win32SurfaceCreateInfo(
+    m_surface = std::make_shared<crude_vulkan_01::Win32_Surface>(crude_vulkan_01::Win32_Surface_Create_Info(
       m_instance,
       m_hinstance,
       m_hwnd));
@@ -273,7 +273,7 @@ private:
 
     std::vector<uint32_t> queueFamilyIndices = {queueIndices.graphicsFamily.value(), queueIndices.presentFamily.value()};
 
-    m_swapchain = std::make_shared<crude_vulkan_01::Swap_Chain>(crude_vulkan_01::SwapChainCreateInfo(
+    m_swapchain = std::make_shared<crude_vulkan_01::Swap_Chain>(crude_vulkan_01::Swap_Chain_Create_Info(
       m_device,
       m_surface,
       surfaceFormat,

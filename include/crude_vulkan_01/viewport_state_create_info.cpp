@@ -64,7 +64,7 @@ void Viewport_State_Create_Info::copy(const VkViewport*  pViewports,
   VkRect2D*   npScissors       = nullptr;
   const uint32 viewportsbsize  = viewportsCount * sizeof(VkViewport);
   const uint32 scissorsbsize   = scissorsCount * sizeof(VkRect2D);
-
+  
   //=========
   // !MALLOC
   if (viewportsCount > 0u)  npViewports = CRUDE_VULKAN_01_NEW VkViewport[viewportsCount]; 

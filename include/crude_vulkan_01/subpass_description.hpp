@@ -11,6 +11,8 @@ namespace crude_vulkan_01
 
 class Device;
 
+// ! sizeof(Subpass_Description) == sizeof(VkSubpassDescription)
+// for render_pass.cpp
 struct Subpass_Description final : public VkSubpassDescription
 {
   explicit Subpass_Description(VkPipelineBindPoint                          pipelineBindPoint,
