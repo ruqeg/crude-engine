@@ -2,7 +2,6 @@
 
 #include "core.hpp"
 #include "include_vulkan.hpp"
-#include "object.hpp"
 
 namespace crude_vulkan_01
 {

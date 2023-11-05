@@ -56,34 +56,19 @@ void Subpass_Description::copy(VkPipelineBindPoint           opipelineBindPoint,
                                const uint32*                 opPreserveAttachments,
                                uint32                        opreserveAttachmentsCount)
 {
-  VkAttachmentReference*  npInputAttachments        = nullptr;
-  VkAttachmentReference*  npColorAttachments        = nullptr;
-  VkAttachmentReference*  npDepthStencilAttachment  = nullptr;
-  uint32*                 npPreserveAttachments     = nullptr;
-
-  //=========
-  // !MALLOC
-  if (ocolorAttachmentsCount > 0u)     npColorAttachments       = CRUDE_VULKAN_01_NEW VkAttachmentReference[ocolorAttachmentsCount];
-  if (oinputAttachmentsCount > 0u)     npInputAttachments       = CRUDE_VULKAN_01_NEW VkAttachmentReference[oinputAttachmentsCount];
-  if (opreserveAttachmentsCount > 0u)  npPreserveAttachments    = CRUDE_VULKAN_01_NEW uint32[opreserveAttachmentsCount];
-  if (opDepthStencilAttachment)        npDepthStencilAttachment = CRUDE_VULKAN_01_NEW VkAttachmentReference(*opDepthStencilAttachment);
-  //=========
-
-  if (ocolorAttachmentsCount > 0u)     CRUDE_VULKAN_01_COPY_MEMORY(npColorAttachments, opColorAttachments, ocolorAttachmentsCount * sizeof(VkAttachmentReference));
-  if (oinputAttachmentsCount > 0u)     CRUDE_VULKAN_01_COPY_MEMORY(npInputAttachments, opInputAttachments, oinputAttachmentsCount * sizeof(VkAttachmentReference));
-  if (opreserveAttachmentsCount > 0u)  CRUDE_VULKAN_01_COPY_MEMORY(npPreserveAttachments, opPreserveAttachments, opreserveAttachmentsCount * sizeof(uint32));
-
   this->flags                    = 0u;
   this->pipelineBindPoint        = opipelineBindPoint;
   this->inputAttachmentCount     = oinputAttachmentsCount;
   this->colorAttachmentCount     = ocolorAttachmentsCount;
   this->preserveAttachmentCount  = opreserveAttachmentsCount;
-  this->pInputAttachments        = npInputAttachments;
-  this->pColorAttachments        = npColorAttachments;
-  this->pPreserveAttachments     = npPreserveAttachments;
-  this->pDepthStencilAttachment  = npDepthStencilAttachment;
-  // !TODO
-  this->pResolveAttachments = nullptr;
+  //=========
+  // !MALLOC
+  this->pInputAttachments        = CRUDE_VULKAN_01_NEW_COPY_MEMORY(VkAttachmentReference, opInputAttachments, oinputAttachmentsCount);
+  this->pColorAttachments        = CRUDE_VULKAN_01_NEW_COPY_MEMORY(VkAttachmentReference, opColorAttachments, ocolorAttachmentsCount);
+  this->pPreserveAttachments     = CRUDE_VULKAN_01_NEW_COPY_MEMORY(uint32, opPreserveAttachments, opreserveAttachmentsCount);
+  this->pDepthStencilAttachment  = opDepthStencilAttachment ? CRUDE_VULKAN_01_NEW VkAttachmentReference(*opDepthStencilAttachment) : nullptr;
+  //=========
+  this->pResolveAttachments = nullptr; // !TODO
 }
 
 void Subpass_Description::move(Subpass_Description& other)

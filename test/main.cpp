@@ -30,6 +30,7 @@
 #include "../include/crude_vulkan_01/color_blend_state_create_info.hpp"
 #include "../include/crude_vulkan_01/dynamic_state_create_info.hpp"
 #include "../include/crude_vulkan_01/pipeline_layout.hpp"
+#include "../include/crude_vulkan_01/shader_stage_create_info.hpp"
 
 #include <algorithm>
 #include <set>
@@ -392,6 +393,12 @@ private:
     auto fragShaderModule = std::make_shared<crude_vulkan_01::Shader_Module>(crude_vulkan_01::Shader_Module_Create_Info(
       m_device,
       fragShaderCode));
+
+    std::vector<crude_vulkan_01::Shader_Stage_Create_Info> shaderStagesInfo =
+    {
+      crude_vulkan_01::Shader_Stage_Create_Info(VK_SHADER_STAGE_VERTEX_BIT, vertShaderModule, "main"),
+      crude_vulkan_01::Shader_Stage_Create_Info(VK_SHADER_STAGE_FRAGMENT_BIT, fragShaderModule, "main"),
+    };
 
     std::vector<VkVertexInputBindingDescription> bindings = { Vertex::getBindingDescription() };
     std::vector<VkVertexInputAttributeDescription> attributes(Vertex::getAttributeDescriptions().begin(), Vertex::getAttributeDescriptions().end());

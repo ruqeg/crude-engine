@@ -17,9 +17,9 @@ public:
   explicit Viewport_State_Create_Info(uint32 viewportsCount,
                                       uint32 scissorsCount);
   Viewport_State_Create_Info(const Viewport_State_Create_Info& other);
-  Viewport_State_Create_Info(Viewport_State_Create_Info&& other);
+  Viewport_State_Create_Info(Viewport_State_Create_Info&& other) noexcept;
   Viewport_State_Create_Info& operator=(const Viewport_State_Create_Info& other);
-  Viewport_State_Create_Info& operator=(Viewport_State_Create_Info&& other);
+  Viewport_State_Create_Info& operator=(Viewport_State_Create_Info&& other) noexcept;
   ~Viewport_State_Create_Info();
 private:
   void copy(const VkViewport*  pViewports,

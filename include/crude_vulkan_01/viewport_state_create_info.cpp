@@ -27,7 +27,7 @@ Viewport_State_Create_Info::Viewport_State_Create_Info(const Viewport_State_Crea
   copy(other.pViewports, other.pScissors, other.viewportCount, other.scissorCount);
 }
 
-Viewport_State_Create_Info::Viewport_State_Create_Info(Viewport_State_Create_Info&& other)
+Viewport_State_Create_Info::Viewport_State_Create_Info(Viewport_State_Create_Info&& other) noexcept
 {
   move(other);
 }
@@ -38,7 +38,7 @@ Viewport_State_Create_Info& Viewport_State_Create_Info::operator=(const Viewport
   return *this;
 }
 
-Viewport_State_Create_Info& Viewport_State_Create_Info::operator=(Viewport_State_Create_Info&& other)
+Viewport_State_Create_Info& Viewport_State_Create_Info::operator=(Viewport_State_Create_Info&& other) noexcept
 {
   move(other);
   return *this;
@@ -58,29 +58,16 @@ void Viewport_State_Create_Info::copy(const VkViewport*  pViewports,
                                       uint32             viewportCount,
                                       uint32             scissorCount)
 {
-  const uint32 viewportsCount  = viewportCount;
-  const uint32 scissorsCount   = scissorCount;
-  VkViewport* npViewports      = nullptr;
-  VkRect2D*   npScissors       = nullptr;
-  const uint32 viewportsbsize  = viewportsCount * sizeof(VkViewport);
-  const uint32 scissorsbsize   = scissorsCount * sizeof(VkRect2D);
-  
-  //=========
-  // !MALLOC
-  if (viewportsCount > 0u)  npViewports = CRUDE_VULKAN_01_NEW VkViewport[viewportsCount]; 
-  if (scissorsCount > 0u)   npScissors  = CRUDE_VULKAN_01_NEW VkRect2D[scissorsCount];
-  //=========
-
-  if (viewportsCount > 0u)  CRUDE_VULKAN_01_COPY_MEMORY(npViewports, pViewports, viewportsbsize); 
-  if (scissorsCount > 0u)   CRUDE_VULKAN_01_COPY_MEMORY(npScissors, pScissors, scissorsbsize);
-
   this->sType          = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
   this->flags          = 0u;
   this->pNext          = 0u;
-  this->viewportCount  = viewportsCount;
-  this->pViewports     = npViewports;
-  this->scissorCount   = scissorsCount;
-  this->pScissors      = npScissors;
+  //=========
+  // !MALLOC
+  this->pViewports     = CRUDE_VULKAN_01_NEW_COPY_MEMORY(VkViewport, pViewports, viewportCount);
+  this->pScissors      = CRUDE_VULKAN_01_NEW_COPY_MEMORY(VkRect2D, pScissors, scissorCount);
+  //=========
+  this->viewportCount  = viewportCount;
+  this->scissorCount   = scissorCount;
 }
 
 void Viewport_State_Create_Info::move(Viewport_State_Create_Info& other)

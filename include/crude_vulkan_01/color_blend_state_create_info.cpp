@@ -38,7 +38,7 @@ Color_Blend_State_Create_Info::~Color_Blend_State_Create_Info()
 {
   //=========
   // !MALLOC
-  if (pAttachments)  CRUDE_VULKAN_01_DELETE[] pAttachments;
+  if (this->pAttachments)  CRUDE_VULKAN_01_DELETE[] pAttachments;
   //=========
 }
 
@@ -48,22 +48,15 @@ void Color_Blend_State_Create_Info::copy(const VkPipelineColorBlendAttachmentSta
                                          VkBool32                                   logicOpEnable,
                                          VkLogicOp                                  logicOp)
 {
-  const uint32                          attachmentsbsize  = attachmentsCount * sizeof(VkPipelineColorBlendAttachmentState);
-  VkPipelineColorBlendAttachmentState*  npAttachments     = nullptr;
-
-  //=========
-  // !MALLOC
-  if (attachmentsCount > 0u)  npAttachments  = CRUDE_VULKAN_01_NEW VkPipelineColorBlendAttachmentState[attachmentsCount];
-  //=========
-  
-  if (attachmentsCount > 0u)  CRUDE_VULKAN_01_COPY_MEMORY(npAttachments, pAttachments, attachmentsbsize); 
-
   this->sType              = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
   this->pNext              = nullptr;
   this->flags              = 0u;
 
-  this->pAttachments       = npAttachments;
-  this->attachmentCount    = attachmentCount;
+  //=========
+  // !MALLOC
+  this->pAttachments       = CRUDE_VULKAN_01_NEW_COPY_MEMORY(VkPipelineColorBlendAttachmentState, pAttachments, attachmentsCount);
+  //=========
+  this->attachmentCount    = attachmentsCount;
   this->blendConstants[0]  = pBlendConstants[0];
   this->blendConstants[1]  = pBlendConstants[1];
   this->blendConstants[2]  = pBlendConstants[2];

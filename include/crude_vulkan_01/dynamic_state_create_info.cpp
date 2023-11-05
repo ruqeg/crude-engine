@@ -34,25 +34,19 @@ Dynamic_State_Create_Info::~Dynamic_State_Create_Info()
 {
   //=========
   // !FREE
-  CRUDE_VULKAN_01_DELETE[] this->pDynamicStates;
+  if (this->pDynamicStates)  CRUDE_VULKAN_01_DELETE[] this->pDynamicStates;
   //=========
 }
 
 void Dynamic_State_Create_Info::copy(const VkDynamicState* opDynamicStates, uint32 odynamicStatesCount)
 {
-  VkDynamicState* npDynamicStates  = nullptr;
-
-  //=========
-  // !MALLOC
-  if (odynamicStatesCount > 0u)  npDynamicStates = CRUDE_VULKAN_01_NEW VkDynamicState[odynamicStatesCount];
-  //=========
-  
-  if (odynamicStatesCount > 0u)  CRUDE_VULKAN_01_COPY_MEMORY(npDynamicStates, opDynamicStates, odynamicStatesCount);
-
   this->sType           = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
   this->pNext           = nullptr;
   this->flags           = 0u;
-  this->pDynamicStates  = npDynamicStates;
+  //=========
+  // !MALLOC
+  this->pDynamicStates  = CRUDE_VULKAN_01_NEW_COPY_MEMORY(VkDynamicState, opDynamicStates, odynamicStatesCount);
+  //=========
 }
 
 void Dynamic_State_Create_Info::move(Dynamic_State_Create_Info& other)
