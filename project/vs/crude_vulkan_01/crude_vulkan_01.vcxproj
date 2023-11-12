@@ -158,6 +158,7 @@
     <ClCompile Include="..\..\..\include\crude_vulkan_01\instance.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\multisample_state_create_info.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\physical_device.cpp" />
+    <ClCompile Include="..\..\..\include\crude_vulkan_01\pipeline.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\pipeline_layout.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\queue.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\rasterization_state_create_info.cpp" />
@@ -190,6 +191,7 @@
     <ClInclude Include="..\..\..\include\crude_vulkan_01\multisample_state_create_info.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\object.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\physical_device.hpp" />
+    <ClInclude Include="..\..\..\include\crude_vulkan_01\pipeline.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\pipeline_layout.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\queue.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\rasterization_state_create_info.hpp" />

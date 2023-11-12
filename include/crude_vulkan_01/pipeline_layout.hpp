@@ -21,7 +21,7 @@ struct Pipeline_Layout_Create_Info
                                        const std::vector<VkPushConstantRange>&                           pushConstantRanges);
 };
 
-class Pipeline_Layout : TObject<VkPipelineLayout>
+class Pipeline_Layout : public TObject<VkPipelineLayout>
 {
 public:
   explicit Pipeline_Layout(const Pipeline_Layout_Create_Info& createInfo);

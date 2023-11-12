@@ -40,21 +40,23 @@ Dynamic_State_Create_Info::~Dynamic_State_Create_Info()
 
 void Dynamic_State_Create_Info::copy(const VkDynamicState* opDynamicStates, uint32 odynamicStatesCount)
 {
-  this->sType           = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-  this->pNext           = nullptr;
-  this->flags           = 0u;
+  this->sType              = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+  this->pNext              = nullptr;
+  this->flags              = 0u;
   //=========
   // !MALLOC
-  this->pDynamicStates  = CRUDE_VULKAN_01_NEW_COPY_MEMORY(VkDynamicState, opDynamicStates, odynamicStatesCount);
+  this->pDynamicStates     = CRUDE_VULKAN_01_NEW_COPY_MEMORY(VkDynamicState, opDynamicStates, odynamicStatesCount);
   //=========
+  this->dynamicStateCount  = odynamicStatesCount;
 }
 
 void Dynamic_State_Create_Info::move(Dynamic_State_Create_Info& other)
 {
-  this->sType           = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-  this->pNext           = nullptr;
-  this->flags           = 0u;
-  this->pDynamicStates  = other.pDynamicStates;
+  this->sType              = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+  this->pNext              = nullptr;
+  this->flags              = 0u;
+  this->pDynamicStates     = other.pDynamicStates;
+  this->dynamicStateCount  = other.dynamicStateCount;
 
   other.pDynamicStates  = nullptr;
 }

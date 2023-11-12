@@ -21,16 +21,9 @@
 #include "../include/crude_vulkan_01/render_pass.hpp"
 #include "../include/crude_vulkan_01/descriptor_set_layout.hpp"
 #include "../include/crude_vulkan_01/shader_module.hpp"
-#include "../include/crude_vulkan_01/vertex_input_state_create_info.hpp"
-#include "../include/crude_vulkan_01/input_assembly_state_create_info.hpp"
-#include "../include/crude_vulkan_01/viewport_state_create_info.hpp"
-#include "../include/crude_vulkan_01/rasterization_state_create_info.hpp"
-#include "../include/crude_vulkan_01/multisample_state_create_info.hpp"
-#include "../include/crude_vulkan_01/depth_stencil_state_create_info.hpp"
-#include "../include/crude_vulkan_01/color_blend_state_create_info.hpp"
-#include "../include/crude_vulkan_01/dynamic_state_create_info.hpp"
 #include "../include/crude_vulkan_01/pipeline_layout.hpp"
 #include "../include/crude_vulkan_01/shader_stage_create_info.hpp"
+#include "../include/crude_vulkan_01/pipeline.hpp"
 
 #include <algorithm>
 #include <set>
@@ -455,6 +448,22 @@ private:
       m_device, 
       { m_descriptorSetLayout }, 
       {}));
+
+    m_graphicsPipeline = std::make_shared<crude_vulkan_01::Pipeline>(crude_vulkan_01::Graphics_Pipeline_Create_Info(
+      m_device,
+      m_renderPass,
+      m_pipelineLayout,
+      nullptr,
+      shaderStagesInfo,
+      vertexInputStateInfo,
+      inputAssembly,
+      viewportState,
+      rasterizer,
+      multisampling,
+      depthStencil,
+      colorBlending,
+      dynamicState,
+      0u));
   }
 
   static std::vector<char> readFile(const std::string& filename) {
@@ -612,6 +621,7 @@ private:
   std::shared_ptr<crude_vulkan_01::Render_Pass>                    m_renderPass;
   std::shared_ptr<crude_vulkan_01::Descriptor_Set_Layout>          m_descriptorSetLayout;
   std::shared_ptr<crude_vulkan_01::Pipeline_Layout>                m_pipelineLayout;
+  std::shared_ptr<crude_vulkan_01::Pipeline>                       m_graphicsPipeline;
   uint32_t m_width = 800u;
   uint32_t m_height = 600u;
   bool m_framebufferResized = false;
