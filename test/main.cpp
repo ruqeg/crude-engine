@@ -24,6 +24,7 @@
 #include "../include/crude_vulkan_01/pipeline_layout.hpp"
 #include "../include/crude_vulkan_01/shader_stage_create_info.hpp"
 #include "../include/crude_vulkan_01/pipeline.hpp"
+#include "../include/crude_vulkan_01/command_pool.hpp"
 
 #include <algorithm>
 #include <set>
@@ -464,6 +465,11 @@ private:
       colorBlending,
       dynamicState,
       0u));
+
+    m_commandPool = std::make_shared<crude_vulkan_01::Command_Pool>(crude_vulkan_01::Command_Pool_Create_Info(
+      m_device, 
+      VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
+      queueIndices.graphicsFamily.value()));
   }
 
   static std::vector<char> readFile(const std::string& filename) {
@@ -622,6 +628,7 @@ private:
   std::shared_ptr<crude_vulkan_01::Descriptor_Set_Layout>          m_descriptorSetLayout;
   std::shared_ptr<crude_vulkan_01::Pipeline_Layout>                m_pipelineLayout;
   std::shared_ptr<crude_vulkan_01::Pipeline>                       m_graphicsPipeline;
+  std::shared_ptr<crude_vulkan_01::Command_Pool>                   m_commandPool;
   uint32_t m_width = 800u;
   uint32_t m_height = 600u;
   bool m_framebufferResized = false;

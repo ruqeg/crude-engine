@@ -146,6 +146,7 @@
     <ClCompile Include="..\..\..\include\crude_vulkan_01\application.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\attachment_description.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\color_blend_state_create_info.cpp" />
+    <ClCompile Include="..\..\..\include\crude_vulkan_01\command_pool.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\core.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\debug_utils_messenger.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\depth_stencil_state_create_info.cpp" />
@@ -177,6 +178,7 @@
     <ClInclude Include="..\..\..\include\crude_vulkan_01\application.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\attachment_description.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\color_blend_state_create_info.hpp" />
+    <ClInclude Include="..\..\..\include\crude_vulkan_01\command_pool.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\core.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\debug_utils_messenger.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\depth_stencil_state_create_info.hpp" />

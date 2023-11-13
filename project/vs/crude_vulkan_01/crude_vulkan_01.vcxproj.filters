@@ -102,6 +102,9 @@
     <ClCompile Include="..\..\..\include\crude_vulkan_01\pipeline.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\include\crude_vulkan_01\command_pool.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\include\crude_vulkan_01\application.hpp">
@@ -201,6 +204,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\crude_vulkan_01\pipeline.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\crude_vulkan_01\command_pool.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
