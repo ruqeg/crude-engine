@@ -4,37 +4,91 @@
 namespace crude_vulkan_01 
 {
 
-Image_Create_Info::Image_Create_Info(std::shared_ptr<const Device>  device,
-                                     VkImage                        handle,
-                                     VkFormat                       format,
-                                     VkColorSpaceKHR                colorSpace,
-                                     VkExtent2D                     extent,
-                                     VkImageUsageFlags              usage,
-                                     VkImageType                    type)
+Image_From_Handle_Create_Info::Image_From_Handle_Create_Info(std::shared_ptr<const Device>  device,
+                                                             VkImage                        handle,
+                                                             VkFormat                       format,
+                                                             VkExtent3D                     extent,
+                                                             VkImageUsageFlags              usage,
+                                                             VkImageType                    type)
   :
   device(device),
   handle(handle),
   format(format),
-  colorSpace(colorSpace),
   extent(extent),
   usage(usage),
   type(type)
 {}
+
+Image_2D_Create_Info::Image_2D_Create_Info(std::shared_ptr<const Device>  device,
+                                           VkImageCreateFlags             flags,
+                                           VkFormat                       format,
+                                           const VkExtent2D&              extent,
+                                           uint32                         mipLevels,
+                                           uint32                         arrayLayers,
+                                           VkSampleCountFlagBits          samples,
+                                           VkImageTiling                  tiling,
+                                           VkImageUsageFlags              usage,
+                                           VkSharingMode                  sharingMode,
+                                           VkImageLayout                  initialLayout)
+  :
+  device(device),
+  flags(flags),
+  format(format),
+  extent(extent),
+  mipLevels(mipLevels),
+  arrayLayers(arrayLayers),
+  samples(samples),
+  tiling(tiling),
+  usage(usage),
+  sharingMode(sharingMode),
+  initialLayout(initialLayout)
+{}
   
-Image::Image(const Image_Create_Info& createInfo)
+Image::Image(const Image_From_Handle_Create_Info& createInfo)
 {
   m_handle      = createInfo.handle;
   m_device      = createInfo.device;
   m_format      = createInfo.format;
-  m_colorSpace  = createInfo.colorSpace;
   m_extent      = createInfo.extent;
   m_usage       = createInfo.usage;
   m_type        = createInfo.type;
 }
+
+Image::Image(const Image_2D_Create_Info& createInfo)
+{
+  m_device         = createInfo.device;
+  m_format         = createInfo.format;
+  m_usage          = createInfo.usage;
+  m_extent.width   = createInfo.extent.width;
+  m_extent.height  = createInfo.extent.height;
+  m_extent.depth   = 1u;
+  m_type           = VK_IMAGE_TYPE_2D;
+
+  VkImageCreateInfo vkImageInfo{};
+  vkImageInfo.sType                  = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+  vkImageInfo.pNext                  = nullptr;
+  vkImageInfo.queueFamilyIndexCount  = 0u; // !TODO
+  vkImageInfo.pQueueFamilyIndices    = nullptr; // !TODO
+
+  vkImageInfo.flags                  = createInfo.flags;
+  vkImageInfo.imageType              = m_type;
+  vkImageInfo.format                 = m_format;
+  vkImageInfo.extent                 = m_extent;
+  vkImageInfo.mipLevels              = createInfo.mipLevels;
+  vkImageInfo.arrayLayers            = createInfo.arrayLayers;
+  vkImageInfo.samples                = createInfo.samples;
+  vkImageInfo.tiling                 = createInfo.tiling;
+  vkImageInfo.usage                  = m_usage;
+  vkImageInfo.sharingMode            = createInfo.sharingMode;
+  vkImageInfo.initialLayout          = createInfo.initialLayout;
+
+  VkResult result = vkCreateImage(CRUDE_VULKAN_01_HANDLE(m_device), &vkImageInfo, nullptr, &m_handle);
+  CRUDE_VULKAN_01_HANDLE_RESULT(result, "failed to create 2d image");
+}
   
 Image::~Image()
 {
-  vkDestroyImage(CRUDE_VULKAN_01_HANDLE(m_device), m_handle, nullptr);
+  if (m_handle != VK_NULL_HANDLE)  vkDestroyImage(CRUDE_VULKAN_01_HANDLE(m_device), m_handle, nullptr);
 }
   
 VkImageType Image::getType() const

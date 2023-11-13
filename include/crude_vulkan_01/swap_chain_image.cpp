@@ -13,13 +13,17 @@ Swap_Chain_Image_Create_Info::Swap_Chain_Image_Create_Info(std::shared_ptr<const
                                                            VkExtent2D                     extent,
                                                            VkImageUsageFlags              usage)
   :
-  Image_Create_Info(device, handle, format, colorSpace, extent, usage, VK_IMAGE_TYPE_2D)
-{}
+  Image_From_Handle_Create_Info(device, handle, format, VkExtent3D{ extent.width, extent.height, 1u }, usage, VK_IMAGE_TYPE_2D)
+{
+  this->colorSpace = colorSpace;
+}
 
 Swap_Chain_Image::Swap_Chain_Image(const Swap_Chain_Image_Create_Info& createInfo)
   :
-  Image(static_cast<Image_Create_Info>(createInfo))
-{}
+  Image(static_cast<Image_From_Handle_Create_Info>(createInfo))
+{
+  m_colorSpace = createInfo.colorSpace;
+}
 
 Swap_Chain_Image::~Swap_Chain_Image()
 {
