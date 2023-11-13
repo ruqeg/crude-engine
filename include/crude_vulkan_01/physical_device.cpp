@@ -140,4 +140,11 @@ VkPhysicalDeviceFeatures Physical_Device::getFeatures() const
   return features;
 }
 
+VkPhysicalDeviceMemoryProperties Physical_Device::getMemoryProperties() const
+{
+  VkPhysicalDeviceMemoryProperties properties;
+  vkGetPhysicalDeviceMemoryProperties(m_handle, &properties);
+  return properties;
+}
+
 }

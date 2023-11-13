@@ -29,6 +29,7 @@ public:
   VkFormatProperties getFormatProperties(VkFormat format) const;
   VkPhysicalDeviceProperties getProperties() const;
   VkPhysicalDeviceFeatures getFeatures() const;
+  VkPhysicalDeviceMemoryProperties getMemoryProperties() const;
 private:
   VkPhysicalDeviceProperties m_properties;
 };

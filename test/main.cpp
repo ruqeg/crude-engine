@@ -25,6 +25,7 @@
 #include "../include/crude_vulkan_01/shader_stage_create_info.hpp"
 #include "../include/crude_vulkan_01/pipeline.hpp"
 #include "../include/crude_vulkan_01/command_pool.hpp"
+#include "../include/crude_vulkan_01/device_memory.hpp"
 
 #include <algorithm>
 #include <set>
@@ -470,6 +471,40 @@ private:
       m_device, 
       VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
       queueIndices.graphicsFamily.value()));
+
+    const VkFormat depthFormat = findDepthFormat();
+    m_depthImage = std::make_shared<crude_vulkan_01::Image>(crude_vulkan_01::Image_2D_Create_Info(
+      m_device,
+      0u,
+      depthFormat,
+      extent,
+      1u,
+      1u,
+      VK_SAMPLE_COUNT_1_BIT,
+      VK_IMAGE_TILING_OPTIMAL,
+      VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+      VK_SHARING_MODE_EXCLUSIVE,
+      VK_IMAGE_LAYOUT_UNDEFINED));
+
+
+    VkMemoryRequirements memRequirements;
+    vkGetImageMemoryRequirements(CRUDE_VULKAN_01_HANDLE(m_device), CRUDE_VULKAN_01_HANDLE(m_depthImage), &memRequirements);
+
+    uint32_t memoryTypeIndex = -1;
+   
+    VkPhysicalDeviceMemoryProperties memProperties = m_physicalDevice->getMemoryProperties();
+    for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
+      if (memRequirements.memoryTypeBits & (1 << i) && (memProperties.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT) == VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT) {
+        memoryTypeIndex = i;
+      }
+    }
+
+    if (memoryTypeIndex == -1)  throw std::runtime_error("failed to find depth memory type");
+
+    m_depthImageDeviceMemory = std::make_shared<crude_vulkan_01::Device_Memory>(crude_vulkan_01::Device_Memory_Allocate_Info(
+      m_device,
+      memRequirements.size,
+      memoryTypeIndex));
   }
 
   static std::vector<char> readFile(const std::string& filename) {
@@ -629,6 +664,8 @@ private:
   std::shared_ptr<crude_vulkan_01::Pipeline_Layout>                m_pipelineLayout;
   std::shared_ptr<crude_vulkan_01::Pipeline>                       m_graphicsPipeline;
   std::shared_ptr<crude_vulkan_01::Command_Pool>                   m_commandPool;
+  std::shared_ptr<crude_vulkan_01::Device_Memory>                  m_depthImageDeviceMemory;
+  std::shared_ptr<crude_vulkan_01::Image>                          m_depthImage;
   uint32_t m_width = 800u;
   uint32_t m_height = 600u;
   bool m_framebufferResized = false;

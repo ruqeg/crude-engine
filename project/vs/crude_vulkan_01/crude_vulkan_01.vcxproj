@@ -152,6 +152,7 @@
     <ClCompile Include="..\..\..\include\crude_vulkan_01\depth_stencil_state_create_info.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\descriptor_set_layout.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\device.cpp" />
+    <ClCompile Include="..\..\..\include\crude_vulkan_01\device_memory.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\dynamic_state_create_info.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\image.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\image_view.cpp" />
@@ -184,6 +185,7 @@
     <ClInclude Include="..\..\..\include\crude_vulkan_01\depth_stencil_state_create_info.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\descriptor_set_layout.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\device.hpp" />
+    <ClInclude Include="..\..\..\include\crude_vulkan_01\device_memory.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\dynamic_state_create_info.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\image.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\image_view.hpp" />
