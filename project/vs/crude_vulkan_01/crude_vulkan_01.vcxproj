@@ -176,6 +176,7 @@
     <ClCompile Include="..\..\..\include\crude_vulkan_01\surface.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\swap_chain.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\swap_chain_image.cpp" />
+    <ClCompile Include="..\..\..\include\crude_vulkan_01\tessellation_state_create_info.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\vertex_input_state_create_info.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\viewport_state_create_info.cpp" />
   </ItemGroup>
@@ -216,6 +217,7 @@
     <ClInclude Include="..\..\..\include\crude_vulkan_01\surface.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\swap_chain.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\swap_chain_image.hpp" />
+    <ClInclude Include="..\..\..\include\crude_vulkan_01\tessellation_state_create_info.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\types.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\vertex_input_state_create_info.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\viewport_state_create_info.hpp" />

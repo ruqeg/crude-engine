@@ -26,6 +26,8 @@
 #include "../include/crude_vulkan_01/pipeline.hpp"
 #include "../include/crude_vulkan_01/command_pool.hpp"
 #include "../include/crude_vulkan_01/device_memory.hpp"
+#include "../include/crude_vulkan_01/command_buffer.hpp"
+#include "../include/crude_vulkan_01/image_memory_barrier.hpp"
 
 #include <algorithm>
 #include <set>
@@ -458,6 +460,7 @@ private:
       nullptr,
       shaderStagesInfo,
       vertexInputStateInfo,
+      crude_vulkan_01::Tessellation_State_Create_Info(3u),
       inputAssembly,
       viewportState,
       rasterizer,
@@ -505,6 +508,21 @@ private:
       m_device,
       memRequirements.size,
       memoryTypeIndex));
+
+    m_depthImageDeviceMemory->bind(*m_depthImage);
+
+    auto commandBuffer = std::make_shared<crude_vulkan_01::Command_Buffer>(crude_vulkan_01::Command_Buffer_Create_Info(
+      m_device,
+      m_commandPool,
+      VK_COMMAND_BUFFER_LEVEL_PRIMARY));
+    commandBuffer->begin();
+
+    crude_vulkan_01::Image_Memory_Barrier barrier(
+      m_depthImage,
+      VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+      crude_vulkan_01::Image_Subresource_Range(m_depthImage, 0u, 1u, 0u, 1u));
+    commandBuffer->barrier(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT, { barrier });
+    commandBuffer->end();
   }
 
   static std::vector<char> readFile(const std::string& filename) {
@@ -601,7 +619,7 @@ private:
 
   VkFormat findDepthFormat() {
     return findSupportedFormat(
-      {VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT},
+      {VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT},
       VK_IMAGE_TILING_OPTIMAL,
       VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
   }
@@ -635,9 +653,10 @@ private:
                                                       const VkDebugUtilsMessengerCallbackDataEXT*  pCallbackData,
                                                       void*                                        pUserData) 
   {
-    if (messageSeverity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT) {
+    //if (messageSeverity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT) {
+    OutputDebugStringA((std::string("validation layer: ") + pCallbackData->pMessage + std::string("\n")).c_str());
       std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
-    }
+    //}
     return VK_FALSE;
   }
 

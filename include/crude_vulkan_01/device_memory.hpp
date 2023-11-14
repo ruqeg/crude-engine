@@ -24,7 +24,7 @@ class Device_Memory : public TObject<VkDeviceMemory>
 {
 public:
   explicit Device_Memory(const Device_Memory_Allocate_Info& createInfo);
-  void bind(Image& image, VkDeviceSize offset);
+  void bind(Image& image, VkDeviceSize offset = 0u);
   ~Device_Memory();
 private:
   std::shared_ptr<const Device>  m_device;

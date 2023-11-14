@@ -12,6 +12,7 @@ Graphics_Pipeline_Create_Info::Graphics_Pipeline_Create_Info(std::shared_ptr<con
                                                              std::shared_ptr<const Pipeline>                         basePipeline,
                                                              const std::vector<Shader_Stage_Create_Info>&            shaderStages,
                                                              const std::optional<Vertex_Input_State_Create_Info>&    vertexInputState,
+                                                             const std::optional<Tessellation_State_Create_Info>&    tessellationState,
                                                              const std::optional<Input_Assembly_State_Create_Info>&  inputAsseblyState,
                                                              const std::optional<Viewport_State_Create_Info>&        viewportState,
                                                              const std::optional<Rasterization_State_Create_Info>&   rasterizationState,
@@ -27,6 +28,7 @@ Graphics_Pipeline_Create_Info::Graphics_Pipeline_Create_Info(std::shared_ptr<con
   basePipeline(basePipeline),
   shaderStages(shaderStages),
   vertexInputState(vertexInputState),
+  tessellationState(tessellationState),
   inputAsseblyState(inputAsseblyState),
   viewportState(viewportState),
   rasterizationState(rasterizationState),
@@ -54,7 +56,8 @@ Pipeline::Pipeline(const Graphics_Pipeline_Create_Info& createInfo)
   vkCreateInfo.stageCount           = static_cast<uint32>(vkShaderStages.size());
   vkCreateInfo.pStages              = vkShaderStages.data();
   vkCreateInfo.pVertexInputState    = CRUDE_VULKAN_01_OPTIONAL_REFVALUE_OR_NULL(createInfo.vertexInputState);
-  vkCreateInfo.pTessellationState   = nullptr; // !TODO
+  vkCreateInfo.pTessellationState   = CRUDE_VULKAN_01_OPTIONAL_REFVALUE_OR_NULL(createInfo.tessellationState);
+  vkCreateInfo.pInputAssemblyState  = CRUDE_VULKAN_01_OPTIONAL_REFVALUE_OR_NULL(createInfo.inputAsseblyState);
   vkCreateInfo.pViewportState       = CRUDE_VULKAN_01_OPTIONAL_REFVALUE_OR_NULL(createInfo.viewportState);
   vkCreateInfo.pRasterizationState  = CRUDE_VULKAN_01_OPTIONAL_REFVALUE_OR_NULL(createInfo.rasterizationState);
   vkCreateInfo.pMultisampleState    = CRUDE_VULKAN_01_OPTIONAL_REFVALUE_OR_NULL(createInfo.multisampleState);

@@ -64,6 +64,7 @@ Image::Image(const Image_2D_Create_Info& createInfo)
   m_extent.height  = createInfo.extent.height;
   m_extent.depth   = 1u;
   m_type           = VK_IMAGE_TYPE_2D;
+  m_layout         = createInfo.initialLayout;
 
   VkImageCreateInfo vkImageInfo{};
   vkImageInfo.sType                  = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -81,7 +82,7 @@ Image::Image(const Image_2D_Create_Info& createInfo)
   vkImageInfo.tiling                 = createInfo.tiling;
   vkImageInfo.usage                  = m_usage;
   vkImageInfo.sharingMode            = createInfo.sharingMode;
-  vkImageInfo.initialLayout          = createInfo.initialLayout;
+  vkImageInfo.initialLayout          = m_layout;
 
   VkResult result = vkCreateImage(CRUDE_VULKAN_01_HANDLE(m_device), &vkImageInfo, nullptr, &m_handle);
   CRUDE_VULKAN_01_HANDLE_RESULT(result, "failed to create 2d image");

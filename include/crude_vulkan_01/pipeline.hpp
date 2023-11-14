@@ -11,6 +11,7 @@
 #include "depth_stencil_state_create_info.hpp"
 #include "color_blend_state_create_info.hpp"
 #include "dynamic_state_create_info.hpp"
+#include "tessellation_state_create_info.hpp"
 #include <optional>
 #include <vector>
 
@@ -30,6 +31,7 @@ struct Graphics_Pipeline_Create_Info
   std::shared_ptr<const Pipeline>                       basePipeline;
   std::vector<Shader_Stage_Create_Info>                 shaderStages;
   std::optional<Vertex_Input_State_Create_Info>         vertexInputState;
+  std::optional<Tessellation_State_Create_Info>         tessellationState;
   std::optional<Input_Assembly_State_Create_Info>       inputAsseblyState;
   std::optional<Viewport_State_Create_Info>             viewportState;
   std::optional<Rasterization_State_Create_Info>        rasterizationState;
@@ -45,6 +47,7 @@ struct Graphics_Pipeline_Create_Info
                                          std::shared_ptr<const Pipeline>                         basePipeline,
                                          const std::vector<Shader_Stage_Create_Info>&            shaderStages,
                                          const std::optional<Vertex_Input_State_Create_Info>&    vertexInputState,
+                                         const std::optional<Tessellation_State_Create_Info>&    tessellationState,
                                          const std::optional<Input_Assembly_State_Create_Info>&  inputAsseblyState,
                                          const std::optional<Viewport_State_Create_Info>&        viewportState,
                                          const std::optional<Rasterization_State_Create_Info>&   rasterizationState,

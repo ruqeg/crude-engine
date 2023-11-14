@@ -6,6 +6,15 @@
 namespace crude_vulkan_01
 {
 
+Command_Buffer_Create_Info::Command_Buffer_Create_Info(std::shared_ptr<const Device>  device,
+                                                       std::shared_ptr<Command_Pool>  commandPool,
+                                                       VkCommandBufferLevel           level)
+  :
+  device(device),
+  commandPool(commandPool),
+  level(level)
+{}
+
 Command_Buffer::Command_Buffer(const Command_Buffer_Create_Info& createInfo)
 {
   m_device       = createInfo.device;
