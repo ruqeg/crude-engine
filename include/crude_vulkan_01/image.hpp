@@ -59,13 +59,17 @@ public:
   explicit Image(const Image_From_Handle_Create_Info& createInfo);
   explicit Image(const Image_2D_Create_Info& createInfo);
   ~Image();
+  void setLayout(VkImageLayout layout);
   VkImageType getType() const;
+  VkFormat getFormat() const;
+  VkImageLayout getLayout() const;
 protected:
   std::shared_ptr<const Device>  m_device;
   VkFormat                       m_format;
   VkExtent3D                     m_extent;
   VkImageUsageFlags              m_usage;
   VkImageType                    m_type;
+  VkImageLayout                  m_layout;
 };
 
 }

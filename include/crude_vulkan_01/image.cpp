@@ -52,6 +52,7 @@ Image::Image(const Image_From_Handle_Create_Info& createInfo)
   m_extent      = createInfo.extent;
   m_usage       = createInfo.usage;
   m_type        = createInfo.type;
+  m_layout      = VK_IMAGE_LAYOUT_UNDEFINED;
 }
 
 Image::Image(const Image_2D_Create_Info& createInfo)
@@ -90,10 +91,25 @@ Image::~Image()
 {
   if (m_handle != VK_NULL_HANDLE)  vkDestroyImage(CRUDE_VULKAN_01_HANDLE(m_device), m_handle, nullptr);
 }
+
+void Image::setLayout(VkImageLayout layout)
+{
+  m_layout = layout;
+}
   
 VkImageType Image::getType() const
 {
   return m_type;
+}
+
+VkFormat Image::getFormat() const
+{
+  return m_format;
+}
+
+VkImageLayout Image::getLayout() const
+{
+  return m_layout;
 }
 
 }
