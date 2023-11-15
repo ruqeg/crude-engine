@@ -113,4 +113,11 @@ VkImageLayout Image::getLayout() const
   return m_layout;
 }
 
+VkMemoryRequirements Image::getMemoryRequirements() const
+{
+  VkMemoryRequirements memRequirements;
+  vkGetImageMemoryRequirements(CRUDE_VULKAN_01_HANDLE(m_device), m_handle, &memRequirements);
+  return memRequirements;
+}
+
 }

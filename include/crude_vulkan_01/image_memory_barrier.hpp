@@ -17,6 +17,7 @@ public:
                                 uint32                   dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED);
 private:
   std::shared_ptr<Image>  m_image;
+  friend class Command_Buffer;
 };
 
 }

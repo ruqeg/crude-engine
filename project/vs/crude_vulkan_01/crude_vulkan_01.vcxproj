@@ -145,6 +145,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\include\crude_vulkan_01\application.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\attachment_description.cpp" />
+    <ClCompile Include="..\..\..\include\crude_vulkan_01\buffer.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\color_blend_state_create_info.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\command_buffer.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\command_pool.cpp" />
@@ -184,6 +185,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\include\crude_vulkan_01\application.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\attachment_description.hpp" />
+    <ClInclude Include="..\..\..\include\crude_vulkan_01\buffer.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\color_blend_state_create_info.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\command_buffer.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\command_pool.hpp" />

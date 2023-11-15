@@ -2,6 +2,7 @@
 #include "command_pool.hpp"
 #include "device.hpp"
 #include "image.hpp"
+#include "buffer.hpp"
 
 namespace crude_vulkan_01
 {
@@ -53,6 +54,16 @@ void Command_Buffer::barrier(VkPipelineStageFlags srcStage, VkPipelineStageFlags
 {
   std::vector<VkImageMemoryBarrier> vkImageMemoryBarriers(imageMemoryBarriers.begin(), imageMemoryBarriers.end());
   vkCmdPipelineBarrier(m_handle, srcStage, dstStage, 0u, 0u, nullptr, 0u, nullptr, vkImageMemoryBarriers.size(), vkImageMemoryBarriers.data());
+
+  for (uint32 i = 0u; i < imageMemoryBarriers.size(); ++i)
+  {
+    imageMemoryBarriers[i].m_image->setLayout(imageMemoryBarriers[i].newLayout);
+  }
+}
+
+void Command_Buffer::copyBufferToImage(std::shared_ptr<Buffer> srcBuffer, std::shared_ptr<Image> dstImage, const std::vector<VkBufferImageCopy>& regions)
+{
+  vkCmdCopyBufferToImage(m_handle, CRUDE_VULKAN_01_HANDLE(srcBuffer), CRUDE_VULKAN_01_HANDLE(dstImage), dstImage->getLayout(), regions.size(), regions.data());
 }
 
 Command_Buffer::~Command_Buffer()

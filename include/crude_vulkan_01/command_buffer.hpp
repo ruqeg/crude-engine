@@ -9,6 +9,8 @@ namespace crude_vulkan_01
 
 class Device;
 class Command_Pool;
+class Buffer;
+class Image;
 
 struct Command_Buffer_Create_Info
 {
@@ -28,6 +30,7 @@ public:
   bool begin(VkCommandBufferUsageFlags flags = 0u);
   bool end();
   void barrier(VkPipelineStageFlags srcStage, VkPipelineStageFlags dstStage, const std::vector<Image_Memory_Barrier>& imageMemoryBarriers);
+  void copyBufferToImage(std::shared_ptr<Buffer> srcBuffer, std::shared_ptr<Image> dstImage, const std::vector<VkBufferImageCopy>& regions);
   // !TODO void begin(VkCommandBufferUsageFlags flags with VkCommandBufferInheritanceInfo);
   ~Command_Buffer();
 private:

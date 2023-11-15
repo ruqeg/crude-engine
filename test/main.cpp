@@ -8,6 +8,8 @@
 #include <Windows.h>
 #undef max
 #endif
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
 #include "../include/crude_vulkan_01/instance.hpp"
 #include "../include/crude_vulkan_01/debug_utils_messenger.hpp"
@@ -29,6 +31,7 @@
 #include "../include/crude_vulkan_01/command_buffer.hpp"
 #include "../include/crude_vulkan_01/image_memory_barrier.hpp"
 #include "../include/crude_vulkan_01/framebuffer.hpp"
+#include "../include/crude_vulkan_01/buffer.hpp"
 
 #include <algorithm>
 #include <set>
@@ -487,6 +490,7 @@ private:
         1u));
     }
 
+    createTextureImageFromFile();
   }
 
   void createDepthImage()
@@ -509,24 +513,13 @@ private:
       VK_IMAGE_LAYOUT_UNDEFINED));
 
 
-    VkMemoryRequirements memRequirements;
-    vkGetImageMemoryRequirements(CRUDE_VULKAN_01_HANDLE(m_device), CRUDE_VULKAN_01_HANDLE(m_depthImage), &memRequirements);
-
-    uint32_t memoryTypeIndex = -1;
-
-    VkPhysicalDeviceMemoryProperties memProperties = m_physicalDevice->getMemoryProperties();
-    for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
-      if (memRequirements.memoryTypeBits & (1 << i) && ((memProperties.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT) == VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)) {
-        memoryTypeIndex = i;
-      }
-    }
-
-    if (memoryTypeIndex == -1)  throw std::runtime_error("failed to find depth memory type");
+    VkMemoryRequirements memRequirements = m_depthImage->getMemoryRequirements();
 
     m_depthImageDeviceMemory = std::make_shared<crude_vulkan_01::Device_Memory>(crude_vulkan_01::Device_Memory_Allocate_Info(
       m_device,
       memRequirements.size,
-      memoryTypeIndex));
+      memRequirements.memoryTypeBits,
+      VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT));
 
     m_depthImageDeviceMemory->bind(*m_depthImage);
 
@@ -550,6 +543,102 @@ private:
       m_depthImage,
       depthFormat,
       crude_vulkan_01::Image_Subresource_Range(m_depthImage)));
+  }
+
+  void createTextureImageFromFile() {
+    int texWidth, texHeight, texChannels;
+    stbi_uc* pixels = stbi_load("../../../test/test.png", &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+    size_t pixelsbsize = 4u * texWidth * texHeight;
+
+    if (!pixels)
+    {
+      throw std::runtime_error("failed to load texture image!");
+    }
+
+    auto stagingBuffer = std::make_shared<crude_vulkan_01::Buffer>(crude_vulkan_01::Buffer_Create_Info(
+      m_device,
+      4 * texWidth * texHeight,
+      VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+      VK_SHARING_MODE_EXCLUSIVE,
+      {}));
+
+    VkMemoryRequirements memRequirements = m_depthImage->getMemoryRequirements();
+
+    auto stagingBufferMemory = std::make_shared<crude_vulkan_01::Device_Memory>(crude_vulkan_01::Device_Memory_Allocate_Info(
+      m_device,
+      memRequirements.size,
+      memRequirements.memoryTypeBits,
+      VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT));
+
+    stagingBufferMemory->bind(*stagingBuffer);
+
+    void* data = stagingBufferMemory->map().value();
+    memcpy(data, pixels, static_cast<size_t>(pixelsbsize));
+    stagingBufferMemory->unmap();
+
+    auto textureImage = std::make_shared<crude_vulkan_01::Image>(crude_vulkan_01::Image_2D_Create_Info(
+      m_device,
+      0u,
+      VK_FORMAT_R8G8B8A8_SRGB,
+      VkExtent2D { static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight) },
+      1u,
+      1u,
+      VK_SAMPLE_COUNT_1_BIT,
+      VK_IMAGE_TILING_OPTIMAL,
+      VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+      VK_SHARING_MODE_EXCLUSIVE,
+      VK_IMAGE_LAYOUT_UNDEFINED));
+
+    memRequirements = textureImage->getMemoryRequirements();
+
+    auto textureImageMemory = std::make_shared<crude_vulkan_01::Device_Memory>(crude_vulkan_01::Device_Memory_Allocate_Info(
+      m_device,
+      memRequirements.size,
+      memRequirements.memoryTypeBits,
+      VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT));
+
+    textureImageMemory->bind(*textureImage);
+
+    auto commandBuffer = std::make_shared<crude_vulkan_01::Command_Buffer>(crude_vulkan_01::Command_Buffer_Create_Info(
+      m_device,
+      m_commandPool,
+      VK_COMMAND_BUFFER_LEVEL_PRIMARY));
+    commandBuffer->begin();
+
+    commandBuffer->barrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, {
+      crude_vulkan_01::Image_Memory_Barrier(
+        textureImage,
+        VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+        crude_vulkan_01::Image_Subresource_Range(textureImage, 0u, 1u, 0u, 1u))
+      });
+     
+    VkBufferImageCopy region{};
+    region.bufferOffset                    = 0;
+    region.bufferRowLength                 = 0;
+    region.bufferImageHeight               = 0;
+    region.imageSubresource.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
+    region.imageSubresource.mipLevel       = 0;
+    region.imageSubresource.baseArrayLayer = 0;
+    region.imageSubresource.layerCount     = 1;
+    region.imageOffset                     = {0, 0, 0};
+    region.imageExtent = {
+      static_cast<uint32_t>(texWidth),
+      static_cast<uint32_t>(texHeight),
+      1
+    };
+    commandBuffer->copyBufferToImage(stagingBuffer, textureImage, { region });
+
+    commandBuffer->barrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, {
+      crude_vulkan_01::Image_Memory_Barrier(
+        textureImage,
+        VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+        crude_vulkan_01::Image_Subresource_Range(textureImage, 0u, 1u, 0u, 1u))
+      });
+
+    commandBuffer->end();
+
+    m_graphicsQueue->sumbit({ commandBuffer });
+    m_graphicsQueue->waitIdle();
   }
 
   static std::vector<char> readFile(const std::string& filename) {

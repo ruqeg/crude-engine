@@ -63,6 +63,7 @@ public:
   VkImageType getType() const;
   VkFormat getFormat() const;
   VkImageLayout getLayout() const;
+  VkMemoryRequirements getMemoryRequirements() const;
 protected:
   std::shared_ptr<const Device>  m_device;
   VkFormat                       m_format;
