@@ -32,6 +32,7 @@
 #include "../include/crude_vulkan_01/image_memory_barrier.hpp"
 #include "../include/crude_vulkan_01/framebuffer.hpp"
 #include "../include/crude_vulkan_01/buffer.hpp"
+#include "../include/crude_vulkan_01/sampler.hpp"
 
 #include <algorithm>
 #include <set>
@@ -252,12 +253,16 @@ private:
 
     // Initialize logic device
     const Queue_Family_Indices queueIndices = findQueueFamilies(*m_physicalDevice);
+
+    VkPhysicalDeviceFeatures deviceFeatures{};
+    deviceFeatures.samplerAnisotropy = VK_TRUE;
+    
     m_device = std::make_shared<crude_vulkan_01::Device>(crude_vulkan_01::Device_Create_Info(
       m_physicalDevice,
       {
         crude_vulkan_01::Device_Queue_Create_Info(queueIndices.graphicsFamily.value()),
         crude_vulkan_01::Device_Queue_Create_Info(queueIndices.presentFamily.value()) },
-      {},
+      deviceFeatures,
       { VK_KHR_SWAPCHAIN_EXTENSION_NAME },
       { "VK_LAYER_KHRONOS_validation" }));
 
@@ -490,7 +495,14 @@ private:
         1u));
     }
 
-    createTextureImageFromFile();
+    createTextureImageFromFile("../../../test/test.png", m_textureImage, m_textureImageMemory);
+    m_textureImageView = std::make_shared<crude_vulkan_01::Image_View>(crude_vulkan_01::Image_View_Create_Info(
+      m_device,
+      m_textureImage,
+      m_textureImage->getFormat(),
+      crude_vulkan_01::Image_Subresource_Range(m_textureImage)));
+
+
   }
 
   void createDepthImage()
@@ -543,11 +555,30 @@ private:
       m_depthImage,
       depthFormat,
       crude_vulkan_01::Image_Subresource_Range(m_depthImage)));
+
+    m_sampler = std::make_shared<crude_vulkan_01::Sampler>(crude_vulkan_01::Sampler_Create_Info(
+      m_device,
+      VK_FILTER_LINEAR,
+      VK_FILTER_LINEAR,
+      VK_SAMPLER_MIPMAP_MODE_LINEAR,
+      VK_SAMPLER_ADDRESS_MODE_REPEAT,
+      VK_SAMPLER_ADDRESS_MODE_REPEAT,
+      VK_SAMPLER_ADDRESS_MODE_REPEAT,
+      0.f,
+      VK_TRUE,
+      m_physicalDevice->getProperties().limits.maxSamplerAnisotropy,
+      VK_FALSE,
+      VK_COMPARE_OP_ALWAYS,
+      0.f,
+      0.f,
+      VK_BORDER_COLOR_INT_OPAQUE_BLACK,
+      VK_FALSE));
   }
 
-  void createTextureImageFromFile() {
+  void createTextureImageFromFile(const char* path, std::shared_ptr<crude_vulkan_01::Image>& textureImage, std::shared_ptr<crude_vulkan_01::Device_Memory>& textureImageMemory)
+  {
     int texWidth, texHeight, texChannels;
-    stbi_uc* pixels = stbi_load("../../../test/test.png", &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+    stbi_uc* pixels = stbi_load(path, &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
     size_t pixelsbsize = 4u * texWidth * texHeight;
 
     if (!pixels)
@@ -576,7 +607,7 @@ private:
     memcpy(data, pixels, static_cast<size_t>(pixelsbsize));
     stagingBufferMemory->unmap();
 
-    auto textureImage = std::make_shared<crude_vulkan_01::Image>(crude_vulkan_01::Image_2D_Create_Info(
+    textureImage = std::make_shared<crude_vulkan_01::Image>(crude_vulkan_01::Image_2D_Create_Info(
       m_device,
       0u,
       VK_FORMAT_R8G8B8A8_SRGB,
@@ -591,7 +622,7 @@ private:
 
     memRequirements = textureImage->getMemoryRequirements();
 
-    auto textureImageMemory = std::make_shared<crude_vulkan_01::Device_Memory>(crude_vulkan_01::Device_Memory_Allocate_Info(
+    textureImageMemory = std::make_shared<crude_vulkan_01::Device_Memory>(crude_vulkan_01::Device_Memory_Allocate_Info(
       m_device,
       memRequirements.size,
       memRequirements.memoryTypeBits,
@@ -605,7 +636,7 @@ private:
       VK_COMMAND_BUFFER_LEVEL_PRIMARY));
     commandBuffer->begin();
 
-    commandBuffer->barrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, {
+    commandBuffer->barrier(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, {
       crude_vulkan_01::Image_Memory_Barrier(
         textureImage,
         VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
@@ -803,6 +834,10 @@ private:
   std::shared_ptr<crude_vulkan_01::Image>                          m_depthImage;
   std::shared_ptr<crude_vulkan_01::Image_View>                     m_depthImageView;
   std::vector<std::shared_ptr<crude_vulkan_01::Framebuffer>>       m_swapchainFramebuffers;
+  std::shared_ptr<crude_vulkan_01::Image>                          m_textureImage;
+  std::shared_ptr<crude_vulkan_01::Device_Memory>                  m_textureImageMemory;
+  std::shared_ptr<crude_vulkan_01::Image_View>                     m_textureImageView;
+  std::shared_ptr<crude_vulkan_01::Sampler>                        m_sampler;
   uint32_t m_width = 800u;
   uint32_t m_height = 600u;
   bool m_framebufferResized = false;

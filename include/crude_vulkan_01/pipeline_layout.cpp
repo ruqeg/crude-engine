@@ -40,4 +40,9 @@ Pipeline_Layout::Pipeline_Layout(const Pipeline_Layout_Create_Info& createInfo)
   CRUDE_VULKAN_01_HANDLE_RESULT(result, "failed to create pipeline layout");
 }
 
+Pipeline_Layout::~Pipeline_Layout()
+{
+  vkDestroyPipelineLayout(CRUDE_VULKAN_01_HANDLE(m_device), m_handle, nullptr);
+}
+
 }

@@ -171,6 +171,7 @@
     <ClCompile Include="..\..\..\include\crude_vulkan_01\queue.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\rasterization_state_create_info.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\render_pass.cpp" />
+    <ClCompile Include="..\..\..\include\crude_vulkan_01\sampler.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\shader_module.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\shader_stage_create_info.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\subpass_dependency.cpp" />
@@ -214,6 +215,7 @@
     <ClInclude Include="..\..\..\include\crude_vulkan_01\rasterization_state_create_info.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\render_pass.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\requiring_extensions.hpp" />
+    <ClInclude Include="..\..\..\include\crude_vulkan_01\sampler.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\shader_module.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\shader_stage_create_info.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\subpass_dependency.hpp" />

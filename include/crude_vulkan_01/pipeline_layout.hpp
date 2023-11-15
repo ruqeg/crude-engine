@@ -25,6 +25,7 @@ class Pipeline_Layout : public TObject<VkPipelineLayout>
 {
 public:
   explicit Pipeline_Layout(const Pipeline_Layout_Create_Info& createInfo);
+  ~Pipeline_Layout();
 private:
   std::shared_ptr<const Device>  m_device;
 };
