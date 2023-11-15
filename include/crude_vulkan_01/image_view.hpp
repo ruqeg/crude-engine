@@ -3,7 +3,7 @@
 #include "core.hpp"
 #include "object.hpp"
 #include "include_vulkan.hpp"
-#include <memory>
+#include "image_subresource_range.hpp"
 
 namespace crude_vulkan_01 
 {
@@ -16,21 +16,14 @@ struct Image_View_Create_Info
   std::shared_ptr<const Device>  device;
   std::shared_ptr<const Image>   image;
   VkFormat                       format;
+  Image_Subresource_Range        subresourceRange;
   VkComponentMapping             components;
-  VkImageAspectFlags             aspectMask;
-  uint32                         baseArrayLayer;
-  uint32                         baseMipLevel;
-  uint32                         levelCount;
-  uint32                         layerCount;
-  explicit Image_View_Create_Info(std::shared_ptr<const Device>  device,
-                                  std::shared_ptr<const Image>   image,
-                                  VkFormat                       format,
-                                  VkComponentMapping             components,
-                                  VkImageAspectFlags             aspectMask,
-                                  uint32                         baseArrayLayer,
-                                  uint32                         baseMipLevel,
-                                  uint32                         levelCount,
-                                  uint32                         layerCount);
+
+  explicit Image_View_Create_Info(std::shared_ptr<const Device>   device,
+                                  std::shared_ptr<const Image>    image,
+                                  VkFormat                        format,
+                                  const Image_Subresource_Range&  subresourceRange,
+                                  const VkComponentMapping&       components = {});
 };
 
 class Image_View : public TObject<VkImageView>

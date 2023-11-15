@@ -28,6 +28,7 @@
 #include "../include/crude_vulkan_01/device_memory.hpp"
 #include "../include/crude_vulkan_01/command_buffer.hpp"
 #include "../include/crude_vulkan_01/image_memory_barrier.hpp"
+#include "../include/crude_vulkan_01/framebuffer.hpp"
 
 #include <algorithm>
 #include <set>
@@ -298,12 +299,7 @@ private:
         m_device,
         m_swapchainImages[i],
         surfaceFormat.format,
-        {},
-        VK_IMAGE_ASPECT_COLOR_BIT,
-        0u,
-        0u,
-        1u,
-        1u));
+        crude_vulkan_01::Image_Subresource_Range(m_swapchainImages[i])));
     }
 
     crude_vulkan_01::Attachment_Description colorAttachment(
@@ -475,6 +471,29 @@ private:
       VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
       queueIndices.graphicsFamily.value()));
 
+    createDepthImage();
+
+    m_swapchainFramebuffers.resize(m_swapchainImagesViews.size());
+    for (uint32_t i = 0; i < m_swapchainFramebuffers.size(); ++i)
+    {
+      std::vector<std::shared_ptr<crude_vulkan_01::Image_View>> attachments = { m_swapchainImagesViews[i], m_depthImageView };
+
+      m_swapchainFramebuffers[i] = std::make_shared<crude_vulkan_01::Framebuffer>(crude_vulkan_01::Framebuffer_Create_Info(
+        m_device,
+        m_renderPass,
+        attachments,
+        extent.width,
+        extent.height,
+        1u));
+    }
+
+  }
+
+  void createDepthImage()
+  {
+    VkSurfaceCapabilitiesKHR surfaceCapabilites = m_physicalDevice->getSurfaceCapabilitis(m_surface);
+    const VkExtent2D extent = chooseSwapExtent(surfaceCapabilites);
+
     const VkFormat depthFormat = findDepthFormat();
     m_depthImage = std::make_shared<crude_vulkan_01::Image>(crude_vulkan_01::Image_2D_Create_Info(
       m_device,
@@ -494,7 +513,7 @@ private:
     vkGetImageMemoryRequirements(CRUDE_VULKAN_01_HANDLE(m_device), CRUDE_VULKAN_01_HANDLE(m_depthImage), &memRequirements);
 
     uint32_t memoryTypeIndex = -1;
-   
+
     VkPhysicalDeviceMemoryProperties memProperties = m_physicalDevice->getMemoryProperties();
     for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
       if (memRequirements.memoryTypeBits & (1 << i) && ((memProperties.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT) == VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)) {
@@ -523,6 +542,14 @@ private:
       crude_vulkan_01::Image_Subresource_Range(m_depthImage, 0u, 1u, 0u, 1u));
     commandBuffer->barrier(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT, { barrier });
     commandBuffer->end();
+    m_graphicsQueue->sumbit({ commandBuffer });
+    m_graphicsQueue->waitIdle();
+
+    m_depthImageView = std::make_shared<crude_vulkan_01::Image_View>(crude_vulkan_01::Image_View_Create_Info(
+      m_device,
+      m_depthImage,
+      depthFormat,
+      crude_vulkan_01::Image_Subresource_Range(m_depthImage)));
   }
 
   static std::vector<char> readFile(const std::string& filename) {
@@ -685,6 +712,8 @@ private:
   std::shared_ptr<crude_vulkan_01::Command_Pool>                   m_commandPool;
   std::shared_ptr<crude_vulkan_01::Device_Memory>                  m_depthImageDeviceMemory;
   std::shared_ptr<crude_vulkan_01::Image>                          m_depthImage;
+  std::shared_ptr<crude_vulkan_01::Image_View>                     m_depthImageView;
+  std::vector<std::shared_ptr<crude_vulkan_01::Framebuffer>>       m_swapchainFramebuffers;
   uint32_t m_width = 800u;
   uint32_t m_height = 600u;
   bool m_framebufferResized = false;

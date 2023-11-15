@@ -156,6 +156,7 @@
     <ClCompile Include="..\..\..\include\crude_vulkan_01\device_memory.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\dynamic_state_create_info.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\format.cpp" />
+    <ClCompile Include="..\..\..\include\crude_vulkan_01\framebuffer.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\image.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\image_memory_barrier.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\image_subresource_range.cpp" />
@@ -194,6 +195,7 @@
     <ClInclude Include="..\..\..\include\crude_vulkan_01\device_memory.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\dynamic_state_create_info.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\format.hpp" />
+    <ClInclude Include="..\..\..\include\crude_vulkan_01\framebuffer.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\image.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\image_memory_barrier.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\image_subresource_range.hpp" />
