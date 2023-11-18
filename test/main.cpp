@@ -33,6 +33,7 @@
 #include "../include/crude_vulkan_01/framebuffer.hpp"
 #include "../include/crude_vulkan_01/buffer.hpp"
 #include "../include/crude_vulkan_01/sampler.hpp"
+#include "../include/crude_vulkan_01/descriptor_pool.hpp"
 
 #include <algorithm>
 #include <set>
@@ -502,7 +503,29 @@ private:
       m_textureImage->getFormat(),
       crude_vulkan_01::Image_Subresource_Range(m_textureImage)));
 
+    m_sampler = std::make_shared<crude_vulkan_01::Sampler>(crude_vulkan_01::Sampler_Create_Info(
+      m_device,
+      VK_FILTER_LINEAR,
+      VK_FILTER_LINEAR,
+      VK_SAMPLER_MIPMAP_MODE_LINEAR,
+      VK_SAMPLER_ADDRESS_MODE_REPEAT,
+      VK_SAMPLER_ADDRESS_MODE_REPEAT,
+      VK_SAMPLER_ADDRESS_MODE_REPEAT,
+      0.f,
+      VK_TRUE,
+      m_physicalDevice->getProperties().limits.maxSamplerAnisotropy,
+      VK_FALSE,
+      VK_COMPARE_OP_ALWAYS,
+      0.f,
+      0.f,
+      VK_BORDER_COLOR_INT_OPAQUE_BLACK,
+      VK_FALSE));
 
+    std::vector<VkDescriptorPoolSize> poolSizes = { VkDescriptorPoolSize{VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 2u} };
+    m_descriptorPool = std::make_shared<crude_vulkan_01::Descriptor_Pool>(crude_vulkan_01::Descriptor_Pool_Create_Info(
+      m_device,
+      poolSizes,
+      2u));
   }
 
   void createDepthImage()
@@ -555,24 +578,6 @@ private:
       m_depthImage,
       depthFormat,
       crude_vulkan_01::Image_Subresource_Range(m_depthImage)));
-
-    m_sampler = std::make_shared<crude_vulkan_01::Sampler>(crude_vulkan_01::Sampler_Create_Info(
-      m_device,
-      VK_FILTER_LINEAR,
-      VK_FILTER_LINEAR,
-      VK_SAMPLER_MIPMAP_MODE_LINEAR,
-      VK_SAMPLER_ADDRESS_MODE_REPEAT,
-      VK_SAMPLER_ADDRESS_MODE_REPEAT,
-      VK_SAMPLER_ADDRESS_MODE_REPEAT,
-      0.f,
-      VK_TRUE,
-      m_physicalDevice->getProperties().limits.maxSamplerAnisotropy,
-      VK_FALSE,
-      VK_COMPARE_OP_ALWAYS,
-      0.f,
-      0.f,
-      VK_BORDER_COLOR_INT_OPAQUE_BLACK,
-      VK_FALSE));
   }
 
   void createTextureImageFromFile(const char* path, std::shared_ptr<crude_vulkan_01::Image>& textureImage, std::shared_ptr<crude_vulkan_01::Device_Memory>& textureImageMemory)
@@ -838,6 +843,7 @@ private:
   std::shared_ptr<crude_vulkan_01::Device_Memory>                  m_textureImageMemory;
   std::shared_ptr<crude_vulkan_01::Image_View>                     m_textureImageView;
   std::shared_ptr<crude_vulkan_01::Sampler>                        m_sampler;
+  std::shared_ptr<crude_vulkan_01::Descriptor_Pool>                m_descriptorPool;
   uint32_t m_width = 800u;
   uint32_t m_height = 600u;
   bool m_framebufferResized = false;
