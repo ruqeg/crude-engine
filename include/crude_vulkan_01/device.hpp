@@ -40,6 +40,7 @@ public:
   ~Device();
   std::shared_ptr<const Physical_Device> getPhysicalDevice() const;
   std::shared_ptr<Queue> getQueue(uint32 queueFamilyIndex, uint32 queueIndex) const;
+  void updateDescriptorSets(const std::vector<VkWriteDescriptorSet>& descriptorWrites, const std::vector<VkCopyDescriptorSet>& descriptorCopies);
 private:
   std::shared_ptr<const Physical_Device> m_physicalDevice;
 };

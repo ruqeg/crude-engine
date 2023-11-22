@@ -34,6 +34,7 @@
 #include "../include/crude_vulkan_01/buffer.hpp"
 #include "../include/crude_vulkan_01/sampler.hpp"
 #include "../include/crude_vulkan_01/descriptor_pool.hpp"
+#include "../include/crude_vulkan_01/descriptor_set.hpp"
 
 #include <algorithm>
 #include <set>
@@ -526,6 +527,42 @@ private:
       m_device,
       poolSizes,
       2u));
+
+    m_descriptorSets.resize(2u);
+    for (auto& descriptorSet : m_descriptorSets)
+    {
+      descriptorSet = std::make_shared<crude_vulkan_01::Descriptor_Set>(crude_vulkan_01::Descriptor_Set_Create_Info(
+        m_device,
+        { m_descriptorSetLayout },
+        m_descriptorPool));
+    }
+
+    for (uint32_t i = 0; i < 2u; i++) {
+      //VkDescriptorImageInfo imageInfo{};
+      //imageInfo.imageLayout  = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+      //imageInfo.imageView    = m_textureImageView;
+      //imageInfo.sampler      = m_textureSampler;
+      //
+      //std::vector<VkWriteDescriptorSet> descriptorWrites(2u);
+      //
+      //descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+      //descriptorWrites[0].dstSet = m_descriptorSets[i];
+      //descriptorWrites[0].dstBinding = 0;
+      //descriptorWrites[0].dstArrayElement = 0;
+      //descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+      //descriptorWrites[0].descriptorCount = 1;
+      //descriptorWrites[0].pBufferInfo = &bufferInfo;
+      //
+      //descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+      //descriptorWrites[1].dstSet = m_descriptorSets[i];
+      //descriptorWrites[1].dstBinding = 1;
+      //descriptorWrites[1].dstArrayElement = 0;
+      //descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+      //descriptorWrites[1].descriptorCount = 1;
+      //descriptorWrites[1].pImageInfo = &imageInfo;
+      //
+      //m_device->updateDescriptorSets(descriptorWrites, {});
+    }
   }
 
   void createDepthImage()
@@ -844,6 +881,7 @@ private:
   std::shared_ptr<crude_vulkan_01::Image_View>                     m_textureImageView;
   std::shared_ptr<crude_vulkan_01::Sampler>                        m_sampler;
   std::shared_ptr<crude_vulkan_01::Descriptor_Pool>                m_descriptorPool;
+  std::vector<std::shared_ptr<crude_vulkan_01::Descriptor_Set>>    m_descriptorSets;
   uint32_t m_width = 800u;
   uint32_t m_height = 600u;
   bool m_framebufferResized = false;

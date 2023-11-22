@@ -135,6 +135,9 @@
     <ClCompile Include="..\..\..\include\crude_vulkan_01\descriptor_pool.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\include\crude_vulkan_01\descriptor_set.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\include\crude_vulkan_01\application.hpp">
@@ -267,6 +270,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\crude_vulkan_01\descriptor_pool.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\crude_vulkan_01\descriptor_set.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
