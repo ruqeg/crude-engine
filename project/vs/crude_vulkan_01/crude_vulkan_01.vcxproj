@@ -160,6 +160,7 @@
     <ClCompile Include="..\..\..\include\crude_vulkan_01\device.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\device_memory.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\dynamic_state_create_info.cpp" />
+    <ClCompile Include="..\..\..\include\crude_vulkan_01\fence.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\format.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\framebuffer.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\image.cpp" />
@@ -176,6 +177,7 @@
     <ClCompile Include="..\..\..\include\crude_vulkan_01\rasterization_state_create_info.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\render_pass.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\sampler.cpp" />
+    <ClCompile Include="..\..\..\include\crude_vulkan_01\semaphore.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\shader_module.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\shader_stage_create_info.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\subpass_dependency.cpp" />
@@ -206,6 +208,7 @@
     <ClInclude Include="..\..\..\include\crude_vulkan_01\device.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\device_memory.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\dynamic_state_create_info.hpp" />
+    <ClInclude Include="..\..\..\include\crude_vulkan_01\fence.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\format.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\framebuffer.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\image.hpp" />
@@ -225,6 +228,7 @@
     <ClInclude Include="..\..\..\include\crude_vulkan_01\render_pass.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\requiring_extensions.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\sampler.hpp" />
+    <ClInclude Include="..\..\..\include\crude_vulkan_01\semaphore.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\shader_module.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\shader_stage_create_info.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\subpass_dependency.hpp" />

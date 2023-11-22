@@ -36,6 +36,8 @@
 #include "../include/crude_vulkan_01/descriptor_pool.hpp"
 #include "../include/crude_vulkan_01/descriptor_set.hpp"
 #include "../include/crude_vulkan_01/write_descriptor_set.hpp"
+#include "../include/crude_vulkan_01/fence.hpp"
+#include "../include/crude_vulkan_01/semaphore.hpp"
 
 #include <algorithm>
 #include <set>
@@ -107,6 +109,7 @@ public:
 #endif
     );
     initVulkan();
+    mainLoop();
     cleanup();
   }
 private:
@@ -566,6 +569,16 @@ private:
         m_commandPool,
         VK_COMMAND_BUFFER_LEVEL_PRIMARY));
     }
+
+    m_imageAvailableSemaphores.resize(2u);
+    m_renderFinishedSemaphores.resize(2u);
+    m_inFlightFences.resize(2u);
+
+    for (size_t i = 0; i < 2u; i++) {
+      m_imageAvailableSemaphores[i] = std::make_shared<crude_vulkan_01::Semaphore>(crude_vulkan_01::Semaphore_Create_Info(m_device));
+      m_renderFinishedSemaphores[i] = std::make_shared<crude_vulkan_01::Semaphore>(crude_vulkan_01::Semaphore_Create_Info(m_device));
+      m_inFlightFences[i] = std::make_shared<crude_vulkan_01::Fence>(crude_vulkan_01::Fence_Create_Info(m_device, VK_FENCE_CREATE_SIGNALED_BIT));
+    }
   }
 
   void createDepthImage()
@@ -830,6 +843,20 @@ private:
     throw std::runtime_error("failed to find supported format!");
   }
 
+  void mainLoop()
+  {
+    //while (!glfwWindowShouldClose(m_window)) {
+    drawFrame();
+    //}
+
+    m_device->waitIdle();
+  }
+
+  void drawFrame()
+  {
+
+  }
+
   void cleanup() 
   {
 #ifdef __linux__ 
@@ -886,6 +913,9 @@ private:
   std::shared_ptr<crude_vulkan_01::Descriptor_Pool>                m_descriptorPool;
   std::vector<std::shared_ptr<crude_vulkan_01::Descriptor_Set>>    m_descriptorSets;
   std::vector<std::shared_ptr<crude_vulkan_01::Command_Buffer>>    m_commandBuffers;
+  std::vector<std::shared_ptr<crude_vulkan_01::Semaphore>>         m_imageAvailableSemaphores;
+  std::vector<std::shared_ptr<crude_vulkan_01::Semaphore>>         m_renderFinishedSemaphores;
+  std::vector<std::shared_ptr<crude_vulkan_01::Fence>>             m_inFlightFences;
   uint32_t m_width = 800u;
   uint32_t m_height = 600u;
   bool m_framebufferResized = false;

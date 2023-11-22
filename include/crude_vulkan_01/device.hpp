@@ -41,6 +41,7 @@ public:
   std::shared_ptr<Queue> getQueue(uint32 queueFamilyIndex, uint32 queueIndex) const;
   // !TODO VkCopyDescriptorSet or replace Write_Descriptor_Set back to VkWriteDescriptorSet
   void updateDescriptorSets(const std::vector<Write_Descriptor_Set>& descriptorWrites, const std::vector<VkCopyDescriptorSet>& descriptorCopies);
+  void waitIdle();
 private:
   std::shared_ptr<const Physical_Device> m_physicalDevice;
 };

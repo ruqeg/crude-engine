@@ -79,4 +79,9 @@ void Device::updateDescriptorSets(const std::vector<Write_Descriptor_Set>& descr
   vkUpdateDescriptorSets(m_handle, static_cast<uint32>(vkDescriptorWrites.size()), vkDescriptorWrites.data(), static_cast<uint32>(descriptorCopies.size()), descriptorCopies.data());
 }
 
+void Device::waitIdle()
+{
+  vkDeviceWaitIdle(m_handle);
+}
+
 }
