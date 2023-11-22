@@ -68,9 +68,15 @@ std::shared_ptr<Queue> Device::getQueue(uint32 queueFamilyIndex, uint32 queueInd
   return queue;
 }
 
-void Device::updateDescriptorSets(const std::vector<VkWriteDescriptorSet>& descriptorWrites, const std::vector<VkCopyDescriptorSet>& descriptorCopies)
+void Device::updateDescriptorSets(const std::vector<Write_Descriptor_Set>& descriptorWrites, const std::vector<VkCopyDescriptorSet>& descriptorCopies)
 {
-  vkUpdateDescriptorSets(m_handle, static_cast<uint32>(descriptorWrites.size()), descriptorWrites.data(), static_cast<uint32>(descriptorCopies.size()), descriptorCopies.data());
+  std::vector<VkWriteDescriptorSet> vkDescriptorWrites(descriptorWrites.size());
+  for (uint32 i = 0u; i < vkDescriptorWrites.size(); ++i)
+  {
+    vkDescriptorWrites[i] = descriptorWrites[i];
+  }
+
+  vkUpdateDescriptorSets(m_handle, static_cast<uint32>(vkDescriptorWrites.size()), vkDescriptorWrites.data(), static_cast<uint32>(descriptorCopies.size()), descriptorCopies.data());
 }
 
 }

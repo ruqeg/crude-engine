@@ -4,6 +4,7 @@
 #include <stdexcept>
 #include <memory>
 #include <assert.h>
+#include <vulkan/vk_enum_string_helper.h>
 
 namespace crude_vulkan_01 
 {

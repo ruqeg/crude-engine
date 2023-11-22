@@ -35,6 +35,7 @@
 #include "../include/crude_vulkan_01/sampler.hpp"
 #include "../include/crude_vulkan_01/descriptor_pool.hpp"
 #include "../include/crude_vulkan_01/descriptor_set.hpp"
+#include "../include/crude_vulkan_01/write_descriptor_set.hpp"
 
 #include <algorithm>
 #include <set>
@@ -363,20 +364,20 @@ private:
       { colorAttachment, depthAttachment }));
 
     VkDescriptorSetLayoutBinding uboLayoutBinding{};
-    uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    uboLayoutBinding.binding = 0;
-    uboLayoutBinding.descriptorCount = 1;
-    uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+    uboLayoutBinding.descriptorType   = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    uboLayoutBinding.binding          = 0;
+    uboLayoutBinding.descriptorCount  = 1;
+    uboLayoutBinding.stageFlags       = VK_SHADER_STAGE_VERTEX_BIT;
 
     VkDescriptorSetLayoutBinding samplerLayoutBinding{};
-    samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    samplerLayoutBinding.binding = 1;
-    samplerLayoutBinding.descriptorCount = 1;
-    samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+    samplerLayoutBinding.descriptorType   = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    samplerLayoutBinding.binding          = 0u/* 1 */;
+    samplerLayoutBinding.descriptorCount  = 1;
+    samplerLayoutBinding.stageFlags       = VK_SHADER_STAGE_FRAGMENT_BIT;
 
     m_descriptorSetLayout = std::make_shared<crude_vulkan_01::Descriptor_Set_Layout>(crude_vulkan_01::Descriptor_Set_Layout_Create_Info(
       m_device,
-      { uboLayoutBinding, samplerLayoutBinding }));
+      { /* uboLayoutBinding, */ samplerLayoutBinding}));
 
     std::string vertShaderPathA;
     std::string fragShaderPathA;
@@ -538,30 +539,32 @@ private:
     }
 
     for (uint32_t i = 0; i < 2u; i++) {
-      //VkDescriptorImageInfo imageInfo{};
-      //imageInfo.imageLayout  = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-      //imageInfo.imageView    = m_textureImageView;
-      //imageInfo.sampler      = m_textureSampler;
-      //
-      //std::vector<VkWriteDescriptorSet> descriptorWrites(2u);
-      //
-      //descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-      //descriptorWrites[0].dstSet = m_descriptorSets[i];
-      //descriptorWrites[0].dstBinding = 0;
-      //descriptorWrites[0].dstArrayElement = 0;
-      //descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-      //descriptorWrites[0].descriptorCount = 1;
-      //descriptorWrites[0].pBufferInfo = &bufferInfo;
-      //
-      //descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-      //descriptorWrites[1].dstSet = m_descriptorSets[i];
-      //descriptorWrites[1].dstBinding = 1;
-      //descriptorWrites[1].dstArrayElement = 0;
-      //descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-      //descriptorWrites[1].descriptorCount = 1;
-      //descriptorWrites[1].pImageInfo = &imageInfo;
-      //
-      //m_device->updateDescriptorSets(descriptorWrites, {});
+      crude_vulkan_01::Descriptor_Image_Info imageInfo(
+        m_sampler,
+        m_textureImageView,
+        VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+      std::vector<crude_vulkan_01::Write_Descriptor_Set> descriptorWrites =
+      {
+        crude_vulkan_01::Write_Descriptor_Set(
+          m_descriptorSets[i],
+          0u,
+          0u,
+          1u,
+          VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+          imageInfo,
+          std::nullopt)
+      };
+      m_device->updateDescriptorSets(descriptorWrites, {});
+    }
+
+    m_commandBuffers.resize(2u);
+    for (auto& commandBuffer : m_commandBuffers)
+    {
+      commandBuffer = std::make_shared<crude_vulkan_01::Command_Buffer>(crude_vulkan_01::Command_Buffer_Create_Info(
+        m_device,
+        m_commandPool,
+        VK_COMMAND_BUFFER_LEVEL_PRIMARY));
     }
   }
 
@@ -882,6 +885,7 @@ private:
   std::shared_ptr<crude_vulkan_01::Sampler>                        m_sampler;
   std::shared_ptr<crude_vulkan_01::Descriptor_Pool>                m_descriptorPool;
   std::vector<std::shared_ptr<crude_vulkan_01::Descriptor_Set>>    m_descriptorSets;
+  std::vector<std::shared_ptr<crude_vulkan_01::Command_Buffer>>    m_commandBuffers;
   uint32_t m_width = 800u;
   uint32_t m_height = 600u;
   bool m_framebufferResized = false;

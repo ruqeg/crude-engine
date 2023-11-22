@@ -32,7 +32,7 @@ Image_Memory_Barrier::Image_Memory_Barrier(std::shared_ptr<Image>   image,
   }
   else 
   {
-    CRUDE_VULKAN_01_HANDLE_RESULT(VK_FALSE, "unsupported layout transition for image memory barrier!");
+    CRUDE_VULKAN_01_ERROR("unsupported layout transition for image memory barrier!");
   }
 
   this->sType                            = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;

@@ -152,6 +152,8 @@
     <ClCompile Include="..\..\..\include\crude_vulkan_01\core.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\debug_utils_messenger.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\depth_stencil_state_create_info.cpp" />
+    <ClCompile Include="..\..\..\include\crude_vulkan_01\descriptor_buffer_info.cpp" />
+    <ClCompile Include="..\..\..\include\crude_vulkan_01\descriptor_image_info.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\descriptor_pool.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\descriptor_set.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\descriptor_set_layout.cpp" />
@@ -184,6 +186,7 @@
     <ClCompile Include="..\..\..\include\crude_vulkan_01\tessellation_state_create_info.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\vertex_input_state_create_info.cpp" />
     <ClCompile Include="..\..\..\include\crude_vulkan_01\viewport_state_create_info.cpp" />
+    <ClCompile Include="..\..\..\include\crude_vulkan_01\write_descriptor_set.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\include\crude_vulkan_01\application.hpp" />
@@ -195,6 +198,8 @@
     <ClInclude Include="..\..\..\include\crude_vulkan_01\core.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\debug_utils_messenger.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\depth_stencil_state_create_info.hpp" />
+    <ClInclude Include="..\..\..\include\crude_vulkan_01\descriptor_buffer_info.hpp" />
+    <ClInclude Include="..\..\..\include\crude_vulkan_01\descriptor_image_info.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\descriptor_pool.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\descriptor_set.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\descriptor_set_layout.hpp" />
@@ -231,6 +236,7 @@
     <ClInclude Include="..\..\..\include\crude_vulkan_01\types.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\vertex_input_state_create_info.hpp" />
     <ClInclude Include="..\..\..\include\crude_vulkan_01\viewport_state_create_info.hpp" />
+    <ClInclude Include="..\..\..\include\crude_vulkan_01\write_descriptor_set.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\include\crude_vulkan_01\object.inl" />

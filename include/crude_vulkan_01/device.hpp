@@ -1,8 +1,7 @@
 #pragma once
 
-#include "core.hpp"
 #include "object.hpp"
-#include "include_vulkan.hpp"
+#include "write_descriptor_set.hpp"
 #include <vector>
 
 namespace crude_vulkan_01
@@ -40,7 +39,8 @@ public:
   ~Device();
   std::shared_ptr<const Physical_Device> getPhysicalDevice() const;
   std::shared_ptr<Queue> getQueue(uint32 queueFamilyIndex, uint32 queueIndex) const;
-  void updateDescriptorSets(const std::vector<VkWriteDescriptorSet>& descriptorWrites, const std::vector<VkCopyDescriptorSet>& descriptorCopies);
+  // !TODO VkCopyDescriptorSet or replace Write_Descriptor_Set back to VkWriteDescriptorSet
+  void updateDescriptorSets(const std::vector<Write_Descriptor_Set>& descriptorWrites, const std::vector<VkCopyDescriptorSet>& descriptorCopies);
 private:
   std::shared_ptr<const Physical_Device> m_physicalDevice;
 };
