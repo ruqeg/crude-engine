@@ -48,41 +48,6 @@
 #include <limits>
 #include <fstream>
 
-struct Vertex {
-  float pos[3];
-  float color[3];
-  float texcoord[2];
-
-  static const VkVertexInputBindingDescription& getBindingDescription() {
-    static VkVertexInputBindingDescription bindingDescription{};
-    bindingDescription.binding   = 0u;
-    bindingDescription.stride    = sizeof(Vertex);
-    bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-    return bindingDescription;
-  }
-
-  static const std::array<VkVertexInputAttributeDescription, 3>& getAttributeDescriptions() {
-    static std::array<VkVertexInputAttributeDescription, 3> attributeDescriptions{};
-    attributeDescriptions[0].binding  = 0u;
-    attributeDescriptions[0].location = 0u;
-    attributeDescriptions[0].format   = VK_FORMAT_R32G32B32_SFLOAT;
-    attributeDescriptions[0].offset   = offsetof(Vertex, pos);
-
-    attributeDescriptions[1].binding  = 0u;
-    attributeDescriptions[1].location = 1u;
-    attributeDescriptions[1].format   = VK_FORMAT_R32G32B32_SFLOAT;
-    attributeDescriptions[1].offset   = offsetof(Vertex, color);
-
-    attributeDescriptions[2].binding  = 0u;
-    attributeDescriptions[2].location = 2u;
-    attributeDescriptions[2].format   = VK_FORMAT_R32G32_SFLOAT;
-    attributeDescriptions[2].offset   = offsetof(Vertex, texcoord);
-
-    return attributeDescriptions;
-  }
-};
-
-
 class Test_Application
 {
 public:
@@ -193,6 +158,19 @@ private:
 
   static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
   {
+    switch (uMsg) 
+    {
+    case WM_DESTROY:
+      DestroyWindow(hwnd);
+      PostQuitMessage(0);
+      break;
+    case WM_PAINT:
+      ValidateRect(hwnd, NULL);
+      break;
+    default:
+      return DefWindowProc(hwnd, uMsg, wParam, lParam);
+      break;
+    }
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
   }
 #endif
@@ -407,8 +385,8 @@ private:
       crude_vulkan_01::Shader_Stage_Create_Info(VK_SHADER_STAGE_FRAGMENT_BIT, fragShaderModule, "main"),
     };
 
-    std::vector<VkVertexInputBindingDescription> bindings = { Vertex::getBindingDescription() };
-    std::vector<VkVertexInputAttributeDescription> attributes(Vertex::getAttributeDescriptions().begin(), Vertex::getAttributeDescriptions().end());
+    std::vector<VkVertexInputBindingDescription> bindings = {};
+    std::vector<VkVertexInputAttributeDescription> attributes = {};
     auto vertexInputStateInfo = crude_vulkan_01::Vertex_Input_State_Create_Info(bindings, attributes);
     auto inputAssembly = crude_vulkan_01::Input_Assembly_State_Create_Info(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FALSE);
     auto viewportState = crude_vulkan_01::Viewport_State_Create_Info(1u, 1u);
@@ -730,6 +708,11 @@ private:
     m_graphicsQueue->waitIdle();
   }
 
+  void recreateSwapChain()
+  {
+
+  }
+
   static std::vector<char> readFile(const std::string& filename) {
     std::ifstream file(filename, std::ios::ate | std::ios::binary);
 
@@ -845,16 +828,116 @@ private:
 
   void mainLoop()
   {
-    //while (!glfwWindowShouldClose(m_window)) {
-    drawFrame();
-    //}
+#ifdef __linux__ 
+#elif _WIN32
+    ShowWindow(m_hwnd, SW_SHOW);
+    MSG message;
+
+    while (GetMessage(&message, NULL, 0, 0)) {
+      TranslateMessage(&message);
+      DispatchMessage(&message);
+      drawFrame();
+    }
+#endif
 
     m_device->waitIdle();
   }
 
   void drawFrame()
   {
+    m_inFlightFences[m_currentFrame]->wait();
+    const crude_vulkan_01::Swap_Chain_Next_Image acquireNextImageResult = m_swapchain->acquireNextImage(m_imageAvailableSemaphores[m_currentFrame]);
 
+    if (acquireNextImageResult.outOfDate())
+    {
+      recreateSwapChain();
+      return;
+    }
+    else if (acquireNextImageResult.failedAcquire())
+    {
+      throw std::runtime_error("failed to acquire swap chain image!");
+    }
+
+    uint32_t imageIndex = acquireNextImageResult.getImageIndex().value();
+
+    m_inFlightFences[m_currentFrame]->reset();
+
+    recordCommandBuffer(m_commandBuffers[m_currentFrame], imageIndex);
+
+    const bool graphicsQueueSubmited = m_graphicsQueue->sumbit(
+      { m_commandBuffers[m_currentFrame] },
+      { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT },
+      { m_imageAvailableSemaphores[m_currentFrame] },
+      { m_renderFinishedSemaphores[m_currentFrame] },
+      m_inFlightFences[m_currentFrame]);
+
+    if (!graphicsQueueSubmited)
+    {
+      throw std::runtime_error("failed to submit draw command buffer!");
+    }
+
+    const crude_vulkan_01::Queue_Present_Result presentResult = m_presentQueue->present({ m_swapchain }, { imageIndex }, { m_renderFinishedSemaphores[m_currentFrame] });
+
+    if (presentResult.outOfDate() || presentResult.suboptimal() || m_framebufferResized)
+    {
+      m_framebufferResized = false;
+      recreateSwapChain();
+    }
+    else if (presentResult.failed())
+    {
+      throw std::runtime_error("failed to present swap chain image!");
+    }
+
+    m_currentFrame = (m_currentFrame + 1u) % 2u;
+  }
+
+  void recordCommandBuffer(std::shared_ptr<crude_vulkan_01::Command_Buffer> commandBuffer, uint32_t imageIndex) {
+    if (!commandBuffer->begin())
+    {
+      throw std::runtime_error("failed to begin recording command buffer!");
+    }
+
+    std::vector<VkClearValue> clearValues(2u);
+    clearValues[0].color = { {0.0f, 0.0f, 0.0f, 1.0f} };
+    clearValues[1].depthStencil = { 1.0f, 0 };
+
+    VkRect2D renderArea;
+    renderArea.extent = m_swapchain->getExtent();
+    renderArea.offset.x = 0.f;
+    renderArea.offset.y = 0.f;
+
+    commandBuffer->beginRenderPass(
+      m_renderPass,
+      m_swapchainFramebuffers[imageIndex],
+      clearValues,
+      renderArea);
+
+    commandBuffer->bindPipeline(m_graphicsPipeline);
+
+    VkViewport viewport{};
+    viewport.x         = 0.0f;
+    viewport.y         = 0.0f;
+    viewport.width     = static_cast<float>(m_swapchain->getExtent().width);
+    viewport.height    = static_cast<float>(m_swapchain->getExtent().height);
+    viewport.minDepth  = 0.0f;
+    viewport.maxDepth  = 1.0f;
+    commandBuffer->setViewport({ viewport });
+
+    VkRect2D scissor{};
+    scissor.offset = { 0, 0 };
+    scissor.extent = m_swapchain->getExtent();
+    commandBuffer->setScissor({ scissor });
+
+    commandBuffer->bindDescriptorSets(m_graphicsPipeline, { m_descriptorSets[m_currentFrame] });
+
+    commandBuffer->draw(3u, 1u);
+    
+    commandBuffer->endRenderPass();
+
+    if (!commandBuffer->end())
+    {
+      throw std::runtime_error("failed to record command buffer!");
+    }
   }
 
   void cleanup() 
@@ -916,6 +999,7 @@ private:
   std::vector<std::shared_ptr<crude_vulkan_01::Semaphore>>         m_imageAvailableSemaphores;
   std::vector<std::shared_ptr<crude_vulkan_01::Semaphore>>         m_renderFinishedSemaphores;
   std::vector<std::shared_ptr<crude_vulkan_01::Fence>>             m_inFlightFences;
+  uint32_t m_currentFrame = 0u;
   uint32_t m_width = 800u;
   uint32_t m_height = 600u;
   bool m_framebufferResized = false;

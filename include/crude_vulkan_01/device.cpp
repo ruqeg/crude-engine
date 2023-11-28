@@ -2,6 +2,7 @@
 #include "core.hpp"
 #include "physical_device.hpp"
 #include "queue.hpp"
+#include "fence.hpp"
 
 namespace crude_vulkan_01
 {
@@ -82,6 +83,32 @@ void Device::updateDescriptorSets(const std::vector<Write_Descriptor_Set>& descr
 void Device::waitIdle()
 {
   vkDeviceWaitIdle(m_handle);
+}
+
+bool Device::waitForFences(const std::vector<std::shared_ptr<Fence>>& fences, bool waitAll, uint64_t timeout) const
+{
+  std::vector<VkFence> fencesHandles(fences.size());
+  for (uint32 i = 0; i < fences.size(); ++i)
+  {
+    fencesHandles[i] = CRUDE_VULKAN_01_HANDLE(fences[i]);
+  }
+
+  const VkResult result = vkWaitForFences(m_handle, fencesHandles.size(), fencesHandles.data(), waitAll, timeout);
+  CRUDE_VULKAN_01_HANDLE_RESULT(result, "failed to wait for fences");
+  return result != VK_TIMEOUT;
+}
+
+bool Device::resetForFences(const std::vector<std::shared_ptr<Fence>>& fences) const
+{
+  std::vector<VkFence> fencesHandles(fences.size());
+  for (uint32 i = 0; i < fences.size(); ++i)
+  {
+    fencesHandles[i] = CRUDE_VULKAN_01_HANDLE(fences[i]);
+  }
+
+  const VkResult result = vkResetFences(m_handle, fencesHandles.size(), fencesHandles.data());
+  CRUDE_VULKAN_01_HANDLE_RESULT(result, "failed to reset fences");
+  return result != VK_ERROR_OUT_OF_DEVICE_MEMORY;
 }
 
 }

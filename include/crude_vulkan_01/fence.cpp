@@ -28,4 +28,19 @@ Fence::~Fence()
   vkDestroyFence(CRUDE_VULKAN_01_HANDLE(m_device), m_handle, nullptr);
 }
 
+bool Fence::wait(uint64 timeout)
+{
+  constexpr bool waitAllFence = true;
+  const VkResult result = vkWaitForFences(CRUDE_VULKAN_01_HANDLE(m_device), 1, &m_handle, waitAllFence, timeout);
+  CRUDE_VULKAN_01_HANDLE_RESULT(result, "failed to wait for fence");
+  return result != VK_TIMEOUT;
+}
+
+bool Fence::reset()
+{
+  const VkResult result = vkResetFences(CRUDE_VULKAN_01_HANDLE(m_device), 1u, &m_handle);
+  CRUDE_VULKAN_01_HANDLE_RESULT(result, "failed to reset fence");
+  return result != VK_ERROR_OUT_OF_DEVICE_MEMORY;
+}
+
 }

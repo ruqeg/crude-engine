@@ -29,6 +29,7 @@ public:
 #define CRUDE_VULKAN_01_COPY_MEMORY(T, dst, src, n)             Core::copyArray(reinterpret_cast<int8*>(dst), reinterpret_cast<const int8*>(src), sizeof(T) * (n))
 #define CRUDE_VULKAN_01_NEW_COPY_MEMORY(T, src, n)              reinterpret_cast<T*>(Core::initCopyArray(reinterpret_cast<const int8*>(src), sizeof(T) * (n)))
 #define CRUDE_VULKAN_01_NEW_COPY_STRING(src)                    Core::initCopyString(src)
-#define CRUDE_VULKAN_01_OPTIONAL_REFVALUE_OR_NULL(optionalval)  ((optionalval).has_value() ? (&(optionalval).value()) : nullptr)
+#define CRUDE_VULKAN_01_OPTIONAL_REFVALUE_OR_NULL(optionalval)  ((optionalval).has_value() ? (&(optionalval).value()) : VK_NULL_HANDLE)
+#define CRUDE_VULKAN_01_OPTIONAL_HANDLE_OR_NULL(optionalval)    ((optionalval).has_value() ? (CRUDE_VULKAN_01_HANDLE((optionalval).value())) : VK_NULL_HANDLE)
 
 }

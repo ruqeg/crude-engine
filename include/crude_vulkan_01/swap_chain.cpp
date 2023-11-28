@@ -2,7 +2,8 @@
 #include "device.hpp"
 #include "surface.hpp"
 #include "swap_chain_image.hpp"
-
+#include "fence.hpp"
+#include "semaphore.hpp"
 
 namespace crude_vulkan_01
 {
@@ -116,6 +117,66 @@ const std::vector<std::shared_ptr<Swap_Chain_Image>>& Swap_Chain::getSwapchainIm
   }
 
   return m_swapChainImages;
+}
+
+Swap_Chain_Next_Image Swap_Chain::acquireNextImage(const std::optional<std::shared_ptr<Semaphore>>&  semaphore,
+                                                   const std::optional<std::shared_ptr<Fence>>&      fence, 
+                                                   uint64                                            timeout)
+{
+  uint32 imageIndex;
+  VkResult result = vkAcquireNextImageKHR(
+    CRUDE_VULKAN_01_HANDLE(m_device),
+    m_handle,
+    timeout,
+    CRUDE_VULKAN_01_OPTIONAL_HANDLE_OR_NULL(semaphore),
+    CRUDE_VULKAN_01_OPTIONAL_HANDLE_OR_NULL(fence),
+    &imageIndex);
+
+  const Swap_Chain_Next_Image nextImage(imageIndex, result);
+  return nextImage;
+}
+
+const VkImageUsageFlags Swap_Chain::getImageUsage() const
+{
+  return m_imageUsage;
+}
+
+const VkSurfaceFormatKHR Swap_Chain::getSurfaceFormat() const
+{
+  return m_surfaceFormat;
+}
+
+const VkExtent2D Swap_Chain::getExtent() const
+{
+  return m_extent;
+}
+
+Swap_Chain_Next_Image::Swap_Chain_Next_Image(uint32 imageIndex, VkResult result)
+  :
+  m_imageIndex(imageIndex),
+  m_result(result)
+{}
+
+std::optional<uint32> Swap_Chain_Next_Image::getImageIndex() const
+{
+  if (failedAcquire())
+    return std::nullopt;
+  return m_imageIndex;
+}
+
+VkResult Swap_Chain_Next_Image::getResult() const
+{
+  return m_result;
+}
+
+bool Swap_Chain_Next_Image::outOfDate() const
+{
+  return m_result == VK_ERROR_OUT_OF_DATE_KHR;
+}
+
+bool Swap_Chain_Next_Image::failedAcquire() const
+{
+  return (m_result != VK_SUCCESS) && (m_result != VK_SUBOPTIMAL_KHR);
 }
 
 }

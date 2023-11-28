@@ -40,6 +40,8 @@ Graphics_Pipeline_Create_Info::Graphics_Pipeline_Create_Info(std::shared_ptr<con
 {}
 
 Pipeline::Pipeline(const Graphics_Pipeline_Create_Info& createInfo)
+  :
+  m_bindPoint(createInfo.bindPoint)
 {
   m_device          = createInfo.device;
   m_pipelineLayout  = createInfo.pipelineLayout;
@@ -77,6 +79,16 @@ Pipeline::Pipeline(const Graphics_Pipeline_Create_Info& createInfo)
 Pipeline::~Pipeline()
 {
   vkDestroyPipeline(CRUDE_VULKAN_01_HANDLE(m_device), m_handle, nullptr);
+}
+
+const VkPipelineBindPoint Pipeline::getBindPoint() const
+{
+  return m_bindPoint;
+}
+
+std::shared_ptr<const Pipeline_Layout> Pipeline::getPipelineLayout()
+{
+  return m_pipelineLayout;
 }
 
 }

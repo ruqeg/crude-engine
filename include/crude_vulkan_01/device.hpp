@@ -8,6 +8,7 @@ namespace crude_vulkan_01
 {
 
 class Queue;
+class Fence;
 class Physical_Device;
 
 struct Device_Queue_Create_Info final : public VkDeviceQueueCreateInfo
@@ -42,6 +43,8 @@ public:
   // !TODO VkCopyDescriptorSet or replace Write_Descriptor_Set back to VkWriteDescriptorSet
   void updateDescriptorSets(const std::vector<Write_Descriptor_Set>& descriptorWrites, const std::vector<VkCopyDescriptorSet>& descriptorCopies);
   void waitIdle();
+  bool waitForFences(const std::vector<std::shared_ptr<Fence>>& fences, bool waitAll, uint64_t timeout = std::numeric_limits<uint64>::max()) const;
+  bool resetForFences(const std::vector<std::shared_ptr<Fence>>& fences) const;
 private:
   std::shared_ptr<const Physical_Device> m_physicalDevice;
 };

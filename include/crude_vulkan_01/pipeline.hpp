@@ -25,6 +25,8 @@ class Pipeline;
 
 struct Graphics_Pipeline_Create_Info
 {
+  static constexpr VkPipelineBindPoint                  bindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+
   std::shared_ptr<const Device>                         device;
   std::shared_ptr<const Render_Pass>                    renderPass;
   std::shared_ptr<const Pipeline_Layout>                pipelineLayout;
@@ -63,11 +65,14 @@ class Pipeline : public TObject<VkPipeline>
 public:
   explicit Pipeline(const Graphics_Pipeline_Create_Info& createInfo);
   ~Pipeline();
+  const VkPipelineBindPoint getBindPoint() const;
+  std::shared_ptr<const Pipeline_Layout> getPipelineLayout();
 private:
   std::shared_ptr<const Device>           m_device;
   std::shared_ptr<const Render_Pass>      m_renderPass;
   std::shared_ptr<const Pipeline_Layout>  m_pipelineLayout;
   std::shared_ptr<const Pipeline>         m_basePipeline;
+  const VkPipelineBindPoint               m_bindPoint;
 };
 
 }
