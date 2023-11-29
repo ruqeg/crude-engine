@@ -1,314 +1,334 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
     <Filter Include="Header Files">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    <Filter Include="Header Files\core">
+      <UniqueIdentifier>{15a2716d-5c88-405f-a2a7-06ebb187737a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\graphics">
+      <UniqueIdentifier>{df00a647-a753-4c7b-b2e4-649fd236ba5b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files\core">
+      <UniqueIdentifier>{f6ea43bb-39ae-4b8c-aeb0-e97d0163a4eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\graphics">
+      <UniqueIdentifier>{6383b419-36ef-4cca-95a3-0e9642df364e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\core\memory">
+      <UniqueIdentifier>{f71a1e9e-f620-41ec-895a-d801cba2248e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\core\memory">
+      <UniqueIdentifier>{9bafff83-f3eb-4e88-a875-219c475cbf38}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\graphics\crude_vulkan_01">
+      <UniqueIdentifier>{f6cdf40c-7949-40a6-bff0-7af6eb322368}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\graphics\crude_vulkan_01">
+      <UniqueIdentifier>{d09366d9-4446-4727-b255-febea83c54a4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\include\crude_vulkan_01\application.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\crude_engine\graphics\crude_vulkan_01\application.cpp">
+      <Filter>Source Files\graphics\crude_vulkan_01</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\include\crude_vulkan_01\debug_utils_messenger.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\crude_engine\graphics\crude_vulkan_01\attachment_description.cpp">
+      <Filter>Source Files\graphics\crude_vulkan_01</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\include\crude_vulkan_01\device.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\crude_engine\graphics\crude_vulkan_01\buffer.cpp">
+      <Filter>Source Files\graphics\crude_vulkan_01</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\include\crude_vulkan_01\instance.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\crude_engine\graphics\crude_vulkan_01\color_blend_state_create_info.cpp">
+      <Filter>Source Files\graphics\crude_vulkan_01</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\include\crude_vulkan_01\physical_device.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\crude_engine\graphics\crude_vulkan_01\command_buffer.cpp">
+      <Filter>Source Files\graphics\crude_vulkan_01</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\include\crude_vulkan_01\surface.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\crude_engine\graphics\crude_vulkan_01\command_pool.cpp">
+      <Filter>Source Files\graphics\crude_vulkan_01</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\include\crude_vulkan_01\color_blend_state_create_info.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\crude_engine\graphics\crude_vulkan_01\debug_utils_messenger.cpp">
+      <Filter>Source Files\graphics\crude_vulkan_01</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\include\crude_vulkan_01\core.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\crude_engine\graphics\crude_vulkan_01\depth_stencil_state_create_info.cpp">
+      <Filter>Source Files\graphics\crude_vulkan_01</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\include\crude_vulkan_01\depth_stencil_state_create_info.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\crude_engine\graphics\crude_vulkan_01\descriptor_buffer_info.cpp">
+      <Filter>Source Files\graphics\crude_vulkan_01</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\include\crude_vulkan_01\descriptor_set_layout.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\crude_engine\graphics\crude_vulkan_01\descriptor_image_info.cpp">
+      <Filter>Source Files\graphics\crude_vulkan_01</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\include\crude_vulkan_01\image.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\crude_engine\graphics\crude_vulkan_01\descriptor_pool.cpp">
+      <Filter>Source Files\graphics\crude_vulkan_01</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\include\crude_vulkan_01\image_view.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\crude_engine\graphics\crude_vulkan_01\descriptor_set.cpp">
+      <Filter>Source Files\graphics\crude_vulkan_01</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\include\crude_vulkan_01\input_assembly_state_create_info.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\crude_engine\graphics\crude_vulkan_01\descriptor_set_layout.cpp">
+      <Filter>Source Files\graphics\crude_vulkan_01</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\include\crude_vulkan_01\multisample_state_create_info.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\crude_engine\graphics\crude_vulkan_01\device.cpp">
+      <Filter>Source Files\graphics\crude_vulkan_01</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\include\crude_vulkan_01\queue.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\crude_engine\graphics\crude_vulkan_01\device_memory.cpp">
+      <Filter>Source Files\graphics\crude_vulkan_01</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\include\crude_vulkan_01\rasterization_state_create_info.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\crude_engine\graphics\crude_vulkan_01\dynamic_state_create_info.cpp">
+      <Filter>Source Files\graphics\crude_vulkan_01</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\include\crude_vulkan_01\render_pass.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\crude_engine\graphics\crude_vulkan_01\fence.cpp">
+      <Filter>Source Files\graphics\crude_vulkan_01</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\include\crude_vulkan_01\shader_module.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\crude_engine\graphics\crude_vulkan_01\format.cpp">
+      <Filter>Source Files\graphics\crude_vulkan_01</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\include\crude_vulkan_01\swap_chain.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\crude_engine\graphics\crude_vulkan_01\framebuffer.cpp">
+      <Filter>Source Files\graphics\crude_vulkan_01</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\include\crude_vulkan_01\swap_chain_image.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\crude_engine\graphics\crude_vulkan_01\image.cpp">
+      <Filter>Source Files\graphics\crude_vulkan_01</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\include\crude_vulkan_01\vertex_input_state_create_info.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\crude_engine\graphics\crude_vulkan_01\image_memory_barrier.cpp">
+      <Filter>Source Files\graphics\crude_vulkan_01</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\include\crude_vulkan_01\viewport_state_create_info.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\crude_engine\graphics\crude_vulkan_01\image_subresource_range.cpp">
+      <Filter>Source Files\graphics\crude_vulkan_01</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\include\crude_vulkan_01\subpass_description.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\crude_engine\graphics\crude_vulkan_01\image_view.cpp">
+      <Filter>Source Files\graphics\crude_vulkan_01</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\include\crude_vulkan_01\subpass_dependency.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\crude_engine\graphics\crude_vulkan_01\input_assembly_state_create_info.cpp">
+      <Filter>Source Files\graphics\crude_vulkan_01</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\include\crude_vulkan_01\attachment_description.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\crude_engine\graphics\crude_vulkan_01\instance.cpp">
+      <Filter>Source Files\graphics\crude_vulkan_01</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\include\crude_vulkan_01\dynamic_state_create_info.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\crude_engine\graphics\crude_vulkan_01\multisample_state_create_info.cpp">
+      <Filter>Source Files\graphics\crude_vulkan_01</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\include\crude_vulkan_01\pipeline_layout.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\crude_engine\graphics\crude_vulkan_01\physical_device.cpp">
+      <Filter>Source Files\graphics\crude_vulkan_01</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\include\crude_vulkan_01\shader_stage_create_info.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\crude_engine\graphics\crude_vulkan_01\pipeline.cpp">
+      <Filter>Source Files\graphics\crude_vulkan_01</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\include\crude_vulkan_01\pipeline.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\crude_engine\graphics\crude_vulkan_01\pipeline_layout.cpp">
+      <Filter>Source Files\graphics\crude_vulkan_01</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\include\crude_vulkan_01\command_pool.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\crude_engine\graphics\crude_vulkan_01\queue.cpp">
+      <Filter>Source Files\graphics\crude_vulkan_01</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\include\crude_vulkan_01\device_memory.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\crude_engine\graphics\crude_vulkan_01\rasterization_state_create_info.cpp">
+      <Filter>Source Files\graphics\crude_vulkan_01</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\include\crude_vulkan_01\command_buffer.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\crude_engine\graphics\crude_vulkan_01\render_pass.cpp">
+      <Filter>Source Files\graphics\crude_vulkan_01</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\include\crude_vulkan_01\image_memory_barrier.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\crude_engine\graphics\crude_vulkan_01\sampler.cpp">
+      <Filter>Source Files\graphics\crude_vulkan_01</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\include\crude_vulkan_01\image_subresource_range.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\crude_engine\graphics\crude_vulkan_01\semaphore.cpp">
+      <Filter>Source Files\graphics\crude_vulkan_01</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\include\crude_vulkan_01\format.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\crude_engine\graphics\crude_vulkan_01\shader_module.cpp">
+      <Filter>Source Files\graphics\crude_vulkan_01</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\include\crude_vulkan_01\tessellation_state_create_info.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\crude_engine\graphics\crude_vulkan_01\shader_stage_create_info.cpp">
+      <Filter>Source Files\graphics\crude_vulkan_01</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\include\crude_vulkan_01\framebuffer.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\crude_engine\graphics\crude_vulkan_01\subpass_dependency.cpp">
+      <Filter>Source Files\graphics\crude_vulkan_01</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\include\crude_vulkan_01\buffer.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\crude_engine\graphics\crude_vulkan_01\subpass_description.cpp">
+      <Filter>Source Files\graphics\crude_vulkan_01</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\include\crude_vulkan_01\sampler.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\crude_engine\graphics\crude_vulkan_01\surface.cpp">
+      <Filter>Source Files\graphics\crude_vulkan_01</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\include\crude_vulkan_01\descriptor_pool.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\crude_engine\graphics\crude_vulkan_01\swap_chain.cpp">
+      <Filter>Source Files\graphics\crude_vulkan_01</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\include\crude_vulkan_01\descriptor_set.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\crude_engine\graphics\crude_vulkan_01\swap_chain_image.cpp">
+      <Filter>Source Files\graphics\crude_vulkan_01</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\include\crude_vulkan_01\write_descriptor_set.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\crude_engine\graphics\crude_vulkan_01\tessellation_state_create_info.cpp">
+      <Filter>Source Files\graphics\crude_vulkan_01</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\include\crude_vulkan_01\descriptor_buffer_info.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\crude_engine\graphics\crude_vulkan_01\vertex_input_state_create_info.cpp">
+      <Filter>Source Files\graphics\crude_vulkan_01</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\include\crude_vulkan_01\descriptor_image_info.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\crude_engine\graphics\crude_vulkan_01\viewport_state_create_info.cpp">
+      <Filter>Source Files\graphics\crude_vulkan_01</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\include\crude_vulkan_01\fence.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\crude_engine\graphics\crude_vulkan_01\write_descriptor_set.cpp">
+      <Filter>Source Files\graphics\crude_vulkan_01</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\include\crude_vulkan_01\semaphore.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\crude_engine\core\core.cpp">
+      <Filter>Source Files\core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\application.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\graphics\crude_vulkan_01\application.hpp">
+      <Filter>Header Files\graphics\crude_vulkan_01</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\core.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\graphics\crude_vulkan_01\attachment_description.hpp">
+      <Filter>Header Files\graphics\crude_vulkan_01</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\debug_utils_messenger.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\graphics\crude_vulkan_01\buffer.hpp">
+      <Filter>Header Files\graphics\crude_vulkan_01</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\device.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\graphics\crude_vulkan_01\color_blend_state_create_info.hpp">
+      <Filter>Header Files\graphics\crude_vulkan_01</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\include_vulkan.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\graphics\crude_vulkan_01\command_buffer.hpp">
+      <Filter>Header Files\graphics\crude_vulkan_01</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\instance.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\graphics\crude_vulkan_01\command_pool.hpp">
+      <Filter>Header Files\graphics\crude_vulkan_01</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\object.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\graphics\crude_vulkan_01\debug_utils_messenger.hpp">
+      <Filter>Header Files\graphics\crude_vulkan_01</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\physical_device.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\graphics\crude_vulkan_01\depth_stencil_state_create_info.hpp">
+      <Filter>Header Files\graphics\crude_vulkan_01</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\requiring_extensions.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\graphics\crude_vulkan_01\descriptor_buffer_info.hpp">
+      <Filter>Header Files\graphics\crude_vulkan_01</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\surface.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\graphics\crude_vulkan_01\descriptor_image_info.hpp">
+      <Filter>Header Files\graphics\crude_vulkan_01</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\types.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\graphics\crude_vulkan_01\descriptor_pool.hpp">
+      <Filter>Header Files\graphics\crude_vulkan_01</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\color_blend_state_create_info.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\graphics\crude_vulkan_01\descriptor_set.hpp">
+      <Filter>Header Files\graphics\crude_vulkan_01</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\depth_stencil_state_create_info.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\graphics\crude_vulkan_01\descriptor_set_layout.hpp">
+      <Filter>Header Files\graphics\crude_vulkan_01</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\descriptor_set_layout.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\graphics\crude_vulkan_01\device.hpp">
+      <Filter>Header Files\graphics\crude_vulkan_01</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\image.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\graphics\crude_vulkan_01\device_memory.hpp">
+      <Filter>Header Files\graphics\crude_vulkan_01</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\image_view.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\graphics\crude_vulkan_01\dynamic_state_create_info.hpp">
+      <Filter>Header Files\graphics\crude_vulkan_01</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\input_assembly_state_create_info.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\graphics\crude_vulkan_01\fence.hpp">
+      <Filter>Header Files\graphics\crude_vulkan_01</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\multisample_state_create_info.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\graphics\crude_vulkan_01\format.hpp">
+      <Filter>Header Files\graphics\crude_vulkan_01</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\queue.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\graphics\crude_vulkan_01\framebuffer.hpp">
+      <Filter>Header Files\graphics\crude_vulkan_01</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\rasterization_state_create_info.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\graphics\crude_vulkan_01\image.hpp">
+      <Filter>Header Files\graphics\crude_vulkan_01</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\render_pass.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\graphics\crude_vulkan_01\image_memory_barrier.hpp">
+      <Filter>Header Files\graphics\crude_vulkan_01</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\shader_module.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\graphics\crude_vulkan_01\image_subresource_range.hpp">
+      <Filter>Header Files\graphics\crude_vulkan_01</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\swap_chain.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\graphics\crude_vulkan_01\image_view.hpp">
+      <Filter>Header Files\graphics\crude_vulkan_01</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\swap_chain_image.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\graphics\crude_vulkan_01\include_vulkan.hpp">
+      <Filter>Header Files\graphics\crude_vulkan_01</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\vertex_input_state_create_info.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\graphics\crude_vulkan_01\input_assembly_state_create_info.hpp">
+      <Filter>Header Files\graphics\crude_vulkan_01</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\viewport_state_create_info.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\graphics\crude_vulkan_01\instance.hpp">
+      <Filter>Header Files\graphics\crude_vulkan_01</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\subpass_description.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\graphics\crude_vulkan_01\multisample_state_create_info.hpp">
+      <Filter>Header Files\graphics\crude_vulkan_01</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\subpass_dependency.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\graphics\crude_vulkan_01\object.hpp">
+      <Filter>Header Files\graphics\crude_vulkan_01</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\attachment_description.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\graphics\crude_vulkan_01\physical_device.hpp">
+      <Filter>Header Files\graphics\crude_vulkan_01</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\dynamic_state_create_info.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\graphics\crude_vulkan_01\pipeline.hpp">
+      <Filter>Header Files\graphics\crude_vulkan_01</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\pipeline_layout.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\graphics\crude_vulkan_01\pipeline_layout.hpp">
+      <Filter>Header Files\graphics\crude_vulkan_01</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\shader_stage_create_info.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\graphics\crude_vulkan_01\queue.hpp">
+      <Filter>Header Files\graphics\crude_vulkan_01</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\pipeline.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\graphics\crude_vulkan_01\rasterization_state_create_info.hpp">
+      <Filter>Header Files\graphics\crude_vulkan_01</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\command_pool.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\graphics\crude_vulkan_01\render_pass.hpp">
+      <Filter>Header Files\graphics\crude_vulkan_01</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\device_memory.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\graphics\crude_vulkan_01\requiring_extensions.hpp">
+      <Filter>Header Files\graphics\crude_vulkan_01</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\command_buffer.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\graphics\crude_vulkan_01\sampler.hpp">
+      <Filter>Header Files\graphics\crude_vulkan_01</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\image_memory_barrier.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\graphics\crude_vulkan_01\semaphore.hpp">
+      <Filter>Header Files\graphics\crude_vulkan_01</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\image_subresource_range.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\graphics\crude_vulkan_01\shader_module.hpp">
+      <Filter>Header Files\graphics\crude_vulkan_01</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\format.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\graphics\crude_vulkan_01\shader_stage_create_info.hpp">
+      <Filter>Header Files\graphics\crude_vulkan_01</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\tessellation_state_create_info.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\graphics\crude_vulkan_01\subpass_dependency.hpp">
+      <Filter>Header Files\graphics\crude_vulkan_01</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\framebuffer.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\graphics\crude_vulkan_01\subpass_description.hpp">
+      <Filter>Header Files\graphics\crude_vulkan_01</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\buffer.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\graphics\crude_vulkan_01\surface.hpp">
+      <Filter>Header Files\graphics\crude_vulkan_01</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\sampler.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\graphics\crude_vulkan_01\swap_chain.hpp">
+      <Filter>Header Files\graphics\crude_vulkan_01</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\descriptor_pool.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\graphics\crude_vulkan_01\swap_chain_image.hpp">
+      <Filter>Header Files\graphics\crude_vulkan_01</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\descriptor_set.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\graphics\crude_vulkan_01\tessellation_state_create_info.hpp">
+      <Filter>Header Files\graphics\crude_vulkan_01</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\write_descriptor_set.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\graphics\crude_vulkan_01\vertex_input_state_create_info.hpp">
+      <Filter>Header Files\graphics\crude_vulkan_01</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\descriptor_buffer_info.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\graphics\crude_vulkan_01\viewport_state_create_info.hpp">
+      <Filter>Header Files\graphics\crude_vulkan_01</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\descriptor_image_info.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\graphics\crude_vulkan_01\write_descriptor_set.hpp">
+      <Filter>Header Files\graphics\crude_vulkan_01</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\fence.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\core\core.hpp">
+      <Filter>Header Files\core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\crude_vulkan_01\semaphore.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\crude_engine\core\types.hpp">
+      <Filter>Header Files\core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\include\crude_vulkan_01\object.inl">
-      <Filter>Header Files</Filter>
+    <None Include="..\..\..\crude_engine\graphics\crude_vulkan_01\object.inl">
+      <Filter>Header Files\graphics\crude_vulkan_01</Filter>
     </None>
   </ItemGroup>
 </Project>
