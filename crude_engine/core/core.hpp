@@ -1,12 +1,11 @@
 #pragma once
 
-#include "types.hpp"
+#include "alias.hpp"
 #include <stdexcept>
 #include <memory>
 #include <assert.h>
-#include <vulkan/vk_enum_string_helper.h>
 
-namespace crude_vulkan_01 
+namespace crude_engine 
 {
 
 class Core

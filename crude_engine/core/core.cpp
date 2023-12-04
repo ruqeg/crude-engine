@@ -1,7 +1,7 @@
 #include "core.hpp"
 #include <cstring>
 
-namespace crude_vulkan_01
+namespace crude_engine
 {
 
 void Core::copyArray(int8* dst, const int8* src, uint32 n)
