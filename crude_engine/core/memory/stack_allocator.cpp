@@ -14,7 +14,7 @@ Stack_Allocator::Stack_Allocator(const std::size_t capacity) noexcept
     Memory_Utils::free(m_heap);
   }
 
-  m_heap = reinterpret_cast<byte*>(Memory_Utils::allocate(capacity));
+  m_heap = reinterpret_cast<std::byte*>(Memory_Utils::allocate(capacity));
   m_heapSize = 0u;
 }
 

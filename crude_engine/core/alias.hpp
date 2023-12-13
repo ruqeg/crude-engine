@@ -31,5 +31,6 @@ using bool32 = int32;
 using bool64 = int64;
 
 #define CRUDE_NODISCARD [[nodiscard]]
+#define CRUDE_INLINE    inline
 
 }

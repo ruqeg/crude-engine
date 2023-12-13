@@ -13,7 +13,7 @@ public:
   CRUDE_NODISCARD void* allocate(std::size_t size) noexcept;
   void reset() noexcept;
 protected:
-  byte*              m_heap = nullptr;
+  std::byte*         m_heap{nullptr};
   std::size_t        m_heapSize;
   const std::size_t  m_capacity;
 };

@@ -147,6 +147,7 @@
     <ClCompile Include="..\..\crude_engine\core\memory\c_allocator.cpp" />
     <ClCompile Include="..\..\crude_engine\core\memory\linear_allocator.cpp" />
     <ClCompile Include="..\..\crude_engine\core\memory\memory_utils.cpp" />
+    <ClCompile Include="..\..\crude_engine\core\memory\pool_allocator.cpp" />
     <ClCompile Include="..\..\crude_engine\core\memory\stack_allocator.cpp" />
     <ClCompile Include="..\..\crude_engine\graphics\vulkan\application.cpp" />
     <ClCompile Include="..\..\crude_engine\graphics\vulkan\attachment_description.cpp" />
@@ -201,7 +202,15 @@
     <ClInclude Include="..\..\crude_engine\core\memory\c_allocator.hpp" />
     <ClInclude Include="..\..\crude_engine\core\memory\linear_allocator.hpp" />
     <ClInclude Include="..\..\crude_engine\core\memory\memory_utils.hpp" />
+    <ClInclude Include="..\..\crude_engine\core\memory\pool_allocator.hpp" />
     <ClInclude Include="..\..\crude_engine\core\memory\stack_allocator.hpp" />
+    <ClInclude Include="..\..\crude_engine\core\stl\bs_tree.hpp" />
+    <ClInclude Include="..\..\crude_engine\core\stl\compare.hpp" />
+    <ClInclude Include="..\..\crude_engine\core\stl\size_holder.hpp" />
+    <ClInclude Include="..\..\crude_engine\core\stl\tree_iterator_base.hpp" />
+    <ClInclude Include="..\..\crude_engine\core\stl\rb_tree.hpp" />
+    <ClInclude Include="..\..\crude_engine\core\stl\stack_linked_list.hpp" />
+    <ClInclude Include="..\..\crude_engine\core\utils.hpp" />
     <ClInclude Include="..\..\crude_engine\graphics\vulkan\application.hpp" />
     <ClInclude Include="..\..\crude_engine\graphics\vulkan\attachment_description.hpp" />
     <ClInclude Include="..\..\crude_engine\graphics\vulkan\buffer.hpp" />
@@ -252,6 +261,10 @@
     <ClInclude Include="..\..\crude_engine\graphics\vulkan\write_descriptor_set.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\crude_engine\core\stl\bs_tree.inl" />
+    <None Include="..\..\crude_engine\core\stl\tree_iterator_base.inl" />
+    <None Include="..\..\crude_engine\core\stl\rb_tree.inl" />
+    <None Include="..\..\crude_engine\core\stl\stack_linked_list.inl" />
     <None Include="..\..\crude_engine\graphics\vulkan\object.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

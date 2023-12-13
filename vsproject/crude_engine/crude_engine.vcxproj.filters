@@ -20,6 +20,9 @@
     <Filter Include="source\graphics\vulkan">
       <UniqueIdentifier>{b6cb0f46-e3d2-4d12-9778-f4eb265f12a7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="source\core\stl">
+      <UniqueIdentifier>{7a7dca1c-072c-4580-95c6-197533f6a1f5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\crude_engine\core\memory\linear_allocator.cpp">
@@ -170,6 +173,9 @@
       <Filter>source\graphics\vulkan</Filter>
     </ClCompile>
     <ClCompile Include="..\..\crude_engine\core\memory\c_allocator.cpp">
+      <Filter>source\core\memory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\core\memory\pool_allocator.cpp">
       <Filter>source\core\memory</Filter>
     </ClCompile>
   </ItemGroup>
@@ -339,10 +345,46 @@
     <ClInclude Include="..\..\crude_engine\core\memory\c_allocator.hpp">
       <Filter>source\core\memory</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\crude_engine\core\memory\pool_allocator.hpp">
+      <Filter>source\core\memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\crude_engine\core\stl\stack_linked_list.hpp">
+      <Filter>source\core\stl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\crude_engine\core\stl\rb_tree.hpp">
+      <Filter>source\core\stl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\crude_engine\core\stl\tree_iterator_base.hpp">
+      <Filter>source\core\stl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\crude_engine\core\stl\bs_tree.hpp">
+      <Filter>source\core\stl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\crude_engine\core\utils.hpp">
+      <Filter>source\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\crude_engine\core\stl\size_holder.hpp">
+      <Filter>source\core\stl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\crude_engine\core\stl\compare.hpp">
+      <Filter>source\core\stl</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\crude_engine\graphics\vulkan\object.inl">
       <Filter>source\graphics\vulkan</Filter>
+    </None>
+    <None Include="..\..\crude_engine\core\stl\stack_linked_list.inl">
+      <Filter>source\core\stl</Filter>
+    </None>
+    <None Include="..\..\crude_engine\core\stl\rb_tree.inl">
+      <Filter>source\core\stl</Filter>
+    </None>
+    <None Include="..\..\crude_engine\core\stl\tree_iterator_base.inl">
+      <Filter>source\core\stl</Filter>
+    </None>
+    <None Include="..\..\crude_engine\core\stl\bs_tree.inl">
+      <Filter>source\core\stl</Filter>
     </None>
   </ItemGroup>
 </Project>
