@@ -49,9 +49,12 @@ public:
   void remove(Node& node) noexcept;
 
 protected:
-  void balanceAfterInsert(Node* node);
-  void rotateRight(Node* parent);
-  void rotateLeft(Node* parent);
+  void balanceAfterInsert(Node* node) noexcept;
+  void rotateRight(Node* parent) noexcept;
+  void rotateLeft(Node* parent) noexcept;
+  void swapNodes(Node* n1, Node* n2, bool swapColors) noexcept;
+  void swapUnrelatedNodes(Node* n1, Node* n2) noexcept;
+  void swapNeighbors(Node* parent, Node* child) noexcept;
 protected:
   static constexpr bool multiple = false;
 };

@@ -207,10 +207,10 @@
     <ClInclude Include="..\..\crude_engine\core\stl\bs_tree.hpp" />
     <ClInclude Include="..\..\crude_engine\core\stl\compare.hpp" />
     <ClInclude Include="..\..\crude_engine\core\stl\size_holder.hpp" />
+    <ClInclude Include="..\..\crude_engine\core\stl\utility.hpp" />
     <ClInclude Include="..\..\crude_engine\core\stl\tree_iterator_base.hpp" />
     <ClInclude Include="..\..\crude_engine\core\stl\rb_tree.hpp" />
     <ClInclude Include="..\..\crude_engine\core\stl\stack_linked_list.hpp" />
-    <ClInclude Include="..\..\crude_engine\core\utils.hpp" />
     <ClInclude Include="..\..\crude_engine\graphics\vulkan\application.hpp" />
     <ClInclude Include="..\..\crude_engine\graphics\vulkan\attachment_description.hpp" />
     <ClInclude Include="..\..\crude_engine\graphics\vulkan\buffer.hpp" />

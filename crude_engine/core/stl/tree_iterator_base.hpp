@@ -20,27 +20,27 @@ public:
   Tree_Iterator_Base(Node* node);
   Tree_Iterator_Base(const Concrete_Iterator& other);
 
-  CRUDE_INLINE inline Concrete_Iterator& operator=(const Concrete_Iterator& other);
-  CRUDE_INLINE inline Concrete_Iterator& operator=(Concrete_Iterator&& other);
-  CRUDE_INLINE inline bool operator==(const Concrete_Iterator& other) const;
-  CRUDE_INLINE inline bool operator!=(const Concrete_Iterator& other) const;
+  CRUDE_INLINE Concrete_Iterator& operator=(const Concrete_Iterator& other);
+  CRUDE_INLINE Concrete_Iterator& operator=(Concrete_Iterator&& other);
+  CRUDE_INLINE bool operator==(const Concrete_Iterator& other) const;
+  CRUDE_INLINE bool operator!=(const Concrete_Iterator& other) const;
 
-  CRUDE_INLINE inline Concrete_Iterator& operator++();
-  CRUDE_INLINE inline Concrete_Iterator operator++(int);
-  CRUDE_INLINE inline Concrete_Iterator& operator+=(std::size_t steps);
-  CRUDE_INLINE inline Concrete_Iterator operator+(std::size_t steps) const;
+  CRUDE_INLINE Concrete_Iterator& operator++();
+  CRUDE_INLINE Concrete_Iterator operator++(int);
+  CRUDE_INLINE Concrete_Iterator& operator+=(std::size_t steps);
+  CRUDE_INLINE Concrete_Iterator operator+(std::size_t steps) const;
 
-  CRUDE_INLINE inline Concrete_Iterator& operator--();
-  CRUDE_INLINE inline Concrete_Iterator operator--(int);
-  CRUDE_INLINE inline Concrete_Iterator& operator-=(std::size_t steps);
-  CRUDE_INLINE inline Concrete_Iterator operator-(std::size_t steps) const;
+  CRUDE_INLINE Concrete_Iterator& operator--();
+  CRUDE_INLINE Concrete_Iterator operator--(int);
+  CRUDE_INLINE Concrete_Iterator& operator-=(std::size_t steps);
+  CRUDE_INLINE Concrete_Iterator operator-(std::size_t steps) const;
 
-  CRUDE_INLINE inline Reference operator*() const;
-  CRUDE_INLINE inline Pointer operator->() const;
+  CRUDE_INLINE Reference operator*() const;
+  CRUDE_INLINE Pointer operator->() const;
 
 protected:
-  CRUDE_INLINE inline void stepForward();
-  CRUDE_INLINE inline void stepBack();
+  CRUDE_INLINE void stepForward();
+  CRUDE_INLINE void stepBack();
 
   Node* m_node;
 

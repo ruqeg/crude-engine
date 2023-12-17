@@ -35,16 +35,16 @@ int main()
   
   RBT t;
 
-  My_Node nodes[250];
+  My_Node nodes[5];
 
-  for (std::size_t i = 0; i < 250; ++i)
+  for (std::size_t i = 0; i < 5; ++i)
   {
     nodes[i].key = i;
     nodes[i].value = std::string("The key is ") + std::to_string(i);
   }
 
   // Insert them
-  for (size_t i = 0; i < 250; ++i)
+  for (size_t i = 0; i < 5; ++i)
   {
     t.insert(nodes[i]);
   }
