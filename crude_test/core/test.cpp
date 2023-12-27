@@ -2,63 +2,35 @@
 #include "../../crude_engine/core/memory/linear_allocator.hpp"
 #include "../../crude_engine/core/memory/pool_allocator.hpp"
 #include "../../crude_engine/core/memory/stack_allocator.hpp"
+#include "../../crude_engine/core/memory/free_rbt_allocator.hpp"
 #include "../../crude_engine/core/stl/rb_tree.hpp"
 
 #include <iostream>
 #include <string>
 #include <assert.h>
 
-
-class My_Node : public crude_engine::RBT_Node_Base<My_Node>
-{
-public:
-  crude_engine::float64  key;
-  std::string            value;
-  // ...
-
-  bool operator<(const My_Node& other) const
-  {
-    return key < other.key;
-  }
-};
-
-bool operator<(const My_Node& lhs, int rhs) {
-  return lhs.key < rhs;
-}
-bool operator<(int lhs, const My_Node& rhs) {
-  return lhs < rhs.key;
-}
-
 int main()
 {
-  using RBT = crude_engine::Red_Black_Tree<My_Node>;
-  
-  RBT t;
-
-  My_Node nodes[5];
-
-  for (std::size_t i = 0; i < 5; ++i)
+  constexpr std::size_t capacity = 10000000u;
+  constexpr std::size_t elementsNum = 3u;
+  crude_engine::Free_RBT_Allocator allocator(capacity, crude_engine::Free_RBT_Allocator::PLACEMANT_POLICY_FIND_BEST);
+  int* arr[elementsNum];
+  for (int i = 0; i < elementsNum; ++i)
   {
-    nodes[i].key = i;
-    nodes[i].value = std::string("The key is ") + std::to_string(i);
+    arr[i] = (int*)allocator.allocate(sizeof(int));
+    *arr[i] = i;
+  }
+  for (int i = 0; i < elementsNum; ++i)
+  {
+    std::cout << "element " << i << ": " << *arr[i] << std::endl;
+  }
+  ///std::cout << "Bef free: " << allocator.m_rbt.size() << std::endl;
+  for (int i = 0; i < elementsNum; ++i)
+  {
+    allocator.free(arr[i]);
   }
 
-  // Insert them
-  for (size_t i = 0; i < 5; ++i)
-  {
-    t.insert(nodes[i]);
-  }
-
-  auto it = t.find(3);
-  assert(it != t.end());
-  std::string retrieved_value = it->value;
-
-  t.remove(*it);
-
-  for (const auto& n : t)
-  {
-    std::cout << "A node: " << n.value << "\n";
-  }
+  ///std::cout << "Aft free: " << allocator.m_rbt.size() << std::endl;
 
   return 1;
 }

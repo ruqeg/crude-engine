@@ -178,6 +178,9 @@
     <ClCompile Include="..\..\crude_engine\core\memory\pool_allocator.cpp">
       <Filter>source\core\memory</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\crude_engine\core\memory\free_rbt_allocator.cpp">
+      <Filter>source\core\memory</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\crude_engine\core\memory\linear_allocator.hpp">
@@ -368,6 +371,9 @@
     </ClInclude>
     <ClInclude Include="..\..\crude_engine\core\stl\utility.hpp">
       <Filter>source\core\stl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\crude_engine\core\memory\free_rbt_allocator.hpp">
+      <Filter>source\core\memory</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

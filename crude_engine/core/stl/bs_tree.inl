@@ -293,14 +293,14 @@ Binary_Search_Tree<Node, Compare>::Iterator Binary_Search_Tree<Node, Compare>::i
 template<class Node, class Compare>
 size_t Binary_Search_Tree<Node, Compare>::size() const noexcept
 {
-  return m_size;
+  return m_size.get();
 }
 
 template<class Node, class Compare>
 void Binary_Search_Tree<Node, Compare>::clear() noexcept
 {
   m_root = nullptr;
-  m_size = 0u;
+  m_size.set(0u);
 }
 
 template<class Node, class Compare>

@@ -145,6 +145,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\crude_engine\core\core.cpp" />
     <ClCompile Include="..\..\crude_engine\core\memory\c_allocator.cpp" />
+    <ClCompile Include="..\..\crude_engine\core\memory\free_rbt_allocator.cpp" />
     <ClCompile Include="..\..\crude_engine\core\memory\linear_allocator.cpp" />
     <ClCompile Include="..\..\crude_engine\core\memory\memory_utils.cpp" />
     <ClCompile Include="..\..\crude_engine\core\memory\pool_allocator.cpp" />
@@ -200,6 +201,7 @@
     <ClInclude Include="..\..\crude_engine\core\core.hpp" />
     <ClInclude Include="..\..\crude_engine\core\debug\assert.hpp" />
     <ClInclude Include="..\..\crude_engine\core\memory\c_allocator.hpp" />
+    <ClInclude Include="..\..\crude_engine\core\memory\free_rbt_allocator.hpp" />
     <ClInclude Include="..\..\crude_engine\core\memory\linear_allocator.hpp" />
     <ClInclude Include="..\..\crude_engine\core\memory\memory_utils.hpp" />
     <ClInclude Include="..\..\crude_engine\core\memory\pool_allocator.hpp" />
