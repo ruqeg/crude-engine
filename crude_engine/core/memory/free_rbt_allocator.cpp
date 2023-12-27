@@ -36,64 +36,68 @@ void* Free_RBT_Allocator::allocate(std::size_t size) noexcept
   const std::size_t requiredSize = static_cast<std::size_t>(size + sizeof(Node));
 
   CRUDE_ASSERT("Allocation size must be bigger" && size >= sizeof(Node));
-  auto allocatedNode = m_rbt.lowerBound(requiredSize);
+  const Red_Black_Tree<Node>::Iterator& allocatedHeaderIt = m_rbt.lowerBound(requiredSize);
   
-  CRUDE_ASSERT("The allocator is full" && allocatedNode != nullptr);
+  CRUDE_ASSERT("The allocator is full" && allocatedHeaderIt != nullptr);
 
-  byte* resultPtr = reinterpret_cast<byte*>(&*allocatedNode) + sizeof(Node);
+  Node* allocatedHeader = &*allocatedHeaderIt;
+  byte* allocatedHeaderAddress = reinterpret_cast<byte*>(allocatedHeader);
 
-  Node* newFreeNode = reinterpret_cast<Node*>(resultPtr + size);
-  *newFreeNode = {};
+  byte* resultAddress = allocatedHeaderAddress + sizeof(Node);
+  
+  Node* newFreeHeader = reinterpret_cast<Node*>(resultAddress + size);
+  *newFreeHeader = {};
 
-  newFreeNode->blockSize = allocatedNode->blockSize - requiredSize;
-  newFreeNode->free = true;
-  newFreeNode->prev = &*allocatedNode;
-  newFreeNode->next = nullptr;
+  newFreeHeader->blockSize = allocatedHeader->blockSize - requiredSize;
+  newFreeHeader->free = true;
+  newFreeHeader->prev = allocatedHeader;
+  newFreeHeader->next = nullptr;
 
-  allocatedNode->free = false;
-  allocatedNode->blockSize = requiredSize;
-  allocatedNode->next = newFreeNode;
+  allocatedHeader->free = false;
+  allocatedHeader->blockSize = requiredSize;
+  allocatedHeader->next = newFreeHeader;
 
-  m_rbt.remove(*allocatedNode);
-  m_rbt.insert(*newFreeNode);
+  m_rbt.remove(*allocatedHeader);
+  m_rbt.insert(*newFreeHeader);
 
-  return resultPtr;
+  return resultAddress;
 }
 
 void Free_RBT_Allocator::free(void* ptr) noexcept
 {
-  const std::size_t currentAddress = (std::size_t)ptr;
-  const std::size_t headerAddress = currentAddress - sizeof(Node);
-  Node* allocatedNode = reinterpret_cast<Node*>(headerAddress);
+  byte* allocatedAddress = reinterpret_cast<byte*>(ptr);
+  byte* allocatedHeaderAddress = allocatedAddress - sizeof(Node);
+  Node* allocatedHeader = reinterpret_cast<Node*>(allocatedHeaderAddress);
 
-  if (allocatedNode->prev && (allocatedNode->prev->free))
+  if (allocatedHeader->prev && (allocatedHeader->prev->free))
   {
-    m_rbt.remove(*allocatedNode->prev);
+    m_rbt.remove(*allocatedHeader->prev);
 
-    allocatedNode->prev->blockSize += allocatedNode->blockSize;
-    allocatedNode->prev->next = allocatedNode->next;
-    if (allocatedNode->prev->next)
+    allocatedHeader->prev->blockSize += allocatedHeader->blockSize;
+    allocatedHeader->prev->next = allocatedHeader->next;
+    if (allocatedHeader->prev->next)
     {
-      allocatedNode->prev->next->prev = allocatedNode->prev;
+      allocatedHeader->prev->next->prev = allocatedHeader->prev;
     }
 
-    allocatedNode = allocatedNode->prev;
+    allocatedHeader = allocatedHeader->prev;
   }
 
-  if (allocatedNode->next && (allocatedNode->next->free))
+  if (allocatedHeader->next && (allocatedHeader->next->free))
   {
-    m_rbt.remove(*allocatedNode->next);
-    allocatedNode->blockSize += allocatedNode->next->blockSize;
+    m_rbt.remove(*allocatedHeader->next);
+    allocatedHeader->blockSize += allocatedHeader->next->blockSize;
 
-    allocatedNode->next = allocatedNode->next->next;
-    if (allocatedNode->next)
+    allocatedHeader->next = allocatedHeader->next->next;
+    if (allocatedHeader->next)
     {
-      allocatedNode->next->prev = allocatedNode;
+      allocatedHeader->next->prev = allocatedHeader;
     }
   }
 
-  allocatedNode->free = true;
-  m_rbt.insert(*allocatedNode);
+  allocatedHeader->free = true;
+  m_rbt.insert(*allocatedHeader);
+
   return;
 }
 

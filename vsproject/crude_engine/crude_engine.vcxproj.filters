@@ -375,6 +375,12 @@
     <ClInclude Include="..\..\crude_engine\core\memory\free_rbt_allocator.hpp">
       <Filter>source\core\memory</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\crude_engine\core\memory\iallocator_a.hpp">
+      <Filter>source\core\memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\crude_engine\core\memory\iallocator_f.hpp">
+      <Filter>source\core\memory</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\crude_engine\graphics\vulkan\object.inl">
