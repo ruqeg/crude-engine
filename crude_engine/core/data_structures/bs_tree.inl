@@ -1,4 +1,4 @@
-#include <core/stl/bs_tree.hpp>
+#include <core/data_structures/bs_tree.hpp>
 
 namespace crude_engine
 {

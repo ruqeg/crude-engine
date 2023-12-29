@@ -6,44 +6,52 @@ namespace crude_engine
 {
 
 template<bool enable>
-class Size_Holder {};
+class Size_Holder
+{};
 
 template<>
-class Size_Holder<true> {
+class Size_Holder<true>
+{
+public:
+  using Size_Type = std::size_t;
+
 public:
   Size_Holder() : m_size(0u) {};
   
-  void add(std::size_t i)
+  void add(Size_Type i)
   {
     m_size += i;
   }
 
-  void reduce(std::size_t i)
+  void reduce(Size_Type i)
   {
     m_size -= i;
   }
 
-  std::size_t get() const
+  Size_Type get() const
   {
     return m_size;
   }
 
-  void set(std::size_t i)
+  void set(Size_Type i)
   {
     m_size = i;
   }
 
 private:
-  std::size_t m_size;
+  Size_Type m_size;
 };
 
 template<>
 class Size_Holder<false>
 {
 public:
-  void add(std::size_t i) {}
-  void reduce(std::size_t i) {}
-  void set(std::size_t i) {}
+  using Size_Type = std::size_t;
+
+public:
+  void add(Size_Type) {}
+  void reduce(Size_Type) {}
+  void set(Size_Type) {}
 };
 
 } // namespace crude_engine

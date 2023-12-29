@@ -69,12 +69,14 @@ Tree_Iterator_Base<Concrete_Iterator, Node, Node_Interface>::Tree_Iterator_Base(
 
 template <class Concrete_Iterator, class Node, class Node_Interface>
 Tree_Iterator_Base<Concrete_Iterator, Node, Node_Interface>::Tree_Iterator_Base(Node* node)
-  : m_node(node)
+  :
+  m_node(node)
 {}
 
 template <class Concrete_Iterator, class Node, class Node_Interface>
 Tree_Iterator_Base<Concrete_Iterator, Node, Node_Interface>::Tree_Iterator_Base(const Concrete_Iterator& other)
-  : m_node(other.m_node)
+  :
+  m_node(other.m_node)
 {}
 
 template <class Concrete_Iterator, class Node, class Node_Interface>
@@ -173,13 +175,13 @@ Concrete_Iterator Tree_Iterator_Base<Concrete_Iterator, Node, Node_Interface>::o
 }
 
 template<class Concrete_Iterator, class Node, class Node_Interface>
-Node& crude_engine::Tree_Iterator_Base<Concrete_Iterator, Node, Node_Interface>::operator*() const
+Tree_Iterator_Base<Concrete_Iterator, Node, Node_Interface>::Const_Reference Tree_Iterator_Base<Concrete_Iterator, Node, Node_Interface>::operator*() const
 {
   return *(m_node);
 }
 
 template<class Concrete_Iterator, class Node, class Node_Interface>
-Node* crude_engine::Tree_Iterator_Base<Concrete_Iterator, Node, Node_Interface>::operator->() const
+Tree_Iterator_Base<Concrete_Iterator, Node, Node_Interface>::Const_Pointer Tree_Iterator_Base<Concrete_Iterator, Node, Node_Interface>::operator->() const
 {
   return m_node;
 }

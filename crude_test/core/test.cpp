@@ -3,7 +3,8 @@
 #include "../../crude_engine/core/memory/pool_allocator.hpp"
 #include "../../crude_engine/core/memory/stack_allocator.hpp"
 #include "../../crude_engine/core/memory/free_rbt_allocator.hpp"
-#include "../../crude_engine/core/stl/rb_tree.hpp"
+#include "../../crude_engine/core/data_structures/rb_tree.hpp"
+#include "../../crude_engine/core/data_structures/array_stack.hpp"
 
 #include <iostream>
 #include <string>
@@ -31,6 +32,10 @@ int main()
   }
 
   ///std::cout << "Aft free: " << allocator.m_rbt.size() << std::endl;
+
+
+  crude_engine::Array_Stack<int, 10> stackArr = { 5 };
+  std::cout << "Stack Array " << stackArr.front() << " " << stackArr[14] << std::endl;
 
   return 1;
 }

@@ -27,4 +27,4 @@ protected:
 
 }
 
-#include <core/stl/stack_linked_list.inl>
+#include <core/data_structures/stack_linked_list.inl>

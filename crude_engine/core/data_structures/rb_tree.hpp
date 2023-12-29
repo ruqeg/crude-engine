@@ -1,6 +1,6 @@
 #pragma once
 
-#include <core/stl/bs_tree.hpp>
+#include <core/data_structures/bs_tree.hpp>
 
 namespace crude_engine
 {
@@ -62,4 +62,4 @@ protected:
 
 } // namespace crude_engine
 
-#include <core/stl/rb_tree.inl>
+#include <core/data_structures/rb_tree.inl>

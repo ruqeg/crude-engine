@@ -37,5 +37,17 @@ CRUDE_INLINE void swap(T& x, T& y) noexcept
   y = move(tmp);
 }
 
+template <class T> 
+T&& forward(typename Remove_Reference<T>::Type& x) noexcept
+{
+  return static_cast<T&&>(x);
+}
+
+template <class T> 
+T&& forward(typename Remove_Reference<T>::Type&& x) noexcept
+{
+  return static_cast<T&&>(x);
+}
+
 
 }

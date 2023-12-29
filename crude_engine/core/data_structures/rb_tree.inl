@@ -1,5 +1,5 @@
-#include <core/stl/rb_tree.hpp>
-#include <core/stl/utility.hpp>
+#include <core/data_structures/rb_tree.hpp>
+#include <core/data_structures/utility.hpp>
 
 namespace crude_engine
 {

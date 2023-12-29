@@ -1,8 +1,8 @@
 #pragma once
 
-#include <core/stl/tree_iterator_base.hpp>
-#include <core/stl/size_holder.hpp>
-#include <core/stl/compare.hpp>
+#include <core/data_structures/tree_iterator_base.hpp>
+#include <core/data_structures/size_holder.hpp>
+#include <core/data_structures/compare.hpp>
 
 namespace crude_engine
 {
