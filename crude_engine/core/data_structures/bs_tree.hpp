@@ -11,7 +11,7 @@ template <class Node>
 class BST_Node_Base
 {
 public:
-  BST_Node_Base();
+  BST_Node_Base() noexcept;
   CRUDE_INLINE void setParent(Node* newParent) noexcept;
   CRUDE_INLINE Node* getParent() const noexcept;
 

@@ -4,7 +4,7 @@ namespace crude_engine
 {
 
 template<class Node>
-BST_Node_Base<Node>::BST_Node_Base()
+BST_Node_Base<Node>::BST_Node_Base() noexcept
   :
   m_parent(nullptr)
 {
