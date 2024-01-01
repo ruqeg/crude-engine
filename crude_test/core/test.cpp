@@ -5,6 +5,7 @@
 #include "../../crude_engine/core/memory/free_rbt_allocator.hpp"
 #include "../../crude_engine/core/data_structures/rb_tree.hpp"
 #include "../../crude_engine/core/data_structures/array_stack.hpp"
+#include "../../crude_engine/core/data_structures/array_dynamic.hpp"
 
 #include <iostream>
 #include <string>
@@ -36,6 +37,11 @@ int main()
 
   crude_engine::Array_Stack<int, 10> stackArr = { 5 };
   std::cout << "Stack Array " << stackArr.front() << " " << stackArr[14] << std::endl;
+
+  crude_engine::Array_Dynamic<int> dynArr;
+  dynArr.resize(100);
+  dynArr.fill(5);
+  std::cout << "Din Array " << dynArr[6] << std::endl;
 
   return 1;
 }

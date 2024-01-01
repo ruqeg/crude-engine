@@ -1,5 +1,4 @@
-#include <core/data_structures\array_stack.hpp>
-#include <core/data_structures/utility.hpp>
+#include <core/data_structures/array_stack.hpp>
 
 namespace crude_engine
 {
@@ -8,27 +7,19 @@ template<class T, std::size_t N>
 template <typename... Args>
 Array_Stack<T, N>::Array_Stack(Args&&... args)
   :
-  m_data{ forward<Args>(args)... }
+  m_data{ Utility::forward<Args>(args)... }
 {}
 
 template<class T, std::size_t N>
 Array_Stack<T, N>::Array_Stack(const Array_Stack& other)
 {
-  //! TODO make copy function
-  for (std::size_t i = 0; i < N; ++i)
-  {
-    m_data[i] = other.m_data[i];
-  }
+  Algorithms::copy(other.begin(), other.end(), begin());
 }
 
 template<class T, std::size_t N>
 Array_Stack<T, N>& Array_Stack<T, N>::operator=(const Array_Stack<T, N>& other)
 {
-  //! TODO make copy function
-  for (std::size_t i = 0; i < N; ++i)
-  {
-    m_data[i] = other.m_data[i];
-  }
+  Algorithms::copy(other.begin(), other.end(), begin());
 }
 
 template<class T, std::size_t N>
@@ -87,11 +78,7 @@ Array_Stack<T, N>::Size_Type Array_Stack<T, N>::size() const noexcept
 template<class T, std::size_t N>
 void Array_Stack<T, N>::fill(Const_Reference value) noexcept
 {
-  // !TODO make fill function
-  for (std::size_t i = 0; i < N; ++i)
-  {
-    m_data[i] = value;
-  }
+  Algorithms::fill(begin(), end(), value);
 }
 
 template<class T, std::size_t N>
@@ -121,13 +108,13 @@ Array_Stack<T, N>::Const_Reference Array_Stack<T, N>::back() const noexcept
 template<class T, std::size_t N>
 Array_Stack<T, N>::Const_Iterator Array_Stack<T, N>::cbegin() const noexcept
 {
-  return Const_Iterator(m_data[0]);
+  return Const_Iterator(m_data);
 }
 
 template<class T, std::size_t N>
 Array_Stack<T, N>::Const_Iterator Array_Stack<T, N>::cend() const noexcept
 {
-  return Const_Iterator(m_data[N]);
+  return Const_Iterator(m_data + N);
 }
 
 template<class T, std::size_t N>
@@ -139,7 +126,7 @@ Array_Stack<T, N>::Const_Iterator Array_Stack<T, N>::begin() const noexcept
 template<class T, std::size_t N>
 Array_Stack<T, N>::Iterator Array_Stack<T, N>::begin() noexcept
 {
-  return Iterator(m_data[0]);
+  return Iterator(m_data);
 }
 
 template<class T, std::size_t N>
@@ -151,19 +138,19 @@ Array_Stack<T, N>::Const_Iterator Array_Stack<T, N>::end() const noexcept
 template<class T, std::size_t N>
 Array_Stack<T, N>::Iterator Array_Stack<T, N>::end() noexcept
 {
-  return Iterator(m_data[N]);
+  return Iterator(m_data + N);
 }
 
 template<class T, std::size_t N>
 Array_Stack<T, N>::Const_Iterator Array_Stack<T, N>::crbegin() const noexcept
 {
-  return Const_Iterator(m_data[0]);
+  return Const_Iterator(m_data);
 }
 
 template<class T, std::size_t N>
 Array_Stack<T, N>::Const_Iterator Array_Stack<T, N>::crend() const noexcept
 {
-  return Const_Iterator(m_data[N - 1]);
+  return Const_Iterator(m_data + (N - 1));
 }
 
 template<class T, std::size_t N>
@@ -175,7 +162,7 @@ Array_Stack<T, N>::Const_Iterator Array_Stack<T, N>::rbegin() const noexcept
 template<class T, std::size_t N>
 Array_Stack<T, N>::Iterator Array_Stack<T, N>::rbegin() noexcept
 {
-  return Iterator(m_data[0]);
+  return Iterator(m_data);
 }
 
 template<class T, std::size_t N>
@@ -187,7 +174,7 @@ Array_Stack<T, N>::Const_Iterator Array_Stack<T, N>::rend() const noexcept
 template<class T, std::size_t N>
 Array_Stack<T, N>::Iterator Array_Stack<T, N>::rend() noexcept
 {
-  return Iterator(m_data[N - 1]);
+  return Iterator(m_data + (N - 1));
 }
 
 } // namespace crude_engine

@@ -147,6 +147,7 @@
     <ClCompile Include="..\..\crude_engine\core\memory\c_allocator.cpp" />
     <ClCompile Include="..\..\crude_engine\core\memory\free_rbt_allocator.cpp" />
     <ClCompile Include="..\..\crude_engine\core\memory\linear_allocator.cpp" />
+    <ClCompile Include="..\..\crude_engine\core\memory\memory_manager.cpp" />
     <ClCompile Include="..\..\crude_engine\core\memory\memory_utils.cpp" />
     <ClCompile Include="..\..\crude_engine\core\memory\pool_allocator.cpp" />
     <ClCompile Include="..\..\crude_engine\core\memory\stack_allocator.cpp" />
@@ -197,8 +198,10 @@
     <ClCompile Include="..\..\crude_engine\graphics\vulkan\write_descriptor_set.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\crude_engine\core\algorithms.hpp" />
     <ClInclude Include="..\..\crude_engine\core\alias.hpp" />
     <ClInclude Include="..\..\crude_engine\core\core.hpp" />
+    <ClInclude Include="..\..\crude_engine\core\data_structures\array_dynamic.hpp" />
     <ClInclude Include="..\..\crude_engine\core\data_structures\array_stack.hpp" />
     <ClInclude Include="..\..\crude_engine\core\data_structures\bs_tree.hpp" />
     <ClInclude Include="..\..\crude_engine\core\data_structures\compare.hpp" />
@@ -207,14 +210,17 @@
     <ClInclude Include="..\..\crude_engine\core\data_structures\size_holder.hpp" />
     <ClInclude Include="..\..\crude_engine\core\data_structures\stack_linked_list.hpp" />
     <ClInclude Include="..\..\crude_engine\core\data_structures\tree_iterator_base.hpp" />
-    <ClInclude Include="..\..\crude_engine\core\data_structures\utility.hpp" />
     <ClInclude Include="..\..\crude_engine\core\debug\assert.hpp" />
     <ClInclude Include="..\..\crude_engine\core\memory\c_allocator.hpp" />
     <ClInclude Include="..\..\crude_engine\core\memory\free_rbt_allocator.hpp" />
+    <ClInclude Include="..\..\crude_engine\core\memory\iallocator.hpp" />
     <ClInclude Include="..\..\crude_engine\core\memory\linear_allocator.hpp" />
+    <ClInclude Include="..\..\crude_engine\core\memory\memory_manager.hpp" />
+    <ClInclude Include="..\..\crude_engine\core\memory\memory_system.hpp" />
     <ClInclude Include="..\..\crude_engine\core\memory\memory_utils.hpp" />
     <ClInclude Include="..\..\crude_engine\core\memory\pool_allocator.hpp" />
     <ClInclude Include="..\..\crude_engine\core\memory\stack_allocator.hpp" />
+    <ClInclude Include="..\..\crude_engine\core\utility.hpp" />
     <ClInclude Include="..\..\crude_engine\graphics\vulkan\application.hpp" />
     <ClInclude Include="..\..\crude_engine\graphics\vulkan\attachment_description.hpp" />
     <ClInclude Include="..\..\crude_engine\graphics\vulkan\buffer.hpp" />
@@ -265,12 +271,17 @@
     <ClInclude Include="..\..\crude_engine\graphics\vulkan\write_descriptor_set.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\crude_engine\core\algorithms.inl" />
+    <None Include="..\..\crude_engine\core\data_structures\array_dynamic.inl" />
     <None Include="..\..\crude_engine\core\data_structures\array_stack.inl" />
     <None Include="..\..\crude_engine\core\data_structures\bs_tree.inl" />
     <None Include="..\..\crude_engine\core\data_structures\iterator_base.inl" />
     <None Include="..\..\crude_engine\core\data_structures\rb_tree.inl" />
     <None Include="..\..\crude_engine\core\data_structures\stack_linked_list.inl" />
     <None Include="..\..\crude_engine\core\data_structures\tree_iterator_base.inl" />
+    <None Include="..\..\crude_engine\core\memory\free_rbt_allocator.inl" />
+    <None Include="..\..\crude_engine\core\memory\memory_system.inl" />
+    <None Include="..\..\crude_engine\core\utility.inl" />
     <None Include="..\..\crude_engine\graphics\vulkan\object.inl" />
     <None Include="cpp.hint" />
   </ItemGroup>

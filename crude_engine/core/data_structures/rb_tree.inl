@@ -1,5 +1,5 @@
 #include <core/data_structures/rb_tree.hpp>
-#include <core/data_structures/utility.hpp>
+#include <core/utility.hpp>
 
 namespace crude_engine
 {
@@ -456,7 +456,7 @@ void Red_Black_Tree<Node, Compare>::swapNodes(Node* n1, Node* n2, bool swapColor
 template<class Node, class Compare>
 void Red_Black_Tree<Node, Compare>::swapUnrelatedNodes(Node* n1, Node* n2) noexcept
 {
-  swap(n1->getLeft(), n2->getLeft());
+  Utility::swap(n1->getLeft(), n2->getLeft());
   if (n1->getLeft() != nullptr)
   {
     n1->getLeft()->setParent(n1);
@@ -466,7 +466,7 @@ void Red_Black_Tree<Node, Compare>::swapUnrelatedNodes(Node* n1, Node* n2) noexc
     n2->getLeft()->setParent(n2);
   }
 
-  swap(n1->getRight(), n2->getRight());
+  Utility::swap(n1->getRight(), n2->getRight());
   if (n1->getRight() != nullptr)
   {
     n1->getRight()->setParent(n1);
@@ -541,7 +541,7 @@ void Red_Black_Tree<Node, Compare>::swapNeighbors(Node* parent, Node* child) noe
     }
     child->setLeft(parent);
 
-    swap(parent->getRight(), child->getRight());
+    Utility::swap(parent->getRight(), child->getRight());
     if (child->getRight() != nullptr)
     {
       child->getRight()->setParent(child);
@@ -560,7 +560,7 @@ void Red_Black_Tree<Node, Compare>::swapNeighbors(Node* parent, Node* child) noe
     }
     child->setRight(parent);
 
-    swap(parent->getLeft(), child->getLeft());
+    Utility::swap(parent->getLeft(), child->getLeft());
     if (child->getLeft() != nullptr)
     {
       child->getLeft()->setParent(child);

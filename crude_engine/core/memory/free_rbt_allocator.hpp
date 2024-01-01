@@ -1,11 +1,12 @@
 #pragma once
 
+#include <core/memory/iallocator.hpp>
 #include <core/data_structures/rb_tree.hpp>
 
 namespace crude_engine
 {
 
-class Free_RBT_Allocator
+class Free_RBT_Allocator : public IAllocator
 {
 public:
   enum Placement_Policy
@@ -27,9 +28,16 @@ public:
 public:
   Free_RBT_Allocator(const std::size_t capacity, Placement_Policy placementPolicy) noexcept;
   ~Free_RBT_Allocator() noexcept;
-  CRUDE_NODISCARD void* allocate(std::size_t size) noexcept; // O(log(n))
-  void free(void* ptr) noexcept; // O(log(n))
+  CRUDE_NODISCARD void* allocate(std::size_t size) noexcept override; // O(log(n))
+  void free(void* ptr) noexcept override; // O(log(n))
   void reset() noexcept;
+
+  template<class T, typename... Args>
+  CRUDE_NODISCARD T* mnew(std::size_t n, Args&&... args) noexcept;
+
+  template<class T>
+  void mdelete(T* ptr) noexcept;
+
 protected:
   std::byte*            m_heap{ nullptr };
   std::size_t           m_heapSize;
@@ -39,3 +47,5 @@ protected:
 };
 
 }
+
+#include <core/memory/free_rbt_allocator.inl>

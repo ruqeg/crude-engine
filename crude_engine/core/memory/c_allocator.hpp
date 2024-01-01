@@ -1,15 +1,15 @@
 #pragma once
 
-#include <core/alias.hpp>
+#include <core/memory/iallocator.hpp>
 
 namespace crude_engine
 {
 
-class C_Allocator
+class C_Allocator : public IAllocator
 {
 public:
-  CRUDE_NODISCARD void* allocate(std::size_t size) noexcept;
-  void free(void* ptr) noexcept;
+  CRUDE_NODISCARD void* allocate(std::size_t size) noexcept override;
+  void free(void* ptr) noexcept override;
 };
 
 }

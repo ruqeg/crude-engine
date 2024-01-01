@@ -181,15 +181,15 @@
     <ClCompile Include="..\..\crude_engine\core\memory\free_rbt_allocator.cpp">
       <Filter>source\core\memory</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\crude_engine\core\memory\memory_manager.cpp">
+      <Filter>source\core\memory</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\crude_engine\core\memory\linear_allocator.hpp">
       <Filter>source\core\memory</Filter>
     </ClInclude>
     <ClInclude Include="..\..\crude_engine\core\memory\memory_utils.hpp">
-      <Filter>source\core\memory</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\crude_engine\core\memory\stack_allocator.hpp">
       <Filter>source\core\memory</Filter>
     </ClInclude>
     <ClInclude Include="..\..\crude_engine\core\debug\assert.hpp">
@@ -372,14 +372,32 @@
     <ClInclude Include="..\..\crude_engine\core\data_structures\tree_iterator_base.hpp">
       <Filter>source\core\data_structures</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\crude_engine\core\data_structures\utility.hpp">
-      <Filter>source\core</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\crude_engine\core\data_structures\array_stack.hpp">
       <Filter>source\core\data_structures</Filter>
     </ClInclude>
     <ClInclude Include="..\..\crude_engine\core\data_structures\iterator_base.hpp">
       <Filter>source\core\data_structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\crude_engine\core\data_structures\array_dynamic.hpp">
+      <Filter>source\core\data_structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\crude_engine\core\memory\iallocator.hpp">
+      <Filter>source\core\memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\crude_engine\core\memory\memory_manager.hpp">
+      <Filter>source\core\memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\crude_engine\core\utility.hpp">
+      <Filter>source\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\crude_engine\core\algorithms.hpp">
+      <Filter>source\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\crude_engine\core\memory\stack_allocator.hpp">
+      <Filter>source\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\crude_engine\core\memory\memory_system.hpp">
+      <Filter>source\core\memory</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -405,5 +423,20 @@
       <Filter>source\core\data_structures</Filter>
     </None>
     <None Include="cpp.hint" />
+    <None Include="..\..\crude_engine\core\memory\free_rbt_allocator.inl">
+      <Filter>source\core\memory</Filter>
+    </None>
+    <None Include="..\..\crude_engine\core\algorithms.inl">
+      <Filter>source\core</Filter>
+    </None>
+    <None Include="..\..\crude_engine\core\data_structures\array_dynamic.inl">
+      <Filter>source\core\data_structures</Filter>
+    </None>
+    <None Include="..\..\crude_engine\core\memory\memory_system.inl">
+      <Filter>source\core\memory</Filter>
+    </None>
+    <None Include="..\..\crude_engine\core\utility.inl">
+      <Filter>source\core</Filter>
+    </None>
   </ItemGroup>
 </Project>
