@@ -3,9 +3,14 @@
 namespace crude_engine
 {
 
-Free_RBT_Allocator& Memory_Manager::getFreeRBTAllocators() noexcept
+Memory_Manager::Memory_Manager()
+  :
+  m_defaultFreeRBTAllocators(FREE_RBT_ALLOCATOR_CAPCITY, Free_RBT_Allocator::PLACEMANT_POLICY_FIND_BEST)
+{}
+
+Free_RBT_Allocator& Memory_Manager::getDefaultFreeRBTAllocators() noexcept
 {
-  return m_freeRBTAllocators;
+  return m_defaultFreeRBTAllocators;
 }
 
 Memory_Manager& Memory_Manager::getInstance() noexcept

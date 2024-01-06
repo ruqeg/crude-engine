@@ -8,7 +8,7 @@
 namespace crude_engine
 {
 
-template<class T>
+template<class T, class Allocator = Memory_System::Default_Free_RBT_Allocator>
 class Array_Dynamic
 {
 public:

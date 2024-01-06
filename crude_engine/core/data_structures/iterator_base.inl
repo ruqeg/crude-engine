@@ -152,7 +152,7 @@ Contiguous_Iterator_Base<Concrete_Iterator, Type, Interface>::Const_Reference Co
 template<class Concrete_Iterator, class Type, class Interface>
 Contiguous_Iterator_Base<Concrete_Iterator, Type, Interface>::Const_Pointer Contiguous_Iterator_Base<Concrete_Iterator, Type, Interface>::operator->() const noexcept
 {
-  return *m_ptr;
+  return m_ptr;
 }
 
 } // namespace crude_engine

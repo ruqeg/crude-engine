@@ -399,6 +399,9 @@
     <ClInclude Include="..\..\crude_engine\core\memory\memory_system.hpp">
       <Filter>source\core\memory</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\crude_engine\core\data_structures\shared_ptr.hpp">
+      <Filter>source\core\data_structures</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\crude_engine\graphics\vulkan\object.inl">
@@ -422,7 +425,6 @@
     <None Include="..\..\crude_engine\core\data_structures\iterator_base.inl">
       <Filter>source\core\data_structures</Filter>
     </None>
-    <None Include="cpp.hint" />
     <None Include="..\..\crude_engine\core\memory\free_rbt_allocator.inl">
       <Filter>source\core\memory</Filter>
     </None>
@@ -437,6 +439,12 @@
     </None>
     <None Include="..\..\crude_engine\core\utility.inl">
       <Filter>source\core</Filter>
+    </None>
+    <None Include="..\..\crude_engine\core\data_structures\shared_ptr.inl">
+      <Filter>source\core\data_structures</Filter>
+    </None>
+    <None Include="..\..\crude_engine\core\memory\pool_allocator.inl">
+      <Filter>source\core\memory</Filter>
     </None>
   </ItemGroup>
 </Project>

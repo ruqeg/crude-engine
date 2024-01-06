@@ -10,7 +10,7 @@ bool operator<(const Free_RBT_Allocator::Node& lhs, int rhs)
   return lhs.blockSize < rhs;
 }
 
-Free_RBT_Allocator::Free_RBT_Allocator(const std::size_t capacity, Placement_Policy placementPolicy) noexcept
+Free_RBT_Allocator::Free_RBT_Allocator(const std::size_t capacity, Placement_Policy placementPolicy /*= PLACEMANT_POLICY_FIND_BEST*/) noexcept
   :
   m_capacity(capacity),
   m_pPolicy(placementPolicy)
@@ -35,7 +35,8 @@ void* Free_RBT_Allocator::allocate(std::size_t size) noexcept
 {
   const std::size_t requiredSize = static_cast<std::size_t>(size + sizeof(Node));
 
-  CRUDE_ASSERT("Allocation size must be bigger" && size >= sizeof(Node));
+  // !TODO
+  //CRUDE_ASSERT("Allocation size must be bigger" && size >= sizeof(Node));
   const Red_Black_Tree<Node>::Iterator& allocatedHeaderIt = m_rbt.lowerBound(requiredSize);
   
   CRUDE_ASSERT("The allocator is full" && allocatedHeaderIt != nullptr);
