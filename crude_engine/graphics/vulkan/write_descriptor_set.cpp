@@ -1,5 +1,5 @@
-#include "write_descriptor_set.hpp"
-#include "descriptor_set.hpp"
+#include <graphics/vulkan/write_descriptor_set.hpp>
+#include <graphics/vulkan/descriptor_set.hpp>
 
 namespace crude_engine
 {

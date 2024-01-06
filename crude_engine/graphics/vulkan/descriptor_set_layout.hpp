@@ -1,30 +1,23 @@
 #pragma once
 
-#include "../../core/core.hpp"
-#include "include_vulkan.hpp"
-#include "object.hpp"
-#include <vector>
+#include <graphics/vulkan/object.hpp>
+#include <graphics/vulkan/include_vulkan.hpp>
+#include <core/data_structures/shared_ptr.hpp>
 
 namespace crude_engine
 {
 
 class Device;
 
-struct Descriptor_Set_Layout_Create_Info
-{
-  std::shared_ptr<const Device>              device;
-  std::vector<VkDescriptorSetLayoutBinding>  bindings;
-  explicit Descriptor_Set_Layout_Create_Info(std::shared_ptr<const Device>                     device,
-                                             const std::vector<VkDescriptorSetLayoutBinding>&  bindings);
-};
-
 class Descriptor_Set_Layout : public TObject<VkDescriptorSetLayout>
 {
 public:
-  explicit Descriptor_Set_Layout(const Descriptor_Set_Layout_Create_Info& createInfo);
+  explicit Descriptor_Set_Layout(Shared_Ptr<const Device>       device,
+                                 VkDescriptorSetLayoutBinding*  pBindings,
+                                 uint32                         bindingCount);
   ~Descriptor_Set_Layout();
 private:
-  std::shared_ptr<const Device>  m_device;
+  Shared_Ptr<const Device>  m_device;
 };
 
 }

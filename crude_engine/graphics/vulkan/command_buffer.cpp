@@ -8,6 +8,7 @@
 #include <graphics/vulkan/pipeline.hpp>
 #include <graphics/vulkan/pipeline_layout.hpp>
 #include <graphics/vulkan/descriptor_set.hpp>
+#include <core/data_structures/array_dynamic.hpp>
 
 namespace crude_engine
 {
@@ -66,8 +67,8 @@ void Command_Buffer::barrier(VkPipelineStageFlags  srcStage,
 {
   CRUDE_ASSERT(pImageMemoryBarriers);
 
-  auto pVkImageMemoryBarriers = Memory_System::Default_Allocator::mnewArray<VkImageMemoryBarrier>(imageMemoryBarrierCount);
-  Algorithms::copy(pImageMemoryBarriers, pImageMemoryBarriers + imageMemoryBarrierCount, pVkImageMemoryBarriers);
+  Array_Dynamic<VkImageMemoryBarrier> pVkImageMemoryBarriers(imageMemoryBarrierCount);
+  Algorithms::copy(pImageMemoryBarriers, pImageMemoryBarriers + imageMemoryBarrierCount, pVkImageMemoryBarriers.begin());
 
   vkCmdPipelineBarrier(
     m_handle, 
@@ -79,7 +80,7 @@ void Command_Buffer::barrier(VkPipelineStageFlags  srcStage,
     0u, 
     nullptr, 
     imageMemoryBarrierCount,
-    pVkImageMemoryBarriers);
+    pVkImageMemoryBarriers.data());
 
   for (uint32 i = 0u; i < imageMemoryBarrierCount; ++i)
   {
@@ -185,8 +186,8 @@ void Command_Buffer::bindDescriptorSets(Pipeline*         pPipeline,
 
   constexpr uint32 offset = 0u;
 
-  auto pDescriptorSetsHandles = Memory_System::Default_Allocator::mnewArray<VkDescriptorSet>(descriptorSetCount);
-  Algorithms::copyc(pDescriptorSets, pDescriptorSets + descriptorSetCount, pDescriptorSetsHandles, [](Descriptor_Set* s, VkDescriptorSet* d) -> void {
+  Array_Dynamic<VkDescriptorSet> descriptorSetsHandles(dynamicOffsetCount);
+  Algorithms::copyc(pDescriptorSets, pDescriptorSets + descriptorSetCount, descriptorSetsHandles.begin(), [](Descriptor_Set* s, Array_Dynamic<VkDescriptorSet>::Iterator d) -> void {
     *d = CRUDE_OBJECT_HANDLE(s);
   });
 
@@ -196,7 +197,7 @@ void Command_Buffer::bindDescriptorSets(Pipeline*         pPipeline,
     CRUDE_OBJECT_HANDLE(pPipeline->getPipelineLayout()),
     offset,
     descriptorSetCount,
-    pDescriptorSetsHandles,
+    descriptorSetsHandles.data(),
     dynamicOffsetCount,
     pDynamicOffsets);
 }

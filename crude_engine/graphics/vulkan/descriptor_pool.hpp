@@ -1,36 +1,27 @@
 #pragma once
 
-#include "../../core/core.hpp"
-#include "include_vulkan.hpp"
-#include "object.hpp"
-#include <vector>
+#include <core/data_structures/shared_ptr.hpp>
+#include <graphics/vulkan/object.hpp>
+#include <graphics/vulkan/include_vulkan.hpp>
 
 namespace crude_engine
 {
 
 class Device;
 
-struct Descriptor_Pool_Create_Info
-{
-  std::shared_ptr<const Device>      device;
-  std::vector<VkDescriptorPoolSize>  poolSizes;
-  uint32                             maxSets;
-  bool                               freeDescriptorSet;
-  explicit Descriptor_Pool_Create_Info(std::shared_ptr<const Device>             device,
-                                       const std::vector<VkDescriptorPoolSize>&  poolSizes,
-                                       uint32                                    maxSets,
-                                       bool                                      freeDescriptorSet = false);
-};
-
 class Descriptor_Pool : public TObject<VkDescriptorPool>
 {
 public:
-  explicit Descriptor_Pool(const Descriptor_Pool_Create_Info& createInfo);
+  explicit Descriptor_Pool(Shared_Ptr<const Device>  device,
+                           VkDescriptorPoolSize*     pPoolSizes,
+                           uint32                    poolSizeCount,
+                           uint32                    maxSets,
+                           bool                      freeDescriptorSet);
   ~Descriptor_Pool();
   bool canFreeDescriptorSet() const;
 private:
-  std::shared_ptr<const Device>  m_device;
-  bool                           m_freeDescriptorSet;
+  const Shared_Ptr<const Device>  m_device;
+  const bool                      m_freeDescriptorSet;
 };
 
 }
