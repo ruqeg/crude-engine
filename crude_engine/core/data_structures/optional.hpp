@@ -31,8 +31,8 @@ public:
 
   CRUDE_INLINE bool hasValue() const noexcept;
 
-  CRUDE_INLINE T& getValue() noexcept;
-  CRUDE_INLINE const T& getValue() const noexcept;
+  CRUDE_INLINE T& value() noexcept;
+  CRUDE_INLINE const T& value() const noexcept;
 
   template<class U>
   CRUDE_INLINE T valueOr(U&& u) const noexcept;
@@ -103,6 +103,12 @@ Optional<T>::Optional(Optional&& other) noexcept
 }
 
 template<class T>
+Optional<T>& Optional<T>::operator=(Nullopt) noexcept
+{
+  m_engaged = false;
+}
+
+template<class T>
 Optional<T>& Optional<T>::operator=(const Optional<T>& other) noexcept
 {
   m_value = other.m_value;
@@ -137,13 +143,13 @@ bool Optional<T>::hasValue() const noexcept
 }
 
 template<class T>
-T& Optional<T>::getValue() noexcept
+T& Optional<T>::value() noexcept
 {
   return m_value;
 }
 
 template<class T>
-const T& Optional<T>::getValue() const noexcept
+const T& Optional<T>::value() const noexcept
 {
   return m_value;
 }

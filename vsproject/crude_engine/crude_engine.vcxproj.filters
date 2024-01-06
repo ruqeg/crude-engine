@@ -306,9 +306,6 @@
     <ClInclude Include="..\..\crude_engine\graphics\vulkan\render_pass.hpp">
       <Filter>source\graphics\vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\requiring_extensions.hpp">
-      <Filter>source\graphics\vulkan</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\crude_engine\graphics\vulkan\sampler.hpp">
       <Filter>source\graphics\vulkan</Filter>
     </ClInclude>
@@ -408,6 +405,9 @@
     <ClInclude Include="..\..\crude_engine\graphics\vulkan\vulkan_allocator.hpp">
       <Filter>source\graphics\vulkan</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\crude_engine\core\data_structures\optional.hpp">
+      <Filter>source\core\data_structures</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\crude_engine\graphics\vulkan\object.inl">
@@ -452,5 +452,6 @@
     <None Include="..\..\crude_engine\core\memory\pool_allocator.inl">
       <Filter>source\core\memory</Filter>
     </None>
+    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>

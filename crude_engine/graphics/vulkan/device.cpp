@@ -1,55 +1,51 @@
-#include "device.hpp"
-#include "../../core/core.hpp"
-#include "physical_device.hpp"
-#include "queue.hpp"
-#include "fence.hpp"
+#include <graphics/vulkan/device.hpp>
+#include <graphics/vulkan/physical_device.hpp>
+#include <graphics/vulkan/queue.hpp>
+#include <graphics/vulkan/fence.hpp>
+#include <core/data_structures/array_dynamic.hpp>
 
 namespace crude_engine
 {
 
-Device_Queue_Create_Info::Device_Queue_Create_Info(uint32                       queueFamilyIndex,
-                                                   const std::vector<float32>&  queuePriorities)
+Device_Queue_Create_Info::Device_Queue_Create_Info(uint32          queueFamilyIndex,
+                                                   const float32*  pQueuePriorities,
+                                                   uint32          queuePrioritiCount)
 {
   this->sType             = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-  this->pQueuePriorities  = queuePriorities.data();
-  this->queueCount        = queuePriorities.size();
+  this->pQueuePriorities  = pQueuePriorities;
+  this->queueCount        = queuePrioritiCount;
   this->pNext             = nullptr;
   this->flags             = 0u;
   this->queueFamilyIndex  = queueFamilyIndex;
 }
 
-Device_Create_Info::Device_Create_Info(std::shared_ptr<const Physical_Device>    physicalDevice,
-                                   const std::vector<Device_Queue_Create_Info>&  queueDescriptors,
-                                   const VkPhysicalDeviceFeatures&               enabledFeatures,
-                                   const std::vector<const char*>&               enabledExtensions,
-                                   const std::vector<const char*>&               enabledLayers)
+Device::Device(Shared_Ptr<const Physical_Device>  physicalDevice,
+               Device_Queue_Create_Info*          pQueueDescriptors,
+               uint32                             queueDescriptorCount,
+               const VkPhysicalDeviceFeatures*    pEnabledFeatures,
+               uint32                             enabledFeatureCount,
+               const char**                       pEnabledExtensions,
+               uint32                             enabledExtensionCount,
+               const char**                       pEnabledLayers,
+               uint32                             enabledLayerCount)
   :
-  physicalDevice(physicalDevice),
-  enabledFeatures(enabledFeatures),
-  enabledExtensions(enabledExtensions),
-  enabledLayers(enabledLayers),
-  queueDescriptors(queueDescriptors)
-{}
-
-Device::Device(const Device_Create_Info& createinfo)
+  m_physicalDevice(physicalDevice)
 {
   VkDeviceCreateInfo vkDeviceCreateInfo{};
   vkDeviceCreateInfo.sType                    = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
   vkDeviceCreateInfo.pNext                    = nullptr;
   vkDeviceCreateInfo.flags                    = 0u;
 
-  vkDeviceCreateInfo.queueCreateInfoCount     = static_cast<uint32>(createinfo.queueDescriptors.size());
-  vkDeviceCreateInfo.pQueueCreateInfos        = createinfo.queueDescriptors.data();
-  vkDeviceCreateInfo.pEnabledFeatures         = &createinfo.enabledFeatures;
-  vkDeviceCreateInfo.enabledExtensionCount    = static_cast<uint32>(createinfo.enabledExtensions.size());
-  vkDeviceCreateInfo.ppEnabledExtensionNames  = createinfo.enabledExtensions.data();
-  vkDeviceCreateInfo.enabledLayerCount        = static_cast<uint32>(createinfo.enabledLayers.size());
-  vkDeviceCreateInfo.ppEnabledLayerNames      = createinfo.enabledLayers.data();
+  vkDeviceCreateInfo.queueCreateInfoCount     = queueDescriptorCount;
+  vkDeviceCreateInfo.pQueueCreateInfos        = pQueueDescriptors;
+  vkDeviceCreateInfo.pEnabledFeatures         = pEnabledFeatures;
+  vkDeviceCreateInfo.enabledExtensionCount    = enabledExtensionCount;
+  vkDeviceCreateInfo.ppEnabledExtensionNames  = pEnabledExtensions;
+  vkDeviceCreateInfo.enabledLayerCount        = enabledLayerCount;
+  vkDeviceCreateInfo.ppEnabledLayerNames      = pEnabledLayers;
 
-  const VkResult result = vkCreateDevice(CRUDE_VULKAN_01_HANDLE(createinfo.physicalDevice), &vkDeviceCreateInfo, nullptr, &m_handle);
-  CRUDE_VULKAN_01_HANDLE_RESULT(result, "failed to create logic device!");
-
-  m_physicalDevice = createinfo.physicalDevice;
+  const VkResult result = vkCreateDevice(CRUDE_OBJECT_HANDLE(m_physicalDevice), &vkDeviceCreateInfo, &getVkAllocationCallbacks(), &m_handle);
+  CRUDE_VULKAN_HANDLE_RESULT(result, "failed to create logic device!");
 }
 
 Device::~Device()
@@ -57,27 +53,35 @@ Device::~Device()
   vkDestroyDevice(m_handle, nullptr);
 }
   
-std::shared_ptr<const Physical_Device> Device::getPhysicalDevice() const
+Shared_Ptr<const Physical_Device> Device::getPhysicalDevice() const
 {
   return m_physicalDevice;
 }
   
-std::shared_ptr<Queue> Device::getQueue(uint32 queueFamilyIndex, uint32 queueIndex) const
+Shared_Ptr<Queue> Device::getQueue(uint32 queueFamilyIndex, uint32 queueIndex) const
 {
-  std::shared_ptr<Queue> queue = std::make_shared<Queue>(Queue_Create_Info(queueFamilyIndex, queueIndex));
-  vkGetDeviceQueue(m_handle, queueFamilyIndex, queueIndex, &CRUDE_VULKAN_01_HANDLE(queue));
+  Shared_Ptr<Queue> queue = Shared_Ptr<Queue>::makeShared(Queue_Create_Info(queueFamilyIndex, queueIndex));
+  vkGetDeviceQueue(m_handle, queueFamilyIndex, queueIndex, &CRUDE_OBJECT_HANDLE(queue));
   return queue;
 }
 
-void Device::updateDescriptorSets(const std::vector<Write_Descriptor_Set>& descriptorWrites, const std::vector<VkCopyDescriptorSet>& descriptorCopies)
+void Device::updateDescriptorSets(const Write_Descriptor_Set*  pDescriptorWrites,
+                                  const uint32                 descriptorWriteCount,
+                                  const VkCopyDescriptorSet*   pDescriptorCopies,
+                                  const uint32                 descriptorCopieCount)
 {
-  std::vector<VkWriteDescriptorSet> vkDescriptorWrites(descriptorWrites.size());
-  for (uint32 i = 0u; i < vkDescriptorWrites.size(); ++i)
-  {
-    vkDescriptorWrites[i] = descriptorWrites[i];
-  }
+  CRUDE_ASSERT(pDescriptorWrites);
+  CRUDE_ASSERT(pDescriptorCopies);
 
-  vkUpdateDescriptorSets(m_handle, static_cast<uint32>(vkDescriptorWrites.size()), vkDescriptorWrites.data(), static_cast<uint32>(descriptorCopies.size()), descriptorCopies.data());
+  Array_Dynamic<VkWriteDescriptorSet> vkDescriptorWrites(descriptorWriteCount);
+  Algorithms::copy(pDescriptorWrites, pDescriptorWrites + descriptorCopieCount, vkDescriptorWrites.begin());
+
+  vkUpdateDescriptorSets(
+    m_handle, 
+    static_cast<uint32>(vkDescriptorWrites.size()), 
+    vkDescriptorWrites.data(), 
+    descriptorCopieCount,
+    pDescriptorCopies);
 }
 
 void Device::waitIdle()
@@ -85,29 +89,31 @@ void Device::waitIdle()
   vkDeviceWaitIdle(m_handle);
 }
 
-bool Device::waitForFences(const std::vector<std::shared_ptr<Fence>>& fences, bool waitAll, uint64_t timeout) const
+bool Device::waitForFences(Fence* pFences, uint32 fenceCount, bool waitAll, uint64 timeout) const
 {
-  std::vector<VkFence> fencesHandles(fences.size());
-  for (uint32 i = 0; i < fences.size(); ++i)
-  {
-    fencesHandles[i] = CRUDE_VULKAN_01_HANDLE(fences[i]);
-  }
+  CRUDE_ASSERT(pFences);
+
+  Array_Dynamic<VkFence> fencesHandles(fenceCount);
+  Algorithms::copyc(pFences, pFences + fenceCount, fencesHandles.begin(), [](auto& s, auto& d) -> void {
+    *d = CRUDE_OBJECT_HANDLE(s);
+  });
 
   const VkResult result = vkWaitForFences(m_handle, fencesHandles.size(), fencesHandles.data(), waitAll, timeout);
-  CRUDE_VULKAN_01_HANDLE_RESULT(result, "failed to wait for fences");
+  CRUDE_VULKAN_HANDLE_RESULT(result, "failed to wait for fences");
   return result != VK_TIMEOUT;
 }
 
-bool Device::resetForFences(const std::vector<std::shared_ptr<Fence>>& fences) const
+bool Device::resetForFences(Fence* pFences, uint32 fenceCount) const
 {
-  std::vector<VkFence> fencesHandles(fences.size());
-  for (uint32 i = 0; i < fences.size(); ++i)
-  {
-    fencesHandles[i] = CRUDE_VULKAN_01_HANDLE(fences[i]);
-  }
+  CRUDE_ASSERT(pFences);
+
+  Array_Dynamic<VkFence> fencesHandles(fenceCount);
+  Algorithms::copyc(pFences, pFences + fenceCount, fencesHandles.begin(), [](auto& s, auto& d) -> void {
+    *d = CRUDE_OBJECT_HANDLE(s);
+  });
 
   const VkResult result = vkResetFences(m_handle, fencesHandles.size(), fencesHandles.data());
-  CRUDE_VULKAN_01_HANDLE_RESULT(result, "failed to reset fences");
+  CRUDE_VULKAN_HANDLE_RESULT(result, "failed to reset fences");
   return result != VK_ERROR_OUT_OF_DEVICE_MEMORY;
 }
 

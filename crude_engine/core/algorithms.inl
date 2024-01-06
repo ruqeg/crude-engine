@@ -29,7 +29,7 @@ Output_Iterator Algorithms::copyc(Input_Iterator first, Input_Iterator last, Out
 {
   while (first != last)
   {
-    func(dFirst, first);
+    func(first, dFirst);
     ++dFirst; ++first;
   }
   return dFirst;

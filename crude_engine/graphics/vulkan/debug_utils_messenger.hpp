@@ -1,5 +1,6 @@
 #pragma once
 
+#include <core/data_structures/shared_ptr.hpp>
 #include <graphics/vulkan/object.hpp>
 #include <graphics/vulkan/include_vulkan.hpp>
 
@@ -11,7 +12,7 @@ class Instance;
 class Debug_Utils_Messenger : public TObject<VkDebugUtilsMessengerEXT>, public Requiring_Extensions
 {
 public:
-  Debug_Utils_Messenger(std::shared_ptr<const Instance>       instance,
+  Debug_Utils_Messenger(Shared_Ptr<const Instance>            instance,
                         PFN_vkDebugUtilsMessengerCallbackEXT  pfnUserCallback,
                         VkDebugUtilsMessageSeverityFlagsEXT   messageSeverity = DEFAULT_DEBUG_UTILS_MESSENGER_MESSAGE_SEVERITY,
                         VkDebugUtilsMessageTypeFlagsEXT       messageType     = DEFAULT_DEBUG_UTILS_MESSENGER_MESSAGE_TYPE,
@@ -42,7 +43,7 @@ private:
     VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
     VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
 private:
-  std::shared_ptr<const Instance> m_instance;
+  Shared_Ptr<const Instance> m_instance;
 };
 
 }
