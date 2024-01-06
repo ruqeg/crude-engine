@@ -69,6 +69,8 @@ public:
       _aligned_free(ptr);
     }
   };
+
+  using Default_Allocator = Default_Free_RBT_Allocator;
 };
 
 }  // namespace crude_engine

@@ -1,14 +1,18 @@
 #pragma once
 
+#include <graphics/vulkan/vulkan_allocator.hpp>
+
 namespace crude_engine
 {
 
-template<class Type>
+template<class Type, class Allocator = Vulkan_Allocator>
 class TObject
 {
 public:
   Type& getHandle();
   const Type& getHandle() const;
+public:
+  const VkAllocationCallbacks& getVkAllocationCallbacks();
 protected:
   Type m_handle;
 };

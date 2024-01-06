@@ -1,5 +1,4 @@
-#include "depth_stencil_state_create_info.hpp"
-#include <algorithm>
+#include <graphics/vulkan/depth_stencil_state_create_info.hpp>
 
 namespace crude_engine
 {

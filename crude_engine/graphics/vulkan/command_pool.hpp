@@ -1,31 +1,23 @@
 #pragma once
 
-#include "../../core/core.hpp"
-#include "include_vulkan.hpp"
-#include "object.hpp"
+#include <core/data_structures/shared_ptr.hpp>
+#include <graphics/vulkan/object.hpp>
+#include <graphics/vulkan/include_vulkan.hpp>
 
 namespace crude_engine
 {
 
 class Device;
 
-struct Command_Pool_Create_Info
-{
-  std::shared_ptr<const Device>  device;
-  VkCommandPoolCreateFlags       flags;
-  uint32                         queueFamilyIndex;
-  explicit Command_Pool_Create_Info(std::shared_ptr<const Device>  device,
-                                    VkCommandPoolCreateFlags       flags,
-                                    uint32                         queueFamilyIndex);
-};
-
 class Command_Pool : public TObject<VkCommandPool>
 {
 public:
-  explicit Command_Pool(const Command_Pool_Create_Info& createInfo);
+  explicit Command_Pool(Shared_Ptr<const Device>  device,
+                        VkCommandPoolCreateFlags  flags,
+                        uint32                    queueFamilyIndex);
   ~Command_Pool();
 private:
-  std::shared_ptr<const Device>  m_device;
+  Shared_Ptr<const Device>  m_device;
 };
 
 }

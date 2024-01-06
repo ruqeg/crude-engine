@@ -1,17 +1,17 @@
-#include "image_memory_barrier.hpp"
-#include "image.hpp"
+#include <graphics/vulkan/image_memory_barrier.hpp>
+#include <graphics/vulkan/image.hpp>
 
 namespace crude_engine
 {
 
-Image_Memory_Barrier::Image_Memory_Barrier(std::shared_ptr<Image>   image,
+Image_Memory_Barrier::Image_Memory_Barrier(Shared_Ptr<Image>        image,
                                            VkImageLayout            newLayout,
                                            Image_Subresource_Range  subresourceRange,
                                            uint32                   srcQueueFamilyIndex,
                                            uint32                   dstQueueFamilyIndex)
+  :
+  m_image(image)
 {
-  m_image = image;
-
   VkAccessFlags newSrcAccessMask;
   VkAccessFlags newDstAccessMask;
 
@@ -32,19 +32,19 @@ Image_Memory_Barrier::Image_Memory_Barrier(std::shared_ptr<Image>   image,
   }
   else 
   {
-    CRUDE_VULKAN_01_ERROR("unsupported layout transition for image memory barrier!");
+    CRUDE_VULKAN_ERROR("unsupported layout transition for image memory barrier!");
   }
 
-  this->sType                            = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-  this->pNext                            = nullptr;
-  this->oldLayout                        = image->getLayout();
-  this->newLayout                        = newLayout;
-  this->srcAccessMask                    = newSrcAccessMask;
-  this->dstAccessMask                    = newDstAccessMask;
-  this->srcQueueFamilyIndex              = srcQueueFamilyIndex;
-  this->dstQueueFamilyIndex              = dstQueueFamilyIndex;
-  this->image                            = CRUDE_VULKAN_01_HANDLE(m_image);
-  this->subresourceRange                 = subresourceRange;
+  this->sType                = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+  this->pNext                = nullptr;
+  this->oldLayout            = image->getLayout();
+  this->newLayout            = newLayout;
+  this->srcAccessMask        = newSrcAccessMask;
+  this->dstAccessMask        = newDstAccessMask;
+  this->srcQueueFamilyIndex  = srcQueueFamilyIndex;
+  this->dstQueueFamilyIndex  = dstQueueFamilyIndex;
+  this->image                = CRUDE_OBJECT_HANDLE(m_image);
+  this->subresourceRange     = subresourceRange;
 }
 
 }

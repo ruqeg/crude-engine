@@ -1,8 +1,7 @@
 #pragma once
 
-#include "../../core/core.hpp"
-#include "include_vulkan.hpp"
-#include "object.hpp"
+#include <core/alias.hpp>
+#include <graphics/vulkan/include_vulkan.hpp>
 
 namespace crude_engine
 {

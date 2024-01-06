@@ -7,7 +7,7 @@ namespace crude_engine
 {
 
 // !TODO make something with allocator
-template<class T, class Allocator = Memory_System::Default_Free_RBT_Allocator>
+template<class T, class Allocator = Memory_System::Default_Allocator>
 class Shared_Ptr
 {
 public:

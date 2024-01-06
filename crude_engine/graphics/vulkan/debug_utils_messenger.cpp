@@ -1,25 +1,8 @@
-#include "debug_utils_messenger.hpp"
-#include "instance.hpp"
+#include <graphics/vulkan/debug_utils_messenger.hpp>
+#include <graphics/vulkan/instance.hpp>
 
 namespace crude_engine
 {
-  
-DebugUtilsMessengerCreateInfo::DebugUtilsMessengerCreateInfo(std::shared_ptr<const Instance>       instance,
-                                                             PFN_vkDebugUtilsMessengerCallbackEXT  pfnUserCallback,
-                                                             VkDebugUtilsMessageSeverityFlagsEXT   messageSeverity,
-                                                             VkDebugUtilsMessageTypeFlagsEXT       messageType,
-                                                             void*                                 pUserData,
-                                                             const void*                           pNext,
-                                                             VkDebugUtilsMessengerCreateFlagsEXT   flags)
-  :
-    instance(instance),
-    pfnUserCallback(pfnUserCallback),
-    messageSeverity(messageSeverity),
-    messageType(messageType),
-    pUserData(pUserData),
-    pNext(pNext),
-    flags(flags)
-{}
 
 VkResult Debug_Utils_Messenger::createDebugUtilsMessengerEXT(VkInstance instance,
                                                              const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
@@ -45,33 +28,43 @@ void Debug_Utils_Messenger::destroyDebugUtilsMessengerEXT(VkInstance instance,
   }
 }
 
-Debug_Utils_Messenger::Debug_Utils_Messenger(const DebugUtilsMessengerCreateInfo& createInfo)
+Debug_Utils_Messenger::Debug_Utils_Messenger(std::shared_ptr<const Instance>       instance,
+                                             PFN_vkDebugUtilsMessengerCallbackEXT  pfnUserCallback,
+                                             VkDebugUtilsMessageSeverityFlagsEXT   messageSeverity,
+                                             VkDebugUtilsMessageTypeFlagsEXT       messageType,
+                                             void*                                 pUserData,
+                                             const void*                           pNext,
+                                             VkDebugUtilsMessengerCreateFlagsEXT   flags)
+  :
+  m_instance(instance)
 {
   VkDebugUtilsMessengerCreateInfoEXT vkCreateInfo{};
   vkCreateInfo.sType            = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-  vkCreateInfo.pfnUserCallback  = createInfo.pfnUserCallback;
-  vkCreateInfo.messageSeverity  = createInfo.messageSeverity;
-  vkCreateInfo.messageType      = createInfo.messageType;
-  vkCreateInfo.pUserData        = createInfo.pUserData;
-  vkCreateInfo.pNext            = createInfo.pNext;
-  vkCreateInfo.flags            = createInfo.flags;
+  vkCreateInfo.pfnUserCallback  = pfnUserCallback;
+  vkCreateInfo.messageSeverity  = messageSeverity;
+  vkCreateInfo.messageType      = messageType;
+  vkCreateInfo.pUserData        = pUserData;
+  vkCreateInfo.pNext            = pNext;
+  vkCreateInfo.flags            = flags;
 
-  m_instance = createInfo.instance;
-
-  const VkAllocationCallbacks* pAllocator = nullptr;
-  const VkResult result = createDebugUtilsMessengerEXT(CRUDE_VULKAN_01_HANDLE(m_instance), &vkCreateInfo, pAllocator, &m_handle);
-  CRUDE_VULKAN_01_HANDLE_RESULT(result, "failed to create debug utils messenger");
+  const VkResult result = createDebugUtilsMessengerEXT(CRUDE_OBJECT_HANDLE(m_instance), &vkCreateInfo, &getVkAllocationCallbacks(), &m_handle);
+  CRUDE_VULKAN_HANDLE_RESULT(result, "failed to create debug utils messenger");
 }
 
 Debug_Utils_Messenger::~Debug_Utils_Messenger()
 {
   destroyDebugUtilsMessengerEXT(CRUDE_VULKAN_01_HANDLE(m_instance), m_handle, nullptr);
 }
-  
-const std::vector<const char*>& Debug_Utils_Messenger::requiredExtensions()
+
+constexpr const char* Debug_Utils_Messenger::pRequiredExtensions()
 {
-  static std::vector<const char*> extensions = {VK_EXT_DEBUG_UTILS_EXTENSION_NAME};
+  static constexpr char extensions[] = {VK_EXT_DEBUG_UTILS_EXTENSION_NAME};
   return extensions;
+}
+
+constexpr uint32 Debug_Utils_Messenger::requiredExtensionCount()
+{
+  return 1u;
 }
 
 }

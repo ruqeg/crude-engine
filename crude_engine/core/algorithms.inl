@@ -24,4 +24,15 @@ Output_Iterator Algorithms::copy(Input_Iterator first, Input_Iterator last, Outp
   return dFirst;
 }
 
+template<class Input_Iterator, class Output_Iterator, class Function>
+Output_Iterator Algorithms::copyc(Input_Iterator first, Input_Iterator last, Output_Iterator dFirst, const Function& func)
+{
+  while (first != last)
+  {
+    func(dFirst, first);
+    ++dFirst; ++first;
+  }
+  return dFirst;
+}
+
 }

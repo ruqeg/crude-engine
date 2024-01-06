@@ -1,41 +1,35 @@
-#include "command_buffer.hpp"
-#include "command_pool.hpp"
-#include "device.hpp"
-#include "image.hpp"
-#include "buffer.hpp"
-#include "render_pass.hpp"
-#include "framebuffer.hpp"
-#include "pipeline.hpp"
-#include "pipeline_layout.hpp"
-#include "descriptor_set.hpp"
+#include <graphics/vulkan/command_buffer.hpp>
+#include <graphics/vulkan/command_pool.hpp>
+#include <graphics/vulkan/device.hpp>
+#include <graphics/vulkan/image.hpp>
+#include <graphics/vulkan/buffer.hpp>
+#include <graphics/vulkan/render_pass.hpp>
+#include <graphics/vulkan/framebuffer.hpp>
+#include <graphics/vulkan/pipeline.hpp>
+#include <graphics/vulkan/pipeline_layout.hpp>
+#include <graphics/vulkan/descriptor_set.hpp>
 
 namespace crude_engine
 {
 
-Command_Buffer_Create_Info::Command_Buffer_Create_Info(std::shared_ptr<const Device>  device,
-                                                       std::shared_ptr<Command_Pool>  commandPool,
-                                                       VkCommandBufferLevel           level)
+
+Command_Buffer::Command_Buffer(Shared_Ptr<const Device>  device,
+                               Shared_Ptr<Command_Pool>  commandPool,
+                               VkCommandBufferLevel      level)
   :
-  device(device),
-  commandPool(commandPool),
-  level(level)
-{}
-
-Command_Buffer::Command_Buffer(const Command_Buffer_Create_Info& createInfo)
+  m_device(device),
+  m_commandPool(commandPool)
 {
-  m_device       = createInfo.device;
-  m_commandPool  = createInfo.commandPool;
-
   VkCommandBufferAllocateInfo vkAllocateInfo{};
   vkAllocateInfo.sType               = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
   vkAllocateInfo.pNext               = nullptr;
-
-  vkAllocateInfo.commandPool         = CRUDE_VULKAN_01_HANDLE(m_commandPool);
-  vkAllocateInfo.level               = createInfo.level;
+  vkAllocateInfo.commandPool         = CRUDE_OBJECT_HANDLE(m_commandPool);
+  vkAllocateInfo.level               = level;
   vkAllocateInfo.commandBufferCount  = 1u;
 
-  VkResult result = vkAllocateCommandBuffers(CRUDE_VULKAN_01_HANDLE(m_device), &vkAllocateInfo, &m_handle);
-  CRUDE_VULKAN_01_HANDLE_RESULT(result, "failed to allocate command buffer");
+
+  VkResult result = vkAllocateCommandBuffers(CRUDE_OBJECT_HANDLE(m_device), &vkAllocateInfo, &m_handle);
+  CRUDE_VULKAN_HANDLE_RESULT(result, "failed to allocate command buffer");
 }
 
 bool Command_Buffer::begin(VkCommandBufferUsageFlags flags)
@@ -65,20 +59,50 @@ bool Command_Buffer::end()
   return result == VK_SUCCESS;
 }
 
-void Command_Buffer::barrier(VkPipelineStageFlags srcStage, VkPipelineStageFlags dstStage, const std::vector<Image_Memory_Barrier>& imageMemoryBarriers)
+void Command_Buffer::barrier(VkPipelineStageFlags  srcStage,
+                             VkPipelineStageFlags  dstStage, 
+                             Image_Memory_Barrier* pImageMemoryBarriers, 
+                             uint32                imageMemoryBarrierCount)
 {
-  std::vector<VkImageMemoryBarrier> vkImageMemoryBarriers(imageMemoryBarriers.begin(), imageMemoryBarriers.end());
-  vkCmdPipelineBarrier(m_handle, srcStage, dstStage, 0u, 0u, nullptr, 0u, nullptr, vkImageMemoryBarriers.size(), vkImageMemoryBarriers.data());
+  CRUDE_ASSERT(pImageMemoryBarriers);
 
-  for (uint32 i = 0u; i < imageMemoryBarriers.size(); ++i)
+  auto pVkImageMemoryBarriers = Memory_System::Default_Allocator::mnewArray<VkImageMemoryBarrier>(imageMemoryBarrierCount);
+  Algorithms::copy(pImageMemoryBarriers, pImageMemoryBarriers + imageMemoryBarrierCount, pVkImageMemoryBarriers);
+
+  vkCmdPipelineBarrier(
+    m_handle, 
+    srcStage, 
+    dstStage, 
+    0u, 
+    0u, 
+    nullptr, 
+    0u, 
+    nullptr, 
+    imageMemoryBarrierCount,
+    pVkImageMemoryBarriers);
+
+  for (uint32 i = 0u; i < imageMemoryBarrierCount; ++i)
   {
-    imageMemoryBarriers[i].m_image->setLayout(imageMemoryBarriers[i].newLayout);
+    pImageMemoryBarriers[i].m_image->setLayout(pImageMemoryBarriers[i].newLayout);
   }
 }
-
-void Command_Buffer::copyBufferToImage(std::shared_ptr<Buffer> srcBuffer, std::shared_ptr<Image> dstImage, const std::vector<VkBufferImageCopy>& regions)
+  
+void Command_Buffer::copyBufferToImage(Buffer*            pSrcBuffer,
+                                       Image*             pDstImage, 
+                                       VkBufferImageCopy* pRegions, 
+                                       uint32             regionCount)
 {
-  vkCmdCopyBufferToImage(m_handle, CRUDE_VULKAN_01_HANDLE(srcBuffer), CRUDE_VULKAN_01_HANDLE(dstImage), dstImage->getLayout(), regions.size(), regions.data());
+  CRUDE_ASSERT(pSrcBuffer);
+  CRUDE_ASSERT(pDstImage);
+  CRUDE_ASSERT(pRegions);
+
+  vkCmdCopyBufferToImage(
+    m_handle, 
+    CRUDE_OBJECT_HANDLE(pSrcBuffer), 
+    CRUDE_OBJECT_HANDLE(pDstImage), 
+    pDstImage->getLayout(), 
+    regionCount,
+    pRegions);
 }
 
 bool Command_Buffer::reset(VkCommandBufferResetFlags flags)
@@ -87,20 +111,25 @@ bool Command_Buffer::reset(VkCommandBufferResetFlags flags)
   return result != VK_ERROR_OUT_OF_DEVICE_MEMORY;
 }
 
-void Command_Buffer::beginRenderPass(std::shared_ptr<Render_Pass>      renderPass,
-                                     std::shared_ptr<Framebuffer>      framebuffer,
-                                     const std::vector<VkClearValue>&  clearValues,
-                                     const VkRect2D&                   renderArea, 
-                                     VkSubpassContents                 contents)
+void Command_Buffer::beginRenderPass(Render_Pass*       pRenderPass,
+                                     Framebuffer*       pFramebuffer,
+                                     VkClearValue*      pClearValues,
+                                     uint32             clearValueCount,
+                                     const VkRect2D&    renderArea, 
+                                     VkSubpassContents  contents)
 {
+  CRUDE_ASSERT(pRenderPass);
+  CRUDE_ASSERT(pFramebuffer);
+  CRUDE_ASSERT(pClearValues);
+
   VkRenderPassBeginInfo renderPassInfo{};
   renderPassInfo.sType            = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
   renderPassInfo.pNext            = nullptr;
-  renderPassInfo.renderPass       = CRUDE_VULKAN_01_HANDLE(renderPass);
-  renderPassInfo.framebuffer      = CRUDE_VULKAN_01_HANDLE(framebuffer);
+  renderPassInfo.renderPass       = CRUDE_OBJECT_HANDLE(pRenderPass);
+  renderPassInfo.framebuffer      = CRUDE_OBJECT_HANDLE(pFramebuffer);
   renderPassInfo.renderArea       = renderArea;
-  renderPassInfo.clearValueCount  = static_cast<uint32>(clearValues.size());
-  renderPassInfo.pClearValues     = clearValues.data();
+  renderPassInfo.clearValueCount  = clearValueCount;
+  renderPassInfo.pClearValues     = pClearValues;
   
   vkCmdBeginRenderPass(
     m_handle,
@@ -110,51 +139,66 @@ void Command_Buffer::beginRenderPass(std::shared_ptr<Render_Pass>      renderPas
   m_withinRenderPass = true;
 }
 
-void Command_Buffer::bindPipeline(std::shared_ptr<Pipeline> pipeline)
+void Command_Buffer::bindPipeline(Pipeline* pPipeline)
 {
+  CRUDE_ASSERT(pPipeline);
+
   vkCmdBindPipeline(
     m_handle,
-    pipeline->getBindPoint(),
-    CRUDE_VULKAN_01_HANDLE(pipeline));
+    pPipeline->getBindPoint(),
+    CRUDE_OBJECT_HANDLE(pPipeline));
 }
 
-void Command_Buffer::setViewport(const std::vector<VkViewport>& viewports)
+void Command_Buffer::setViewport(VkViewport* pViewports, uint32 viewportCount)
 {
+  CRUDE_ASSERT(pViewports);
+
   constexpr uint32 offset = 0u;
   vkCmdSetViewport(
     m_handle,
     offset,
-    static_cast<uint32>(viewports.size()),
-    viewports.data());
+    viewportCount,
+    pViewports);
 }
 
-void Command_Buffer::setScissor(const std::vector<VkRect2D>& scissors)
+void Command_Buffer::setScissor(VkRect2D* pScissors, uint32 scissorCount)
 {
+  CRUDE_ASSERT(pScissors);
+
   constexpr uint32 offset = 0u;
   vkCmdSetScissor(
     m_handle,
     offset,
-    static_cast<uint32>(scissors.size()),
-    scissors.data());
+    scissorCount,
+    pScissors);
 }
 
-void Command_Buffer::bindDescriptorSets(std::shared_ptr<Pipeline> pipeline, const std::vector<std::shared_ptr<Descriptor_Set>>& descriptorSets, const std::vector<uint32>& dynamicOffsets)
+void Command_Buffer::bindDescriptorSets(Pipeline*         pPipeline,
+                                        Descriptor_Set**  pDescriptorSets, 
+                                        uint32            descriptorSetCount, 
+                                        uint32*           pDynamicOffsets,
+                                        uint32            dynamicOffsetCount)
 {
+  CRUDE_ASSERT(pPipeline);
+  CRUDE_ASSERT(pDescriptorSets);
+  CRUDE_ASSERT(pDynamicOffsets);
+
   constexpr uint32 offset = 0u;
 
-  std::vector<VkDescriptorSet> descriptorSetsHandles(descriptorSets.size());
-  for (uint32 i = 0; i < descriptorSetsHandles.size(); ++i)
-    descriptorSetsHandles[i] = CRUDE_VULKAN_01_HANDLE(descriptorSets[i]);
+  auto pDescriptorSetsHandles = Memory_System::Default_Allocator::mnewArray<VkDescriptorSet>(descriptorSetCount);
+  Algorithms::copyc(pDescriptorSets, pDescriptorSets + descriptorSetCount, pDescriptorSetsHandles, [](Descriptor_Set* s, VkDescriptorSet* d) -> void {
+    *d = CRUDE_OBJECT_HANDLE(s);
+  });
 
   vkCmdBindDescriptorSets(
     m_handle,
-    pipeline->getBindPoint(),
-    CRUDE_VULKAN_01_HANDLE(pipeline->getPipelineLayout()),
+    pPipeline->getBindPoint(),
+    CRUDE_OBJECT_HANDLE(pPipeline->getPipelineLayout()),
     offset,
-    static_cast<uint32>(descriptorSetsHandles.size()),
-    descriptorSetsHandles.data(),
-    static_cast<uint32>(dynamicOffsets.size()),
-    dynamicOffsets.data());
+    descriptorSetCount,
+    pDescriptorSetsHandles,
+    dynamicOffsetCount,
+    pDynamicOffsets);
 }
 
 void Command_Buffer::draw(uint32 vertexCount, uint32 instanceCount, uint32 firstVertex, uint32 firstInstance)
@@ -173,7 +217,11 @@ void Command_Buffer::endRenderPass()
 
 Command_Buffer::~Command_Buffer()
 {
-  vkFreeCommandBuffers(CRUDE_VULKAN_01_HANDLE(m_device), CRUDE_VULKAN_01_HANDLE(m_commandPool), 1u, &m_handle);
+  vkFreeCommandBuffers(
+    CRUDE_OBJECT_HANDLE(m_device), 
+    CRUDE_OBJECT_HANDLE(m_commandPool), 
+    1u, 
+    &m_handle);
 }
 
 }

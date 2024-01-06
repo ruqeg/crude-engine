@@ -1,32 +1,19 @@
 #pragma once
 
-#include "../../core/core.hpp"
-#include "include_vulkan.hpp"
-#include <vector>
-#include <array>
+#include <core/data_structures/array_stack.hpp>
+#include <graphics/vulkan/include_vulkan.hpp>
 
 namespace crude_engine
 {
 
-class Color_Blend_State_Create_Info : public VkPipelineColorBlendStateCreateInfo
+class Color_Blend_State_Create_Info final : public VkPipelineColorBlendStateCreateInfo
 {
 public:
-  explicit Color_Blend_State_Create_Info(const std::vector<VkPipelineColorBlendAttachmentState>&  attachments,
-                                         const std::array<float32, 4>&                            blendConstants,
-                                         VkBool32                                                 logicOpEnable,
-                                         VkLogicOp                                                logicOp);
-  Color_Blend_State_Create_Info(const Color_Blend_State_Create_Info& other);
-  Color_Blend_State_Create_Info(Color_Blend_State_Create_Info&& other) noexcept;
-  Color_Blend_State_Create_Info& operator=(const Color_Blend_State_Create_Info& other);
-  Color_Blend_State_Create_Info& operator=(Color_Blend_State_Create_Info&& other) noexcept;
-  ~Color_Blend_State_Create_Info();
-private:
-  void copy(const VkPipelineColorBlendAttachmentState*  pAttachments,
-            uint32                                      attachmentsCount,
-            const float32*                              pBlendConstants,
-            VkBool32                                    logicOpEnable,
-            VkLogicOp                                   logicOp);
-  void move(Color_Blend_State_Create_Info& other);
+  explicit Color_Blend_State_Create_Info(const VkPipelineColorBlendAttachmentState*&  pAttachments,
+                                         uint32                                       attachmentCount,
+                                         const Array_Stack<float32, 4>&               blendConstants,
+                                         VkBool32                                     logicOpEnable,
+                                         VkLogicOp                                    logicOp);
 };
 
 }

@@ -1,37 +1,27 @@
 #pragma once
 
-#include "../../core/core.hpp"
-#include "include_vulkan.hpp"
-#include "object.hpp"
-#include <vector>
+#include <core/data_structures/shared_ptr.hpp>
+#include <graphics/vulkan/include_vulkan.hpp>
+#include <graphics/vulkan/object.hpp>
 
 namespace crude_engine
 {
 
 class Device;
 
-struct Buffer_Create_Info
-{
-  std::shared_ptr<const Device>  device;
-  VkDeviceSize                   size;
-  VkBufferUsageFlags             usage;
-  VkSharingMode                  sharingMode;
-  std::vector<uint32>            queueFamilyIndices;
-  explicit Buffer_Create_Info(std::shared_ptr<const Device>  device,
-                              VkDeviceSize                   size,
-                              VkBufferUsageFlags             usage,
-                              VkSharingMode                  sharingMode,
-                              const std::vector<uint32>&     queueFamilyIndices);
-};
-
 class Buffer : public TObject<VkBuffer>
 {
 public:
-  explicit Buffer(const Buffer_Create_Info& createInfo);
+  explicit Buffer(Shared_Ptr<const Device>  device,
+                  VkDeviceSize              size,
+                  VkBufferUsageFlags        usage,
+                  VkSharingMode             sharingMode,
+                  uint32*                   pQueueFamilyIndices,
+                  uint32                    queueFamilyIndexCount);
   ~Buffer();
   VkMemoryRequirements getMemoryRequirements() const;
 private:
-  std::shared_ptr<const Device>  m_device;
+  const Shared_Ptr<const Device>  m_device;
 };
 
 }

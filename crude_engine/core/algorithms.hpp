@@ -13,6 +13,9 @@ public:
 
   template<class Input_Iterator, class Output_Iterator>
   static Output_Iterator copy(Input_Iterator first, Input_Iterator last, Output_Iterator dFirst);
+
+  template<class Input_Iterator, class Output_Iterator, class Function>
+  static Output_Iterator copyc(Input_Iterator first, Input_Iterator last, Output_Iterator dFirst, const Function& func);
 };
 
 }
