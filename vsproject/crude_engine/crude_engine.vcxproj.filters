@@ -184,6 +184,9 @@
     <ClCompile Include="..\..\crude_engine\core\memory\memory_manager.cpp">
       <Filter>source\core\memory</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\crude_engine\graphics\vulkan\vulkan_allocator.cpp">
+      <Filter>source\graphics\vulkan</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\crude_engine\core\memory\linear_allocator.hpp">
@@ -401,6 +404,9 @@
     </ClInclude>
     <ClInclude Include="..\..\crude_engine\core\data_structures\shared_ptr.hpp">
       <Filter>source\core\data_structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\crude_engine\graphics\vulkan\vulkan_allocator.hpp">
+      <Filter>source\graphics\vulkan</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

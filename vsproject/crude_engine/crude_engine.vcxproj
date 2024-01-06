@@ -195,6 +195,7 @@
     <ClCompile Include="..\..\crude_engine\graphics\vulkan\tessellation_state_create_info.cpp" />
     <ClCompile Include="..\..\crude_engine\graphics\vulkan\vertex_input_state_create_info.cpp" />
     <ClCompile Include="..\..\crude_engine\graphics\vulkan\viewport_state_create_info.cpp" />
+    <ClCompile Include="..\..\crude_engine\graphics\vulkan\vulkan_allocator.cpp" />
     <ClCompile Include="..\..\crude_engine\graphics\vulkan\write_descriptor_set.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -269,6 +270,7 @@
     <ClInclude Include="..\..\crude_engine\graphics\vulkan\tessellation_state_create_info.hpp" />
     <ClInclude Include="..\..\crude_engine\graphics\vulkan\vertex_input_state_create_info.hpp" />
     <ClInclude Include="..\..\crude_engine\graphics\vulkan\viewport_state_create_info.hpp" />
+    <ClInclude Include="..\..\crude_engine\graphics\vulkan\vulkan_allocator.hpp" />
     <ClInclude Include="..\..\crude_engine\graphics\vulkan\write_descriptor_set.hpp" />
   </ItemGroup>
   <ItemGroup>

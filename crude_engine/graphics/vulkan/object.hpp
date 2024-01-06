@@ -13,6 +13,8 @@ protected:
   Type m_handle;
 };
 
+#define CRUDE_OBJECT_HANDLE(pData) pData->getHandle()
+
 } // namespace crude_engine
 
 #include "object.inl"

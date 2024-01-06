@@ -1,6 +1,7 @@
 #pragma once
 
 #include <core/memory/memory_manager.hpp>
+#include <malloc.h>
 
 namespace crude_engine
 {
@@ -48,6 +49,24 @@ public:
     static void reset() noexcept
     {
       return Memory_Manager::getInstance().getDefaultFreeRBTAllocators().reset();
+    }
+  };
+
+  // !TODO
+  class Default_Aligned_Allocator
+  {
+  public:
+    static CRUDE_NODISCARD void* allocate(std::size_t size, std::size_t alignment)
+    {
+      return _aligned_malloc(size, alignment);
+    }
+    static CRUDE_NODISCARD void* reallocate(void* ptr, std::size_t size, std::size_t alignment)
+    {
+      return _aligned_realloc(ptr, size, alignment);
+    }
+    static void free(void* ptr)
+    {
+      _aligned_free(ptr);
     }
   };
 };
