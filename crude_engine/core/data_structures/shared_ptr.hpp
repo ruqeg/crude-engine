@@ -34,6 +34,8 @@ public:
   CRUDE_INLINE const T& operator*() const noexcept;
   CRUDE_INLINE const T* operator->() const noexcept;
 
+  explicit operator bool() const noexcept;
+
 protected:
   CRUDE_INLINE T* getPtr() noexcept;
   CRUDE_INLINE Ref_Count_Pointer getRefCount() noexcept;
@@ -157,6 +159,12 @@ template<class T, class Allocator>
 const T* Shared_Ptr<T, Allocator>::operator->() const noexcept
 {
   return getPtr();
+}
+
+template<class T, class Allocator>
+Shared_Ptr<T, Allocator>::operator bool() const noexcept
+{
+  return (m_memBlock != nullptr);
 }
 
 template<class T, class Allocator>

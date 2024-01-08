@@ -146,6 +146,12 @@ Array_Dynamic<T, Allocator>::Const_Reference Array_Dynamic<T, Allocator>::operat
 }
 
 template<class T, class Allocator>
+bool Array_Dynamic<T, Allocator>::empty() const noexcept
+{
+  return (m_size == 0u);
+}
+
+template<class T, class Allocator>
 Array_Dynamic<T, Allocator>::Size_Type Array_Dynamic<T, Allocator>::size() const noexcept
 {
   return m_size;

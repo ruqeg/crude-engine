@@ -1,46 +1,41 @@
-#include "physical_device.hpp"
-#include "surface.hpp"
+#include <graphics/vulkan/physical_device.hpp>
+#include <graphics/vulkan/surface.hpp>
 
 namespace crude_engine
 {
-
-Physical_Device_Create_Info::Physical_Device_Create_Info(VkPhysicalDevice vkPhysicalDevice)
-  :
-  vkPhysicalDevice(vkPhysicalDevice)
-{}
-  
-Physical_Device::Physical_Device(const Physical_Device_Create_Info& createInfo)
+ 
+Physical_Device::Physical_Device(VkPhysicalDevice vkPhysicalDevice)
 {
-  m_handle = createInfo.vkPhysicalDevice;
+  m_handle = vkPhysicalDevice;
 }
   
-bool Physical_Device::getSupportSurface(std::shared_ptr<const Surface> surface, uint32 queueFamilyIndex) const
+bool Physical_Device::getSupportSurface(Shared_Ptr<const Surface> surface, uint32 queueFamilyIndex) const
 {
   VkBool32 presentSupport = false;
   vkGetPhysicalDeviceSurfaceSupportKHR(
     m_handle,
     queueFamilyIndex,
-    CRUDE_VULKAN_01_HANDLE(surface),
+    CRUDE_OBJECT_HANDLE(surface),
     &presentSupport);
   return presentSupport;
 }
   
-VkSurfaceCapabilitiesKHR Physical_Device::getSurfaceCapabilitis(std::shared_ptr<const Surface> surface) const
+VkSurfaceCapabilitiesKHR Physical_Device::getSurfaceCapabilitis(Shared_Ptr<const Surface> surface) const
 {
   VkSurfaceCapabilitiesKHR capabilities;
   vkGetPhysicalDeviceSurfaceCapabilitiesKHR(
     m_handle, 
-    CRUDE_VULKAN_01_HANDLE(surface),
+    CRUDE_OBJECT_HANDLE(surface),
     &capabilities);
   return capabilities;
 }
    
-std::vector<VkSurfaceFormatKHR> Physical_Device::getSurfaceFormats(std::shared_ptr<const Surface> surface)
+Array_Dynamic<VkSurfaceFormatKHR> Physical_Device::getSurfaceFormats(Shared_Ptr<const Surface> surface)
 {
   uint32 formatCount;
   vkGetPhysicalDeviceSurfaceFormatsKHR(
     m_handle, 
-    CRUDE_VULKAN_01_HANDLE(surface), 
+    CRUDE_OBJECT_HANDLE(surface),
     &formatCount, 
     nullptr);
 
@@ -49,21 +44,21 @@ std::vector<VkSurfaceFormatKHR> Physical_Device::getSurfaceFormats(std::shared_p
     return {};
   }
 
-  std::vector<VkSurfaceFormatKHR> formats(formatCount);
+  Array_Dynamic<VkSurfaceFormatKHR> formats(formatCount);
   vkGetPhysicalDeviceSurfaceFormatsKHR(
     m_handle, 
-    CRUDE_VULKAN_01_HANDLE(surface),
+    CRUDE_OBJECT_HANDLE(surface),
     &formatCount, 
     formats.data());
   return formats;
 }
-  
-std::vector<VkPresentModeKHR> Physical_Device::getSurfacePresentModes(std::shared_ptr<const Surface> surface)
+
+Array_Dynamic<VkPresentModeKHR> Physical_Device::getSurfacePresentModes(Shared_Ptr<const Surface> surface)
 {
   uint32 presentModeCount;
   vkGetPhysicalDeviceSurfacePresentModesKHR(
     m_handle, 
-    CRUDE_VULKAN_01_HANDLE(surface),
+    CRUDE_OBJECT_HANDLE(surface),
     &presentModeCount, 
     nullptr);
 
@@ -72,17 +67,17 @@ std::vector<VkPresentModeKHR> Physical_Device::getSurfacePresentModes(std::share
     return {};
   }
 
-  std::vector<VkPresentModeKHR> presentModes(presentModeCount);
+  Array_Dynamic<VkPresentModeKHR> presentModes(presentModeCount);
   vkGetPhysicalDeviceSurfacePresentModesKHR(
     m_handle, 
-    CRUDE_VULKAN_01_HANDLE(surface), 
+    CRUDE_OBJECT_HANDLE(surface),
     &presentModeCount, 
     presentModes.data());
 
   return presentModes;
 }
 
-std::vector<VkQueueFamilyProperties> Physical_Device::getQueueFamilyProperties() const
+Array_Dynamic<VkQueueFamilyProperties> Physical_Device::getQueueFamilyProperties() const
 {
   uint32 queueFamilyCount = 0u;
   vkGetPhysicalDeviceQueueFamilyProperties(
@@ -95,7 +90,7 @@ std::vector<VkQueueFamilyProperties> Physical_Device::getQueueFamilyProperties()
     return {};
   }
 
-  std::vector<VkQueueFamilyProperties> queueFamiliesProperties(queueFamilyCount);
+  Array_Dynamic<VkQueueFamilyProperties> queueFamiliesProperties(queueFamilyCount);
   vkGetPhysicalDeviceQueueFamilyProperties(
     m_handle, 
     &queueFamilyCount, 
@@ -104,7 +99,7 @@ std::vector<VkQueueFamilyProperties> Physical_Device::getQueueFamilyProperties()
   return queueFamiliesProperties;
 }
   
-std::vector<VkExtensionProperties> Physical_Device::getExtensionProperties() const
+Array_Dynamic<VkExtensionProperties> Physical_Device::getExtensionProperties() const
 {
   uint32 extensionCount = 0u;
   vkEnumerateDeviceExtensionProperties(m_handle, nullptr, &extensionCount, nullptr);
@@ -113,7 +108,7 @@ std::vector<VkExtensionProperties> Physical_Device::getExtensionProperties() con
     return {};
   }
     
-  std::vector<VkExtensionProperties> extensions(extensionCount);
+  Array_Dynamic<VkExtensionProperties> extensions(extensionCount);
   vkEnumerateDeviceExtensionProperties(m_handle, nullptr, &extensionCount, extensions.data());
   
   return extensions;

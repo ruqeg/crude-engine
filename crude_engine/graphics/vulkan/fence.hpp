@@ -1,31 +1,23 @@
 #pragma once
 
-#include "../../core/core.hpp"
-#include "include_vulkan.hpp"
-#include "object.hpp"
-#include <limits>
+#include <core/data_structures/shared_ptr.hpp>
+#include <graphics/vulkan/include_vulkan.hpp>
+#include <graphics/vulkan/object.hpp>
 
 namespace crude_engine
 {
 
 class Device;
 
-struct Fence_Create_Info
-{
-  std::shared_ptr<const Device>  device;
-  VkFenceCreateFlags             flags;
-  explicit Fence_Create_Info(std::shared_ptr<const Device> device, VkFenceCreateFlags flags);
-};
-
 class Fence : public TObject<VkFence>
 {
 public:
-  explicit Fence(const Fence_Create_Info& createInfo);
+  explicit Fence(Shared_Ptr<const Device> device, VkFenceCreateFlags flags);
   ~Fence();
-  bool wait(uint64 timeout = std::numeric_limits<uint64>::max());
+  bool wait(uint64 timeout = UINT64_MAX);
   bool reset();
 private:
-  std::shared_ptr<const Device>  m_device;
+  Shared_Ptr<const Device>  m_device;
 };
 
 }

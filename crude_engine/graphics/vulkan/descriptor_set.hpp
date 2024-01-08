@@ -15,9 +15,9 @@ class Descriptor_Pool;
 class Descriptor_Set : public TObject<VkDescriptorSet>
 {
 public:
-  explicit Descriptor_Set(Shared_Ptr<const Device>                                 device,
+  explicit Descriptor_Set(Shared_Ptr<const Device>                           device,
                           Array_Dynamic<Shared_Ptr<Descriptor_Set_Layout>>&  setLayouts,
-                          Shared_Ptr<Descriptor_Pool>                              pool);
+                          Shared_Ptr<Descriptor_Pool>                        pool);
   ~Descriptor_Set();
 private:
   Shared_Ptr<const Device>                          m_device;

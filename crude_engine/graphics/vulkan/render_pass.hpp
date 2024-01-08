@@ -1,33 +1,26 @@
 #pragma once
 
-#include "subpass_description.hpp"
-#include "subpass_dependency.hpp"
-#include "attachment_description.hpp"
+#include <core/data_structures/array_unsafe.hpp>
+#include <core/data_structures/shared_ptr.hpp>
+#include <graphics/vulkan/subpass_dependency.hpp>
+#include <graphics/vulkan/subpass_description.hpp>
+#include <graphics/vulkan/attachment_description.hpp>
 
 namespace crude_engine
 {
 
 class Device;
 
-struct Render_Pass_Create_Info
-{
-  std::shared_ptr<const Device>        device;
-  std::vector<Subpass_Description>     subpasses;
-  std::vector<Subpass_Dependency>      subpassesDependencies;
-  std::vector<Attachment_Description>  attachments;
-  explicit Render_Pass_Create_Info(std::shared_ptr<const Device>            device,
-                                const std::vector<Subpass_Description>&     subpasses,
-                                const std::vector<Subpass_Dependency>&      subpassesDependencies,
-                                const std::vector<Attachment_Description>&  attachments);
-};
-
 class Render_Pass : public TObject<VkRenderPass>
 {
 public:
-  explicit Render_Pass(const Render_Pass_Create_Info& createInfo);
+  explicit Render_Pass(Shared_Ptr<const Device>                     device,
+                       const Array_Unsafe<Subpass_Description>&     subpasses,
+                       const Array_Unsafe<Subpass_Dependency>&      subpassesDependencies,
+                       const Array_Unsafe<Attachment_Description>&  attachments);
   ~Render_Pass();
 private:
-  std::shared_ptr<const Device>  m_device;
+  Shared_Ptr<const Device>  m_device;
 };
 
 }

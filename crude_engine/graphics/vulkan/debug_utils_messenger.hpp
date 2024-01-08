@@ -1,5 +1,6 @@
 #pragma once
 
+#include <core/data_structures/array_unsafe.hpp>
 #include <core/data_structures/shared_ptr.hpp>
 #include <graphics/vulkan/object.hpp>
 #include <graphics/vulkan/include_vulkan.hpp>
@@ -9,7 +10,7 @@ namespace crude_engine
 
 class Instance;
 
-class Debug_Utils_Messenger : public TObject<VkDebugUtilsMessengerEXT>, public Requiring_Extensions
+class Debug_Utils_Messenger : public TObject<VkDebugUtilsMessengerEXT>
 {
 public:
   Debug_Utils_Messenger(Shared_Ptr<const Instance>            instance,
@@ -21,8 +22,7 @@ public:
                         VkDebugUtilsMessengerCreateFlagsEXT   flags           = 0u);
   ~Debug_Utils_Messenger();
 public:
-  static constexpr const char* pRequiredExtensions();
-  static constexpr uint32 requiredExtensionCount();
+  static const Array_Unsafe<const char>& requiredExtensions();
 private:
   void destroyDebugUtilsMessengerEXT(VkInstance instance, 
                                      VkDebugUtilsMessengerEXT debugMessenger, 

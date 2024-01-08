@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../../core/core.hpp"
-#include "include_vulkan.hpp"
-#include "object.hpp"
-#include <optional>
+#include <core/data_structures/shared_ptr.hpp>
+#include <core/data_structures/optional.hpp>
+#include <graphics/vulkan/include_vulkan.hpp>
+#include <graphics/vulkan/object.hpp>
 
 namespace crude_engine
 {
@@ -12,31 +12,26 @@ class Device;
 class Image;
 class Buffer;
 
-struct Device_Memory_Allocate_Info
-{
-  std::shared_ptr<const Device>  device;
-  VkDeviceSize                   allocationSize;
-  uint32                         memoryTypeIndex;
-  explicit Device_Memory_Allocate_Info(std::shared_ptr<const Device>  device,
-                                       VkDeviceSize                   allocationSize,
-                                       uint32                         memoryTypeIndex);
-  explicit Device_Memory_Allocate_Info(std::shared_ptr<const Device>  device,
-                                       VkDeviceSize                   allocationSize,
-                                       uint32                         memoryTypeFilter,
-                                       VkMemoryPropertyFlags          memoryProperties);
-};
-
 class Device_Memory : public TObject<VkDeviceMemory>
 {
 public:
-  explicit Device_Memory(const Device_Memory_Allocate_Info& createInfo);
+  explicit Device_Memory(Shared_Ptr<const Device>  device,
+                         VkDeviceSize              allocationSize,
+                         uint32                    memoryTypeIndex);
+
+  explicit Device_Memory(Shared_Ptr<const Device>  device,
+                         VkDeviceSize              allocationSize,
+                         uint32                    memoryTypeFilter,
+                         VkMemoryPropertyFlags     memoryProperties);
   ~Device_Memory();
   void bind(Image& image, VkDeviceSize offset = 0u);
   void bind(Buffer& buffer, VkDeviceSize offset = 0u);
-  std::optional<void*> map(VkDeviceSize offset = 0u, VkDeviceSize size = VK_WHOLE_SIZE, VkMemoryMapFlags flags = 0);
+  Optional<void*> map(VkDeviceSize offset = 0u, VkDeviceSize size = VK_WHOLE_SIZE, VkMemoryMapFlags flags = 0);
   void unmap();
 private:
-  std::shared_ptr<const Device>  m_device;
+  void initalize(VkDeviceSize allocationSize, uint32 memoryTypeIndex);
+private:
+  Shared_Ptr<const Device>  m_device;
 };
 
 }

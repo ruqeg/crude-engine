@@ -60,15 +60,14 @@ bool Command_Buffer::end()
   return result == VK_SUCCESS;
 }
 
-void Command_Buffer::barrier(VkPipelineStageFlags  srcStage,
-                             VkPipelineStageFlags  dstStage, 
-                             Image_Memory_Barrier* pImageMemoryBarriers, 
-                             uint32                imageMemoryBarrierCount)
+void Command_Buffer::barrier(VkPipelineStageFlags                srcStage, 
+                             VkPipelineStageFlags                dstStage, 
+                             Array_Unsafe<Image_Memory_Barrier>& imageMemoryBarriers)
 {
-  CRUDE_ASSERT(pImageMemoryBarriers);
+  CRUDE_ASSERT(imageMemoryBarriers.data());
 
-  Array_Dynamic<VkImageMemoryBarrier> pVkImageMemoryBarriers(imageMemoryBarrierCount);
-  Algorithms::copy(pImageMemoryBarriers, pImageMemoryBarriers + imageMemoryBarrierCount, pVkImageMemoryBarriers.begin());
+  Array_Dynamic<VkImageMemoryBarrier> pVkImageMemoryBarriers(imageMemoryBarriers.size());
+  Algorithms::copy(imageMemoryBarriers.begin(), imageMemoryBarriers.end(), pVkImageMemoryBarriers.begin());
 
   vkCmdPipelineBarrier(
     m_handle, 
@@ -79,31 +78,30 @@ void Command_Buffer::barrier(VkPipelineStageFlags  srcStage,
     nullptr, 
     0u, 
     nullptr, 
-    imageMemoryBarrierCount,
+    pVkImageMemoryBarriers.size(),
     pVkImageMemoryBarriers.data());
 
-  for (uint32 i = 0u; i < imageMemoryBarrierCount; ++i)
+  for (uint32 i = 0u; i < imageMemoryBarriers.size(); ++i)
   {
-    pImageMemoryBarriers[i].m_image->setLayout(pImageMemoryBarriers[i].newLayout);
+    imageMemoryBarriers[i].m_image->setLayout(imageMemoryBarriers[i].newLayout);
   }
 }
   
-void Command_Buffer::copyBufferToImage(Buffer*            pSrcBuffer,
-                                       Image*             pDstImage, 
-                                       VkBufferImageCopy* pRegions, 
-                                       uint32             regionCount)
+void Command_Buffer::copyBufferToImage(Shared_Ptr<Buffer>              srcBuffer, 
+                                       Shared_Ptr<Image>               dstImage, 
+                                       Array_Unsafe<VkBufferImageCopy> regions)
 {
-  CRUDE_ASSERT(pSrcBuffer);
-  CRUDE_ASSERT(pDstImage);
-  CRUDE_ASSERT(pRegions);
+  CRUDE_ASSERT(srcBuffer);
+  CRUDE_ASSERT(dstImage);
+  CRUDE_ASSERT(regions.data());
 
   vkCmdCopyBufferToImage(
     m_handle, 
-    CRUDE_OBJECT_HANDLE(pSrcBuffer), 
-    CRUDE_OBJECT_HANDLE(pDstImage), 
-    pDstImage->getLayout(), 
-    regionCount,
-    pRegions);
+    CRUDE_OBJECT_HANDLE(srcBuffer), 
+    CRUDE_OBJECT_HANDLE(dstImage), 
+    dstImage->getLayout(), 
+    regions.size(),
+    regions.data());
 }
 
 bool Command_Buffer::reset(VkCommandBufferResetFlags flags)
@@ -112,25 +110,24 @@ bool Command_Buffer::reset(VkCommandBufferResetFlags flags)
   return result != VK_ERROR_OUT_OF_DEVICE_MEMORY;
 }
 
-void Command_Buffer::beginRenderPass(Render_Pass*       pRenderPass,
-                                     Framebuffer*       pFramebuffer,
-                                     VkClearValue*      pClearValues,
-                                     uint32             clearValueCount,
-                                     const VkRect2D&    renderArea, 
-                                     VkSubpassContents  contents)
+void Command_Buffer::beginRenderPass(Shared_Ptr<Render_Pass>     renderPass,
+                                     Shared_Ptr<Framebuffer>     framebuffer,
+                                     Array_Unsafe<VkClearValue>  clearValues,
+                                     const VkRect2D&             renderArea, 
+                                     VkSubpassContents           contents)
 {
-  CRUDE_ASSERT(pRenderPass);
-  CRUDE_ASSERT(pFramebuffer);
-  CRUDE_ASSERT(pClearValues);
+  CRUDE_ASSERT(renderPass);
+  CRUDE_ASSERT(framebuffer);
+  CRUDE_ASSERT(clearValues.data());
 
   VkRenderPassBeginInfo renderPassInfo{};
   renderPassInfo.sType            = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
   renderPassInfo.pNext            = nullptr;
-  renderPassInfo.renderPass       = CRUDE_OBJECT_HANDLE(pRenderPass);
-  renderPassInfo.framebuffer      = CRUDE_OBJECT_HANDLE(pFramebuffer);
+  renderPassInfo.renderPass       = CRUDE_OBJECT_HANDLE(renderPass);
+  renderPassInfo.framebuffer      = CRUDE_OBJECT_HANDLE(framebuffer);
   renderPassInfo.renderArea       = renderArea;
-  renderPassInfo.clearValueCount  = clearValueCount;
-  renderPassInfo.pClearValues     = pClearValues;
+  renderPassInfo.clearValueCount  = clearValues.size();
+  renderPassInfo.pClearValues     = clearValues.data();
   
   vkCmdBeginRenderPass(
     m_handle,
@@ -140,66 +137,56 @@ void Command_Buffer::beginRenderPass(Render_Pass*       pRenderPass,
   m_withinRenderPass = true;
 }
 
-void Command_Buffer::bindPipeline(Pipeline* pPipeline)
+void Command_Buffer::bindPipeline(Shared_Ptr<Pipeline> pipeline)
 {
-  CRUDE_ASSERT(pPipeline);
+  CRUDE_ASSERT(pipeline);
 
   vkCmdBindPipeline(
     m_handle,
-    pPipeline->getBindPoint(),
-    CRUDE_OBJECT_HANDLE(pPipeline));
+    pipeline->getBindPoint(),
+    CRUDE_OBJECT_HANDLE(pipeline));
 }
 
-void Command_Buffer::setViewport(VkViewport* pViewports, uint32 viewportCount)
+void Command_Buffer::setViewport(Array_Unsafe<VkViewport> viewports)
 {
-  CRUDE_ASSERT(pViewports);
-
   constexpr uint32 offset = 0u;
   vkCmdSetViewport(
     m_handle,
     offset,
-    viewportCount,
-    pViewports);
+    viewports.size(),
+    viewports.data());
 }
 
-void Command_Buffer::setScissor(VkRect2D* pScissors, uint32 scissorCount)
+void Command_Buffer::setScissor(Array_Unsafe<VkRect2D> scissors)
 {
-  CRUDE_ASSERT(pScissors);
-
   constexpr uint32 offset = 0u;
   vkCmdSetScissor(
     m_handle,
     offset,
-    scissorCount,
-    pScissors);
+    scissors.size(),
+    scissors.data());
 }
 
-void Command_Buffer::bindDescriptorSets(Pipeline*         pPipeline,
-                                        Descriptor_Set**  pDescriptorSets, 
-                                        uint32            descriptorSetCount, 
-                                        uint32*           pDynamicOffsets,
-                                        uint32            dynamicOffsetCount)
+void Command_Buffer::bindDescriptorSets(Shared_Ptr<Pipeline>                      pipeline,
+                                        Array_Unsafe<Shared_Ptr<Descriptor_Set>>  descriptorSets, 
+                                        Array_Unsafe<uint32>                      dynamicOffsets)
 {
-  CRUDE_ASSERT(pPipeline);
-  CRUDE_ASSERT(pDescriptorSets);
-  CRUDE_ASSERT(pDynamicOffsets);
-
   constexpr uint32 offset = 0u;
 
-  Array_Dynamic<VkDescriptorSet> descriptorSetsHandles(dynamicOffsetCount);
-  Algorithms::copyc(pDescriptorSets, pDescriptorSets + descriptorSetCount, descriptorSetsHandles.begin(), [](Descriptor_Set* s, Array_Dynamic<VkDescriptorSet>::Iterator d) -> void {
+  Array_Dynamic<VkDescriptorSet> descriptorSetsHandles(descriptorSets.size());
+  Algorithms::copyc(descriptorSets.begin(), descriptorSets.end(), descriptorSetsHandles.begin(), [](Descriptor_Set* s, Array_Dynamic<VkDescriptorSet>::Iterator d) -> void {
     *d = CRUDE_OBJECT_HANDLE(s);
   });
 
   vkCmdBindDescriptorSets(
     m_handle,
-    pPipeline->getBindPoint(),
-    CRUDE_OBJECT_HANDLE(pPipeline->getPipelineLayout()),
+    pipeline->getBindPoint(),
+    CRUDE_OBJECT_HANDLE(pipeline->getPipelineLayout()),
     offset,
-    descriptorSetCount,
+    descriptorSetsHandles.size(),
     descriptorSetsHandles.data(),
-    dynamicOffsetCount,
-    pDynamicOffsets);
+    dynamicOffsets.size(),
+    dynamicOffsets.data());
 }
 
 void Command_Buffer::draw(uint32 vertexCount, uint32 instanceCount, uint32 firstVertex, uint32 firstInstance)

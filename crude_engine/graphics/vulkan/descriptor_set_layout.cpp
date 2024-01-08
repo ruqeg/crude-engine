@@ -4,9 +4,8 @@
 namespace crude_engine
 {
   
-Descriptor_Set_Layout::Descriptor_Set_Layout(Shared_Ptr<const Device>       device,
-                                             VkDescriptorSetLayoutBinding*  pBindings,
-                                             uint32                         bindingCount)
+Descriptor_Set_Layout::Descriptor_Set_Layout(Shared_Ptr<const Device>                           device,
+                                             const Array_Unsafe<VkDescriptorSetLayoutBinding>&  bindings)
   :
   m_device(device)
 {
@@ -15,8 +14,8 @@ Descriptor_Set_Layout::Descriptor_Set_Layout(Shared_Ptr<const Device>       devi
   vkCreateInfo.pNext         = nullptr;
   vkCreateInfo.flags         = 0u;
 
-  vkCreateInfo.pBindings     = pBindings;
-  vkCreateInfo.bindingCount  = bindingCount;
+  vkCreateInfo.pBindings     = bindings.data();
+  vkCreateInfo.bindingCount  = bindings.size();
 
   VkResult result = vkCreateDescriptorSetLayout(CRUDE_OBJECT_HANDLE(m_device), &vkCreateInfo, &getVkAllocationCallbacks(), &m_handle);
   CRUDE_VULKAN_HANDLE_RESULT(result, "failed to create descriptor set layout");

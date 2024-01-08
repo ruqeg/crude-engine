@@ -1,57 +1,47 @@
-#include "framebuffer.hpp"
-#include "render_pass.hpp"
-#include "image_view.hpp"
-#include "device.hpp"
+#include <graphics/vulkan/framebuffer.hpp>
+#include <graphics/vulkan/render_pass.hpp>
+#include <graphics/vulkan/image_view.hpp>
+#include <graphics/vulkan/device.hpp>
 
 namespace crude_engine
 {
 
-Framebuffer_Create_Info::Framebuffer_Create_Info(std::shared_ptr<const Device>                    device,
-                                                 std::shared_ptr<Render_Pass>                     renderPass,
-                                                 const std::vector<std::shared_ptr<Image_View>>&  attachments,
-                                                 uint32                                           width,
-                                                 uint32                                           height,
-                                                 uint32                                           layers)
+
+Framebuffer::Framebuffer(Shared_Ptr<const Device>                      device,
+                         Shared_Ptr<Render_Pass>                       renderPass,
+                         const Array_Dynamic<Shared_Ptr<Image_View>>&  attachments,
+                         uint32                                        width,
+                         uint32                                        height,
+                         uint32                                        layers)
   :
-  device(device),
-  renderPass(renderPass),
-  attachments(attachments),
-  width(width),
-  height(height),
-  layers(layers)
-{}
-
-Framebuffer::Framebuffer(const Framebuffer_Create_Info& createInfo)
+  m_device(device),
+  m_attachments(attachments),
+  m_renderPass(renderPass)
 {
-  m_device       = createInfo.device;
-  m_attachments  = createInfo.attachments;
-  m_renderPass   = createInfo.renderPass;
-
-  std::vector<VkImageView> attachmentsHandles(m_attachments.size());
-  for (uint32 i = 0; i < attachmentsHandles.size(); ++i)
-  {
-    attachmentsHandles[i] = CRUDE_VULKAN_01_HANDLE(m_attachments[i]);
-  }
+  Array_Dynamic<VkImageView> attachmentsHandles(m_attachments.size());
+  Algorithms::copyc(m_attachments.begin(), m_attachments.end(), attachmentsHandles.begin(), [](auto& src, auto& dst) -> void {
+    *dst = CRUDE_OBJECT_HANDLE(src);
+  });
 
   VkFramebufferCreateInfo vkCreateInfo{};
   vkCreateInfo.sType            = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
   vkCreateInfo.pNext            = nullptr;
   vkCreateInfo.flags            = 0u;
 
-  vkCreateInfo.renderPass       = CRUDE_VULKAN_01_HANDLE(m_renderPass);
+  vkCreateInfo.renderPass       = CRUDE_OBJECT_HANDLE(m_renderPass);
   vkCreateInfo.attachmentCount  = static_cast<uint32>(attachmentsHandles.size());
   vkCreateInfo.pAttachments     = attachmentsHandles.data();
-  vkCreateInfo.width            = createInfo.width;
-  vkCreateInfo.height           = createInfo.height;
-  vkCreateInfo.layers           = createInfo.layers;
+  vkCreateInfo.width            = width;
+  vkCreateInfo.height           = height;
+  vkCreateInfo.layers           = layers;
 
-  VkResult result = vkCreateFramebuffer(CRUDE_VULKAN_01_HANDLE(m_device), &vkCreateInfo, nullptr, &m_handle);
-  CRUDE_VULKAN_01_HANDLE_RESULT(result, "failed to create framebuffer");
+  VkResult result = vkCreateFramebuffer(CRUDE_OBJECT_HANDLE(m_device), &vkCreateInfo, &getVkAllocationCallbacks(), &m_handle);
+  CRUDE_VULKAN_HANDLE_RESULT(result, "failed to create framebuffer");
 }
 
 Framebuffer::~Framebuffer()
 {
-  vkDestroyFramebuffer(CRUDE_VULKAN_01_HANDLE(m_device), m_handle, nullptr);
+  vkDestroyFramebuffer(CRUDE_OBJECT_HANDLE(m_device), m_handle, &getVkAllocationCallbacks());
 }
 
 }

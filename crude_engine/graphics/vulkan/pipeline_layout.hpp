@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../../core/core.hpp"
-#include "include_vulkan.hpp"
-#include "object.hpp"
-#include <vector>
+#include <core/data_structures/shared_ptr.hpp>
+#include <core/data_structures/array_unsafe.hpp>
+#include <graphics/vulkan/include_vulkan.hpp>
+#include <graphics/vulkan/object.hpp>
 
 namespace crude_engine
 {
@@ -11,23 +11,15 @@ namespace crude_engine
 class Device;
 class Descriptor_Set_Layout;
 
-struct Pipeline_Layout_Create_Info
-{
-  std::shared_ptr<const Device>                              device;
-  std::vector<std::shared_ptr<const Descriptor_Set_Layout>>  descriptorSetLayouts;
-  std::vector<VkPushConstantRange>                           pushConstantRanges;
-  explicit Pipeline_Layout_Create_Info(std::shared_ptr<const Device>                                     device,
-                                       const std::vector<std::shared_ptr<const Descriptor_Set_Layout>>&  descriptorSetLayouts,
-                                       const std::vector<VkPushConstantRange>&                           pushConstantRanges);
-};
-
 class Pipeline_Layout : public TObject<VkPipelineLayout>
 {
 public:
-  explicit Pipeline_Layout(const Pipeline_Layout_Create_Info& createInfo);
+  explicit Pipeline_Layout(Shared_Ptr<const Device>                                      device,
+                           const Array_Unsafe<Shared_Ptr<const Descriptor_Set_Layout>>&  descriptorSetLayouts,
+                           const Array_Unsafe<VkPushConstantRange>&                      pushConstantRanges);
   ~Pipeline_Layout();
 private:
-  std::shared_ptr<const Device>  m_device;
+  Shared_Ptr<const Device>  m_device;
 };
 
 }

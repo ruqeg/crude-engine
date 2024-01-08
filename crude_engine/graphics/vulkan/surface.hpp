@@ -1,69 +1,48 @@
 #pragma once
 
-#include "../../core/core.hpp"
-#include "object.hpp"
-#include "include_vulkan.hpp"
-#include "requiring_extensions.hpp"
+#include <core/data_structures/shared_ptr.hpp>
+#include <core/data_structures/array_unsafe.hpp>
+#include <graphics/vulkan/include_vulkan.hpp>
+#include <graphics/vulkan/object.hpp>
 
 namespace crude_engine
 {
 
 class Instance;
 
-struct Surface_Create_Info
-{
-  std::shared_ptr<const Instance>  instance;
-  explicit Surface_Create_Info(std::shared_ptr<const Instance>  instance);
-};
-
 class Surface : public TObject<VkSurfaceKHR>
 {
 public:
-  explicit Surface(const Surface_Create_Info& createInfo);
+  explicit Surface(Shared_Ptr<const Instance> instance);
   ~Surface();
 protected:
-  std::shared_ptr<const Instance> m_instance;
+  Shared_Ptr<const Instance>  m_instance;
 };
 
 #ifdef VK_KHR_win32_surface
 
-struct Win32_Surface_Create_Info : public Surface_Create_Info
-{
-  HINSTANCE                        hinstance;
-  HWND                             hwnd;
-  VkWin32SurfaceCreateFlagsKHR     flags;
-
-  explicit Win32_Surface_Create_Info(std::shared_ptr<const Instance>  instance,
-                                     HINSTANCE                        hinstance,
-                                     HWND                             hwnd,
-                                     VkWin32SurfaceCreateFlagsKHR     flags = 0u)
-    :
-    Surface_Create_Info(instance),
-    hinstance(hinstance),
-    hwnd(hwnd),
-    flags(flags)
-  {}
-};
-
 class Win32_Surface : public Surface, public Requiring_Extensions
 {
 public:
-  Win32_Surface(const Win32_Surface_Create_Info& createInfoWin32)
+  Win32_Surface(std::shared_ptr<const Instance>  instance,
+                HINSTANCE                        hinstance,
+                HWND                             hwnd,
+                VkWin32SurfaceCreateFlagsKHR     flags = 0u)
     :
-    Surface(createInfoWin32),
-    m_hwnd(createInfoWin32.hwnd),
-    m_hinstance(createInfoWin32.hinstance)
+    Surface(instance),
+    m_hwnd(hwnd),
+    m_hinstance(hinstance)
   {
     VkWin32SurfaceCreateInfoKHR vkCreateInfo{};
     vkCreateInfo.sType      = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
     vkCreateInfo.pNext      = nullptr;
 
-    vkCreateInfo.hinstance  = createInfoWin32.hinstance;
-    vkCreateInfo.hwnd       = createInfoWin32.hwnd;
-    vkCreateInfo.flags      = createInfoWin32.flags;
+    vkCreateInfo.hinstance  = hinstance;
+    vkCreateInfo.hwnd       = hwnd;
+    vkCreateInfo.flags      = flags;
 
-    const VkResult result = vkCreateWin32SurfaceKHR(CRUDE_VULKAN_01_HANDLE(m_instance), &vkCreateInfo, nullptr, &m_handle);
-    CRUDE_VULKAN_01_HANDLE_RESULT(result, "failed to create win32 surface");
+    const VkResult result = vkCreateWin32SurfaceKHR(CRUDE_OBJECT_HANDLE(m_instance), &vkCreateInfo, &getVkAllocationCallbacks(), &m_handle);
+    CRUDE_VULKAN_HANDLE_RESULT(result, "failed to create win32 surface");
   }
 
   HINSTANCE getHInstance() const
@@ -76,10 +55,10 @@ public:
     return m_hwnd;
   }
 
-  static const std::vector<const char*>& requiredExtensions()
+  static const Array_Unsafe<const char*>& requiredExtensions()
   {
-    static std::vector<const char*> extensions = { "VK_KHR_win32_surface", "VK_KHR_surface" };
-    return extensions;
+    static const char* extensions[] = {"VK_KHR_win32_surface", "VK_KHR_surface"};
+    return Array_Unsafe<const char*>(extensions, 2u);
   }
 private:
   const HWND       m_hwnd;
@@ -88,6 +67,7 @@ private:
 
 #endif // VK_KHR_win32_surface
 
+// !TODO fix
 #ifdef VK_KHR_xcb_surface
 
 struct XCB_Surface_CreateInfo : public Surface_Create_Info

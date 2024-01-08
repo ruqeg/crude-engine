@@ -53,18 +53,13 @@ Debug_Utils_Messenger::Debug_Utils_Messenger(Shared_Ptr<const Instance>         
 
 Debug_Utils_Messenger::~Debug_Utils_Messenger()
 {
-  destroyDebugUtilsMessengerEXT(CRUDE_VULKAN_01_HANDLE(m_instance), m_handle, nullptr);
+  destroyDebugUtilsMessengerEXT(CRUDE_OBJECT_HANDLE(m_instance), m_handle, &getVkAllocationCallbacks());
 }
 
-constexpr const char* Debug_Utils_Messenger::pRequiredExtensions()
+const Array_Unsafe<const char>& Debug_Utils_Messenger::requiredExtensions()
 {
   static constexpr char extensions[] = {VK_EXT_DEBUG_UTILS_EXTENSION_NAME};
-  return extensions;
-}
-
-constexpr uint32 Debug_Utils_Messenger::requiredExtensionCount()
-{
-  return 1u;
+  return Array_Unsafe<const char>(extensions, 1u);
 }
 
 }

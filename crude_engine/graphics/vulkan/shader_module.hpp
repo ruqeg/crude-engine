@@ -1,32 +1,22 @@
 #pragma once
 
-#include "../../core/core.hpp"
-#include "include_vulkan.hpp"
-#include "object.hpp"
-#include <memory>
-#include <span>
-#include <vulkan/vulkan_core.h>
+#include <core/data_structures/shared_ptr.hpp>
+#include <core/data_structures/array_unsafe.hpp>
+#include <graphics/vulkan/object.hpp>
+#include <graphics/vulkan/include_vulkan.hpp>
 
 namespace crude_engine
 {
 
 class Device;
 
-struct Shader_Module_Create_Info
-{
-  std::shared_ptr<const Device>  device;
-  std::span<const char>          code; 
-  explicit Shader_Module_Create_Info(std::shared_ptr<const Device>  device,
-                                     std::span<const char>          code);
-};
-
 class Shader_Module : public TObject<VkShaderModule>
 {
 public:
-  explicit Shader_Module(const Shader_Module_Create_Info& createInfo);
+  explicit Shader_Module(Shared_Ptr<const Device> device, Array_Unsafe<const char> code);
   ~Shader_Module();
 private:
-  std::shared_ptr<const Device>  m_device;
+  Shared_Ptr<const Device>  m_device;
 };
 
 }

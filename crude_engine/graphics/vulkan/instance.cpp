@@ -1,38 +1,27 @@
-#include "instance.hpp"
-#include "application.hpp"
-#include "physical_device.hpp"
+#include <graphics/vulkan/instance.hpp>
+#include <graphics/vulkan/application.hpp>
+#include <graphics/vulkan/physical_device.hpp>
 
 namespace crude_engine
 {
   
-Instance_Create_Info::Instance_Create_Info(
+Instance::Instance(
 #ifdef VK_EXT_debug_utils
-                                       PFN_vkDebugUtilsMessengerCallbackEXT debugUtilsCallback,
+                   PFN_vkDebugUtilsMessengerCallbackEXT  debugUtilsCallback,
 #endif // VK_EXT_debug_utils
-                                       const Application&              application,
-                                       const std::vector<const char*>& enabledExtensions,
-                                       const std::vector<const char*>& enabledLayers,
-                                       VkInstanceCreateFlags           flags)
-  :
-#ifdef VK_EXT_debug_utils
-    debugUtilsCallback(debugUtilsCallback),
-#endif // VK_EXT_debug_utils
-    application(application),
-    enabledExtensions(enabledExtensions),
-    enabledLayers(enabledLayers),
-    flags(flags)
-{}
-  
-Instance::Instance(const Instance_Create_Info& createInfo)
+                   const Application&                    application,
+                   const Array_Unsafe<const char*>&      enabledExtensions,
+                   const Array_Unsafe<const char*>&      enabledLayers,
+                   VkInstanceCreateFlags                 flags)
 {
   VkInstanceCreateInfo vkInstanceCreateInfo{};
   vkInstanceCreateInfo.sType                    = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-  vkInstanceCreateInfo.pApplicationInfo         = &createInfo.application;
-  vkInstanceCreateInfo.flags                    = createInfo.flags;
-  vkInstanceCreateInfo.ppEnabledExtensionNames  = createInfo.enabledExtensions.data();
-  vkInstanceCreateInfo.enabledExtensionCount    = createInfo.enabledExtensions.size();
+  vkInstanceCreateInfo.pApplicationInfo         = &application;
+  vkInstanceCreateInfo.flags                    = flags;
+  vkInstanceCreateInfo.ppEnabledExtensionNames  = enabledExtensions.data();
+  vkInstanceCreateInfo.enabledExtensionCount    = enabledExtensions.size();
 
-  const uint32 ebabledLayersCount = createInfo.enabledLayers.size();
+  const uint32 ebabledLayersCount = enabledLayers.size();
 
 #ifdef VK_EXT_debug_utils
     VkDebugUtilsMessengerCreateInfoEXT vkDebugCreateInfo{};
@@ -40,8 +29,8 @@ Instance::Instance(const Instance_Create_Info& createInfo)
 
   if (ebabledLayersCount > 0u)
   {
-    vkInstanceCreateInfo.ppEnabledLayerNames     = createInfo.enabledLayers.data();
-    vkInstanceCreateInfo.enabledLayerCount       = createInfo.enabledLayers.size();
+    vkInstanceCreateInfo.ppEnabledLayerNames     = enabledLayers.data();
+    vkInstanceCreateInfo.enabledLayerCount       = enabledLayers.size();
 
 #ifdef VK_EXT_debug_utils
     void* pDebugNext      = nullptr;
@@ -51,7 +40,7 @@ Instance::Instance(const Instance_Create_Info& createInfo)
     vkDebugCreateInfo.sType            = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
     vkDebugCreateInfo.pNext            = pDebugNext;
     vkDebugCreateInfo.flags            = debugFlags;
-    vkDebugCreateInfo.pfnUserCallback  = createInfo.debugUtilsCallback;
+    vkDebugCreateInfo.pfnUserCallback  = debugUtilsCallback;
     vkDebugCreateInfo.pUserData        = pDebugUserData;
 
     vkDebugCreateInfo.messageSeverity =
@@ -75,26 +64,16 @@ Instance::Instance(const Instance_Create_Info& createInfo)
     vkInstanceCreateInfo.enabledLayerCount = 0u;
   }
   
-  VkAllocationCallbacks* pAllocator = nullptr;
-  const VkResult result = vkCreateInstance(&vkInstanceCreateInfo, pAllocator, &m_handle);
-  
-  if (result != VK_SUCCESS) 
-  {
-#ifndef CRUDE_VULKAN_01_NO_EXCEPTIONS
-    throw std::runtime_error("failed to create instance");
-#endif //CRUDE_VULKAN_01_NO_EXCEPTIONS
-  }
-  
-  CRUDE_VULKAN_01_HANDLE_RESULT(result, "failed to create instance");
+  const VkResult result = vkCreateInstance(&vkInstanceCreateInfo, &getVkAllocationCallbacks(), &m_handle);
+  CRUDE_VULKAN_HANDLE_RESULT(result, "failed to create instance");
 }
  
 Instance::~Instance()
 {
-  VkAllocationCallbacks* pAllocator = nullptr;
-  vkDestroyInstance(m_handle, pAllocator);
+  vkDestroyInstance(m_handle, &getVkAllocationCallbacks());
 }
   
-std::vector<std::shared_ptr<Physical_Device>> Instance::getPhysicalDevices()
+Array_Dynamic<Shared_Ptr<Physical_Device>> Instance::getPhysicalDevices()
 {
   uint32 vkPhysicalDeviceCount = 0u;
   vkEnumeratePhysicalDevices(
@@ -107,16 +86,16 @@ std::vector<std::shared_ptr<Physical_Device>> Instance::getPhysicalDevices()
     return {};
   }
 
-  std::vector<VkPhysicalDevice> vkPhysicalDevices(vkPhysicalDeviceCount);
+  Array_Dynamic<VkPhysicalDevice> vkPhysicalDevices(vkPhysicalDeviceCount);
   vkEnumeratePhysicalDevices(
       m_handle, 
       &vkPhysicalDeviceCount,
       vkPhysicalDevices.data());
 
-  std::vector<std::shared_ptr<Physical_Device>> physicaDevices(vkPhysicalDeviceCount);
+  Array_Dynamic<Shared_Ptr<Physical_Device>> physicaDevices(vkPhysicalDeviceCount);
   for (uint32 i = 0u; i < vkPhysicalDeviceCount; ++i) 
   {
-    physicaDevices[i] = std::make_shared<Physical_Device>(Physical_Device_Create_Info(vkPhysicalDevices[i]));
+    physicaDevices[i] = Shared_Ptr<Physical_Device>::makeShared(vkPhysicalDevices[i]);
   }
   
   return physicaDevices;

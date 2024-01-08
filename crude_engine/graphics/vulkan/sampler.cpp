@@ -1,75 +1,55 @@
-#include "sampler.hpp"
-#include "device.hpp"
+#include <graphics/vulkan/sampler.hpp>
+#include <graphics/vulkan/device.hpp>
 
 namespace crude_engine
 {
   
-Sampler_Create_Info::Sampler_Create_Info(std::shared_ptr<const Device>  device,
-                                         VkFilter                       magFilter,
-                                         VkFilter                       minFilter,
-                                         VkSamplerMipmapMode            mipmapMode,
-                                         VkSamplerAddressMode           addressModeU,
-                                         VkSamplerAddressMode           addressModeV,
-                                         VkSamplerAddressMode           addressModeW,
-                                         float32                        mipLodBias,
-                                         VkBool32                       anisotropyEnable,
-                                         float32                        maxAnisotropy,
-                                         VkBool32                       compareEnable,
-                                         VkCompareOp                    compareOp,
-                                         float32                        minLod,
-                                         float32                        maxLod,
-                                         VkBorderColor                  borderColor,
-                                         VkBool32                       unnormalizedCoordinates)
+Sampler::Sampler(Shared_Ptr<const Device>  device,
+                 VkFilter                  magFilter,
+                 VkFilter                  minFilter,
+                 VkSamplerMipmapMode       mipmapMode,
+                 VkSamplerAddressMode      addressModeU,
+                 VkSamplerAddressMode      addressModeV,
+                 VkSamplerAddressMode      addressModeW,
+                 float32                   mipLodBias,
+                 VkBool32                  anisotropyEnable,
+                 float32                   maxAnisotropy,
+                 VkBool32                  compareEnable,
+                 VkCompareOp               compareOp,
+                 float32                   minLod,
+                 float32                   maxLod,
+                 VkBorderColor             borderColor,
+                 VkBool32                  unnormalizedCoordinates)
   :
-  device(device),
-  magFilter(magFilter),
-  minFilter(minFilter),
-  mipmapMode(mipmapMode),
-  addressModeU(addressModeU),
-  addressModeV(addressModeV),
-  addressModeW(addressModeW),
-  mipLodBias(mipLodBias),
-  anisotropyEnable(anisotropyEnable),
-  maxAnisotropy(maxAnisotropy),
-  compareEnable(compareEnable),
-  compareOp(compareOp),
-  minLod(minLod),
-  maxLod(maxLod),
-  borderColor(borderColor),
-  unnormalizedCoordinates(unnormalizedCoordinates)
-{}
-
-Sampler::Sampler(const Sampler_Create_Info& createInfo)
+  m_device(device)
 {
-  m_device = createInfo.device;
-
   VkSamplerCreateInfo vkCreateInfo{};
   vkCreateInfo.sType                    = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
   vkCreateInfo.pNext                    = nullptr;
   vkCreateInfo.flags                    = 0u;
-  vkCreateInfo.magFilter                = createInfo.magFilter;
-  vkCreateInfo.minFilter                = createInfo.minFilter;
-  vkCreateInfo.mipmapMode               = createInfo.mipmapMode;
-  vkCreateInfo.addressModeU             = createInfo.addressModeU;
-  vkCreateInfo.addressModeV             = createInfo.addressModeV;
-  vkCreateInfo.addressModeW             = createInfo.addressModeW;
-  vkCreateInfo.mipLodBias               = createInfo.mipLodBias;
-  vkCreateInfo.anisotropyEnable         = createInfo.anisotropyEnable;
-  vkCreateInfo.maxAnisotropy            = createInfo.maxAnisotropy;
-  vkCreateInfo.compareEnable            = createInfo.compareEnable;
-  vkCreateInfo.compareOp                = createInfo.compareOp;
-  vkCreateInfo.minLod                   = createInfo.minLod;
-  vkCreateInfo.maxLod                   = createInfo.maxLod;
-  vkCreateInfo.borderColor              = createInfo.borderColor;
-  vkCreateInfo.unnormalizedCoordinates  = createInfo.unnormalizedCoordinates;
+  vkCreateInfo.magFilter                = magFilter;
+  vkCreateInfo.minFilter                = minFilter;
+  vkCreateInfo.mipmapMode               = mipmapMode;
+  vkCreateInfo.addressModeU             = addressModeU;
+  vkCreateInfo.addressModeV             = addressModeV;
+  vkCreateInfo.addressModeW             = addressModeW;
+  vkCreateInfo.mipLodBias               = mipLodBias;
+  vkCreateInfo.anisotropyEnable         = anisotropyEnable;
+  vkCreateInfo.maxAnisotropy            = maxAnisotropy;
+  vkCreateInfo.compareEnable            = compareEnable;
+  vkCreateInfo.compareOp                = compareOp;
+  vkCreateInfo.minLod                   = minLod;
+  vkCreateInfo.maxLod                   = maxLod;
+  vkCreateInfo.borderColor              = borderColor;
+  vkCreateInfo.unnormalizedCoordinates  = unnormalizedCoordinates;
 
-  VkResult result = vkCreateSampler(CRUDE_VULKAN_01_HANDLE(m_device), &vkCreateInfo, nullptr, &m_handle);
-  CRUDE_VULKAN_01_HANDLE_RESULT(result, "failed to create sampler");
+  VkResult result = vkCreateSampler(CRUDE_OBJECT_HANDLE(m_device), &vkCreateInfo, &getVkAllocationCallbacks(), &m_handle);
+  CRUDE_VULKAN_HANDLE_RESULT(result, "failed to create sampler");
 }
 
 Sampler::~Sampler()
 {
-  vkDestroySampler(CRUDE_VULKAN_01_HANDLE(m_device), m_handle, nullptr);
+  vkDestroySampler(CRUDE_OBJECT_HANDLE(m_device), m_handle, &getVkAllocationCallbacks());
 }
 
 }

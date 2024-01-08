@@ -10,12 +10,15 @@ struct Nullopt
   constexpr explicit Nullopt(int) {}
 };
 
+constexpr Nullopt nullopt;
+
 template<class T>
 class Optional
 {
 public:
   Optional() noexcept;
   ~Optional();
+  Optional(Nullopt) noexcept;
   template<typename... Args>
   Optional(Args&&... args) noexcept;
   Optional(const T& value) noexcept;
@@ -70,6 +73,13 @@ Optional<T>::~Optional()
     }
   }
 }
+
+template<class T>
+Optional<T>::Optional(Nullopt) noexcept
+  :
+  m_dummy(0u),
+  m_engaged(true)
+{}
 
 template<class T>
 template<typename ...Args>

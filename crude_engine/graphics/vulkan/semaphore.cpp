@@ -1,33 +1,25 @@
-#include "semaphore.hpp"
-#include "device.hpp"
+#include <graphics/vulkan/semaphore.hpp>
+#include <graphics/vulkan/device.hpp>
 
 namespace crude_engine
 {
 
-class Device;
-
-Semaphore_Create_Info::Semaphore_Create_Info(std::shared_ptr<const Device> device, VkSemaphoreCreateFlags flags)
+Semaphore::Semaphore(Shared_Ptr<const Device> device, VkSemaphoreCreateFlags flags)
   :
-  device(device),
-  flags(flags)
-{}
-
-Semaphore::Semaphore(const Semaphore_Create_Info& createInfo)
+  m_device(device)
 {
-  m_device = createInfo.device;
-
   VkSemaphoreCreateInfo vkCreateInfo{};
   vkCreateInfo.sType  = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
   vkCreateInfo.pNext  = nullptr;
-  vkCreateInfo.flags  = createInfo.flags;
+  vkCreateInfo.flags  = flags;
 
-  VkResult result = vkCreateSemaphore(CRUDE_VULKAN_01_HANDLE(m_device), &vkCreateInfo, nullptr, &m_handle);
-  CRUDE_VULKAN_01_HANDLE_RESULT(result, "failed to create semaphore");
+  VkResult result = vkCreateSemaphore(CRUDE_OBJECT_HANDLE(m_device), &vkCreateInfo, &getVkAllocationCallbacks(), &m_handle);
+  CRUDE_VULKAN_HANDLE_RESULT(result, "failed to create semaphore");
 }
  
 Semaphore::~Semaphore()
 {
-  vkDestroySemaphore(CRUDE_VULKAN_01_HANDLE(m_device), m_handle, nullptr);
+  vkDestroySemaphore(CRUDE_OBJECT_HANDLE(m_device), m_handle, &getVkAllocationCallbacks());
 }
 
 }

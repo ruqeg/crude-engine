@@ -6,9 +6,9 @@
 namespace crude_engine
 {
 
-Descriptor_Set::Descriptor_Set(Shared_Ptr<const Device>                                 device,
+Descriptor_Set::Descriptor_Set(Shared_Ptr<const Device>                           device,
                                Array_Dynamic<Shared_Ptr<Descriptor_Set_Layout>>&  setLayouts,
-                               Shared_Ptr<Descriptor_Pool>                              pool)
+                               Shared_Ptr<Descriptor_Pool>                        pool)
   :
   m_device(device),
   m_pool(pool),

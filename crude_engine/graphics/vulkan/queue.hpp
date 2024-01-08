@@ -1,10 +1,9 @@
 #pragma once
 
-#include "../../core/core.hpp"
-#include "include_vulkan.hpp"
-#include "object.hpp"
-#include <vector>
-#include <optional>
+#include <core/data_structures/array_unsafe.hpp>
+#include <core/data_structures/optional.hpp>
+#include <graphics/vulkan/object.hpp>
+#include <graphics/vulkan/include_vulkan.hpp>
 
 namespace crude_engine
 {
@@ -14,14 +13,6 @@ class Command_Buffer;
 class Fence;
 class Semaphore;
 class Swap_Chain;
-
-struct Queue_Create_Info
-{
-  uint32  familyIndex;
-  uint32  index;
-
-  explicit Queue_Create_Info(uint32 familyIndex, uint32 index);
-};
 
 class Queue_Present_Result
 {
@@ -41,15 +32,15 @@ private:
 class Queue : public TObject<VkQueue>
 {
 public:
-  explicit Queue(const Queue_Create_Info& createInfo);
-  bool sumbit(const std::vector<std::shared_ptr<Command_Buffer>>&  commandBuffers, 
-              const std::vector<VkPipelineStageFlags>&             waitStageMasks = {}, 
-              const std::vector<std::shared_ptr<Semaphore>>&       waitSemaphores = {}, 
-              const std::vector<std::shared_ptr<Semaphore>>&       signalSemaphores = {},
-              const std::optional<std::shared_ptr<Fence>>&         fence = std::nullopt);
-  Queue_Present_Result present(const std::vector<std::shared_ptr<Swap_Chain>>&  swapchains,
-                               const std::vector<uint32>&                       imageIndices, 
-                               const std::vector<std::shared_ptr<Semaphore>>&   waitSemaphores = {});
+  explicit Queue(uint32 familyIndex, uint32 index);
+  bool sumbit(const Array_Unsafe<Shared_Ptr<Command_Buffer>>&  commandBuffers, 
+              const Array_Unsafe<VkPipelineStageFlags>&        waitStageMasks = {}, 
+              const Array_Unsafe<Shared_Ptr<Semaphore>>&       waitSemaphores = {},
+              const Array_Unsafe<Shared_Ptr<Semaphore>>&       signalSemaphores = {},
+              const Optional<Shared_Ptr<Fence>>&               fence = nullopt);
+  Queue_Present_Result present(const Array_Unsafe<Shared_Ptr<Swap_Chain>>&  swapchains,
+                               const Array_Unsafe<uint32>&                  imageIndices,
+                               const Array_Unsafe<Shared_Ptr<Semaphore>>&   waitSemaphores = {});
   void waitIdle();
   ~Queue() = default;
 private:

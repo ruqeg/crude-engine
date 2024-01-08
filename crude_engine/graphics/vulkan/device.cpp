@@ -7,27 +7,22 @@
 namespace crude_engine
 {
 
-Device_Queue_Create_Info::Device_Queue_Create_Info(uint32          queueFamilyIndex,
-                                                   const float32*  pQueuePriorities,
-                                                   uint32          queuePrioritiCount)
+Device_Queue_Create_Info::Device_Queue_Create_Info(uint32                        queueFamilyIndex,
+                                                   const Array_Unsafe<float32>&  queuePriorities)
 {
   this->sType             = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-  this->pQueuePriorities  = pQueuePriorities;
-  this->queueCount        = queuePrioritiCount;
+  this->pQueuePriorities  = queuePriorities.data();
+  this->queueCount        = queuePriorities.size();
   this->pNext             = nullptr;
   this->flags             = 0u;
   this->queueFamilyIndex  = queueFamilyIndex;
 }
 
-Device::Device(Shared_Ptr<const Physical_Device>  physicalDevice,
-               Device_Queue_Create_Info*          pQueueDescriptors,
-               uint32                             queueDescriptorCount,
-               const VkPhysicalDeviceFeatures*    pEnabledFeatures,
-               uint32                             enabledFeatureCount,
-               const char**                       pEnabledExtensions,
-               uint32                             enabledExtensionCount,
-               const char**                       pEnabledLayers,
-               uint32                             enabledLayerCount)
+Device::Device(Shared_Ptr<const Physical_Device>              physicalDevice,
+               const Array_Unsafe<Device_Queue_Create_Info>&  queueDescriptors,
+               const Array_Unsafe<VkPhysicalDeviceFeatures>&  enabledFeatures,
+               Array_Unsafe<const char*>&                     enabledExtensions,
+               Array_Unsafe<const char*>&                     enabledLayers)
   :
   m_physicalDevice(physicalDevice)
 {
@@ -36,13 +31,13 @@ Device::Device(Shared_Ptr<const Physical_Device>  physicalDevice,
   vkDeviceCreateInfo.pNext                    = nullptr;
   vkDeviceCreateInfo.flags                    = 0u;
 
-  vkDeviceCreateInfo.queueCreateInfoCount     = queueDescriptorCount;
-  vkDeviceCreateInfo.pQueueCreateInfos        = pQueueDescriptors;
-  vkDeviceCreateInfo.pEnabledFeatures         = pEnabledFeatures;
-  vkDeviceCreateInfo.enabledExtensionCount    = enabledExtensionCount;
-  vkDeviceCreateInfo.ppEnabledExtensionNames  = pEnabledExtensions;
-  vkDeviceCreateInfo.enabledLayerCount        = enabledLayerCount;
-  vkDeviceCreateInfo.ppEnabledLayerNames      = pEnabledLayers;
+  vkDeviceCreateInfo.queueCreateInfoCount     = queueDescriptors.size();
+  vkDeviceCreateInfo.pQueueCreateInfos        = queueDescriptors.data();
+  vkDeviceCreateInfo.pEnabledFeatures         = enabledFeatures.data();
+  vkDeviceCreateInfo.enabledExtensionCount    = enabledExtensions.size();
+  vkDeviceCreateInfo.ppEnabledExtensionNames  = enabledExtensions.data();
+  vkDeviceCreateInfo.enabledLayerCount        = enabledLayers.size();
+  vkDeviceCreateInfo.ppEnabledLayerNames      = enabledLayers.data();
 
   const VkResult result = vkCreateDevice(CRUDE_OBJECT_HANDLE(m_physicalDevice), &vkDeviceCreateInfo, &getVkAllocationCallbacks(), &m_handle);
   CRUDE_VULKAN_HANDLE_RESULT(result, "failed to create logic device!");

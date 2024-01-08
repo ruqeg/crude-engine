@@ -1,15 +1,15 @@
 #pragma once
 
-#include <core/data_structures/iterator_base.hpp>
-#include <core/algorithms.hpp>
-#include <core/memory/memory_system.hpp>
 #include <core/debug/assert.hpp>
+#include <core/utility.hpp>
+#include <core/algorithms.hpp>
+#include <core/data_structures/iterator_base.hpp>
 
 namespace crude_engine
 {
 
-template<class T, class Allocator = Memory_System::Default_Allocator>
-class Array_Dynamic
+template<class T>
+class Array_Unsafe
 {
 public:
   using Value_Type       = T;
@@ -61,58 +61,52 @@ public:
   };
 
 public:
-  Array_Dynamic();
-  Array_Dynamic(Size_Type size);
-  Array_Dynamic(Size_Type size, Const_Reference value);
-  ~Array_Dynamic();
-  Array_Dynamic(std::initializer_list<Value_Type>& initList);
-  Array_Dynamic(const Array_Dynamic& other);
-  Array_Dynamic(Array_Dynamic&& other);
-  Array_Dynamic& operator=(const Array_Dynamic& other);
-  Array_Dynamic& operator=(Array_Dynamic&& other);
+  Array_Unsafe();
+  explicit Array_Unsafe(Pointer data, Size_Type size);
+  ~Array_Unsafe() = default;
+  Array_Unsafe(const Array_Unsafe& other);
+  Array_Unsafe(Array_Unsafe&&) = delete;
+  Array_Unsafe& operator=(const Array_Unsafe& other);
+  Array_Unsafe& operator=(Array_Unsafe&&) = delete;
 
 public:
-  void resize(Size_Type newSize) noexcept;
+  CRUDE_INLINE Pointer data() noexcept;
+  CRUDE_INLINE Const_Pointer data() const noexcept;
 
-  Pointer data() noexcept;
-  Const_Pointer data() const noexcept;
-
-  Reference get(std::size_t index) noexcept;
-  Const_Reference get(std::size_t index) const noexcept;
+  CRUDE_INLINE Reference get(std::size_t index) noexcept;
+  CRUDE_INLINE Const_Reference get(std::size_t index) const noexcept;
 
   void set(std::size_t index, Const_Reference value) noexcept;
 
-  Reference operator[](std::size_t index) noexcept;
-  Const_Reference operator[](std::size_t index) const noexcept;
-
-  bool empty() const noexcept;
+  CRUDE_INLINE Reference operator[](std::size_t index) noexcept;
+  CRUDE_INLINE Const_Reference operator[](std::size_t index) const noexcept;
 
   Size_Type size() const noexcept;
   void fill(Const_Reference value) noexcept;
 
-  Reference front() noexcept;
-  Const_Reference front() const noexcept;
+  CRUDE_INLINE Reference front() noexcept;
+  CRUDE_INLINE Const_Reference front() const noexcept;
 
-  Reference back() noexcept;
-  Const_Reference back() const noexcept;
+  CRUDE_INLINE Reference back() noexcept;
+  CRUDE_INLINE Const_Reference back() const noexcept;
 
-  Const_Iterator cbegin() const noexcept;
-  Const_Iterator cend() const noexcept;
+  CRUDE_INLINE Const_Iterator cbegin() const noexcept;
+  CRUDE_INLINE Const_Iterator cend() const noexcept;
 
-  Const_Iterator begin() const noexcept;
-  Iterator begin() noexcept;
+  CRUDE_INLINE Const_Iterator begin() const noexcept;
+  CRUDE_INLINE Iterator begin() noexcept;
 
-  Const_Iterator end() const noexcept;
-  Iterator end() noexcept;
+  CRUDE_INLINE Const_Iterator end() const noexcept;
+  CRUDE_INLINE Iterator end() noexcept;
 
-  Const_Iterator crbegin() const noexcept;
-  Const_Iterator crend() const noexcept;
+  CRUDE_INLINE Const_Iterator crbegin() const noexcept;
+  CRUDE_INLINE Const_Iterator crend() const noexcept;
 
-  Const_Iterator rbegin() const noexcept;
-  Iterator rbegin() noexcept;
+  CRUDE_INLINE Const_Iterator rbegin() const noexcept;
+  CRUDE_INLINE Iterator rbegin() noexcept;
 
-  Const_Iterator rend() const noexcept;
-  Iterator rend() noexcept;
+  CRUDE_INLINE Const_Iterator rend() const noexcept;
+  CRUDE_INLINE Iterator rend() noexcept;
 
 protected:
   Pointer    m_data;
@@ -121,4 +115,4 @@ protected:
 
 } // namespace crude_engine
 
-#include <core/data_structures/array_dynamic.inl>
+#include <core/data_structures/array_unsafe.inl>

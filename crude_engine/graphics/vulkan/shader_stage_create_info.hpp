@@ -1,7 +1,8 @@
 #pragma once
 
-#include "../../core/core.hpp"
-#include "include_vulkan.hpp"
+#include <core/data_structures/shared_ptr.hpp>
+#include <core/data_structures/array_unsafe.hpp>
+#include <graphics/vulkan/include_vulkan.hpp>
 
 namespace crude_engine
 {
@@ -11,21 +12,11 @@ class Shader_Module;
 class Shader_Stage_Create_Info : public VkPipelineShaderStageCreateInfo
 {
 public:
-  explicit Shader_Stage_Create_Info(VkShaderStageFlagBits                 stage,
-                                    std::shared_ptr<const Shader_Module>  shaderModule,
-                                    const char*                           entrypoint);
-  Shader_Stage_Create_Info(const Shader_Stage_Create_Info& other);
-  Shader_Stage_Create_Info(Shader_Stage_Create_Info&& other) noexcept;
-  Shader_Stage_Create_Info& operator=(const Shader_Stage_Create_Info& other);
-  Shader_Stage_Create_Info& operator=(Shader_Stage_Create_Info&& other) noexcept;
-  ~Shader_Stage_Create_Info();
+  explicit Shader_Stage_Create_Info(VkShaderStageFlagBits            stage,
+                                    Shared_Ptr<const Shader_Module>  shaderModule,
+                                    const char*                      pEntrypoint);
 private:
-  void copy(VkShaderStageFlagBits                 stage,
-            std::shared_ptr<const Shader_Module>  shaderModule,
-            const char*                           entrypoint);
-  void move(Shader_Stage_Create_Info& other);
-private:
-  std::shared_ptr<const Shader_Module>  m_shaderModule;
+  Shared_Ptr<const Shader_Module>  m_shaderModule;
 };
 
 }

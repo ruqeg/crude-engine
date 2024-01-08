@@ -1,28 +1,21 @@
 #pragma once
 
-#include "../../core/core.hpp"
-#include "include_vulkan.hpp"
-#include "object.hpp"
+#include <core/data_structures/shared_ptr.hpp>
+#include <graphics/vulkan/object.hpp>
+#include <graphics/vulkan/include_vulkan.hpp>
 
 namespace crude_engine
 {
 
 class Device;
 
-struct Semaphore_Create_Info
-{
-  std::shared_ptr<const Device>  device;
-  VkSemaphoreCreateFlags         flags;
-  explicit Semaphore_Create_Info(std::shared_ptr<const Device> device, VkSemaphoreCreateFlags flags = 0u);
-};
-
 class Semaphore : public TObject<VkSemaphore>
 {
 public:
-  explicit Semaphore(const Semaphore_Create_Info& createInfo);
+  explicit Semaphore(Shared_Ptr<const Device> device, VkSemaphoreCreateFlags flags = 0u);
   ~Semaphore();
 private:
-  std::shared_ptr<const Device>  m_device;
+  Shared_Ptr<const Device>  m_device;
 };
 
 }

@@ -8,8 +8,7 @@ Buffer::Buffer(Shared_Ptr<const Device>  device,
                VkDeviceSize              size,
                VkBufferUsageFlags        usage,
                VkSharingMode             sharingMode,
-               uint32*                   pQueueFamilyIndices,
-               uint32                    queueFamilyIndexCount)
+               Array_Unsafe<uint32>      queueFamilyIndices)
   :
   m_device(device)
 {
@@ -20,8 +19,8 @@ Buffer::Buffer(Shared_Ptr<const Device>  device,
   vkCreateInfo.size                   = size;
   vkCreateInfo.usage                  = usage;
   vkCreateInfo.sharingMode            = sharingMode;
-  vkCreateInfo.queueFamilyIndexCount  = queueFamilyIndexCount;
-  vkCreateInfo.pQueueFamilyIndices    = pQueueFamilyIndices;
+  vkCreateInfo.queueFamilyIndexCount  = queueFamilyIndices.size();
+  vkCreateInfo.pQueueFamilyIndices    = queueFamilyIndices.data();
 
   VkResult result = vkCreateBuffer(CRUDE_OBJECT_HANDLE(m_device), &vkCreateInfo, &getVkAllocationCallbacks(), &m_handle);
   CRUDE_VULKAN_HANDLE_RESULT(result, "failed to create buffer");

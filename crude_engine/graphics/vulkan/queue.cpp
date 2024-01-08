@@ -1,49 +1,44 @@
-#include "queue.hpp"
-#include "command_buffer.hpp"
-#include "fence.hpp"
-#include "semaphore.hpp"
-#include "swap_chain.hpp"
+#include <graphics/vulkan/queue.hpp>
+#include <graphics/vulkan/command_buffer.hpp>
+#include <graphics/vulkan/fence.hpp>
+#include <graphics/vulkan/semaphore.hpp>
+#include <graphics/vulkan/swap_chain.hpp>
+#include <core/data_structures/array_dynamic.hpp>
 
 namespace crude_engine
 {
-  
-Queue_Create_Info::Queue_Create_Info(uint32 familyIndex, uint32 index)
+
+Queue::Queue(uint32 familyIndex, uint32 index)
   :
-  familyIndex(familyIndex),
-  index(index)
-{}
-  
-Queue::Queue(const Queue_Create_Info& createInfo)
-  :
-  m_familyIndex(createInfo.familyIndex),
-  m_index(createInfo.index)
+  m_familyIndex(familyIndex),
+  m_index(index)
 {}
 
-bool Queue::sumbit(const std::vector<std::shared_ptr<Command_Buffer>>&  commandBuffers,
-                   const std::vector<VkPipelineStageFlags>&             waitStageMasks,
-                   const std::vector<std::shared_ptr<Semaphore>>&       waitSemaphores,
-                   const std::vector<std::shared_ptr<Semaphore>>&       signalSemaphores,
-                   const std::optional<std::shared_ptr<Fence>>&         fence)
+bool Queue::sumbit(const Array_Unsafe<Shared_Ptr<Command_Buffer>>&  commandBuffers,
+                   const Array_Unsafe<VkPipelineStageFlags>&        waitStageMasks, 
+                   const Array_Unsafe<Shared_Ptr<Semaphore>>&       waitSemaphores,
+                   const Array_Unsafe<Shared_Ptr<Semaphore>>&       signalSemaphores,
+                   const Optional<Shared_Ptr<Fence>>&               fence)
 {
-
   if (waitSemaphores.size() != waitStageMasks.size())
   {
     return false;
   }
 
-  std::vector<VkCommandBuffer> commandBuffersHandles(commandBuffers.size());
-  for (uint32 i = 0; i < commandBuffers.size(); ++i)
-  {
-    commandBuffersHandles[i] = CRUDE_VULKAN_01_HANDLE(commandBuffers[i]);
-  }
+  Array_Dynamic<VkCommandBuffer> commandBuffersHandles(commandBuffers.size());
+  Algorithms::copyc(commandBuffers.begin(), commandBuffers.end(), commandBuffersHandles.begin(), [](auto& src, auto& dst) -> void {
+    *dst = CRUDE_OBJECT_HANDLE(src);
+  });
 
-  std::vector<VkSemaphore> waitSemaphoreHandles(waitSemaphores.size());
-  for (uint32 i = 0u; i < waitSemaphoreHandles.size(); ++i)
-    waitSemaphoreHandles[i] = CRUDE_VULKAN_01_HANDLE(waitSemaphores[i]);
+  Array_Dynamic<VkSemaphore> waitSemaphoreHandles(waitSemaphores.size());
+  Algorithms::copyc(waitSemaphores.begin(), waitSemaphores.end(), waitSemaphoreHandles.begin(), [](auto& src, auto& dst) -> void {
+    *dst = CRUDE_OBJECT_HANDLE(src);
+    });
 
-  std::vector<VkSemaphore> signalSemaphoreHandles(signalSemaphores.size());
-  for (uint32 i = 0u; i < signalSemaphoreHandles.size(); ++i)
-    signalSemaphoreHandles[i] = CRUDE_VULKAN_01_HANDLE(signalSemaphores[i]);
+  Array_Dynamic<VkSemaphore> signalSemaphoreHandles(signalSemaphores.size());
+  Algorithms::copyc(signalSemaphores.begin(), signalSemaphores.end(), signalSemaphoreHandles.begin(), [](auto& src, auto& dst) -> void {
+    *dst = CRUDE_OBJECT_HANDLE(src);
+    });
 
   VkSubmitInfo vkSumbitInfo;
   vkSumbitInfo.sType                 = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -56,21 +51,23 @@ bool Queue::sumbit(const std::vector<std::shared_ptr<Command_Buffer>>&  commandB
   vkSumbitInfo.signalSemaphoreCount  = static_cast<uint32>(signalSemaphoreHandles.size());
   vkSumbitInfo.pSignalSemaphores     = signalSemaphoreHandles.data();
 
-  VkResult result = vkQueueSubmit(m_handle, 1u, &vkSumbitInfo, CRUDE_VULKAN_01_OPTIONAL_HANDLE_OR_NULL(fence));
+  VkResult result = vkQueueSubmit(m_handle, 1u, &vkSumbitInfo, fence.hasValue() ? CRUDE_OBJECT_HANDLE(fence.value()) : VK_NULL_HANDLE);
   return result == VK_SUCCESS;
 }
 
-Queue_Present_Result Queue::present(const std::vector<std::shared_ptr<Swap_Chain>>&  swapchains,
-                                    const std::vector<uint32>&                       imageIndices, 
-                                    const std::vector<std::shared_ptr<Semaphore>>&   waitSemaphores)
+Queue_Present_Result Queue::present(const Array_Unsafe<Shared_Ptr<Swap_Chain>>&  swapchains,
+                                    const Array_Unsafe<uint32>&                  imageIndices,
+                                    const Array_Unsafe<Shared_Ptr<Semaphore>>&   waitSemaphores)
 {
-  std::vector<VkSemaphore> waitSemaphoreHandles(waitSemaphores.size());
-  for (uint32 i = 0u; i < waitSemaphoreHandles.size(); ++i)
-    waitSemaphoreHandles[i] = CRUDE_VULKAN_01_HANDLE(waitSemaphores[i]);
+  Array_Dynamic<VkSemaphore> waitSemaphoreHandles(waitSemaphores.size());
+  Algorithms::copyc(waitSemaphores.begin(), waitSemaphores.end(), waitSemaphoreHandles.begin(), [](auto& src, auto& dst) -> void {
+    *dst = CRUDE_OBJECT_HANDLE(src);
+    });
 
-  std::vector<VkSwapchainKHR> swapchainHandles(swapchains.size());
-  for (uint32 i = 0u; i < swapchainHandles.size(); ++i)
-    swapchainHandles[i] = CRUDE_VULKAN_01_HANDLE(swapchains[i]);
+  Array_Dynamic<VkSwapchainKHR> swapchainHandles(swapchains.size());
+  Algorithms::copyc(swapchains.begin(), swapchains.end(), swapchainHandles.begin(), [](auto& src, auto& dst) -> void {
+    *dst = CRUDE_OBJECT_HANDLE(src);
+    });
 
   VkPresentInfoKHR vkPresentInfo{};
   vkPresentInfo.sType               = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;

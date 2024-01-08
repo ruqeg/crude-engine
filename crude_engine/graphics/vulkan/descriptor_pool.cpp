@@ -4,11 +4,10 @@
 namespace crude_engine
 {
 
-Descriptor_Pool::Descriptor_Pool(Shared_Ptr<const Device>  device,
-                                 VkDescriptorPoolSize*     pPoolSizes,
-                                 uint32                    poolSizeCount,
-                                 uint32                    maxSets,
-                                 bool                      freeDescriptorSet)
+Descriptor_Pool::Descriptor_Pool(Shared_Ptr<const Device>                   device,
+                                 const Array_Unsafe<VkDescriptorPoolSize>&  poolSizes,
+                                 uint32                                     maxSets,
+                                 bool                                       freeDescriptorSet)
   :
   m_device(device),
   m_freeDescriptorSet(m_freeDescriptorSet)
@@ -18,8 +17,8 @@ Descriptor_Pool::Descriptor_Pool(Shared_Ptr<const Device>  device,
   vkCreateInfo.pNext          = nullptr;
   vkCreateInfo.flags          = 0u;
 
-  vkCreateInfo.pPoolSizes     = pPoolSizes;
-  vkCreateInfo.poolSizeCount  = poolSizeCount;
+  vkCreateInfo.pPoolSizes     = poolSizes.data();
+  vkCreateInfo.poolSizeCount  = poolSizes.size();
   vkCreateInfo.maxSets        = maxSets;
 
   if (m_freeDescriptorSet)  vkCreateInfo.flags |= VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;

@@ -1,41 +1,31 @@
 #pragma once
 
-#include "../../core/core.hpp"
-#include "object.hpp"
-#include "application.hpp"
-#include <vector>
+#include <graphics/vulkan/include_vulkan.hpp>
+#include <core/data_structures/shared_ptr.hpp>
+#include <core/data_structures/array_dynamic.hpp>
+#include <core/data_structures/array_unsafe.hpp>
+#include <graphics/vulkan/application.hpp>
+#include <graphics/vulkan/object.hpp>
 
 namespace crude_engine
 {
 
 class Physical_Device;
 
-struct Instance_Create_Info
-{
-  Application                           application;
-#ifdef VK_EXT_debug_utils
-  PFN_vkDebugUtilsMessengerCallbackEXT  debugUtilsCallback;
-#endif // VK_EXT_debug_utils
-  VkInstanceCreateFlags                 flags;
-  std::vector<const char*>              enabledExtensions;
-  std::vector<const char*>              enabledLayers;
-
-  explicit Instance_Create_Info(
-#ifdef VK_EXT_debug_utils
-                              PFN_vkDebugUtilsMessengerCallbackEXT  debugUtilsCallback,
-#endif // VK_EXT_debug_utils
-                              const Application&                    application        = Application(),
-                              const std::vector<const char*>&       enabledExtensions  = {},
-                              const std::vector<const char*>&       enabledLayers      = {},
-                              VkInstanceCreateFlags                 flags              = 0u);
-};
 
 class Instance : public TObject<VkInstance>
 {
 public:
-  explicit Instance(const Instance_Create_Info& createInfo);
+  explicit Instance(
+#ifdef VK_EXT_debug_utils
+                    PFN_vkDebugUtilsMessengerCallbackEXT  debugUtilsCallback,
+#endif // VK_EXT_debug_utils
+                     const Application&                    application        = Application(),
+                     const Array_Unsafe<const char*>&      enabledExtensions  = {},
+                     const Array_Unsafe<const char*>&      enabledLayers      = {},
+                     VkInstanceCreateFlags                 flags              = 0u);
   ~Instance();
-  std::vector<std::shared_ptr<Physical_Device>> getPhysicalDevices();
+  Array_Dynamic<Shared_Ptr<Physical_Device>> getPhysicalDevices();
 };
 
 }
