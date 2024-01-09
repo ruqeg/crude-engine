@@ -1,5 +1,6 @@
 #pragma once
 
+#include <core/data_structures/shared_ptr.hpp>
 #include <core/data_structures/array_unsafe.hpp>
 #include <core/data_structures/optional.hpp>
 #include <graphics/vulkan/object.hpp>

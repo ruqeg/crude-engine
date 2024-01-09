@@ -204,6 +204,7 @@
     <ClInclude Include="..\..\crude_engine\core\core.hpp" />
     <ClInclude Include="..\..\crude_engine\core\data_structures\array_dynamic.hpp" />
     <ClInclude Include="..\..\crude_engine\core\data_structures\array_stack.hpp" />
+    <ClInclude Include="..\..\crude_engine\core\data_structures\array_unsafe.hpp" />
     <ClInclude Include="..\..\crude_engine\core\data_structures\bs_tree.hpp" />
     <ClInclude Include="..\..\crude_engine\core\data_structures\compare.hpp" />
     <ClInclude Include="..\..\crude_engine\core\data_structures\iterator_base.hpp" />
@@ -277,6 +278,7 @@
     <None Include="..\..\crude_engine\core\algorithms.inl" />
     <None Include="..\..\crude_engine\core\data_structures\array_dynamic.inl" />
     <None Include="..\..\crude_engine\core\data_structures\array_stack.inl" />
+    <None Include="..\..\crude_engine\core\data_structures\array_unsafe.inl" />
     <None Include="..\..\crude_engine\core\data_structures\bs_tree.inl" />
     <None Include="..\..\crude_engine\core\data_structures\iterator_base.inl" />
     <None Include="..\..\crude_engine\core\data_structures\rb_tree.inl" />

@@ -88,6 +88,7 @@ public:
   bool empty() const noexcept;
 
   Size_Type size() const noexcept;
+
   void fill(Const_Reference value) noexcept;
 
   Reference front() noexcept;

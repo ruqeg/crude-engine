@@ -6,20 +6,18 @@
 namespace crude_engine
 {
 
-Image_Subresource_Range::Image_Subresource_Range(Image*  pImage,
-                                                 uint32  baseMipLevel,
-                                                 uint32  levelCount,
-                                                 uint32  baseArrayLayer,
-                                                 uint32  layerCount)
+Image_Subresource_Range::Image_Subresource_Range(Shared_Ptr<Image>  image,
+                                                 uint32             baseMipLevel,
+                                                 uint32             levelCount,
+                                                 uint32             baseArrayLayer,
+                                                 uint32             layerCount)
 {
-  CRUDE_ASSERT(pImage);
-
   this->baseMipLevel    = baseMipLevel;
   this->levelCount      = levelCount;
   this->baseArrayLayer  = baseArrayLayer;
   this->layerCount      = layerCount;
 
-  Format format(pImage->getFormat());
+  Format format(image->getFormat());
 
   if (format.depth())              this->aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
   else if (format.stencil())       this->aspectMask = VK_IMAGE_ASPECT_STENCIL_BIT;

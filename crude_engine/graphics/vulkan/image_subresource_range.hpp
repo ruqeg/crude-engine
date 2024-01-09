@@ -1,5 +1,6 @@
 #pragma once
 
+#include <core/alias.hpp>
 #include <graphics/vulkan/include_vulkan.hpp>
 
 namespace crude_engine
@@ -10,11 +11,11 @@ class Image;
 class Image_Subresource_Range : public VkImageSubresourceRange
 {
 public:
-  explicit Image_Subresource_Range(Image*  pImage,
-                                   uint32  baseMipLevel   = 0u,
-                                   uint32  levelCount     = VK_REMAINING_MIP_LEVELS,
-                                   uint32  baseArrayLayer = 0u,
-                                   uint32  layerCount     = VK_REMAINING_ARRAY_LAYERS);
+  explicit Image_Subresource_Range(Shared_Ptr<Image>  image,
+                                   uint32             baseMipLevel   = 0u,
+                                   uint32             levelCount     = VK_REMAINING_MIP_LEVELS,
+                                   uint32             baseArrayLayer = 0u,
+                                   uint32             layerCount     = VK_REMAINING_ARRAY_LAYERS);
 };
 
 }

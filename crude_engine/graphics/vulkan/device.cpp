@@ -20,7 +20,7 @@ Device_Queue_Create_Info::Device_Queue_Create_Info(uint32                       
 
 Device::Device(Shared_Ptr<const Physical_Device>              physicalDevice,
                const Array_Unsafe<Device_Queue_Create_Info>&  queueDescriptors,
-               const Array_Unsafe<VkPhysicalDeviceFeatures>&  enabledFeatures,
+               const VkPhysicalDeviceFeatures&                enabledFeatures,
                Array_Unsafe<const char*>&                     enabledExtensions,
                Array_Unsafe<const char*>&                     enabledLayers)
   :
@@ -33,7 +33,7 @@ Device::Device(Shared_Ptr<const Physical_Device>              physicalDevice,
 
   vkDeviceCreateInfo.queueCreateInfoCount     = queueDescriptors.size();
   vkDeviceCreateInfo.pQueueCreateInfos        = queueDescriptors.data();
-  vkDeviceCreateInfo.pEnabledFeatures         = enabledFeatures.data();
+  vkDeviceCreateInfo.pEnabledFeatures         = &enabledFeatures;
   vkDeviceCreateInfo.enabledExtensionCount    = enabledExtensions.size();
   vkDeviceCreateInfo.ppEnabledExtensionNames  = enabledExtensions.data();
   vkDeviceCreateInfo.enabledLayerCount        = enabledLayers.size();
@@ -55,28 +55,23 @@ Shared_Ptr<const Physical_Device> Device::getPhysicalDevice() const
   
 Shared_Ptr<Queue> Device::getQueue(uint32 queueFamilyIndex, uint32 queueIndex) const
 {
-  Shared_Ptr<Queue> queue = Shared_Ptr<Queue>::makeShared(Queue_Create_Info(queueFamilyIndex, queueIndex));
+  Shared_Ptr<Queue> queue = Shared_Ptr<Queue>::makeShared(queueFamilyIndex, queueIndex);
   vkGetDeviceQueue(m_handle, queueFamilyIndex, queueIndex, &CRUDE_OBJECT_HANDLE(queue));
   return queue;
 }
 
-void Device::updateDescriptorSets(const Write_Descriptor_Set*  pDescriptorWrites,
-                                  const uint32                 descriptorWriteCount,
-                                  const VkCopyDescriptorSet*   pDescriptorCopies,
-                                  const uint32                 descriptorCopieCount)
+void Device::updateDescriptorSets(const Array_Unsafe<Write_Descriptor_Set>&  descriptorWrites,
+                                  const Array_Unsafe<VkCopyDescriptorSet>&   descriptorCopies)
 {
-  CRUDE_ASSERT(pDescriptorWrites);
-  CRUDE_ASSERT(pDescriptorCopies);
-
-  Array_Dynamic<VkWriteDescriptorSet> vkDescriptorWrites(descriptorWriteCount);
-  Algorithms::copy(pDescriptorWrites, pDescriptorWrites + descriptorCopieCount, vkDescriptorWrites.begin());
+  Array_Dynamic<VkWriteDescriptorSet> vkDescriptorWrites(descriptorWrites.size());
+  Algorithms::copy(descriptorWrites.begin(), descriptorWrites.end(), vkDescriptorWrites.begin());
 
   vkUpdateDescriptorSets(
     m_handle, 
     static_cast<uint32>(vkDescriptorWrites.size()), 
     vkDescriptorWrites.data(), 
-    descriptorCopieCount,
-    pDescriptorCopies);
+    descriptorCopies.size(),
+    descriptorCopies.data());
 }
 
 void Device::waitIdle()
@@ -84,12 +79,10 @@ void Device::waitIdle()
   vkDeviceWaitIdle(m_handle);
 }
 
-bool Device::waitForFences(Fence* pFences, uint32 fenceCount, bool waitAll, uint64 timeout) const
+bool Device::waitForFences(Array_Unsafe<Fence>& fences, bool waitAll, uint64 timeout) const
 {
-  CRUDE_ASSERT(pFences);
-
-  Array_Dynamic<VkFence> fencesHandles(fenceCount);
-  Algorithms::copyc(pFences, pFences + fenceCount, fencesHandles.begin(), [](auto& s, auto& d) -> void {
+  Array_Dynamic<VkFence> fencesHandles(fences.size());
+  Algorithms::copyc(fences.begin(), fences.end(), fencesHandles.begin(), [](auto& s, auto& d) -> void {
     *d = CRUDE_OBJECT_HANDLE(s);
   });
 
@@ -98,12 +91,10 @@ bool Device::waitForFences(Fence* pFences, uint32 fenceCount, bool waitAll, uint
   return result != VK_TIMEOUT;
 }
 
-bool Device::resetForFences(Fence* pFences, uint32 fenceCount) const
+bool Device::resetForFences(Array_Unsafe<Fence>& fences) const
 {
-  CRUDE_ASSERT(pFences);
-
-  Array_Dynamic<VkFence> fencesHandles(fenceCount);
-  Algorithms::copyc(pFences, pFences + fenceCount, fencesHandles.begin(), [](auto& s, auto& d) -> void {
+  Array_Dynamic<VkFence> fencesHandles(fences.size());
+  Algorithms::copyc(fences.begin(), fences.end(), fencesHandles.begin(), [](auto& s, auto& d) -> void {
     *d = CRUDE_OBJECT_HANDLE(s);
   });
 

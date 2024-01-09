@@ -38,6 +38,7 @@ public:
 
 protected:
   CRUDE_INLINE T* getPtr() noexcept;
+  CRUDE_INLINE const T* getPtr() const noexcept;
   CRUDE_INLINE Ref_Count_Pointer getRefCount() noexcept;
   CRUDE_INLINE CRUDE_NODISCARD byte* allocateMemBlock() noexcept;
 
@@ -171,6 +172,12 @@ template<class T, class Allocator>
 T* Shared_Ptr<T, Allocator>::getPtr() noexcept
 {
   return reinterpret_cast<T*>(m_memBlock + sizeof(Ref_Count));
+}
+
+template<class T, class Allocator>
+const T* Shared_Ptr<T, Allocator>::getPtr() const noexcept
+{
+  return reinterpret_cast<const T*>(m_memBlock + sizeof(Ref_Count));
 }
 
 template<class T, class Allocator>

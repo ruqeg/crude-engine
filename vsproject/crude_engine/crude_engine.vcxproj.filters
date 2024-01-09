@@ -408,6 +408,9 @@
     <ClInclude Include="..\..\crude_engine\core\data_structures\optional.hpp">
       <Filter>source\core\data_structures</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\crude_engine\core\data_structures\array_unsafe.hpp">
+      <Filter>source\core\data_structures</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\crude_engine\graphics\vulkan\object.inl">
@@ -453,5 +456,8 @@
       <Filter>source\core\memory</Filter>
     </None>
     <None Include="cpp.hint" />
+    <None Include="..\..\crude_engine\core\data_structures\array_unsafe.inl">
+      <Filter>source\core\data_structures</Filter>
+    </None>
   </ItemGroup>
 </Project>

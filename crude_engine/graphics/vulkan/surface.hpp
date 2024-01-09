@@ -21,13 +21,13 @@ protected:
 
 #ifdef VK_KHR_win32_surface
 
-class Win32_Surface : public Surface, public Requiring_Extensions
+class Win32_Surface : public Surface
 {
 public:
-  Win32_Surface(std::shared_ptr<const Instance>  instance,
-                HINSTANCE                        hinstance,
-                HWND                             hwnd,
-                VkWin32SurfaceCreateFlagsKHR     flags = 0u)
+  Win32_Surface(Shared_Ptr<const Instance>    instance,
+                HINSTANCE                     hinstance,
+                HWND                          hwnd,
+                VkWin32SurfaceCreateFlagsKHR  flags = 0u)
     :
     Surface(instance),
     m_hwnd(hwnd),

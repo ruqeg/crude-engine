@@ -1,7 +1,7 @@
 #pragma once
 
+#include <core/data_structures/array_unsafe.hpp>
 #include <graphics/vulkan/include_vulkan.hpp>
-#include <core/alias.hpp>
 
 namespace crude_engine
 {
@@ -9,7 +9,7 @@ namespace crude_engine
 class Dynamic_State_Create_Info : public VkPipelineDynamicStateCreateInfo
 {
 public:
-  explicit Dynamic_State_Create_Info(const VkDynamicState* pDynamicStates, uint32 dynamicStateCount);
+  explicit Dynamic_State_Create_Info(const Array_Unsafe<VkDynamicState>& dynamicStates);
 };
 
 }

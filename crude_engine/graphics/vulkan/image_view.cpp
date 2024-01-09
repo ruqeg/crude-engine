@@ -10,7 +10,7 @@ Image_View::Image_View(Shared_Ptr<const Device>        device,
                        Shared_Ptr<const Image>         image,
                        VkFormat                        format,
                        const Image_Subresource_Range&  subresourceRange,
-                       const VkComponentMapping&       components = {})
+                       const VkComponentMapping&       components)
   :
   m_device(device),
   m_image(image)

@@ -13,7 +13,7 @@ Pipeline_Layout::Pipeline_Layout(Shared_Ptr<const Device>                       
   m_device(device)
 {
   Array_Dynamic<VkDescriptorSetLayout> vkDescriptorSetLayoutHandles(descriptorSetLayouts.size());
-  Algorithms::copyc(descriptorSetLayouts.begin(), descriptorSetLayouts.end(), vkDescriptorSetLayoutHandles.begin(), [](auto& src, auto& dst) -> {
+  Algorithms::copyc(descriptorSetLayouts.begin(), descriptorSetLayouts.end(), vkDescriptorSetLayoutHandles.begin(), [](auto& src, auto& dst) -> void {
     *dst = CRUDE_OBJECT_HANDLE(src);
   });
 

@@ -48,7 +48,7 @@ Array_Dynamic<T, Allocator>::Array_Dynamic(std::initializer_list<Value_Type>& in
 template<class T, class Allocator>
 Array_Dynamic<T, Allocator>::Array_Dynamic(const Array_Dynamic& other)
   :
-  m_size(size)
+  m_size(other.m_size)
 {
   m_data = Allocator::mnewArray<T>(m_size);
 
@@ -57,11 +57,12 @@ Array_Dynamic<T, Allocator>::Array_Dynamic(const Array_Dynamic& other)
 
 template<class T, class Allocator>
 Array_Dynamic<T, Allocator>::Array_Dynamic(Array_Dynamic&& other)
+  :
+  m_data(other.m_data),
+  m_size(other.m_size)
 {
-  m_data = other.m_data;
-  m_size = other.m_size;
-
   other.m_data = nullptr;
+  other.m_size = 0u;
 }
 
 
@@ -81,6 +82,7 @@ Array_Dynamic<T, Allocator>& Array_Dynamic<T, Allocator>::operator=(Array_Dynami
   m_size = other.m_size;
 
   other.m_data = nullptr;
+  other.m_size = 0u;
 }
 
 template<class T, class Allocator>

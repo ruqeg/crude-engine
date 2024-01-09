@@ -1,5 +1,3 @@
-#include <array>
-
 #ifdef __linux__ 
 #define VK_USE_PLATFORM_XCB_KHR
 #include <xcb/xcb.h>
@@ -130,7 +128,7 @@ private:
     wc.hCursor = LoadCursor(NULL, IDC_ARROW);
     wc.hbrBackground = NULL;
     wc.lpszMenuName = NULL;
-    wc.lpszClassName = m_windowClassWide.c_str();
+    wc.lpszClassName = m_windowClassWide;
     wc.cbSize = sizeof(WNDCLASSEX);
 
     if (!RegisterClassEx(&wc))
@@ -140,8 +138,8 @@ private:
 
     m_hwnd = CreateWindowEx(
       NULL,
-      m_windowClassWide.c_str(),
-      m_titileWide.c_str(),
+      m_windowClassWide,
+      m_titileWide,
       WS_OVERLAPPEDWINDOW,
       CW_USEDEFAULT, CW_USEDEFAULT,
       m_width, m_height,
@@ -184,22 +182,22 @@ private:
 #endif
     const auto& debugUtilsExtensions = crude_engine::Debug_Utils_Messenger::requiredExtensions();
 
-    std::vector<const char*> enabledExtensions;
-    enabledExtensions.reserve(surfaceExtensions.size() + debugUtilsExtensions.size());
-    enabledExtensions.insert(enabledExtensions.end(), surfaceExtensions.begin(), surfaceExtensions.end());
-    enabledExtensions.insert(enabledExtensions.end(), debugUtilsExtensions.begin(), debugUtilsExtensions.end());
+    crude_engine::Array_Dynamic<const char*> enabledExtensions(surfaceExtensions.size() + debugUtilsExtensions.size());
+    for (std::size_t i = 0u; i < surfaceExtensions.size(); ++i)
+    {
+      enabledExtensions[i] = surfaceExtensions[i];
+    }
+    for (std::size_t i = 0u; i < debugUtilsExtensions.size(); ++i)
+    {
+      enabledExtensions[i + surfaceExtensions.size()] = debugUtilsExtensions[i];
+    }
 
     // Initialize instance
-    crude_engine::Instance_Create_Info instanceInfo(debugCallback);
-    instanceInfo.enabledExtensions = enabledExtensions;
-    instanceInfo.enabledLayers = { "VK_LAYER_KHRONOS_validation" };
-
-    m_instance = std::make_shared<crude_engine::Instance>(instanceInfo);
+    const char* enabledLayers = { "VK_LAYER_KHRONOS_validation" };
+    m_instance = crude_engine::Shared_Ptr<crude_engine::Instance>::makeShared(debugCallback, crude_engine::Application(), enabledExtensions, enabledLayers);
 
     // Initialize debugCallback
-    m_debugUtilsMessenger = std::make_shared<crude_engine::Debug_Utils_Messenger>(crude_engine::DebugUtilsMessengerCreateInfo(
-      m_instance,
-      debugCallback));
+    m_debugUtilsMessenger = crude_engine::Shared_Ptr<crude_engine::Debug_Utils_Messenger>::makeShared(m_instance, debugCallback);
 
     // Initialize surface
 #ifdef __linux__ 
@@ -208,10 +206,7 @@ private:
       m_pConnection,
       m_window));
 #elif _WIN32
-    m_surface = std::make_shared<crude_engine::Win32_Surface>(crude_engine::Win32_Surface_Create_Info(
-      m_instance,
-      m_hinstance,
-      m_hwnd));
+    m_surface = crude_engine::Shared_Ptr<crude_engine::Win32_Surface>::makeShared(m_instance, m_hinstance, m_hwnd);
 #endif
 
     // Pick physical device
@@ -241,14 +236,14 @@ private:
     VkPhysicalDeviceFeatures deviceFeatures{};
     deviceFeatures.samplerAnisotropy = VK_TRUE;
     
-    m_device = std::make_shared<crude_engine::Device>(crude_engine::Device_Create_Info(
+    m_device = crude_engine::Shared_Ptr<crude_engine::Device>::makeShared(
       m_physicalDevice,
       {
         crude_engine::Device_Queue_Create_Info(queueIndices.graphicsFamily.value()),
         crude_engine::Device_Queue_Create_Info(queueIndices.presentFamily.value()) },
       deviceFeatures,
       { VK_KHR_SWAPCHAIN_EXTENSION_NAME },
-      { "VK_LAYER_KHRONOS_validation" }));
+      { "VK_LAYER_KHRONOS_validation" });
 
     m_graphicsQueue = m_device->getQueue(queueIndices.graphicsFamily.value(), 0u);
     m_presentQueue = m_device->getQueue(queueIndices.presentFamily.value(), 0u);
@@ -581,37 +576,39 @@ private:
 
     VkMemoryRequirements memRequirements = m_depthImage->getMemoryRequirements();
 
-    m_depthImageDeviceMemory = std::make_shared<crude_engine::Device_Memory>(crude_engine::Device_Memory_Allocate_Info(
+    m_depthImageDeviceMemory = crude_engine::Shared_Ptr<crude_engine::Device_Memory>::makeShared(
       m_device,
       memRequirements.size,
       memRequirements.memoryTypeBits,
-      VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT));
+      VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
     m_depthImageDeviceMemory->bind(*m_depthImage);
 
-    auto commandBuffer = std::make_shared<crude_engine::Command_Buffer>(crude_engine::Command_Buffer_Create_Info(
+    auto commandBuffer = crude_engine::Shared_Ptr<crude_engine::Command_Buffer>::makeShared(
       m_device,
       m_commandPool,
-      VK_COMMAND_BUFFER_LEVEL_PRIMARY));
+      VK_COMMAND_BUFFER_LEVEL_PRIMARY);
     commandBuffer->begin();
 
     crude_engine::Image_Memory_Barrier barrier(
       m_depthImage,
       VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
       crude_engine::Image_Subresource_Range(m_depthImage, 0u, 1u, 0u, 1u));
-    commandBuffer->barrier(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT, { barrier });
+    crude_engine::Array_Unsafe barriers(&barrier, 1);
+    commandBuffer->barrier(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT, barriers);
     commandBuffer->end();
-    m_graphicsQueue->sumbit({ commandBuffer });
+
+    m_graphicsQueue->sumbit(crude_engine::Array_Unsafe(&commandBuffer, 1u));
     m_graphicsQueue->waitIdle();
 
-    m_depthImageView = std::make_shared<crude_engine::Image_View>(crude_engine::Image_View_Create_Info(
+    m_depthImageView = crude_engine::Shared_Ptr<crude_engine::Image_View>(
       m_device,
       m_depthImage,
       depthFormat,
-      crude_engine::Image_Subresource_Range(m_depthImage)));
+      crude_engine::Image_Subresource_Range(m_depthImage));
   }
 
-  void createTextureImageFromFile(const char* path, std::shared_ptr<crude_engine::Image>& textureImage, std::shared_ptr<crude_engine::Device_Memory>& textureImageMemory)
+  void createTextureImageFromFile(const char* path, crude_engine::Shared_Ptr<crude_engine::Image>& textureImage, crude_engine::Shared_Ptr<crude_engine::Device_Memory>& textureImageMemory)
   {
     int texWidth, texHeight, texChannels;
     stbi_uc* pixels = stbi_load(path, &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
@@ -622,20 +619,20 @@ private:
       throw std::runtime_error("failed to load texture image!");
     }
 
-    auto stagingBuffer = std::make_shared<crude_engine::Buffer>(crude_engine::Buffer_Create_Info(
+    auto stagingBuffer = crude_engine::Shared_Ptr<crude_engine::Buffer>::makeShared(
       m_device,
       4 * texWidth * texHeight,
       VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
       VK_SHARING_MODE_EXCLUSIVE,
-      {}));
-
+      crude_engine::Array_Unsafe<crude_engine::uint32>());
+    
     VkMemoryRequirements memRequirements = m_depthImage->getMemoryRequirements();
 
-    auto stagingBufferMemory = std::make_shared<crude_engine::Device_Memory>(crude_engine::Device_Memory_Allocate_Info(
+    auto stagingBufferMemory = crude_engine::Shared_Ptr<crude_engine::Device_Memory>::makeShared(
       m_device,
       memRequirements.size,
       memRequirements.memoryTypeBits,
-      VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT));
+      VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
     stagingBufferMemory->bind(*stagingBuffer);
 
@@ -643,68 +640,71 @@ private:
     memcpy(data, pixels, static_cast<size_t>(pixelsbsize));
     stagingBufferMemory->unmap();
 
-    textureImage = std::make_shared<crude_engine::Image>(crude_engine::Image_2D_Create_Info(
+    textureImage = crude_engine::Shared_Ptr<crude_engine::Image>(
       m_device,
       0u,
       VK_FORMAT_R8G8B8A8_SRGB,
-      VkExtent2D { static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight) },
+      VkExtent2D{ static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight) },
       1u,
       1u,
       VK_SAMPLE_COUNT_1_BIT,
       VK_IMAGE_TILING_OPTIMAL,
       VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
       VK_SHARING_MODE_EXCLUSIVE,
-      VK_IMAGE_LAYOUT_UNDEFINED));
+      VK_IMAGE_LAYOUT_UNDEFINED);
 
     memRequirements = textureImage->getMemoryRequirements();
 
-    textureImageMemory = std::make_shared<crude_engine::Device_Memory>(crude_engine::Device_Memory_Allocate_Info(
+    textureImageMemory = crude_engine::Shared_Ptr<crude_engine::Device_Memory>::makeShared(
       m_device,
       memRequirements.size,
       memRequirements.memoryTypeBits,
-      VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT));
+      VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
     textureImageMemory->bind(*textureImage);
 
-    auto commandBuffer = std::make_shared<crude_engine::Command_Buffer>(crude_engine::Command_Buffer_Create_Info(
+    auto commandBuffer = crude_engine::Shared_Ptr<crude_engine::Command_Buffer>::makeShared(
       m_device,
       m_commandPool,
-      VK_COMMAND_BUFFER_LEVEL_PRIMARY));
+      VK_COMMAND_BUFFER_LEVEL_PRIMARY);
     commandBuffer->begin();
 
-    commandBuffer->barrier(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, {
-      crude_engine::Image_Memory_Barrier(
-        textureImage,
-        VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-        crude_engine::Image_Subresource_Range(textureImage, 0u, 1u, 0u, 1u))
-      });
-     
+    crude_engine::Image_Memory_Barrier imageMemBarrier(
+      textureImage,
+      VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+      crude_engine::Image_Subresource_Range(textureImage, 0u, 1u, 0u, 1u));
+
+    crude_engine::Array_Unsafe<crude_engine::Image_Memory_Barrier> imageMemoryBarriersUnsafe(&imageMemBarrier, 1u);
+
+    commandBuffer->barrier(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, imageMemoryBarriersUnsafe);
+
     VkBufferImageCopy region{};
-    region.bufferOffset                    = 0;
-    region.bufferRowLength                 = 0;
-    region.bufferImageHeight               = 0;
-    region.imageSubresource.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
-    region.imageSubresource.mipLevel       = 0;
+    region.bufferOffset = 0;
+    region.bufferRowLength = 0;
+    region.bufferImageHeight = 0;
+    region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    region.imageSubresource.mipLevel = 0;
     region.imageSubresource.baseArrayLayer = 0;
-    region.imageSubresource.layerCount     = 1;
-    region.imageOffset                     = {0, 0, 0};
+    region.imageSubresource.layerCount = 1;
+    region.imageOffset = { 0, 0, 0 };
     region.imageExtent = {
       static_cast<uint32_t>(texWidth),
       static_cast<uint32_t>(texHeight),
       1
     };
-    commandBuffer->copyBufferToImage(stagingBuffer, textureImage, { region });
+    commandBuffer->copyBufferToImage(stagingBuffer, textureImage, crude_engine::Array_Unsafe(&region, 1u));
+    
 
-    commandBuffer->barrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, {
-      crude_engine::Image_Memory_Barrier(
-        textureImage,
-        VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-        crude_engine::Image_Subresource_Range(textureImage, 0u, 1u, 0u, 1u))
-      });
+    imageMemBarrier = crude_engine::Image_Memory_Barrier(
+      textureImage,
+      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+      crude_engine::Image_Subresource_Range(textureImage, 0u, 1u, 0u, 1u));
+
+    commandBuffer->barrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, imageMemoryBarriersUnsafe);
 
     commandBuffer->end();
 
-    m_graphicsQueue->sumbit({ commandBuffer });
+    m_graphicsQueue->sumbit(crude_engine::Array_Unsafe(&commandBuffer, 1u));
     m_graphicsQueue->waitIdle();
   }
 
@@ -713,7 +713,7 @@ private:
 
   }
 
-  static std::vector<char> readFile(const std::string& filename) {
+  static crude_engine::Array_Dynamic<char> readFile(const std::string& filename) {
     std::ifstream file(filename, std::ios::ate | std::ios::binary);
 
     if (!file.is_open()) {
@@ -721,7 +721,7 @@ private:
     }
 
     size_t fileSize = (size_t) file.tellg();
-    std::vector<char> buffer(fileSize);
+    crude_engine::Array_Dynamic<char> buffer(fileSize);
 
     file.seekg(0);
     file.read(buffer.data(), fileSize);
@@ -752,7 +752,7 @@ private:
 
   bool checkDeviceExtensionSupport(crude_engine::Physical_Device& physicalDevice) 
   {
-    static const std::vector<const char*> deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
+    static const crude_engine::Array_Dynamic<const char*> deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
     
     const auto& availableExtensions = physicalDevice.getExtensionProperties();
     std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
@@ -769,7 +769,7 @@ private:
     return !physicalDevice.getSurfaceFormats(surface).empty() && !physicalDevice.getSurfacePresentModes(surface).empty();
   }
 
-  VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) {
+  VkSurfaceFormatKHR chooseSwapSurfaceFormat(const crude_engine::Array_Dynamic<VkSurfaceFormatKHR>& availableFormats) {
     for (const auto& availableFormat : availableFormats) {
       if (availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
         return availableFormat;
@@ -779,7 +779,7 @@ private:
     return availableFormats[0];
   }
 
-  VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) {
+  VkPresentModeKHR chooseSwapPresentMode(const crude_engine::Array_Dynamic<VkPresentModeKHR>& availablePresentModes) {
     for (const auto& availablePresentMode : availablePresentModes) {
       if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
         return availablePresentMode;
@@ -812,7 +812,7 @@ private:
       VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
   }
 
-  VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) {
+  VkFormat findSupportedFormat(const crude_engine::Array_Dynamic<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) {
     for (VkFormat format : candidates) {
       VkFormatProperties props = m_physicalDevice->getFormatProperties(format);
       
@@ -864,11 +864,12 @@ private:
 
     recordCommandBuffer(m_commandBuffers[m_currentFrame], imageIndex);
 
+    crude_engine::uint32 waitStageMasks[1] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
     const bool graphicsQueueSubmited = m_graphicsQueue->sumbit(
-      { m_commandBuffers[m_currentFrame] },
-      { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT },
-      { m_imageAvailableSemaphores[m_currentFrame] },
-      { m_renderFinishedSemaphores[m_currentFrame] },
+      crude_engine::Array_Unsafe(&m_commandBuffers[m_currentFrame], 1u),
+      crude_engine::Array_Unsafe(waitStageMasks, 1u),
+      crude_engine::Array_Unsafe(&m_imageAvailableSemaphores[m_currentFrame], 1u),
+      crude_engine::Array_Unsafe(&m_renderFinishedSemaphores[m_currentFrame], 1u),
       m_inFlightFences[m_currentFrame]);
 
     if (!graphicsQueueSubmited)
@@ -876,7 +877,10 @@ private:
       throw std::runtime_error("failed to submit draw command buffer!");
     }
 
-    const crude_engine::Queue_Present_Result presentResult = m_presentQueue->present({ m_swapchain }, { imageIndex }, { m_renderFinishedSemaphores[m_currentFrame] });
+    const crude_engine::Queue_Present_Result presentResult = m_presentQueue->present(
+      crude_engine::Array_Unsafe(&m_swapchain, 1u), 
+      crude_engine::Array_Unsafe(&imageIndex, 1u), 
+      crude_engine::Array_Unsafe(&m_renderFinishedSemaphores[m_currentFrame], 1u));
 
     if (presentResult.outOfDate() || presentResult.suboptimal() || m_framebufferResized)
     {
@@ -891,13 +895,13 @@ private:
     m_currentFrame = (m_currentFrame + 1u) % 2u;
   }
 
-  void recordCommandBuffer(std::shared_ptr<crude_engine::Command_Buffer> commandBuffer, uint32_t imageIndex) {
+  void recordCommandBuffer(crude_engine::Shared_Ptr<crude_engine::Command_Buffer> commandBuffer, uint32_t imageIndex) {
     if (!commandBuffer->begin())
     {
       throw std::runtime_error("failed to begin recording command buffer!");
     }
 
-    std::vector<VkClearValue> clearValues(2u);
+    crude_engine::Array_Stack<VkClearValue, 2u> clearValues;
     clearValues[0].color = { {0.0f, 0.0f, 0.0f, 1.0f} };
     clearValues[1].depthStencil = { 1.0f, 0 };
 
@@ -909,7 +913,7 @@ private:
     commandBuffer->beginRenderPass(
       m_renderPass,
       m_swapchainFramebuffers[imageIndex],
-      clearValues,
+      crude_engine::Array_Unsafe(clearValues.data(), clearValues.size()),
       renderArea);
 
     commandBuffer->bindPipeline(m_graphicsPipeline);
@@ -921,14 +925,14 @@ private:
     viewport.height    = static_cast<float>(m_swapchain->getExtent().height);
     viewport.minDepth  = 0.0f;
     viewport.maxDepth  = 1.0f;
-    commandBuffer->setViewport({ viewport });
+    commandBuffer->setViewport(crude_engine::Array_Unsafe(&viewport, 1u));
 
     VkRect2D scissor{};
     scissor.offset = { 0, 0 };
     scissor.extent = m_swapchain->getExtent();
-    commandBuffer->setScissor({ scissor });
+    commandBuffer->setScissor(crude_engine::Array_Unsafe(&scissor, 1u));
 
-    commandBuffer->bindDescriptorSets(m_graphicsPipeline, { m_descriptorSets[m_currentFrame] });
+    commandBuffer->bindDescriptorSets(m_graphicsPipeline, crude_engine::Array_Unsafe(&m_descriptorSets[m_currentFrame], 1u));
 
     commandBuffer->draw(3u, 1u);
     
@@ -945,7 +949,7 @@ private:
 #ifdef __linux__ 
     xcb_disconnect(m_pConnection);
 #elif _WIN32
-    UnregisterClass(m_windowClassWide.c_str(), m_hinstance);
+    UnregisterClass(m_windowClassWide, m_hinstance);
     DestroyWindow(m_hwnd);
 #endif
   }
@@ -970,43 +974,43 @@ private:
   HWND       m_hwnd;
   HINSTANCE  m_hinstance;
 #endif
-  std::shared_ptr<crude_engine::Instance>                       m_instance;
-  std::shared_ptr<crude_engine::Debug_Utils_Messenger>          m_debugUtilsMessenger;
-  std::shared_ptr<crude_engine::Surface>                        m_surface;
-  std::shared_ptr<crude_engine::Physical_Device>                m_physicalDevice;
-  std::shared_ptr<crude_engine::Device>                         m_device;
-  std::shared_ptr<crude_engine::Queue>                          m_graphicsQueue;
-  std::shared_ptr<crude_engine::Queue>                          m_presentQueue;
-  std::shared_ptr<crude_engine::Swap_Chain>                     m_swapchain;
-  std::vector<std::shared_ptr<crude_engine::Swap_Chain_Image>>  m_swapchainImages;
-  std::vector<std::shared_ptr<crude_engine::Image_View>>        m_swapchainImagesViews;
-  std::shared_ptr<crude_engine::Render_Pass>                    m_renderPass;
-  std::shared_ptr<crude_engine::Descriptor_Set_Layout>          m_descriptorSetLayout;
-  std::shared_ptr<crude_engine::Pipeline_Layout>                m_pipelineLayout;
-  std::shared_ptr<crude_engine::Pipeline>                       m_graphicsPipeline;
-  std::shared_ptr<crude_engine::Command_Pool>                   m_commandPool;
-  std::shared_ptr<crude_engine::Device_Memory>                  m_depthImageDeviceMemory;
-  std::shared_ptr<crude_engine::Image>                          m_depthImage;
-  std::shared_ptr<crude_engine::Image_View>                     m_depthImageView;
-  std::vector<std::shared_ptr<crude_engine::Framebuffer>>       m_swapchainFramebuffers;
-  std::shared_ptr<crude_engine::Image>                          m_textureImage;
-  std::shared_ptr<crude_engine::Device_Memory>                  m_textureImageMemory;
-  std::shared_ptr<crude_engine::Image_View>                     m_textureImageView;
-  std::shared_ptr<crude_engine::Sampler>                        m_sampler;
-  std::shared_ptr<crude_engine::Descriptor_Pool>                m_descriptorPool;
-  std::vector<std::shared_ptr<crude_engine::Descriptor_Set>>    m_descriptorSets;
-  std::vector<std::shared_ptr<crude_engine::Command_Buffer>>    m_commandBuffers;
-  std::vector<std::shared_ptr<crude_engine::Semaphore>>         m_imageAvailableSemaphores;
-  std::vector<std::shared_ptr<crude_engine::Semaphore>>         m_renderFinishedSemaphores;
-  std::vector<std::shared_ptr<crude_engine::Fence>>             m_inFlightFences;
+  crude_engine::Shared_Ptr<crude_engine::Instance>                                       m_instance;
+  crude_engine::Shared_Ptr<crude_engine::Debug_Utils_Messenger>                          m_debugUtilsMessenger;
+  crude_engine::Shared_Ptr<crude_engine::Surface>                                        m_surface;
+  crude_engine::Shared_Ptr<crude_engine::Physical_Device>                                m_physicalDevice;
+  crude_engine::Shared_Ptr<crude_engine::Device>                                         m_device;
+  crude_engine::Shared_Ptr<crude_engine::Queue>                                          m_graphicsQueue;
+  crude_engine::Shared_Ptr<crude_engine::Queue>                                          m_presentQueue;
+  crude_engine::Shared_Ptr<crude_engine::Swap_Chain>                                     m_swapchain;
+  crude_engine::Array_Dynamic<crude_engine::Shared_Ptr<crude_engine::Swap_Chain_Image>>  m_swapchainImages;
+  crude_engine::Array_Dynamic<crude_engine::Shared_Ptr<crude_engine::Image_View>>        m_swapchainImagesViews;
+  crude_engine::Shared_Ptr<crude_engine::Render_Pass>                                    m_renderPass;
+  crude_engine::Shared_Ptr<crude_engine::Descriptor_Set_Layout>                          m_descriptorSetLayout;
+  crude_engine::Shared_Ptr<crude_engine::Pipeline_Layout>                                m_pipelineLayout;
+  crude_engine::Shared_Ptr<crude_engine::Pipeline>                                       m_graphicsPipeline;
+  crude_engine::Shared_Ptr<crude_engine::Command_Pool>                                   m_commandPool;
+  crude_engine::Shared_Ptr<crude_engine::Device_Memory>                                  m_depthImageDeviceMemory;
+  crude_engine::Shared_Ptr<crude_engine::Image>                                          m_depthImage;
+  crude_engine::Shared_Ptr<crude_engine::Image_View>                                     m_depthImageView;
+  crude_engine::Array_Dynamic<crude_engine::Shared_Ptr<crude_engine::Framebuffer>>       m_swapchainFramebuffers;
+  crude_engine::Shared_Ptr<crude_engine::Image>                                          m_textureImage;
+  crude_engine::Shared_Ptr<crude_engine::Device_Memory>                                  m_textureImageMemory;
+  crude_engine::Shared_Ptr<crude_engine::Image_View>                                     m_textureImageView;
+  crude_engine::Shared_Ptr<crude_engine::Sampler>                                        m_sampler;
+  crude_engine::Shared_Ptr<crude_engine::Descriptor_Pool>                                m_descriptorPool;
+  crude_engine::Array_Dynamic<crude_engine::Shared_Ptr<crude_engine::Descriptor_Set>>    m_descriptorSets;
+  crude_engine::Array_Dynamic<crude_engine::Shared_Ptr<crude_engine::Command_Buffer>>    m_commandBuffers;
+  crude_engine::Array_Dynamic<crude_engine::Shared_Ptr<crude_engine::Semaphore>>         m_imageAvailableSemaphores;
+  crude_engine::Array_Dynamic<crude_engine::Shared_Ptr<crude_engine::Semaphore>>         m_renderFinishedSemaphores;
+  crude_engine::Array_Dynamic<crude_engine::Shared_Ptr<crude_engine::Fence>>             m_inFlightFences;
   uint32_t m_currentFrame = 0u;
   uint32_t m_width = 800u;
   uint32_t m_height = 600u;
   bool m_framebufferResized = false;
 
-  const std::string   m_titile = "test";
-  const std::wstring  m_titileWide = L"test";
-  const std::wstring  m_windowClassWide = L"test_class";
+  const crude_engine::char8*   m_titile = "test";
+  const crude_engine::char16*  m_titileWide = L"test";
+  const crude_engine::char16*  m_windowClassWide = L"test_class";
 };
 
 #ifdef __linux__

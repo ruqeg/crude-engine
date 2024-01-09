@@ -22,7 +22,7 @@ public:
                         VkDebugUtilsMessengerCreateFlagsEXT   flags           = 0u);
   ~Debug_Utils_Messenger();
 public:
-  static const Array_Unsafe<const char>& requiredExtensions();
+  static const Array_Unsafe<const char*>& requiredExtensions();
 private:
   void destroyDebugUtilsMessengerEXT(VkInstance instance, 
                                      VkDebugUtilsMessengerEXT debugMessenger, 

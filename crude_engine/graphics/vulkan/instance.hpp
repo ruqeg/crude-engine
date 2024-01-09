@@ -18,7 +18,7 @@ class Instance : public TObject<VkInstance>
 public:
   explicit Instance(
 #ifdef VK_EXT_debug_utils
-                    PFN_vkDebugUtilsMessengerCallbackEXT  debugUtilsCallback,
+                    PFN_vkDebugUtilsMessengerCallbackEXT   debugUtilsCallback,
 #endif // VK_EXT_debug_utils
                      const Application&                    application        = Application(),
                      const Array_Unsafe<const char*>&      enabledExtensions  = {},

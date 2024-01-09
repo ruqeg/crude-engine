@@ -52,7 +52,7 @@ public:
 
   void bindDescriptorSets(Shared_Ptr<Pipeline>                      pipeline,
                           Array_Unsafe<Shared_Ptr<Descriptor_Set>>  descriptorSets, 
-                          Array_Unsafe<uint32>                      dynamicOffsets);
+                          Array_Unsafe<uint32>                      dynamicOffsets = {});
 
   void draw(uint32 vertexCount, uint32 instanceCount = 0u, uint32 firstVertex = 0u, uint32 firstInstance = 0u);
 

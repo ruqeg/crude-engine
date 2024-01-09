@@ -10,7 +10,7 @@ struct Nullopt
   constexpr explicit Nullopt(int) {}
 };
 
-constexpr Nullopt nullopt;
+constexpr Nullopt nullopt(1);
 
 template<class T>
 class Optional
