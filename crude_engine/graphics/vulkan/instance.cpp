@@ -64,13 +64,13 @@ Instance::Instance(
     vkInstanceCreateInfo.enabledLayerCount = 0u;
   }
   
-  const VkResult result = vkCreateInstance(&vkInstanceCreateInfo, &getVkAllocationCallbacks(), &m_handle);
+  const VkResult result = vkCreateInstance(&vkInstanceCreateInfo, getPVkAllocationCallbacks(), &m_handle);
   CRUDE_VULKAN_HANDLE_RESULT(result, "failed to create instance");
 }
  
 Instance::~Instance()
 {
-  vkDestroyInstance(m_handle, &getVkAllocationCallbacks());
+  vkDestroyInstance(m_handle, getPVkAllocationCallbacks());
 }
   
 Array_Dynamic<Shared_Ptr<Physical_Device>> Instance::getPhysicalDevices()

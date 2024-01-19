@@ -61,7 +61,7 @@ Image::Image(Shared_Ptr<const Device>  device,
   vkImageInfo.sharingMode            = sharingMode;
   vkImageInfo.initialLayout          = m_layout;
 
-  VkResult result = vkCreateImage(CRUDE_OBJECT_HANDLE(m_device), &vkImageInfo, &getVkAllocationCallbacks(), &m_handle);
+  VkResult result = vkCreateImage(CRUDE_OBJECT_HANDLE(m_device), &vkImageInfo, getPVkAllocationCallbacks(), &m_handle);
   CRUDE_VULKAN_HANDLE_RESULT(result, "failed to create 2d image");
 }
   
@@ -69,7 +69,7 @@ Image::~Image()
 {
   if (m_handle != VK_NULL_HANDLE)
   {
-    vkDestroyImage(CRUDE_OBJECT_HANDLE(m_device), m_handle, &getVkAllocationCallbacks());
+    vkDestroyImage(CRUDE_OBJECT_HANDLE(m_device), m_handle, getPVkAllocationCallbacks());
   }
 }
 

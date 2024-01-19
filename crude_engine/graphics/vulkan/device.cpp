@@ -39,7 +39,7 @@ Device::Device(Shared_Ptr<const Physical_Device>              physicalDevice,
   vkDeviceCreateInfo.enabledLayerCount        = enabledLayers.size();
   vkDeviceCreateInfo.ppEnabledLayerNames      = enabledLayers.data();
 
-  const VkResult result = vkCreateDevice(CRUDE_OBJECT_HANDLE(m_physicalDevice), &vkDeviceCreateInfo, &getVkAllocationCallbacks(), &m_handle);
+  const VkResult result = vkCreateDevice(CRUDE_OBJECT_HANDLE(m_physicalDevice), &vkDeviceCreateInfo, getPVkAllocationCallbacks(), &m_handle);
   CRUDE_VULKAN_HANDLE_RESULT(result, "failed to create logic device!");
 }
 

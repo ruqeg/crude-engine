@@ -17,13 +17,13 @@ Descriptor_Set_Layout::Descriptor_Set_Layout(Shared_Ptr<const Device>           
   vkCreateInfo.pBindings     = bindings.data();
   vkCreateInfo.bindingCount  = bindings.size();
 
-  VkResult result = vkCreateDescriptorSetLayout(CRUDE_OBJECT_HANDLE(m_device), &vkCreateInfo, &getVkAllocationCallbacks(), &m_handle);
+  VkResult result = vkCreateDescriptorSetLayout(CRUDE_OBJECT_HANDLE(m_device), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
   CRUDE_VULKAN_HANDLE_RESULT(result, "failed to create descriptor set layout");
 }
   
 Descriptor_Set_Layout::~Descriptor_Set_Layout()
 {
-  vkDestroyDescriptorSetLayout(CRUDE_OBJECT_HANDLE(m_device), m_handle, &getVkAllocationCallbacks());
+  vkDestroyDescriptorSetLayout(CRUDE_OBJECT_HANDLE(m_device), m_handle, getPVkAllocationCallbacks());
 }
 
 }

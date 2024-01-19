@@ -53,7 +53,7 @@ void Device_Memory::initalize(VkDeviceSize allocationSize, uint32 memoryTypeInde
   vkAllocateInfo.allocationSize = allocationSize;
   vkAllocateInfo.memoryTypeIndex = memoryTypeIndex;
 
-  VkResult result = vkAllocateMemory(CRUDE_OBJECT_HANDLE(m_device), &vkAllocateInfo, &getVkAllocationCallbacks(), &m_handle);
+  VkResult result = vkAllocateMemory(CRUDE_OBJECT_HANDLE(m_device), &vkAllocateInfo, getPVkAllocationCallbacks(), &m_handle);
   CRUDE_VULKAN_HANDLE_RESULT(result, "failed to allocate memory");
 }
 
@@ -82,7 +82,7 @@ void Device_Memory::unmap()
 
 Device_Memory::~Device_Memory()
 {
-  vkFreeMemory(CRUDE_OBJECT_HANDLE(m_device), m_handle, &getVkAllocationCallbacks());
+  vkFreeMemory(CRUDE_OBJECT_HANDLE(m_device), m_handle, getPVkAllocationCallbacks());
 }
 
 }

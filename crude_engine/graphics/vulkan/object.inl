@@ -15,10 +15,11 @@ const Type& TObject<Type, Allocator>::getHandle() const
 }
 
 template<class Type, class Allocator>
-const VkAllocationCallbacks& TObject<Type, Allocator>::getVkAllocationCallbacks()
+const VkAllocationCallbacks* TObject<Type, Allocator>::getPVkAllocationCallbacks()
 {
+  // !TODO
   static VkAllocationCallbacks instance = Allocator();
-  return instance;
+  return nullptr;
 }
 
 } // namespace crude_engine

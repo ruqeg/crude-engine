@@ -58,13 +58,13 @@ Swap_Chain::Swap_Chain(Shared_Ptr<const Device>       device,
   vkCreateInfo.clipped                = clipped;
   vkCreateInfo.oldSwapchain           = oldSwapchain ? CRUDE_OBJECT_HANDLE(oldSwapchain) : VK_NULL_HANDLE;
 
-  VkResult result = vkCreateSwapchainKHR(CRUDE_OBJECT_HANDLE(m_device), &vkCreateInfo, &getVkAllocationCallbacks(), &m_handle);
+  VkResult result = vkCreateSwapchainKHR(CRUDE_OBJECT_HANDLE(m_device), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
   CRUDE_VULKAN_HANDLE_RESULT(result, "failed to create swapchain");
 }
 
 Swap_Chain::~Swap_Chain()
 {
-  vkDestroySwapchainKHR(CRUDE_OBJECT_HANDLE(m_device), m_handle, &getVkAllocationCallbacks());
+  vkDestroySwapchainKHR(CRUDE_OBJECT_HANDLE(m_device), m_handle, getPVkAllocationCallbacks());
 }
   
 const Array_Dynamic<Shared_Ptr<Swap_Chain_Image>>& Swap_Chain::getSwapchainImages()

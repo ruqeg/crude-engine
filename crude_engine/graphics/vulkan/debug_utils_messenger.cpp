@@ -47,16 +47,16 @@ Debug_Utils_Messenger::Debug_Utils_Messenger(Shared_Ptr<const Instance>         
   vkCreateInfo.pNext            = pNext;
   vkCreateInfo.flags            = flags;
 
-  const VkResult result = createDebugUtilsMessengerEXT(CRUDE_OBJECT_HANDLE(m_instance), &vkCreateInfo, &getVkAllocationCallbacks(), &m_handle);
+  const VkResult result = createDebugUtilsMessengerEXT(CRUDE_OBJECT_HANDLE(m_instance), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
   CRUDE_VULKAN_HANDLE_RESULT(result, "failed to create debug utils messenger");
 }
 
 Debug_Utils_Messenger::~Debug_Utils_Messenger()
 {
-  destroyDebugUtilsMessengerEXT(CRUDE_OBJECT_HANDLE(m_instance), m_handle, &getVkAllocationCallbacks());
+  destroyDebugUtilsMessengerEXT(CRUDE_OBJECT_HANDLE(m_instance), m_handle, getPVkAllocationCallbacks());
 }
 
-const Array_Unsafe<const char*>& Debug_Utils_Messenger::requiredExtensions()
+const Array_Unsafe<const char*> Debug_Utils_Messenger::requiredExtensions()
 {
   static const char* extensions[] = {VK_EXT_DEBUG_UTILS_EXTENSION_NAME};
   return Array_Unsafe<const char*>(extensions, 1u);

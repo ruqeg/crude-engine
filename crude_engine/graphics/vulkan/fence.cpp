@@ -13,13 +13,13 @@ Fence::Fence(Shared_Ptr<const Device> device, VkFenceCreateFlags flags)
   vkCreateInfo.pNext  = nullptr;
   vkCreateInfo.flags  = flags;
 
-  VkResult result = vkCreateFence(CRUDE_OBJECT_HANDLE(m_device), &vkCreateInfo, &getVkAllocationCallbacks(), &m_handle);
+  VkResult result = vkCreateFence(CRUDE_OBJECT_HANDLE(m_device), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
   CRUDE_VULKAN_HANDLE_RESULT(result, "failed to create fence");
 }
 
 Fence::~Fence()
 {
-  vkDestroyFence(CRUDE_OBJECT_HANDLE(m_device), m_handle, &getVkAllocationCallbacks());
+  vkDestroyFence(CRUDE_OBJECT_HANDLE(m_device), m_handle, getPVkAllocationCallbacks());
 }
 
 bool Fence::wait(uint64 timeout)

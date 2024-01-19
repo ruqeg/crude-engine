@@ -26,13 +26,13 @@ Image_View::Image_View(Shared_Ptr<const Device>        device,
   vkCreateInfo.format                           = format;
   vkCreateInfo.subresourceRange                 = subresourceRange;
 
-  VkResult result = vkCreateImageView(CRUDE_OBJECT_HANDLE(m_device), &vkCreateInfo, &getVkAllocationCallbacks(), &m_handle);
+  VkResult result = vkCreateImageView(CRUDE_OBJECT_HANDLE(m_device), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
   CRUDE_VULKAN_HANDLE_RESULT(result, "failed to create image view");
 }
 
 Image_View::~Image_View()
 {
-  vkDestroyImageView(CRUDE_OBJECT_HANDLE(m_device), m_handle, &getVkAllocationCallbacks());
+  vkDestroyImageView(CRUDE_OBJECT_HANDLE(m_device), m_handle, getPVkAllocationCallbacks());
 }
   
 VkImageViewType Image_View::imageToViewType(VkImageType imageType)

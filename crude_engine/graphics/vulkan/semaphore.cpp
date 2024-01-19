@@ -13,13 +13,13 @@ Semaphore::Semaphore(Shared_Ptr<const Device> device, VkSemaphoreCreateFlags fla
   vkCreateInfo.pNext  = nullptr;
   vkCreateInfo.flags  = flags;
 
-  VkResult result = vkCreateSemaphore(CRUDE_OBJECT_HANDLE(m_device), &vkCreateInfo, &getVkAllocationCallbacks(), &m_handle);
+  VkResult result = vkCreateSemaphore(CRUDE_OBJECT_HANDLE(m_device), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
   CRUDE_VULKAN_HANDLE_RESULT(result, "failed to create semaphore");
 }
  
 Semaphore::~Semaphore()
 {
-  vkDestroySemaphore(CRUDE_OBJECT_HANDLE(m_device), m_handle, &getVkAllocationCallbacks());
+  vkDestroySemaphore(CRUDE_OBJECT_HANDLE(m_device), m_handle, getPVkAllocationCallbacks());
 }
 
 }

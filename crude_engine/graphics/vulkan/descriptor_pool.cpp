@@ -23,13 +23,13 @@ Descriptor_Pool::Descriptor_Pool(Shared_Ptr<const Device>                   devi
 
   if (m_freeDescriptorSet)  vkCreateInfo.flags |= VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
 
-  VkResult result = vkCreateDescriptorPool(CRUDE_OBJECT_HANDLE(m_device), &vkCreateInfo, &getVkAllocationCallbacks(), &m_handle);
+  VkResult result = vkCreateDescriptorPool(CRUDE_OBJECT_HANDLE(m_device), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
   CRUDE_VULKAN_HANDLE_RESULT(result, "failed to create descriptor pool");
 }
 
 Descriptor_Pool::~Descriptor_Pool()
 {
-  vkDestroyDescriptorPool(CRUDE_OBJECT_HANDLE(m_device), m_handle, &getVkAllocationCallbacks());
+  vkDestroyDescriptorPool(CRUDE_OBJECT_HANDLE(m_device), m_handle, getPVkAllocationCallbacks());
 }
 
 bool Descriptor_Pool::canFreeDescriptorSet() const

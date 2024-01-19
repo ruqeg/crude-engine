@@ -27,13 +27,13 @@ Pipeline_Layout::Pipeline_Layout(Shared_Ptr<const Device>                       
   vkCreateInfo.pushConstantRangeCount  = static_cast<uint32>(pushConstantRanges.size());
   vkCreateInfo.pPushConstantRanges     = pushConstantRanges.data();
 
-  VkResult result = vkCreatePipelineLayout(CRUDE_OBJECT_HANDLE(m_device), &vkCreateInfo, &getVkAllocationCallbacks(), &m_handle);
+  VkResult result = vkCreatePipelineLayout(CRUDE_OBJECT_HANDLE(m_device), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
   CRUDE_VULKAN_HANDLE_RESULT(result, "failed to create pipeline layout");
 }
 
 Pipeline_Layout::~Pipeline_Layout()
 {
-  vkDestroyPipelineLayout(CRUDE_OBJECT_HANDLE(m_device), m_handle, &getVkAllocationCallbacks());
+  vkDestroyPipelineLayout(CRUDE_OBJECT_HANDLE(m_device), m_handle, getPVkAllocationCallbacks());
 }
 
 }

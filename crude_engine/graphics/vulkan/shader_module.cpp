@@ -16,13 +16,13 @@ Shader_Module::Shader_Module(Shared_Ptr<const Device> device, Array_Unsafe<const
   vkCreateInfo.codeSize  = static_cast<uint32>(code.size());
   vkCreateInfo.pCode     = reinterpret_cast<const uint32*>(code.data());
 
-  const VkResult result = vkCreateShaderModule(CRUDE_OBJECT_HANDLE(m_device), &vkCreateInfo, &getVkAllocationCallbacks(), &m_handle);
+  const VkResult result = vkCreateShaderModule(CRUDE_OBJECT_HANDLE(m_device), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
   CRUDE_VULKAN_HANDLE_RESULT(result, "failed to create shader module");
 }
 
 Shader_Module::~Shader_Module()
 {
-  vkDestroyShaderModule(CRUDE_OBJECT_HANDLE(m_device), m_handle, &getVkAllocationCallbacks());
+  vkDestroyShaderModule(CRUDE_OBJECT_HANDLE(m_device), m_handle, getPVkAllocationCallbacks());
 }
 
 }

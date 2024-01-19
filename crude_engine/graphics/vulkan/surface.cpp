@@ -11,7 +11,7 @@ Surface::Surface(Shared_Ptr<const Instance> instance)
 
 Surface::~Surface()
 {
-  vkDestroySurfaceKHR(CRUDE_OBJECT_HANDLE(m_instance), m_handle, &getVkAllocationCallbacks());
+  vkDestroySurfaceKHR(CRUDE_OBJECT_HANDLE(m_instance), m_handle, getPVkAllocationCallbacks());
 }
 
 }

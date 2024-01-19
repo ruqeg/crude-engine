@@ -41,7 +41,7 @@ public:
     vkCreateInfo.hwnd       = hwnd;
     vkCreateInfo.flags      = flags;
 
-    const VkResult result = vkCreateWin32SurfaceKHR(CRUDE_OBJECT_HANDLE(m_instance), &vkCreateInfo, &getVkAllocationCallbacks(), &m_handle);
+    const VkResult result = vkCreateWin32SurfaceKHR(CRUDE_OBJECT_HANDLE(m_instance), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
     CRUDE_VULKAN_HANDLE_RESULT(result, "failed to create win32 surface");
   }
 
@@ -55,7 +55,7 @@ public:
     return m_hwnd;
   }
 
-  static const Array_Unsafe<const char*>& requiredExtensions()
+  static const Array_Unsafe<const char*> requiredExtensions()
   {
     static const char* extensions[] = {"VK_KHR_win32_surface", "VK_KHR_surface"};
     return Array_Unsafe<const char*>(extensions, 2u);

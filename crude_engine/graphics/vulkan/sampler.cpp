@@ -43,13 +43,13 @@ Sampler::Sampler(Shared_Ptr<const Device>  device,
   vkCreateInfo.borderColor              = borderColor;
   vkCreateInfo.unnormalizedCoordinates  = unnormalizedCoordinates;
 
-  VkResult result = vkCreateSampler(CRUDE_OBJECT_HANDLE(m_device), &vkCreateInfo, &getVkAllocationCallbacks(), &m_handle);
+  VkResult result = vkCreateSampler(CRUDE_OBJECT_HANDLE(m_device), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
   CRUDE_VULKAN_HANDLE_RESULT(result, "failed to create sampler");
 }
 
 Sampler::~Sampler()
 {
-  vkDestroySampler(CRUDE_OBJECT_HANDLE(m_device), m_handle, &getVkAllocationCallbacks());
+  vkDestroySampler(CRUDE_OBJECT_HANDLE(m_device), m_handle, getPVkAllocationCallbacks());
 }
 
 }

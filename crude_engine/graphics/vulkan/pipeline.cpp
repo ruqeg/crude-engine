@@ -57,13 +57,13 @@ Pipeline::Pipeline(Shared_Ptr<const Device>                           device,
   vkCreateInfo.basePipelineHandle   = m_basePipeline ? CRUDE_OBJECT_HANDLE(m_basePipeline) : VK_NULL_HANDLE;
   vkCreateInfo.basePipelineIndex    = -1;
 
-  VkResult result = vkCreateGraphicsPipelines(CRUDE_OBJECT_HANDLE(m_device), VK_NULL_HANDLE, 1u, &vkCreateInfo, &getVkAllocationCallbacks(), &m_handle);
+  VkResult result = vkCreateGraphicsPipelines(CRUDE_OBJECT_HANDLE(m_device), VK_NULL_HANDLE, 1u, &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
   CRUDE_VULKAN_HANDLE_RESULT(result, "failed to create graphics pipeline");
 }
 
 Pipeline::~Pipeline()
 {
-  vkDestroyPipeline(CRUDE_OBJECT_HANDLE(m_device), m_handle, &getVkAllocationCallbacks());
+  vkDestroyPipeline(CRUDE_OBJECT_HANDLE(m_device), m_handle, getPVkAllocationCallbacks());
 }
 
 const VkPipelineBindPoint Pipeline::getBindPoint() const

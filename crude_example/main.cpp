@@ -176,11 +176,11 @@ private:
   void initVulkan()
   {
 #ifdef __linux__ 
-    const auto& surfaceExtensions = crude_engine::XCB_Surface::requiredExtensions();
+    const auto surfaceExtensions = crude_engine::XCB_Surface::requiredExtensions();
 #elif _WIN32
-    const auto& surfaceExtensions = crude_engine::Win32_Surface::requiredExtensions();
+    const auto surfaceExtensions = crude_engine::Win32_Surface::requiredExtensions();
 #endif
-    const auto& debugUtilsExtensions = crude_engine::Debug_Utils_Messenger::requiredExtensions();
+    const auto debugUtilsExtensions = crude_engine::Debug_Utils_Messenger::requiredExtensions();
 
     crude_engine::Array_Dynamic<const char*> enabledExtensions(surfaceExtensions.size() + debugUtilsExtensions.size());
     for (std::size_t i = 0u; i < surfaceExtensions.size(); ++i)

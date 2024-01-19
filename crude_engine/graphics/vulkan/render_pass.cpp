@@ -23,13 +23,13 @@ Render_Pass::Render_Pass(Shared_Ptr<const Device>                     device,
   vkCreateInfo.dependencyCount  = static_cast<uint32>(subpassesDependencies.size());
   vkCreateInfo.pDependencies    = subpassesDependencies.data();
 
-  const VkResult result = vkCreateRenderPass(CRUDE_OBJECT_HANDLE(m_device), &vkCreateInfo, &getVkAllocationCallbacks(), &m_handle);
+  const VkResult result = vkCreateRenderPass(CRUDE_OBJECT_HANDLE(m_device), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
   CRUDE_VULKAN_HANDLE_RESULT(result, "failed to create render pass");
 }
   
 Render_Pass::~Render_Pass()
 {
-  vkDestroyRenderPass(CRUDE_OBJECT_HANDLE(m_device), m_handle, &getVkAllocationCallbacks());
+  vkDestroyRenderPass(CRUDE_OBJECT_HANDLE(m_device), m_handle, getPVkAllocationCallbacks());
 }
 
 }

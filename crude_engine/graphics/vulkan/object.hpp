@@ -12,7 +12,7 @@ public:
   Type& getHandle();
   const Type& getHandle() const;
 public:
-  const VkAllocationCallbacks& getVkAllocationCallbacks();
+  const VkAllocationCallbacks* getPVkAllocationCallbacks();
 protected:
   Type m_handle;
 };
