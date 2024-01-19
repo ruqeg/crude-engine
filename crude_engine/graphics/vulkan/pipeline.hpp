@@ -4,6 +4,7 @@
 
 #include <core/data_structures/shared_ptr.hpp>
 #include <core/data_structures/array_unsafe.hpp>
+#include <core/data_structures/optional.hpp>
 #include <graphics/vulkan/shader_stage_create_info.hpp>
 #include <graphics/vulkan/vertex_input_state_create_info.hpp>
 #include <graphics/vulkan/input_assembly_state_create_info.hpp>
@@ -14,6 +15,7 @@
 #include <graphics/vulkan/color_blend_state_create_info.hpp>
 #include <graphics/vulkan/dynamic_state_create_info.hpp>
 #include <graphics/vulkan/tessellation_state_create_info.hpp>
+#include <graphics/vulkan/object.hpp>
 
 namespace crude_engine
 {

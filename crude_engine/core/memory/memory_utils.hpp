@@ -14,7 +14,7 @@ public:
   template<class T, class... Args >
   static CRUDE_NODISCARD T* constructAt(T* ptr, Args&&... args) noexcept
   {
-    return ::new (reinterpret_cast<void*>(ptr)) T(Utility::forward<Args>(args)...);
+    return ::new (ptr) T(Utility::forward<Args>(args)...);
   }
 
   template<class T>

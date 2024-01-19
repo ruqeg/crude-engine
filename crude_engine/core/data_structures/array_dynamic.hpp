@@ -65,7 +65,7 @@ public:
   Array_Dynamic(Size_Type size);
   Array_Dynamic(Size_Type size, Const_Reference value);
   ~Array_Dynamic();
-  Array_Dynamic(std::initializer_list<Value_Type>& initList);
+  Array_Dynamic(std::initializer_list<Value_Type> initList);
   Array_Dynamic(const Array_Dynamic& other);
   Array_Dynamic(Array_Dynamic&& other);
   Array_Dynamic& operator=(const Array_Dynamic& other);

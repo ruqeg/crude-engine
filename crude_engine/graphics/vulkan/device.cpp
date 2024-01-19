@@ -21,8 +21,8 @@ Device_Queue_Create_Info::Device_Queue_Create_Info(uint32                       
 Device::Device(Shared_Ptr<const Physical_Device>              physicalDevice,
                const Array_Unsafe<Device_Queue_Create_Info>&  queueDescriptors,
                const VkPhysicalDeviceFeatures&                enabledFeatures,
-               Array_Unsafe<const char*>&                     enabledExtensions,
-               Array_Unsafe<const char*>&                     enabledLayers)
+               Array_Unsafe<const char*>                      enabledExtensions,
+               Array_Unsafe<const char*>                      enabledLayers)
   :
   m_physicalDevice(physicalDevice)
 {
@@ -55,7 +55,7 @@ Shared_Ptr<const Physical_Device> Device::getPhysicalDevice() const
   
 Shared_Ptr<Queue> Device::getQueue(uint32 queueFamilyIndex, uint32 queueIndex) const
 {
-  Shared_Ptr<Queue> queue = Shared_Ptr<Queue>::makeShared(queueFamilyIndex, queueIndex);
+  Shared_Ptr<Queue> queue = makeShared<Queue>(queueFamilyIndex, queueIndex);
   vkGetDeviceQueue(m_handle, queueFamilyIndex, queueIndex, &CRUDE_OBJECT_HANDLE(queue));
   return queue;
 }
@@ -64,7 +64,19 @@ void Device::updateDescriptorSets(const Array_Unsafe<Write_Descriptor_Set>&  des
                                   const Array_Unsafe<VkCopyDescriptorSet>&   descriptorCopies)
 {
   Array_Dynamic<VkWriteDescriptorSet> vkDescriptorWrites(descriptorWrites.size());
-  Algorithms::copy(descriptorWrites.begin(), descriptorWrites.end(), vkDescriptorWrites.begin());
+
+
+  //!TODO WTF???
+  Array_Unsafe<Write_Descriptor_Set>::Const_Iterator first = descriptorWrites.begin();
+  Array_Unsafe<Write_Descriptor_Set>::Const_Iterator last = descriptorWrites.end();
+  Array_Dynamic<VkWriteDescriptorSet>::Iterator dFirst = vkDescriptorWrites.begin();
+  //Algorithms::copy(first, last, dFirst);
+
+  while (first != last)
+  {
+    *dFirst = *first;
+    ++dFirst; ++first;
+  }
 
   vkUpdateDescriptorSets(
     m_handle, 
@@ -79,7 +91,7 @@ void Device::waitIdle()
   vkDeviceWaitIdle(m_handle);
 }
 
-bool Device::waitForFences(Array_Unsafe<Fence>& fences, bool waitAll, uint64 timeout) const
+bool Device::waitForFences(Array_Unsafe<Fence> fences, bool waitAll, uint64 timeout) const
 {
   Array_Dynamic<VkFence> fencesHandles(fences.size());
   Algorithms::copyc(fences.begin(), fences.end(), fencesHandles.begin(), [](auto& s, auto& d) -> void {
@@ -91,7 +103,7 @@ bool Device::waitForFences(Array_Unsafe<Fence>& fences, bool waitAll, uint64 tim
   return result != VK_TIMEOUT;
 }
 
-bool Device::resetForFences(Array_Unsafe<Fence>& fences) const
+bool Device::resetForFences(Array_Unsafe<Fence> fences) const
 {
   Array_Dynamic<VkFence> fencesHandles(fences.size());
   Algorithms::copyc(fences.begin(), fences.end(), fencesHandles.begin(), [](auto& s, auto& d) -> void {

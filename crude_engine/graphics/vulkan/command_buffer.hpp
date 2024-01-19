@@ -30,7 +30,7 @@ public:
   
   void barrier(VkPipelineStageFlags                srcStage, 
                VkPipelineStageFlags                dstStage, 
-               Array_Unsafe<Image_Memory_Barrier>& imageMemoryBarriers);
+               Array_Unsafe<Image_Memory_Barrier>  imageMemoryBarriers);
   
   void copyBufferToImage(Shared_Ptr<Buffer>              srcBuffer, 
                          Shared_Ptr<Image>               dstImage, 

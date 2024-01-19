@@ -11,6 +11,7 @@ class Viewport_State_Create_Info : public VkPipelineViewportStateCreateInfo
 public:
   explicit Viewport_State_Create_Info(const Array_Unsafe<VkViewport>&  viewports,
                                       const Array_Unsafe<VkRect2D>&    scissors);
+  explicit Viewport_State_Create_Info(uint32 viewportsCount, uint32 scissorsCount);
 };
 
 }

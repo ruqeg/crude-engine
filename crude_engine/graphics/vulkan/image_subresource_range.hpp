@@ -1,6 +1,6 @@
 #pragma once
 
-#include <core/alias.hpp>
+#include <core/data_structures/shared_ptr.hpp>
 #include <graphics/vulkan/include_vulkan.hpp>
 
 namespace crude_engine

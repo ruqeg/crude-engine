@@ -88,7 +88,7 @@ const Array_Dynamic<Shared_Ptr<Swap_Chain_Image>>& Swap_Chain::getSwapchainImage
   m_swapChainImages.resize(imageCount);
   for (uint32 i = 0; i < imageCount; ++i)
   {
-    m_swapChainImages[i] = Shared_Ptr<Swap_Chain_Image>::makeShared(
+    m_swapChainImages[i] = makeShared<Swap_Chain_Image>(
       m_device,
       vkSwapchainImages[i],
       m_surfaceFormat.format,

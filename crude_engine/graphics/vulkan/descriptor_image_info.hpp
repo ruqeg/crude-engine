@@ -1,7 +1,7 @@
 #pragma once
 
-#include <core/data_structures/shared_ptr.hpp>
-#include <graphics/vulkan/include_vulkan.hpp>
+#include <graphics/vulkan/sampler.hpp>
+#include <graphics/vulkan/image_view.hpp>
 
 namespace crude_engine
 {

@@ -27,17 +27,17 @@ bool Queue::sumbit(const Array_Unsafe<Shared_Ptr<Command_Buffer>>&  commandBuffe
 
   Array_Dynamic<VkCommandBuffer> commandBuffersHandles(commandBuffers.size());
   Algorithms::copyc(commandBuffers.begin(), commandBuffers.end(), commandBuffersHandles.begin(), [](auto& src, auto& dst) -> void {
-    *dst = CRUDE_OBJECT_HANDLE(src);
+    *dst = CRUDE_OBJECT_HANDLE(*src);
   });
 
   Array_Dynamic<VkSemaphore> waitSemaphoreHandles(waitSemaphores.size());
   Algorithms::copyc(waitSemaphores.begin(), waitSemaphores.end(), waitSemaphoreHandles.begin(), [](auto& src, auto& dst) -> void {
-    *dst = CRUDE_OBJECT_HANDLE(src);
+    *dst = CRUDE_OBJECT_HANDLE(*src);
     });
 
   Array_Dynamic<VkSemaphore> signalSemaphoreHandles(signalSemaphores.size());
   Algorithms::copyc(signalSemaphores.begin(), signalSemaphores.end(), signalSemaphoreHandles.begin(), [](auto& src, auto& dst) -> void {
-    *dst = CRUDE_OBJECT_HANDLE(src);
+    *dst = CRUDE_OBJECT_HANDLE(*src);
     });
 
   VkSubmitInfo vkSumbitInfo;
@@ -61,12 +61,12 @@ Queue_Present_Result Queue::present(const Array_Unsafe<Shared_Ptr<Swap_Chain>>& 
 {
   Array_Dynamic<VkSemaphore> waitSemaphoreHandles(waitSemaphores.size());
   Algorithms::copyc(waitSemaphores.begin(), waitSemaphores.end(), waitSemaphoreHandles.begin(), [](auto& src, auto& dst) -> void {
-    *dst = CRUDE_OBJECT_HANDLE(src);
+    *dst = CRUDE_OBJECT_HANDLE(*src);
     });
 
   Array_Dynamic<VkSwapchainKHR> swapchainHandles(swapchains.size());
   Algorithms::copyc(swapchains.begin(), swapchains.end(), swapchainHandles.begin(), [](auto& src, auto& dst) -> void {
-    *dst = CRUDE_OBJECT_HANDLE(src);
+    *dst = CRUDE_OBJECT_HANDLE(*src);
     });
 
   VkPresentInfoKHR vkPresentInfo{};

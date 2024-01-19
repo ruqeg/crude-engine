@@ -16,7 +16,7 @@ public:
   explicit Descriptor_Pool(Shared_Ptr<const Device>                   device,
                            const Array_Unsafe<VkDescriptorPoolSize>&  poolSizes,
                            uint32                                     maxSets,
-                           bool                                       freeDescriptorSet);
+                           bool                                       freeDescriptorSet = false);
   ~Descriptor_Pool();
   bool canFreeDescriptorSet() const;
 private:

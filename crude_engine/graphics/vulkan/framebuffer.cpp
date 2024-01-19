@@ -20,7 +20,7 @@ Framebuffer::Framebuffer(Shared_Ptr<const Device>                      device,
 {
   Array_Dynamic<VkImageView> attachmentsHandles(m_attachments.size());
   Algorithms::copyc(m_attachments.begin(), m_attachments.end(), attachmentsHandles.begin(), [](auto& src, auto& dst) -> void {
-    *dst = CRUDE_OBJECT_HANDLE(src);
+    *dst = CRUDE_OBJECT_HANDLE(*src);
   });
 
   VkFramebufferCreateInfo vkCreateInfo{};

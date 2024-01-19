@@ -95,7 +95,7 @@ Array_Dynamic<Shared_Ptr<Physical_Device>> Instance::getPhysicalDevices()
   Array_Dynamic<Shared_Ptr<Physical_Device>> physicaDevices(vkPhysicalDeviceCount);
   for (uint32 i = 0u; i < vkPhysicalDeviceCount; ++i) 
   {
-    physicaDevices[i] = Shared_Ptr<Physical_Device>::makeShared(vkPhysicalDevices[i]);
+    physicaDevices[i] = makeShared<Physical_Device>(vkPhysicalDevices[i]);
   }
   
   return physicaDevices;

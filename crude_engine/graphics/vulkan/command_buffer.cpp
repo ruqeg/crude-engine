@@ -62,7 +62,7 @@ bool Command_Buffer::end()
 
 void Command_Buffer::barrier(VkPipelineStageFlags                srcStage, 
                              VkPipelineStageFlags                dstStage, 
-                             Array_Unsafe<Image_Memory_Barrier>& imageMemoryBarriers)
+                             Array_Unsafe<Image_Memory_Barrier>  imageMemoryBarriers)
 {
   CRUDE_ASSERT(imageMemoryBarriers.data());
 
@@ -174,8 +174,8 @@ void Command_Buffer::bindDescriptorSets(Shared_Ptr<Pipeline>                    
   constexpr uint32 offset = 0u;
 
   Array_Dynamic<VkDescriptorSet> descriptorSetsHandles(descriptorSets.size());
-  Algorithms::copyc(descriptorSets.begin(), descriptorSets.end(), descriptorSetsHandles.begin(), [](Descriptor_Set* s, Array_Dynamic<VkDescriptorSet>::Iterator d) -> void {
-    *d = CRUDE_OBJECT_HANDLE(s);
+  Algorithms::copyc(descriptorSets.begin(), descriptorSets.end(), descriptorSetsHandles.begin(), [](auto& src, auto& dst) -> void {
+    *dst = CRUDE_OBJECT_HANDLE(*src);
   });
 
   vkCmdBindDescriptorSets(

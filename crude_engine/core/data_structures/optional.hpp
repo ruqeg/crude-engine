@@ -5,7 +5,7 @@
 namespace crude_engine
 {
 
-struct Nullopt 
+struct Nullopt
 {
   constexpr explicit Nullopt(int) {}
 };
@@ -19,8 +19,6 @@ public:
   Optional() noexcept;
   ~Optional();
   Optional(Nullopt) noexcept;
-  template<typename... Args>
-  Optional(Args&&... args) noexcept;
   Optional(const T& value) noexcept;
   Optional(const Optional& other) noexcept;
   Optional(Optional&& other) noexcept;
@@ -43,8 +41,8 @@ public:
   CRUDE_INLINE T& operator*() noexcept;
   CRUDE_INLINE T& operator->() noexcept;
 
-  CRUDE_INLINE T& operator*() const noexcept;
-  CRUDE_INLINE T& operator->() const noexcept;
+  CRUDE_INLINE const T& operator*() const noexcept;
+  CRUDE_INLINE const T& operator->() const noexcept;
 
   CRUDE_INLINE void reset() noexcept;
 
@@ -78,14 +76,6 @@ template<class T>
 Optional<T>::Optional(Nullopt) noexcept
   :
   m_dummy(0u),
-  m_engaged(true)
-{}
-
-template<class T>
-template<typename ...Args>
-Optional<T>::Optional(Args&& ...args) noexcept
-  :
-  m_value(Utility::forward<Args>(args)...),
   m_engaged(true)
 {}
 
@@ -177,13 +167,13 @@ T& Optional<T>::operator->() noexcept
 }
 
 template<class T>
-T& Optional<T>::operator*() const noexcept
+const T& Optional<T>::operator*() const noexcept
 {
   return m_value;
 }
 
 template<class T>
-T& Optional<T>::operator->() const noexcept
+const T& Optional<T>::operator->() const noexcept
 {
   return m_value;
 }

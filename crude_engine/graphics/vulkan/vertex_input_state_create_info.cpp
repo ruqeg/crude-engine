@@ -3,8 +3,8 @@
 namespace crude_engine 
 {
 
-Vertex_Input_State_Create_Info::Vertex_Input_State_Create_Info(Array_Unsafe<VkVertexInputBindingDescription>&    bindingDescriptions,
-                                                               Array_Unsafe<VkVertexInputAttributeDescription>&  attributeDescriptions)
+Vertex_Input_State_Create_Info::Vertex_Input_State_Create_Info(const Array_Unsafe<VkVertexInputBindingDescription>&    bindingDescriptions,
+                                                               const Array_Unsafe<VkVertexInputAttributeDescription>&  attributeDescriptions)
 {
 
   this->sType                           = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;

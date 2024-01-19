@@ -30,6 +30,8 @@ using bool16 = int16;
 using bool32 = int32;
 using bool64 = int64;
 
+using nullptr_t = decltype(nullptr);
+
 #define CRUDE_NODISCARD [[nodiscard]]
 #define CRUDE_INLINE    inline
 

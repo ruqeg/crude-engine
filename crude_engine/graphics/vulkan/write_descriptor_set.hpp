@@ -3,6 +3,7 @@
 #include <graphics/vulkan/descriptor_buffer_info.hpp>
 #include <graphics/vulkan/descriptor_image_info.hpp>
 #include <core/data_structures/optional.hpp>
+#include <core/data_structures/shared_ptr.hpp>
 
 namespace crude_engine
 {

@@ -6,15 +6,15 @@
 namespace crude_engine
 {
 
-Pipeline_Layout::Pipeline_Layout(Shared_Ptr<const Device>                                      device,
-                                 const Array_Unsafe<Shared_Ptr<const Descriptor_Set_Layout>>&  descriptorSetLayouts,
-                                 const Array_Unsafe<VkPushConstantRange>&                      pushConstantRanges)
+Pipeline_Layout::Pipeline_Layout(Shared_Ptr<const Device>                                device,
+                                 const Array_Unsafe<Shared_Ptr<Descriptor_Set_Layout>>&  descriptorSetLayouts,
+                                 const Array_Unsafe<VkPushConstantRange>&                pushConstantRanges)
   :
   m_device(device)
 {
   Array_Dynamic<VkDescriptorSetLayout> vkDescriptorSetLayoutHandles(descriptorSetLayouts.size());
   Algorithms::copyc(descriptorSetLayouts.begin(), descriptorSetLayouts.end(), vkDescriptorSetLayoutHandles.begin(), [](auto& src, auto& dst) -> void {
-    *dst = CRUDE_OBJECT_HANDLE(src);
+    *dst = CRUDE_OBJECT_HANDLE(*src);
   });
 
   VkPipelineLayoutCreateInfo vkCreateInfo{};

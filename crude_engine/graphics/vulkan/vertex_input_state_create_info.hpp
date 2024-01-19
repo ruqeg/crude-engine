@@ -9,8 +9,8 @@ namespace crude_engine
 class Vertex_Input_State_Create_Info : public VkPipelineVertexInputStateCreateInfo
 {
 public:
-  explicit Vertex_Input_State_Create_Info(Array_Unsafe<VkVertexInputBindingDescription>&    bindingDescriptions,
-                                          Array_Unsafe<VkVertexInputAttributeDescription>&  attributeDescriptions);
+  explicit Vertex_Input_State_Create_Info(const Array_Unsafe<VkVertexInputBindingDescription>&    bindingDescriptions,
+                                          const Array_Unsafe<VkVertexInputAttributeDescription>&  attributeDescriptions);
 };
 
 }

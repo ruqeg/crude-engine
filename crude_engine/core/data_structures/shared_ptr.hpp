@@ -16,42 +16,58 @@ public:
 public:
   Shared_Ptr() noexcept;
   ~Shared_Ptr() noexcept;
-  template<typename... Args>
-  Shared_Ptr(Args&&... args) noexcept;
+  Shared_Ptr(nullptr_t) noexcept;
   Shared_Ptr(const T& value) noexcept;
-  Shared_Ptr(const Shared_Ptr& other) noexcept;
-  Shared_Ptr(Shared_Ptr&& other) noexcept;
+  template<class U, class UAllocator> requires Same_As<Allocator, UAllocator>
+  Shared_Ptr(const Shared_Ptr<U, UAllocator>& other) noexcept;
+  template<class U, class UAllocator> requires Same_As<Allocator, UAllocator>
+  Shared_Ptr(Shared_Ptr<U, UAllocator>&& other) noexcept;
 
-  CRUDE_INLINE Shared_Ptr& operator=(const Shared_Ptr& other) noexcept;
-  CRUDE_INLINE Shared_Ptr& operator=(Shared_Ptr&& other) noexcept;
+  template<class U, class UAllocator> requires Same_As<Allocator, UAllocator>
+  CRUDE_INLINE Shared_Ptr<T, Allocator>& operator=(const Shared_Ptr<U, UAllocator>& other) noexcept;
+  template<class U, class UAllocator> requires Same_As<Allocator, UAllocator>
+  CRUDE_INLINE Shared_Ptr<T, Allocator>& operator=(Shared_Ptr<U, UAllocator>&& other) noexcept;
 
-  CRUDE_INLINE bool operator==(const Shared_Ptr& other) const noexcept;
-  CRUDE_INLINE bool operator!=(const Shared_Ptr& other) const noexcept;
+  template<class U, class UAllocator> requires Same_As<Allocator, UAllocator>
+  CRUDE_INLINE bool operator==(const Shared_Ptr<U, UAllocator>& other) const noexcept;
+  template<class U, class UAllocator> requires Same_As<Allocator, UAllocator>
+  CRUDE_INLINE bool operator!=(const Shared_Ptr<U, UAllocator>& other) const noexcept;
 
   CRUDE_INLINE T& operator*() noexcept;
   CRUDE_INLINE T* operator->() noexcept;
 
-  CRUDE_INLINE const T& operator*() const noexcept;
-  CRUDE_INLINE const T* operator->() const noexcept;
+  CRUDE_INLINE T& operator*() const noexcept;
+  CRUDE_INLINE T* operator->() const noexcept;
 
   explicit operator bool() const noexcept;
 
 protected:
   CRUDE_INLINE T* getPtr() noexcept;
-  CRUDE_INLINE const T* getPtr() const noexcept;
+  CRUDE_INLINE T* getPtr() const noexcept;
   CRUDE_INLINE Ref_Count_Pointer getRefCount() noexcept;
   CRUDE_INLINE CRUDE_NODISCARD byte* allocateMemBlock() noexcept;
 
-public:
-  template<typename... Args>
-  static Shared_Ptr<T, Allocator> makeShared(Args&&... args);
-
 protected:
   byte* m_memBlock;
+
+  template<class U, class UAllocator, typename... Args>
+  friend Shared_Ptr<U, UAllocator> makeShared(Args&&... args) noexcept;
+
+  template<typename U, class UAllocator>
+  friend class Shared_Ptr;
 };
+
+template<class U, class UAllocator = Memory_System::Default_Allocator, typename... Args>
+extern Shared_Ptr<U, UAllocator> makeShared(Args&&... args) noexcept;
 
 template<class T, class Allocator>
 Shared_Ptr<T, Allocator>::Shared_Ptr() noexcept
+  :
+  m_memBlock(nullptr)
+{}
+
+template<class T, class Allocator>
+Shared_Ptr<T, Allocator>::Shared_Ptr(nullptr_t) noexcept
   :
   m_memBlock(nullptr)
 {}
@@ -72,15 +88,6 @@ Shared_Ptr<T, Allocator>::~Shared_Ptr() noexcept
 }
 
 template<class T, class Allocator>
-template<typename ...Args>
-Shared_Ptr<T, Allocator>::Shared_Ptr(Args&& ...args) noexcept
-{
-  m_memBlock = allocateMemBlock();
-  Memory_Utils::constructAt(getPtr(), Utility::forward<Args>(args)...);
-  (*getRefCount()) = 1;
-}
-
-template<class T, class Allocator>
 Shared_Ptr<T, Allocator>::Shared_Ptr(const T& value) noexcept
 {
   m_memBlock = allocateMemBlock();
@@ -89,7 +96,8 @@ Shared_Ptr<T, Allocator>::Shared_Ptr(const T& value) noexcept
 }
 
 template<class T, class Allocator>
-Shared_Ptr<T, Allocator>::Shared_Ptr(const Shared_Ptr& other) noexcept
+template<class U, class UAllocator> requires Same_As<Allocator, UAllocator>
+Shared_Ptr<T, Allocator>::Shared_Ptr(const Shared_Ptr<U, UAllocator>& other) noexcept
 {
   m_memBlock = other.m_memBlock;
 
@@ -100,14 +108,16 @@ Shared_Ptr<T, Allocator>::Shared_Ptr(const Shared_Ptr& other) noexcept
 }
 
 template<class T, class Allocator>
-Shared_Ptr<T, Allocator>::Shared_Ptr(Shared_Ptr&& other) noexcept
+template<class U, class UAllocator> requires Same_As<Allocator, UAllocator>
+Shared_Ptr<T, Allocator>::Shared_Ptr(Shared_Ptr<U, UAllocator>&& other) noexcept
 {
   m_memBlock = other.m_memBlock;
   other.m_memBlock = nullptr;
 }
 
 template<class T, class Allocator>
-Shared_Ptr<T, Allocator>& Shared_Ptr<T, Allocator>::operator=(const Shared_Ptr<T, Allocator>& other) noexcept
+template<class U, class UAllocator> requires Same_As<Allocator, UAllocator>
+Shared_Ptr<T, Allocator>& Shared_Ptr<T, Allocator>::operator=(const Shared_Ptr<U, UAllocator>& other) noexcept
 {
   m_memBlock = other.m_memBlock;
 
@@ -119,7 +129,8 @@ Shared_Ptr<T, Allocator>& Shared_Ptr<T, Allocator>::operator=(const Shared_Ptr<T
 }
 
 template<class T, class Allocator>
-Shared_Ptr<T, Allocator>& Shared_Ptr<T, Allocator>::operator=(Shared_Ptr<T, Allocator>&& other) noexcept
+template<class U, class UAllocator> requires Same_As<Allocator, UAllocator>
+Shared_Ptr<T, Allocator>& Shared_Ptr<T, Allocator>::operator=(Shared_Ptr<U, UAllocator>&& other) noexcept
 {
   m_memBlock = other.m_memBlock;
   other.m_memBlock = nullptr;
@@ -127,13 +138,15 @@ Shared_Ptr<T, Allocator>& Shared_Ptr<T, Allocator>::operator=(Shared_Ptr<T, Allo
 }
 
 template<class T, class Allocator>
-bool Shared_Ptr<T, Allocator>::operator==(const Shared_Ptr<T, Allocator>& other) const noexcept
+template<class U, class UAllocator> requires Same_As<Allocator, UAllocator>
+bool Shared_Ptr<T, Allocator>::operator==(const Shared_Ptr<U, UAllocator>& other) const noexcept
 {
   return (m_memBlock == other.m_memBlock);
 }
 
 template<class T, class Allocator>
-bool Shared_Ptr<T, Allocator>::operator!=(const Shared_Ptr<T, Allocator>& other) const noexcept
+template<class U, class UAllocator> requires Same_As<Allocator, UAllocator>
+bool Shared_Ptr<T, Allocator>::operator!=(const Shared_Ptr<U, UAllocator>& other) const noexcept
 {
   return (m_memBlock != other.m_memBlock);
 }
@@ -151,13 +164,13 @@ T* Shared_Ptr<T, Allocator>::operator->() noexcept
 }
 
 template<class T, class Allocator>
-const T& Shared_Ptr<T, Allocator>::operator*() const noexcept
+T& Shared_Ptr<T, Allocator>::operator*() const noexcept
 {
   return *getPtr();
 }
 
 template<class T, class Allocator>
-const T* Shared_Ptr<T, Allocator>::operator->() const noexcept
+T* Shared_Ptr<T, Allocator>::operator->() const noexcept
 {
   return getPtr();
 }
@@ -175,9 +188,9 @@ T* Shared_Ptr<T, Allocator>::getPtr() noexcept
 }
 
 template<class T, class Allocator>
-const T* Shared_Ptr<T, Allocator>::getPtr() const noexcept
+T* Shared_Ptr<T, Allocator>::getPtr() const noexcept
 {
-  return reinterpret_cast<const T*>(m_memBlock + sizeof(Ref_Count));
+  return reinterpret_cast<T*>(m_memBlock + sizeof(Ref_Count));
 }
 
 template<class T, class Allocator>
@@ -192,12 +205,16 @@ byte* Shared_Ptr<T, Allocator>::allocateMemBlock() noexcept
   return reinterpret_cast<byte*>(Allocator::allocate(sizeof(T) + sizeof(Ref_Count)));
 }
 
-template<class T, class Allocator>
-template<typename ...Args>
-Shared_Ptr<T, Allocator> Shared_Ptr<T, Allocator>::makeShared(Args&& ...args)
+template<class U, class UAllocator, typename... Args>
+Shared_Ptr<U, UAllocator> makeShared(Args&&... args) noexcept
 {
-  Shared_Ptr<T, Allocator> shared(Utility::forward<Args>(args)...);
-  return shared;
+  Shared_Ptr<U, UAllocator> impl;
+
+  impl.m_memBlock = impl.allocateMemBlock();
+  Memory_Utils::constructAt(impl.getPtr(), Utility::forward<Args>(args)...);
+  (*impl.getRefCount()) = 1;
+
+  return Shared_Ptr<U, UAllocator>(impl);
 }
 
 } // namespace crude_engine

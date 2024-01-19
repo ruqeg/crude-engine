@@ -5,6 +5,7 @@
 #include <graphics/vulkan/subpass_dependency.hpp>
 #include <graphics/vulkan/subpass_description.hpp>
 #include <graphics/vulkan/attachment_description.hpp>
+#include <graphics/vulkan/object.hpp>
 
 namespace crude_engine
 {

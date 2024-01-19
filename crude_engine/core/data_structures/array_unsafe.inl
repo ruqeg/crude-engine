@@ -25,10 +25,26 @@ Array_Unsafe<T>::Array_Unsafe(const Array_Unsafe& other)
 }
 
 template<class T>
+Array_Unsafe<T>::Array_Unsafe(Array_Unsafe&& other)
+{
+  m_data = other.m_data;
+  m_size = other.m_size;
+}
+
+template<class T>
 Array_Unsafe<T>& Array_Unsafe<T>::operator=(const Array_Unsafe<T>& other)
 {
   m_data = other.m_data;
   m_size = other.m_size;
+  return *this;
+}
+
+template<class T>
+Array_Unsafe<T>& Array_Unsafe<T>::operator=(Array_Unsafe<T>&& other)
+{
+  m_data = other.m_data;
+  m_size = other.m_size;
+  return *this;
 }
 
 template<class T>

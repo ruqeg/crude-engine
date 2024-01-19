@@ -24,8 +24,8 @@ public:
   explicit Device(Shared_Ptr<const Physical_Device>              physicalDevice,
                   const Array_Unsafe<Device_Queue_Create_Info>&  queueDescriptors,
                   const VkPhysicalDeviceFeatures&                enabledFeatures,
-                  Array_Unsafe<const char*>&                     enabledExtensions,
-                  Array_Unsafe<const char*>&                     enabledLayers);
+                  Array_Unsafe<const char*>                      enabledExtensions,
+                  Array_Unsafe<const char*>                      enabledLayers);
 
   ~Device();
   Shared_Ptr<const Physical_Device> getPhysicalDevice() const;
@@ -34,8 +34,8 @@ public:
   void updateDescriptorSets(const Array_Unsafe<Write_Descriptor_Set>&  descriptorWrites,
                             const Array_Unsafe<VkCopyDescriptorSet>&   descriptorCopies);
   void waitIdle();
-  bool waitForFences(Array_Unsafe<Fence>& fences, bool waitAll, uint64 timeout = UINT64_MAX) const;
-  bool resetForFences(Array_Unsafe<Fence>& fences) const;
+  bool waitForFences(Array_Unsafe<Fence> fences, bool waitAll, uint64 timeout = UINT64_MAX) const;
+  bool resetForFences(Array_Unsafe<Fence> fences) const;
 private:
   Shared_Ptr<const Physical_Device> m_physicalDevice;
 };

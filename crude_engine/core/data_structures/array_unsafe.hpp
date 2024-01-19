@@ -65,9 +65,9 @@ public:
   explicit Array_Unsafe(Pointer data, Size_Type size);
   ~Array_Unsafe() = default;
   Array_Unsafe(const Array_Unsafe& other);
-  Array_Unsafe(Array_Unsafe&&) = delete;
+  Array_Unsafe(Array_Unsafe&& other);
   Array_Unsafe& operator=(const Array_Unsafe& other);
-  Array_Unsafe& operator=(Array_Unsafe&&) = delete;
+  Array_Unsafe& operator=(Array_Unsafe&& other);
 
 public:
   CRUDE_INLINE Pointer data() noexcept;

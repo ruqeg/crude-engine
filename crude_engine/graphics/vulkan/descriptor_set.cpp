@@ -6,9 +6,9 @@
 namespace crude_engine
 {
 
-Descriptor_Set::Descriptor_Set(Shared_Ptr<const Device>                           device,
-                               Array_Dynamic<Shared_Ptr<Descriptor_Set_Layout>>&  setLayouts,
-                               Shared_Ptr<Descriptor_Pool>                        pool)
+Descriptor_Set::Descriptor_Set(Shared_Ptr<const Device>                                 device,
+                               const Array_Dynamic<Shared_Ptr<Descriptor_Set_Layout>>&  setLayouts,
+                               Shared_Ptr<Descriptor_Pool>                              pool)
   :
   m_device(device),
   m_pool(pool),
@@ -16,7 +16,7 @@ Descriptor_Set::Descriptor_Set(Shared_Ptr<const Device>                         
 {
   Array_Dynamic<VkDescriptorSetLayout> setLayoutsHandles(m_setLayouts.size());
   Algorithms::copyc(m_setLayouts.begin(), m_setLayouts.end(), setLayoutsHandles.begin(), [](auto& s, auto& d) -> void {
-    *d = CRUDE_OBJECT_HANDLE(s);
+    *d = CRUDE_OBJECT_HANDLE(*s);
   });
 
   VkDescriptorSetAllocateInfo vkAllocateInfo{};
