@@ -34,9 +34,6 @@
     <ClCompile Include="..\..\crude_engine\core\memory\stack_allocator.cpp">
       <Filter>source\core\memory</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\crude_engine\core\core.cpp">
-      <Filter>source\core</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\crude_engine\graphics\vulkan\application.cpp">
       <Filter>source\graphics\vulkan</Filter>
     </ClCompile>
@@ -205,9 +202,6 @@
       <Filter>source\core\debug</Filter>
     </ClInclude>
     <ClInclude Include="..\..\crude_engine\core\alias.hpp">
-      <Filter>source\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\crude_engine\core\core.hpp">
       <Filter>source\core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\crude_engine\graphics\vulkan\application.hpp">
@@ -399,9 +393,6 @@
     <ClInclude Include="..\..\crude_engine\core\algorithms.hpp">
       <Filter>source\core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\crude_engine\core\memory\stack_allocator.hpp">
-      <Filter>source\core</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\crude_engine\core\memory\memory_system.hpp">
       <Filter>source\core\memory</Filter>
     </ClInclude>
@@ -425,6 +416,9 @@
     </ClInclude>
     <ClInclude Include="..\..\crude_engine\core\data_structures\string.hpp">
       <Filter>source\core\data_structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\crude_engine\core\memory\stack_allocator.hpp">
+      <Filter>source\core\memory</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -479,6 +473,12 @@
     </None>
     <None Include="..\..\crude_engine\core\data_structures\string.inl">
       <Filter>source\core\data_structures</Filter>
+    </None>
+    <None Include="..\..\crude_engine\core\data_structures\optional.inl">
+      <Filter>source\core\data_structures</Filter>
+    </None>
+    <None Include="..\..\crude_engine\core\memory\cxx_allocator.inl">
+      <Filter>source\core\memory</Filter>
     </None>
   </ItemGroup>
 </Project>
