@@ -52,6 +52,50 @@ public:
     }
   };
 
+
+  class Default_CXX_Allocator
+  {
+  public:
+    template<class T, typename... Args>
+    static CRUDE_NODISCARD T* mnew(Args&&... args) noexcept
+    {
+      return Memory_Manager::getInstance().getDefaultCxxAllocators().mnew<T>(Utility::forward<Args>(args)...);
+    }
+
+    template<class T, typename... Args>
+    static CRUDE_NODISCARD T* mnewArray(std::size_t n, Args&&... args) noexcept
+    {
+      return Memory_Manager::getInstance().getDefaultCxxAllocators().mnewArray<T>(n, Utility::forward<Args>(args)...);
+    }
+
+    template<class T>
+    static void mdelete(T* ptr) noexcept
+    {
+      return Memory_Manager::getInstance().getDefaultCxxAllocators().mdelete<T>(ptr);
+    }
+
+    template<class T>
+    static void mdeleteArray(std::size_t n, T* ptr) noexcept
+    {
+      return Memory_Manager::getInstance().getDefaultCxxAllocators().mdeleteArray<T>(n, ptr);
+    }
+
+    static CRUDE_NODISCARD void* allocate(std::size_t size) noexcept
+    {
+      return Memory_Manager::getInstance().getDefaultCxxAllocators().allocate(size);
+    }
+
+    static void free(void* ptr) noexcept
+    {
+      return Memory_Manager::getInstance().getDefaultCxxAllocators().free(ptr);
+    }
+
+    static void reset() noexcept
+    {
+      // none
+    }
+  };
+
   // !TODO
   class Default_Aligned_Allocator
   {
@@ -70,7 +114,7 @@ public:
     }
   };
 
-  using Default_Allocator = Default_Free_RBT_Allocator;
+  using Default_Allocator = Default_CXX_Allocator;
 };
 
 }  // namespace crude_engine

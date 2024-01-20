@@ -5,9 +5,11 @@ namespace crude_engine
 {
 
 Surface::Surface(Shared_Ptr<const Instance> instance)
-  :
-  m_instance(instance)
-{}
+//  :
+//  m_instance(instance)
+{
+  m_instance = instance;
+}
 
 Surface::~Surface()
 {

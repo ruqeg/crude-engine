@@ -35,4 +35,6 @@ using nullptr_t = decltype(nullptr);
 #define CRUDE_NODISCARD [[nodiscard]]
 #define CRUDE_INLINE    inline
 
+#define __FILENAME__ __FILE__
+
 }

@@ -13,6 +13,11 @@ Free_RBT_Allocator& Memory_Manager::getDefaultFreeRBTAllocators() noexcept
   return m_defaultFreeRBTAllocators;
 }
 
+CXX_Allocator& Memory_Manager::getDefaultCxxAllocators() noexcept
+{
+  return m_defaultCxxAllocators;
+}
+
 Memory_Manager& Memory_Manager::getInstance() noexcept
 {
   static Memory_Manager instance;

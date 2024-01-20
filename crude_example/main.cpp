@@ -1,6 +1,8 @@
+#include <vulkan/vulkan_core.h>
+
 #ifdef __linux__ 
-#define VK_USE_PLATFORM_XCB_KHR
-#include <xcb/xcb.h>
+//#define VK_USE_PLATFORM_XCB_KHR
+//#include <xcb/xcb.h>
 #elif _WIN32
 #define VK_USE_PLATFORM_WIN32_KHR
 #include <Windows.h>
@@ -51,12 +53,12 @@ class Test_Application
 public:
   struct Queue_Family_Indices
   {
-    std::optional<uint32_t> graphicsFamily;
-    std::optional<uint32_t> presentFamily;
+    crude_engine::Optional<uint32_t> graphicsFamily;
+    crude_engine::Optional<uint32_t> presentFamily;
 
     bool isComplete() const
     {
-      return graphicsFamily.has_value() && presentFamily.has_value();
+      return graphicsFamily.hasValue() && presentFamily.hasValue();
     }
   };
 public:
@@ -195,9 +197,9 @@ private:
     // Initialize instance
     crude_engine::Array_Stack<const char*, 1u> enabledLayers = { "VK_LAYER_KHRONOS_validation" };
     m_instance = crude_engine::makeShared<crude_engine::Instance>(
-      debugCallback, 
-      crude_engine::Application(), 
-      crude_engine::Array_Unsafe(enabledExtensions.data(), enabledExtensions.size()), 
+      debugCallback,
+      crude_engine::Application(),
+      crude_engine::Array_Unsafe(enabledExtensions.data(), enabledExtensions.size()),
       crude_engine::Array_Unsafe(enabledLayers.data(), enabledLayers.size()));
 
     // Initialize debugCallback
@@ -214,7 +216,8 @@ private:
 #endif
 
     // Pick physical device
-    for (auto& physicalDevice : m_instance->getPhysicalDevices())
+    auto physicalDevices = m_instance->getPhysicalDevices();
+    for (auto& physicalDevice : physicalDevices)
     {
       const Queue_Family_Indices queueIndices = findQueueFamilies(*physicalDevice);
       const bool extensionsSupported = checkDeviceExtensionSupport(*physicalDevice);
@@ -374,14 +377,12 @@ private:
       m_device,
       crude_engine::Array_Unsafe(&samplerLayoutBinding, 1u));
 
-    std::string vertShaderPathA;
-    std::string fragShaderPathA;
 #ifdef __linux__ 
-    vertShaderPathA = "test/shader.vert.spv";
-    fragShaderPathA = "test/shader.frag.spv";
+    const char* vertShaderPathA = "test/shader.vert.spv";
+    const char* fragShaderPathA = "test/shader.frag.spv";
 #elif _WIN32
-    vertShaderPathA = "../../../test/shader.vert.spv";
-    fragShaderPathA = "../../../test/shader.frag.spv";
+    const char* vertShaderPathA = "../../crude_example/shader.vert.spv";
+    const char* fragShaderPathA = "../../crude_example/shader.frag.spv";
 #endif
 
     const auto vertShaderCode = readFile(vertShaderPathA);
@@ -399,9 +400,7 @@ private:
       crude_engine::Shader_Stage_Create_Info(VK_SHADER_STAGE_FRAGMENT_BIT, fragShaderModule, "main"),
     };
 
-    crude_engine::Array_Stack<VkVertexInputBindingDescription, 1u> bindings = {};
-    crude_engine::Array_Stack<VkVertexInputAttributeDescription, 1u> attributes = {};
-    auto vertexInputStateInfo = crude_engine::Vertex_Input_State_Create_Info(crude_engine::Array_Unsafe(bindings.data(), bindings.size()), crude_engine::Array_Unsafe(attributes.data(), attributes.size()));
+    auto vertexInputStateInfo = crude_engine::Vertex_Input_State_Create_Info({}, {});
     auto inputAssembly = crude_engine::Input_Assembly_State_Create_Info(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FALSE);
     auto viewportState = crude_engine::Viewport_State_Create_Info(1u, 1u);
     auto rasterizer = crude_engine::Rasterization_State_Create_Info(
@@ -494,7 +493,7 @@ private:
         1u);
     }
 
-    createTextureImageFromFile("../../../test/test.png", m_textureImage, m_textureImageMemory);
+    createTextureImageFromFile("../../crude_example/test.png", m_textureImage, m_textureImageMemory);
     m_textureImageView = crude_engine::makeShared<crude_engine::Image_View>(
       m_device,
       m_textureImage,
@@ -730,7 +729,7 @@ private:
 
   }
 
-  static crude_engine::Array_Dynamic<char> readFile(const std::string& filename) {
+  static crude_engine::Array_Dynamic<char> readFile(const char* filename) {
     std::ifstream file(filename, std::ios::ate | std::ios::binary);
 
     if (!file.is_open()) {

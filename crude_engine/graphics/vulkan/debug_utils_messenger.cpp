@@ -4,10 +4,10 @@
 namespace crude_engine
 {
 
-VkResult Debug_Utils_Messenger::createDebugUtilsMessengerEXT(VkInstance instance,
-                                                             const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
-                                                             const VkAllocationCallbacks* pAllocator,
-                                                             VkDebugUtilsMessengerEXT* pDebugMessenger) {
+VkResult Debug_Utils_Messenger::createDebugUtilsMessengerEXT(VkInstance                                 instance,
+                                                             const VkDebugUtilsMessengerCreateInfoEXT*  pCreateInfo,
+                                                             const VkAllocationCallbacks*               pAllocator,
+                                                             VkDebugUtilsMessengerEXT*                  pDebugMessenger) {
   auto func = (PFN_vkCreateDebugUtilsMessengerEXT) vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
   if (func != nullptr) 
   {
@@ -18,9 +18,9 @@ VkResult Debug_Utils_Messenger::createDebugUtilsMessengerEXT(VkInstance instance
   }
 }
 
-void Debug_Utils_Messenger::destroyDebugUtilsMessengerEXT(VkInstance instance, 
-                                                          VkDebugUtilsMessengerEXT debugMessenger, 
-                                                          const VkAllocationCallbacks* pAllocator) {
+void Debug_Utils_Messenger::destroyDebugUtilsMessengerEXT(VkInstance                    instance, 
+                                                          VkDebugUtilsMessengerEXT      debugMessenger, 
+                                                          const VkAllocationCallbacks*  pAllocator) {
   auto func = (PFN_vkDestroyDebugUtilsMessengerEXT) vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
   if (func != nullptr) 
   {

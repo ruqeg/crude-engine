@@ -43,13 +43,13 @@ bool RBT_Node_Base<Node>::isRed() const
 template <class Node>
 void RBT_Node_Base<Node>::swapParentWith(Node* other) noexcept
 {
-  this->m_parent = other->m_parent;
+  Utility::swap(this->m_parent, other->m_parent);
 }
 
 template <class Node>
 void RBT_Node_Base<Node>::swapColorWith(Node* other) noexcept
 {
-  m_color = other->m_color;
+  Utility::swap(m_color, other->m_color);
 }
 
 template<class Node, class Compare>

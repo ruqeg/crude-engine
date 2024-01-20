@@ -57,7 +57,7 @@ template<class T>
 Optional<T>::Optional() noexcept
   :
   m_dummy(0u),
-  m_engaged(true)
+  m_engaged(false)
 {}
 
 template<class T>
@@ -76,7 +76,7 @@ template<class T>
 Optional<T>::Optional(Nullopt) noexcept
   :
   m_dummy(0u),
-  m_engaged(true)
+  m_engaged(false)
 {}
 
 template<class T>
@@ -89,15 +89,22 @@ Optional<T>::Optional(const T& value) noexcept
 template<class T>
 Optional<T>::Optional(const Optional& other) noexcept
 {
-  m_value = other.m_value;
   m_engaged = other.m_engaged;
+  if (m_engaged)
+  {
+    m_value = other.m_value;
+  }
 }
 
 template<class T>
 Optional<T>::Optional(Optional&& other) noexcept
 {
-  m_value = Utility::move(other.m_value);
   m_engaged = other.m_engaged;
+  
+  if (m_engaged)
+  {
+    m_value = Utility::move(other.m_value);
+  }
 
   other.m_engaged = false;
 }
@@ -106,22 +113,36 @@ template<class T>
 Optional<T>& Optional<T>::operator=(Nullopt) noexcept
 {
   m_engaged = false;
+
+  return*this;
 }
 
 template<class T>
 Optional<T>& Optional<T>::operator=(const Optional<T>& other) noexcept
 {
-  m_value = other.m_value;
   m_engaged = other.m_engaged;
+  
+  if (m_engaged)
+  {
+    m_value = other.m_value;
+  }
+
+  return*this;
 }
 
 template<class T>
 Optional<T>& Optional<T>::operator=(Optional<T>&& other) noexcept
 {
-  m_value = Utility::move(other.m_value);
   m_engaged = other.m_engaged;
 
+  if (m_engaged)
+  {
+    m_value = Utility::move(other.m_value);
+  }
+  
   other.m_engaged = false;
+
+  return*this;
 }
 
 template<class T>

@@ -13,7 +13,7 @@ class Descriptor_Set;
 struct Write_Descriptor_Set : private VkWriteDescriptorSet
 {
 public:
-  explicit Write_Descriptor_Set(Shared_Ptr<Descriptor_Set>               dscriptorSet,
+  explicit Write_Descriptor_Set(Shared_Ptr<Descriptor_Set>               descriptorSet,
                                 uint32                                   binding,
                                 uint32                                   arrayElement,
                                 uint32                                   descriptorCount,

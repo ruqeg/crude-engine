@@ -2,6 +2,7 @@
 
 #include <core/memory/iallocator.hpp>
 #include <core/data_structures/rb_tree.hpp>
+#include <core/debug/logger.hpp>
 
 namespace crude_engine
 {

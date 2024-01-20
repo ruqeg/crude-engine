@@ -1,4 +1,4 @@
-#include "../../crude_engine/core/memory/c_allocator.hpp"
+#include "../../crude_engine/core/memory/cxx_allocator.hpp"
 #include "../../crude_engine/core/memory/linear_allocator.hpp"
 #include "../../crude_engine/core/memory/pool_allocator.hpp"
 #include "../../crude_engine/core/memory/stack_allocator.hpp"
@@ -35,14 +35,9 @@ int main()
   //
   //std::cout << "Aft free: " << allocator.m_rbt.size() << std::endl;
 
-
-  crude_engine::Array_Stack<int, 10> stackArr = { 5 };
-  std::cout << "Stack Array " << stackArr.front() << " " << stackArr[5] << std::endl;
-
-  crude_engine::Array_Dynamic<int> dynArr;
-  dynArr.resize(100);
-  dynArr.fill(5);
-  std::cout << "Din Array " << dynArr[6] << std::endl;
+  crude_engine::Array_Dynamic<int> arr(50);
+  arr[5] = 6;
+  std::cout << arr[9] << std::endl;
 
   return 1;
 }

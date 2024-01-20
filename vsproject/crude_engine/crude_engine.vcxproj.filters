@@ -172,7 +172,7 @@
     <ClCompile Include="..\..\crude_engine\graphics\vulkan\write_descriptor_set.cpp">
       <Filter>source\graphics\vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\crude_engine\core\memory\c_allocator.cpp">
+    <ClCompile Include="..\..\crude_engine\core\memory\cxx_allocator.cpp">
       <Filter>source\core\memory</Filter>
     </ClCompile>
     <ClCompile Include="..\..\crude_engine\core\memory\pool_allocator.cpp">
@@ -186,6 +186,12 @@
     </ClCompile>
     <ClCompile Include="..\..\crude_engine\graphics\vulkan\vulkan_allocator.cpp">
       <Filter>source\graphics\vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\core\debug\logger.cpp">
+      <Filter>source\core\debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\core\data_structures\string.cpp">
+      <Filter>source\core\data_structures</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -345,7 +351,7 @@
     <ClInclude Include="..\..\crude_engine\graphics\vulkan\write_descriptor_set.hpp">
       <Filter>source\graphics\vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\crude_engine\core\memory\c_allocator.hpp">
+    <ClInclude Include="..\..\crude_engine\core\memory\cxx_allocator.hpp">
       <Filter>source\core\memory</Filter>
     </ClInclude>
     <ClInclude Include="..\..\crude_engine\core\memory\pool_allocator.hpp">
@@ -411,6 +417,15 @@
     <ClInclude Include="..\..\crude_engine\core\data_structures\array_unsafe.hpp">
       <Filter>source\core\data_structures</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\crude_engine\core\debug\logger.hpp">
+      <Filter>source\core\debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\crude_engine\core\debug\debug.hpp">
+      <Filter>source\core\debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\crude_engine\core\data_structures\string.hpp">
+      <Filter>source\core\data_structures</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\crude_engine\graphics\vulkan\object.inl">
@@ -457,6 +472,12 @@
     </None>
     <None Include="cpp.hint" />
     <None Include="..\..\crude_engine\core\data_structures\array_unsafe.inl">
+      <Filter>source\core\data_structures</Filter>
+    </None>
+    <None Include="..\..\crude_engine\core\debug\logger.inl">
+      <Filter>source\core\debug</Filter>
+    </None>
+    <None Include="..\..\crude_engine\core\data_structures\string.inl">
       <Filter>source\core\data_structures</Filter>
     </None>
   </ItemGroup>

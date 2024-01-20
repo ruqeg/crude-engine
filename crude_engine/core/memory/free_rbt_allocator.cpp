@@ -35,6 +35,8 @@ void* Free_RBT_Allocator::allocate(std::size_t size) noexcept
 {
   const std::size_t requiredSize = static_cast<std::size_t>(size + sizeof(Node));
 
+  CRUDE_LOG_INFO(Debug::Channel::Memory, "Free_RBT_Allocator::allocate() blockSize: %i", requiredSize);
+
   // !TODO
   //CRUDE_ASSERT("Allocation size must be bigger" && size >= sizeof(Node));
   const Red_Black_Tree<Node>::Iterator& allocatedHeaderIt = m_rbt.lowerBound(requiredSize);
@@ -54,11 +56,12 @@ void* Free_RBT_Allocator::allocate(std::size_t size) noexcept
   newFreeHeader->prev = allocatedHeader;
   newFreeHeader->next = nullptr;
 
+  m_rbt.remove(*allocatedHeader);
+
   allocatedHeader->free = false;
   allocatedHeader->blockSize = requiredSize;
   allocatedHeader->next = newFreeHeader;
 
-  m_rbt.remove(*allocatedHeader);
   m_rbt.insert(*newFreeHeader);
 
   return resultAddress;
@@ -69,6 +72,8 @@ void Free_RBT_Allocator::free(void* ptr) noexcept
   byte* allocatedAddress = reinterpret_cast<byte*>(ptr);
   byte* allocatedHeaderAddress = allocatedAddress - sizeof(Node);
   Node* allocatedHeader = reinterpret_cast<Node*>(allocatedHeaderAddress);
+
+  CRUDE_LOG_INFO(Debug::Channel::Memory, "Free_RBT_Allocator::free() blockSize: %i", allocatedHeader->blockSize);
 
   if (allocatedHeader->prev && (allocatedHeader->prev->free))
   {
