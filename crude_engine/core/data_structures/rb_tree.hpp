@@ -15,7 +15,7 @@ template <class Node>
 class RBT_Node_Base : public BST_Node_Base<Node>
 {
 public:
-  RBT_Node_Base() = default;
+  RBT_Node_Base() noexcept;
   void setColor(RB_Color color) noexcept;
   void makeBlack() noexcept;
   void makeRed() noexcept;

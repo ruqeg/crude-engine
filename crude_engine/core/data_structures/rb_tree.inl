@@ -4,6 +4,13 @@
 namespace crude_engine
 {
 
+template<class Node>
+RBT_Node_Base<Node>::RBT_Node_Base() noexcept
+  :
+  BST_Node_Base<Node>(),
+  m_color(RB_Color::BLACK)
+{}
+
 template <class Node>
 void RBT_Node_Base<Node>::setColor(RB_Color color) noexcept
 {

@@ -17,6 +17,7 @@ public:
   };
   struct Node : public RBT_Node_Base<Node>
   {
+    Node(std::size_t blockSize, bool64 free, Node* prev, Node* next) noexcept;
     Node*       next;
     Node*       prev;
     std::size_t blockSize;

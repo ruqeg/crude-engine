@@ -114,7 +114,7 @@ public:
     }
   };
 
-  using Default_Allocator = Default_CXX_Allocator;
+  using Default_Allocator = Default_Free_RBT_Allocator;
 };
 
 }  // namespace crude_engine
