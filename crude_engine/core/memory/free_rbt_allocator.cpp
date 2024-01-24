@@ -38,7 +38,6 @@ void* Free_RBT_Allocator::allocate(std::size_t size) noexcept
   const std::size_t requiredSize = static_cast<std::size_t>(size + sizeof(Node));
 
   CRUDE_LOG_INFO(Debug::Channel::Memory, "Free_RBT_Allocator::allocate() blockSize: %i", requiredSize);
-  CRUDE_LOG_INFO(Debug::Channel::Memory, "CURRENT_MAX: %i", m_rbt.rend()->blockSize);
 
   // !TODO
   //CRUDE_ASSERT("Allocation size must be bigger" && size >= sizeof(Node));
@@ -79,35 +78,30 @@ void Free_RBT_Allocator::free(void* ptr) noexcept
   Node* allocatedHeader = reinterpret_cast<Node*>(allocatedHeaderAddress);
   
   CRUDE_LOG_INFO(Debug::Channel::Memory, "Free_RBT_Allocator::free() blockSize: %i", allocatedHeader->blockSize);
-  CRUDE_LOG_INFO(Debug::Channel::Memory, "CURRENT_MAX: %i", m_rbt.rend()->blockSize);
-  
+
   if (allocatedHeader->prev && (allocatedHeader->prev->free))
   {
     m_rbt.remove(*allocatedHeader->prev);
-  
-    allocatedHeader->prev->blockSize += allocatedHeader->blockSize;
-    allocatedHeader->prev->next = allocatedHeader->next;
-    if (allocatedHeader->prev->next)
-    {
-      allocatedHeader->prev->next->prev = allocatedHeader->prev;
-    }
-  
+
     allocatedHeader = allocatedHeader->prev;
-  }
-  
-  if (allocatedHeader->next && (allocatedHeader->next->free))
-  {
-    m_rbt.remove(*allocatedHeader->next);
-    allocatedHeader->blockSize += allocatedHeader->next->blockSize;
-  
-    allocatedHeader->next = allocatedHeader->next->next;
+    *allocatedHeader = Node(allocatedHeader->blockSize + allocatedHeader->next->blockSize, true, allocatedHeader->prev, allocatedHeader->next->next);
     if (allocatedHeader->next)
     {
       allocatedHeader->next->prev = allocatedHeader;
     }
   }
   
-  allocatedHeader->free = true;
+  if (allocatedHeader->next && (allocatedHeader->next->free))
+  {
+    m_rbt.remove(*allocatedHeader->next);
+
+    *allocatedHeader = Node(allocatedHeader->blockSize + allocatedHeader->next->blockSize, true, allocatedHeader->prev, allocatedHeader->next->next);
+    if (allocatedHeader->next)
+    {
+      allocatedHeader->next->prev = allocatedHeader;
+    }
+  }
+  
   m_rbt.insert(*allocatedHeader);
 
   return;
