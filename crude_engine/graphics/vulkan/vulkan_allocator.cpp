@@ -49,7 +49,7 @@ void* VKAPI_CALL Vulkan_Allocator::reallocation(
 void Vulkan_Allocator::free(
   void* pMemory)
 {
-  CRUDE_ASSERT(ptr);
+  CRUDE_ASSERT(pMemory);
 
   Memory_System::Default_Aligned_Allocator::free(pMemory);
 }
@@ -58,7 +58,7 @@ void VKAPI_CALL Vulkan_Allocator::free(
   void* pUserData,
   void* pMemory)
 {
-  CRUDE_ASSERT(ptr);
+  CRUDE_ASSERT(pMemory);
 
   return static_cast<Vulkan_Allocator*>(pUserData)->free(pMemory);
 }
