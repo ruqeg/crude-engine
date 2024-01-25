@@ -47,7 +47,7 @@ public:
   template<class T>
   void mdeleteArray(std::size_t n, T* ptr) noexcept;
 
-public:
+private:
   std::byte*            m_heap{ nullptr };
   std::size_t           m_heapSize;
   const std::size_t     m_capacity;

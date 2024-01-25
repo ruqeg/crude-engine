@@ -28,6 +28,7 @@ Shared_Ptr<T, Allocator>::~Shared_Ptr() noexcept
   {
     Memory_Utils::destructorAt(getPtr());
     Allocator::free(m_memBlock);
+    m_memBlock = nullptr;
   }
 }
 

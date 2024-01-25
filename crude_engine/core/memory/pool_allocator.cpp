@@ -43,6 +43,8 @@ void* Pool_Allocator::allocate(std::size_t size) noexcept
 
 void Pool_Allocator::free(void* ptr) noexcept
 {
+  CRUDE_ASSERT(ptr);
+
   m_heapSize -= m_chunkSize;
   m_freeList.push(reinterpret_cast<Node*>(ptr));
 }

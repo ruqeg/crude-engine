@@ -73,6 +73,8 @@ void* Free_RBT_Allocator::allocate(std::size_t size) noexcept
 
 void Free_RBT_Allocator::free(void* ptr) noexcept
 {
+  CRUDE_ASSERT(ptr);
+
   byte* allocatedAddress = reinterpret_cast<byte*>(ptr);
   byte* allocatedHeaderAddress = allocatedAddress - sizeof(Node);
   Node* allocatedHeader = reinterpret_cast<Node*>(allocatedHeaderAddress);
