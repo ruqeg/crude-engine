@@ -57,7 +57,7 @@ protected:
   void swapUnrelatedNodes(Node* n1, Node* n2) noexcept;
   void swapNeighbors(Node* parent, Node* child) noexcept;
 protected:
-  static constexpr bool multiple = false;
+  static constexpr bool multiple = true;
 };
 
 } // namespace crude_engine

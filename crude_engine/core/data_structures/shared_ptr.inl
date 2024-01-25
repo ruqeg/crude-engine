@@ -22,6 +22,8 @@ Shared_Ptr<T, Allocator>::~Shared_Ptr() noexcept
   if (m_memBlock == nullptr)
     return;
 
+  CRUDE_ASSERT(*getRefCount() != 0);
+
   (*getRefCount())--;
 
   if (*getRefCount() == 0)

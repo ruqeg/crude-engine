@@ -74,7 +74,7 @@ public:
 #endif
     );
     initVulkan();
-    mainLoop();
+    //mainLoop();
     cleanup();
   }
 private:
@@ -231,7 +231,7 @@ private:
         break;
       }
     }
-
+    return;
     if (!m_physicalDevice)
     {
       throw std::runtime_error("failed to find suitable physical device");
@@ -1069,8 +1069,6 @@ int APIENTRY wWinMain(
     system("pause");
     return EXIT_FAILURE;
   }
-
-  system("pause");
 
   return EXIT_SUCCESS;
 }

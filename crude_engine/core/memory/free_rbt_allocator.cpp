@@ -78,8 +78,11 @@ void Free_RBT_Allocator::free(void* ptr) noexcept
   byte* allocatedAddress = reinterpret_cast<byte*>(ptr);
   byte* allocatedHeaderAddress = allocatedAddress - sizeof(Node);
   Node* allocatedHeader = reinterpret_cast<Node*>(allocatedHeaderAddress);
-  
+
+  CRUDE_ASSERT(!allocatedHeader->free && !allocatedHeader->getParent() && !allocatedHeader->getLeft() && !allocatedHeader->getRight());
   CRUDE_LOG_INFO(Debug::Channel::Memory, "Free_RBT_Allocator::free() blockSize: %i", allocatedHeader->blockSize);
+
+  *allocatedHeader = Node(allocatedHeader->blockSize, true, allocatedHeader->prev, allocatedHeader->next);
 
   if (allocatedHeader->prev && (allocatedHeader->prev->free))
   {
