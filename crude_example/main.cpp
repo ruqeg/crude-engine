@@ -74,7 +74,7 @@ public:
 #endif
     );
     initVulkan();
-    //mainLoop();
+    mainLoop();
     cleanup();
   }
 private:
