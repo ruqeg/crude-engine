@@ -231,7 +231,7 @@ private:
         break;
       }
     }
-    return;
+
     if (!m_physicalDevice)
     {
       throw std::runtime_error("failed to find suitable physical device");
@@ -494,6 +494,7 @@ private:
     }
 
     createTextureImageFromFile("../../crude_example/test.png", m_textureImage, m_textureImageMemory);
+
     m_textureImageView = crude_engine::makeShared<crude_engine::Image_View>(
       m_device,
       m_textureImage,
@@ -534,7 +535,7 @@ private:
         descriptorSetLayouts,
         m_descriptorPool);
     }
-
+    return;
     for (uint32_t i = 0; i < 2u; i++) {
       crude_engine::Descriptor_Image_Info imageInfo(
         m_sampler,
@@ -709,7 +710,6 @@ private:
       1
     };
     commandBuffer->copyBufferToImage(stagingBuffer, textureImage, crude_engine::Array_Unsafe(&region, 1u));
-    
 
     barrier = crude_engine::Image_Memory_Barrier(
       textureImage,

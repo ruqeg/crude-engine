@@ -50,6 +50,8 @@ protected:
   CRUDE_INLINE T* getPtr() const noexcept;
   CRUDE_INLINE Ref_Count_Pointer getRefCount() noexcept;
   CRUDE_INLINE CRUDE_NODISCARD byte* allocateMemBlock() noexcept;
+  CRUDE_INLINE void release() noexcept;
+
 
 protected:
   byte* m_memBlock;
