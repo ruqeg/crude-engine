@@ -53,6 +53,18 @@ struct Remove_Reference<T&&>
   using Type = T;
 };
 
+template<std::size_t Len, std::size_t Align>
+struct Aligned_Storage
+{
+  struct Type
+  {
+    alignas(Align) uint8 data[Len];
+  };
+};
+
+template< std::size_t Len, std::size_t Align>
+using Aligned_Storage_T = typename Aligned_Storage<Len, Align>::Type;
+
 class Utility
 {
 public:

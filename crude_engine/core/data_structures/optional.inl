@@ -1,66 +1,86 @@
+#include <core/data_structures/optional.hpp>
+
 namespace crude_engine
 {
 
 template<class T>
 Optional<T>::Optional() noexcept
-  :
-  m_dummy(0u),
-  m_engaged(false)
 {}
 
 template<class T>
 Optional<T>::~Optional()
 {
-  if constexpr (!std::is_trivially_destructible<T>{})
-  {
-    if (m_engaged)
-    {
-      m_value.~T();
-    }
-  }
+  reset();
 }
 
 template<class T>
 Optional<T>::Optional(Nullopt) noexcept
-  :
-  m_dummy(0u),
-  m_engaged(false)
 {}
 
 template<class T>
 Optional<T>::Optional(const T& value) noexcept
-  :
-  m_value(value),
-  m_engaged(true)
-{}
+{
+  construct(value);
+}
+
+template<class T>
+Optional<T>::Optional(T&& value) noexcept
+{
+  construct(Utility::move(value));
+}
 
 template<class T>
 Optional<T>::Optional(const Optional& other) noexcept
 {
-  m_engaged = other.m_engaged;
-  if (m_engaged)
+  if (other.hasValue())
   {
-    m_value = other.m_value;
+    construct(other.value());
   }
 }
 
 template<class T>
 Optional<T>::Optional(Optional&& other) noexcept
 {
-  m_engaged = other.m_engaged;
-
-  if (m_engaged)
+  if (other.hasValue())
   {
-    m_value = Utility::move(other.m_value);
+    construct(Utility::move(other.value()));
   }
-
   other.m_engaged = false;
 }
 
 template<class T>
 Optional<T>& Optional<T>::operator=(Nullopt) noexcept
 {
-  m_engaged = false;
+  reset();
+  return*this;
+}
+
+template<class T>
+Optional<T>& Optional<T>::operator=(const T& value) noexcept
+{
+  if (hasValue())
+  {
+    this->value() = value;
+  }
+  else
+  {
+    construct(value);
+  }
+
+  return *this;
+}
+
+template<class T>
+Optional<T>& Optional<T>::operator=(T&& value) noexcept
+{
+  if (hasValue())
+  {
+    this->value() = Utility::move(value);
+  }
+  else
+  {
+    construct(Utility::move(value));
+  }
 
   return*this;
 }
@@ -68,11 +88,20 @@ Optional<T>& Optional<T>::operator=(Nullopt) noexcept
 template<class T>
 Optional<T>& Optional<T>::operator=(const Optional<T>& other) noexcept
 {
-  m_engaged = other.m_engaged;
-
-  if (m_engaged)
+  if (other.hasValue())
   {
-    m_value = other.m_value;
+    if (hasValue())
+    {
+      this->value() = other.value();
+    }
+    else
+    {
+      construct(other.value());
+    }
+  }
+  else
+  {
+    reset();
   }
 
   return*this;
@@ -81,14 +110,21 @@ Optional<T>& Optional<T>::operator=(const Optional<T>& other) noexcept
 template<class T>
 Optional<T>& Optional<T>::operator=(Optional<T>&& other) noexcept
 {
-  m_engaged = other.m_engaged;
-
-  if (m_engaged)
+  if (other.hasValue())
   {
-    m_value = Utility::move(other.m_value);
+    if (hasValue())
+    {
+      this->value() = Utility::move(other.value());
+    }
+    else
+    {
+      construct(Utility::move(other.value()));
+    }
   }
-
-  other.m_engaged = false;
+  else
+  {
+    reset();
+  }
 
   return*this;
 }
@@ -96,13 +132,13 @@ Optional<T>& Optional<T>::operator=(Optional<T>&& other) noexcept
 template<class T>
 bool Optional<T>::operator==(const Optional& other) const noexcept
 {
-  return (m_engaged == other.m_engaged) && (m_value == other.m_value);
+  return (m_engaged == other.m_engaged) && (m_storage == other.m_storage);
 }
 
 template<class T>
 bool Optional<T>::operator!=(const Optional& other) const noexcept
 {
-  return (m_engaged != other.m_engaged) || (m_value != other.m_value);
+  return (m_engaged != other.m_engaged) || (m_storage != other.m_storage);
 }
 
 template<class T>
@@ -114,43 +150,55 @@ bool Optional<T>::hasValue() const noexcept
 template<class T>
 T& Optional<T>::value() noexcept
 {
-  return m_value;
+  CRUDE_ASSERT(hasValue());
+  return static_cast<T&>(*getStorage());
 }
 
 template<class T>
 const T& Optional<T>::value() const noexcept
 {
-  return m_value;
+  CRUDE_ASSERT(hasValue());
+  return static_cast<const T&>(*getStorage());
 }
 
 template<class T>
 T& Optional<T>::operator*() noexcept
 {
-  return m_value;
+  CRUDE_ASSERT(hasValue());
+  return value();
 }
 
 template<class T>
 T& Optional<T>::operator->() noexcept
 {
-  return m_value;
+  CRUDE_ASSERT(hasValue());
+  return value();
 }
 
 template<class T>
 const T& Optional<T>::operator*() const noexcept
 {
-  return m_value;
+  CRUDE_ASSERT(hasValue());
+  return value();
 }
 
 template<class T>
 const T& Optional<T>::operator->() const noexcept
 {
-  return m_value;
+  CRUDE_ASSERT(hasValue());
+  return value();
 }
 
 template<class T>
 void Optional<T>::reset() noexcept
 {
-  m_engaged = false;
+  if constexpr (!std::is_trivially_destructible<T>{})
+  {
+    if (hasValue())
+    {
+      destruct();
+    }
+  }
 }
 
 template<class T>
@@ -163,7 +211,38 @@ template<class T>
 template<class U>
 T Optional<T>::valueOr(U&& u) const noexcept
 {
-  return m_engaged ? m_value : u;
+  return m_engaged ? value() : u;
+}
+
+template<class T>
+T* Optional<T>::getStorage() noexcept
+{
+  return reinterpret_cast<T*>(&m_storage);
+}
+
+template<class T>
+const T* Optional<T>::getStorage() const noexcept
+{
+  return reinterpret_cast<const T*>(&m_storage);
+}
+
+template<class T>
+template<typename... Args>
+void Optional<T>::construct(Args&&... args) noexcept
+{
+  CRUDE_ASSERT(!hasValue());
+  Memory_Utils::constructAt<T>(getStorage(), std::forward<Args>(args)...);
+  m_engaged = true;
+}
+
+template<class T>
+void Optional<T>::destruct() noexcept
+{
+  if (hasValue())
+  {
+    Memory_Utils::destructorAt<T>(getStorage());
+    m_engaged = false;
+  }
 }
 
 }

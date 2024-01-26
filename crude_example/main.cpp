@@ -524,8 +524,6 @@ private:
       m_device,
       crude_engine::Array_Unsafe(poolSizes.data(), poolSizes.size()),
       2u);
-    
-    crude_engine::Shared_Ptr<crude_engine::Descriptor_Set_Layout> b;
 
     m_descriptorSets.resize(2u);
     for (auto& descriptorSet : m_descriptorSets)
@@ -535,7 +533,7 @@ private:
         descriptorSetLayouts,
         m_descriptorPool);
     }
-    return;
+
     for (uint32_t i = 0; i < 2u; i++) {
       crude_engine::Descriptor_Image_Info imageInfo(
         m_sampler,
@@ -550,6 +548,7 @@ private:
         VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
         imageInfo,
         crude_engine::nullopt);
+
       m_device->updateDescriptorSets(crude_engine::Array_Unsafe(&descriptorWrites, 1u), {});
     }
 

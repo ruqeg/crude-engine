@@ -1,6 +1,7 @@
 #pragma once
 
 #include <core/utility.hpp>
+#include <core/memory/memory_utils.hpp>
 
 namespace crude_engine
 {
@@ -16,14 +17,20 @@ template<class T>
 class Optional
 {
 public:
+  using Value_Type = T;
+
+public:
   Optional() noexcept;
   ~Optional();
   Optional(Nullopt) noexcept;
   Optional(const T& value) noexcept;
+  Optional(T&& value) noexcept;
   Optional(const Optional& other) noexcept;
   Optional(Optional&& other) noexcept;
 
   CRUDE_INLINE Optional& operator=(Nullopt) noexcept;
+  CRUDE_INLINE Optional& operator=(const T& value) noexcept;
+  CRUDE_INLINE Optional& operator=(T&& value) noexcept;
   CRUDE_INLINE Optional& operator=(const Optional& other) noexcept;
   CRUDE_INLINE Optional& operator=(Optional&& other) noexcept;
 
@@ -49,8 +56,17 @@ public:
   explicit operator bool() const noexcept;
 
 protected:
-  union { T m_value; byte m_dummy; };
-  bool8  m_engaged;
+  T* getStorage() noexcept;
+  const T* getStorage() const noexcept;
+
+  template<typename... Args>
+  void construct(Args&&... args) noexcept;
+
+  void destruct() noexcept;
+
+protected:
+  Aligned_Storage_T<sizeof(T), alignof(T)> m_storage;
+  bool8  m_engaged = false;
 };
 
 } // namespace crude_engine
