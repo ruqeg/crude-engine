@@ -38,6 +38,7 @@
 #include "../crude_engine/graphics/vulkan/write_descriptor_set.hpp"
 #include "../crude_engine/graphics/vulkan/fence.hpp"
 #include "../crude_engine/graphics/vulkan/semaphore.hpp"
+#include <core/filesystem.hpp>
 
 #include <algorithm>
 #include <set>
@@ -46,7 +47,6 @@
 #include <optional>
 #include <stdexcept>
 #include <limits>
-#include <fstream>
 
 class Test_Application
 {
@@ -729,18 +729,16 @@ private:
   }
 
   static crude_engine::Array_Dynamic<char> readFile(const char* filename) {
-    std::ifstream file(filename, std::ios::ate | std::ios::binary);
-
-    if (!file.is_open()) {
-      throw std::runtime_error("failed to open file!");
+    if (!crude_engine::Filesystem::getInstance().fileAccess(filename))
+    {
+      throw std::runtime_error("failed to access file!");
     }
 
-    size_t fileSize = (size_t) file.tellg();
-    crude_engine::Array_Dynamic<char> buffer(fileSize);
-
-    file.seekg(0);
-    file.read(buffer.data(), fileSize);
-    file.close();
+    crude_engine::Array_Dynamic<char> buffer;
+    if (crude_engine::Filesystem::getInstance().read(filename, buffer) != crude_engine::Filesystem::RESULT_SUCCESS)
+    {
+      throw std::runtime_error("failed to read file!");
+    }
 
     return buffer;
   }

@@ -109,7 +109,7 @@ public:
   CRUDE_INLINE Const_Iterator rend() const noexcept;
   CRUDE_INLINE Iterator rend() noexcept;
 
-  static_assert(N > 0);
+  CRUDE_STATIC_ASSERT(N > 0);
 
 protected:
   Value_Type m_data[N];

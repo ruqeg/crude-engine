@@ -1,7 +1,7 @@
 #pragma once
 
 #include <core/utility.hpp>
-#include <cstdio>
+#include <stdio.h>
 
 namespace crude_engine
 {

@@ -64,7 +64,7 @@ public:
   CRUDE_INLINE Const_Pointer operator->() const noexcept;
 
   // !TODO
-  //static_assert(std::contiguous_iterator<Contiguous_Iterator_Base<Concrete_Iterator, Type, Interface>>);
+  //CRUDE_STATIC_ASSERT(std::contiguous_iterator<Contiguous_Iterator_Base<Concrete_Iterator, Type, Interface>>);
 
 protected:
   Pointer m_ptr;

@@ -16,47 +16,53 @@ template<class T>
 class Optional
 {
 public:
-  using Value_Type = T;
+  using Value_Type       = T;
+  using Size_Type        = std::size_t;
+  using Difference_Type  = std::ptrdiff_t;
+  using Reference        = Value_Type&;
+  using Const_Reference  = Value_Type const&;
+  using Pointer          = Value_Type*;
+  using Const_Pointer    = Value_Type const*;
 
 public:
   Optional() noexcept;
   ~Optional();
   Optional(Nullopt) noexcept;
-  Optional(const T& value) noexcept;
-  Optional(T&& value) noexcept;
-  Optional(const Optional& other) noexcept;
+  Optional(Const_Reference value) noexcept;
+  Optional(Value_Type&& value) noexcept;
+  Optional(Optional const& other) noexcept;
   Optional(Optional&& other) noexcept;
 
   CRUDE_INLINE Optional& operator=(Nullopt) noexcept;
-  CRUDE_INLINE Optional& operator=(const T& value) noexcept;
-  CRUDE_INLINE Optional& operator=(T&& value) noexcept;
-  CRUDE_INLINE Optional& operator=(const Optional& other) noexcept;
+  CRUDE_INLINE Optional& operator=(Const_Reference value) noexcept;
+  CRUDE_INLINE Optional& operator=(Value_Type&& value) noexcept;
+  CRUDE_INLINE Optional& operator=(Optional const& other) noexcept;
   CRUDE_INLINE Optional& operator=(Optional&& other) noexcept;
 
-  CRUDE_INLINE bool operator==(const Optional& other) const noexcept;
-  CRUDE_INLINE bool operator!=(const Optional& other) const noexcept;
+  CRUDE_INLINE bool operator==(Optional const& other) const noexcept;
+  CRUDE_INLINE bool operator!=(Optional const& other) const noexcept;
 
   CRUDE_INLINE bool hasValue() const noexcept;
 
-  CRUDE_INLINE T& value() noexcept;
-  CRUDE_INLINE const T& value() const noexcept;
+  CRUDE_INLINE Reference value() noexcept;
+  CRUDE_INLINE Const_Reference value() const noexcept;
 
   template<class U>
-  CRUDE_INLINE T valueOr(U&& u) const noexcept;
+  CRUDE_INLINE Value_Type valueOr(U&& u) const noexcept;
 
-  CRUDE_INLINE T& operator*() noexcept;
-  CRUDE_INLINE T& operator->() noexcept;
+  CRUDE_INLINE Reference operator*() noexcept;
+  CRUDE_INLINE Reference operator->() noexcept;
 
-  CRUDE_INLINE T const& operator*() const noexcept;
-  CRUDE_INLINE const T& operator->() const noexcept;
+  CRUDE_INLINE Const_Reference operator*() const noexcept;
+  CRUDE_INLINE Const_Reference operator->() const noexcept;
 
   CRUDE_INLINE void reset() noexcept;
 
   explicit operator bool() const noexcept;
 
 protected:
-  T* getStorage() noexcept;
-  const T* getStorage() const noexcept;
+  Pointer getStorage() noexcept;
+  Const_Pointer getStorage() const noexcept;
 
   template<typename... Args>
   void construct(Args&&... args) noexcept;

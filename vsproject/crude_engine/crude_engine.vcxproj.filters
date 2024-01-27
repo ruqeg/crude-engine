@@ -190,6 +190,9 @@
     <ClCompile Include="..\..\crude_engine\core\data_structures\string.cpp">
       <Filter>source\core\data_structures</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\crude_engine\core\filesystem.cpp">
+      <Filter>source\core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\crude_engine\core\memory\linear_allocator.hpp">
@@ -419,6 +422,9 @@
     </ClInclude>
     <ClInclude Include="..\..\crude_engine\core\memory\stack_allocator.hpp">
       <Filter>source\core\memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\crude_engine\core\filesystem.hpp">
+      <Filter>source\core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
