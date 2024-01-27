@@ -27,7 +27,7 @@ template<class T, class Allocator>
 Shared_Ptr<T, Allocator>::Shared_Ptr(const T& value) noexcept
 {
   m_memBlock = allocateMemBlock();
-  Memory_Utils::constructAt(getPtr(), value);
+  Utility::constructAt(getPtr(), value);
   (*getRefCount()) = 1;
 }
 
@@ -196,7 +196,7 @@ CRUDE_INLINE void Shared_Ptr<T, Allocator>::release() noexcept
 
   if (*getRefCount() == 0)
   {
-    Memory_Utils::destructorAt(getPtr());
+    Utility::destructorAt(getPtr());
     Allocator::free(m_memBlock);
     m_memBlock = nullptr;
   }
@@ -209,7 +209,7 @@ Shared_Ptr<U, UAllocator> makeShared(Args&&... args) noexcept
   Shared_Ptr<U, UAllocator> impl;
 
   impl.m_memBlock = impl.allocateMemBlock();
-  Memory_Utils::constructAt(impl.getPtr(), Utility::forward<Args>(args)...);
+  Utility::constructAt(impl.getPtr(), Utility::forward<Args>(args)...);
   (*impl.getRefCount()) = 1;
 
   return impl;

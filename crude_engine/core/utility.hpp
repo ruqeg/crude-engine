@@ -79,6 +79,12 @@ public:
 
   template <class T>
   static CRUDE_INLINE T&& forward(typename Remove_Reference<T>::Type&& x) noexcept;
+
+  template<class T, class... Args >
+  static CRUDE_NODISCARD T* constructAt(T* ptr, Args&&... args) noexcept;
+
+  template<class T>
+  static CRUDE_NODISCARD void destructorAt(T* ptr) noexcept;
 };
 
 } // namespace crude_engine

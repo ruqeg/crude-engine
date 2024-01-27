@@ -29,4 +29,16 @@ T&& Utility::forward(typename Remove_Reference<T>::Type&& x) noexcept
   return static_cast<T&&>(x);
 }
 
+template<class T, class... Args >
+T* Utility::constructAt(T* ptr, Args&&... args) noexcept
+{
+  return ::new (ptr) T(Utility::forward<Args>(args)...);
+}
+
+template<class T>
+void Utility::destructorAt(T* ptr) noexcept
+{
+  ptr->~T();
+}
+
 }

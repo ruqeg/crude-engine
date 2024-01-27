@@ -4,7 +4,7 @@ namespace crude_engine
 template<class T, typename... Args>
 T* CXX_Allocator::mnew(Args&&... args) noexcept
 {
-  return Memory_Utils::constructAt(allocate(sizeof(T)), Utility::forward<Args>(args)...);
+  return Utility::constructAt(allocate(sizeof(T)), Utility::forward<Args>(args)...);
 }
 
 template<class T, typename... Args>
@@ -14,7 +14,7 @@ T* CXX_Allocator::mnewArray(std::size_t n, Args&&... args) noexcept
 
   for (std::size_t i = 0; i < n; ++i)
   {
-    Memory_Utils::constructAt(ptr + i, Utility::forward<Args>(args)...);
+    Utility::constructAt(ptr + i, Utility::forward<Args>(args)...);
   }
   return ptr;
 }
@@ -22,7 +22,7 @@ T* CXX_Allocator::mnewArray(std::size_t n, Args&&... args) noexcept
 template<class T>
 void CXX_Allocator::mdelete(T* ptr) noexcept
 {
-  Memory_Utils::destructorAt(ptr);
+  Utility::destructorAt(ptr);
   free(reinterpret_cast<void*>(ptr));
 }
 
@@ -31,7 +31,7 @@ void CXX_Allocator::mdeleteArray(std::size_t n, T* ptr) noexcept
 {
   for (std::size_t i = 0; i < n; ++i)
   {
-    Memory_Utils::destructorAt(ptr + i);
+    Utility::destructorAt(ptr + i);
   }
   free(reinterpret_cast<void*>(ptr));
 }

@@ -231,7 +231,7 @@ template<typename... Args>
 void Optional<T>::construct(Args&&... args) noexcept
 {
   CRUDE_ASSERT(!hasValue());
-  Memory_Utils::constructAt<T>(getStorage(), std::forward<Args>(args)...);
+  Utility::constructAt<T>(getStorage(), std::forward<Args>(args)...);
   m_engaged = true;
 }
 
@@ -240,7 +240,7 @@ void Optional<T>::destruct() noexcept
 {
   if (hasValue())
   {
-    Memory_Utils::destructorAt<T>(getStorage());
+    Utility::destructorAt<T>(getStorage());
     m_engaged = false;
   }
 }

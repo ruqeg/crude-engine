@@ -1,7 +1,6 @@
 #pragma once
 
 #include <core/utility.hpp>
-#include <core/memory/memory_utils.hpp>
 
 namespace crude_engine
 {
@@ -48,7 +47,7 @@ public:
   CRUDE_INLINE T& operator*() noexcept;
   CRUDE_INLINE T& operator->() noexcept;
 
-  CRUDE_INLINE const T& operator*() const noexcept;
+  CRUDE_INLINE T const& operator*() const noexcept;
   CRUDE_INLINE const T& operator->() const noexcept;
 
   CRUDE_INLINE void reset() noexcept;

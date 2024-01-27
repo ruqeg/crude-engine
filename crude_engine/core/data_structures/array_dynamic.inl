@@ -43,7 +43,7 @@ Array_Dynamic<T, Allocator>::Array_Dynamic(std::initializer_list<Value_Type> ini
   m_data = reinterpret_cast<Pointer>(Allocator::allocate(sizeof(T) * m_size));
 
   Algorithms::copyc(initList.begin(), initList.end(), begin(), [](auto src, auto dst) -> void {
-    Memory_Utils::constructAt(&(*dst), *src);
+    Utility::constructAt(&(*dst), *src);
   });
 }
 
@@ -55,7 +55,7 @@ Array_Dynamic<T, Allocator>::Array_Dynamic(const Array_Dynamic& other)
   m_data = reinterpret_cast<Pointer>(Allocator::allocate(sizeof(T) * m_size));
 
   Algorithms::copyc(other.begin(), other.end(), begin(), [](auto src, auto dst) -> void {
-    Memory_Utils::constructAt(&(*dst), *src);
+    Utility::constructAt(&(*dst), *src);
   });
 }
 
@@ -78,7 +78,7 @@ Array_Dynamic<T, Allocator>& Array_Dynamic<T, Allocator>::operator=(const Array_
   m_data = reinterpret_cast<Pointer>(Allocator::allocate(sizeof(T) * m_size));
 
   Algorithms::copyc(other.begin(), other.end(), begin(), [](auto src, auto dst) -> void {
-    Memory_Utils::constructAt(&(*dst), *src);
+    Utility::constructAt(&(*dst), *src);
   });
 
   return *this;
