@@ -7,7 +7,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\crude_test\core\core_math_vectors.cpp">
+    <ClCompile Include="..\..\crude_test\core\core_math.cpp">
       <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>

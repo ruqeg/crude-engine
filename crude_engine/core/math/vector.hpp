@@ -7,10 +7,34 @@
 namespace crude_engine
 {
 
-class Vector
+struct __vector4
+{
+  union
+  {
+    float32   vector4_f32[4];
+    uint32    vector4_u32[4];
+  };
+
+  __vector4() = default;
+  __vector4(const __vector4& other) noexcept;
+  __vector4& operator=(const __vector4& other) noexcept;
+  __vector4(__vector4&& other) noexcept;
+  __vector4& operator=(__vector4&& other) noexcept;
+};
+
+#ifdef _CRUDE_NO_INTRINSICS_
+using Vector = __vector4;
+#else
+// !TODO
+#endif
+
+class SysVector
 {
 public:
   using CVector = const Vector&;
+
+public:
+  SysVector() = delete;
 
 public:
   static Vector setInt(uint32 x, uint32 y, uint32 z, uint32 w) noexcept;
@@ -146,13 +170,6 @@ public:
   static Vector cos4(CVector v1, CVector v2) noexcept;
   static Vector project4(CVector v1, CVector v2) noexcept;
   static Vector reject4(CVector v1, CVector v2) noexcept;
-
-protected:
-  union
-  {
-    float32  vector4_f32[4];
-    uint32   vector4_u32[4];
-  };
 };
 
 }
