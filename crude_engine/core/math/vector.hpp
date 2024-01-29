@@ -1,11 +1,12 @@
+// Thanks to DirectXMath
+
 #pragma once
 
+#include <xmmintrin.h>
+#include <emmintrin.h>
 #include <core/alias.hpp>
 #include <core/math/scalar.hpp>
 #include <core/math/constants.hpp>
-
-// !TODO
-#define _CRUDE_NO_INTRINSICS
 
 namespace crude_engine
 {
@@ -19,10 +20,15 @@ struct __vector4
   };
 };
 
-#ifdef _CRUDE_NO_INTRINSICS
-using Vector = __vector4;
+// !TODO complete _CRUDE_SSE_INTRINSICS (in the next life) or just switch to DirectXMath
+#if defined(_CRUDE_SSE_INTRINSICS) && !defined(_CRUDE_NO_INTRINSICS)
+#error "!TODO"
+using Vector = __m128;
+#elif defined(_CRUDE_ARM_NEON_INTRINSICS) && !defined(_CRUDE_NO_INTRINSICS)
+#error "!TODO"
+using Vector = float32x4_t;
 #else
-// !TODO
+using Vector = __vector4;
 #endif
 
 class SysVector

@@ -1,5 +1,12 @@
 #include <core/math/vector.hpp>
 
+
+#if defined(_CRUDE_AVX_INTRINSICS) && defined(_CRUDE_FAVOR_INTEL)
+#define CRUDE_PERMUTE_PS( v, c ) _mm_permute_ps((v), c )
+#else
+#define CRUDE_PERMUTE_PS( v, c ) _mm_shuffle_ps((v), (v), c )
+#endif
+
 namespace crude_engine
 {
 
@@ -43,42 +50,71 @@ Vector SysVector::zero() noexcept
 
 Vector SysVector::set(float32 x, float32 y, float32 z, float32 w) noexcept
 {
+#if defined(_CRUDE_NO_INTRINSICS)
   VectorF32 vResult = { { { x, y, z, w } } };
   return vResult.v;
+#elif defined(_CRUDE_SSE_INTRINSICS)
+  return _mm_setzero_ps();
+#endif
 }
 
 Vector SysVector::setInt(uint32 x, uint32 y, uint32 z, uint32 w) noexcept
 {
+#if defined(_CRUDE_NO_INTRINSICS)
   VectorU32 vResult = { { { x, y, z, w } } };
   return vResult;
+#elif defined(_CRUDE_SSE_INTRINSICS)
+  __m128i v = _mm_set_epi32(static_cast<int32>(w), static_cast<int32>(z), static_cast<int32>(y), static_cast<int32>(x));
+  return _mm_castsi128_ps(v);
+#endif
 }
 
 Vector SysVector::fill(float32 value) noexcept
 {
+#if defined(_CRUDE_NO_INTRINSICS)
   VectorF32 vResult = { { { value, value, value, value } } };
   return vResult.v;
+#elif defined(_CRUDE_SSE_INTRINSICS)
+  return _mm_set_ps1(value);
+#endif
+
 }
 
 Vector SysVector::fillInt(uint32 value) noexcept
 {
+#if defined(_CRUDE_NO_INTRINSICS)
   VectorU32 vResult = { { { value, value, value, value } } };
   return vResult.v;
+#elif defined(_CRUDE_SSE_INTRINSICS)
+  __m128i v = _mm_set1_epi32(static_cast<int32>(value));
+  return _mm_castsi128_ps(v);
+#endif
 }
 
 Vector SysVector::trueInt() noexcept
 {
+#if defined(_CRUDE_NO_INTRINSICS)
   VectorU32 vResult = { { { 0xFFFFFFFFU, 0xFFFFFFFFU, 0xFFFFFFFFU, 0xFFFFFFFFU } } };
   return vResult.v;
+#elif defined(_CRUDE_SSE_INTRINSICS)
+  __m128i v = _mm_set1_epi32(-1);
+  return _mm_castsi128_ps(v);
+#endif
 }
 
 Vector SysVector::falseInt() noexcept
 {
+#if defined(_CRUDE_NO_INTRINSICS)
   VectorU32 vResult = { { { 0x00000000U, 0x00000000U, 0x00000000U, 0x00000000U } } };
   return vResult.v;
+#elif defined(_CRUDE_SSE_INTRINSICS)
+  return _mm_set_ps1(0);
+#endif
 }
 
 Vector SysVector::splatX(CVector v) noexcept
 {
+#if defined(_CRUDE_NO_INTRINSICS)
   Vector vResult;
   vResult.vector4_f32[0]
     = vResult.vector4_f32[1]
@@ -86,6 +122,9 @@ Vector SysVector::splatX(CVector v) noexcept
     = vResult.vector4_f32[3]
     = v.vector4_f32[0];
   return vResult;
+#elif defined(_CRUDE_SSE_INTRINSICS)
+  return CRUDE_PERMUTE_PS(v, _MM_SHUFFLE(0, 0, 0, 0));
+#endif
 }
 
 Vector SysVector::splatY(CVector v) noexcept
