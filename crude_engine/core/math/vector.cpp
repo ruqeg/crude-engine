@@ -1,5 +1,3 @@
-#pragma once
-
 #include <core/math/vector.hpp>
 
 namespace crude_engine
@@ -928,8 +926,8 @@ Vector Vector::dot2(CVector v1, CVector v2, CVector e1, CVector e2, Vector* cov)
 
 Vector Vector::dot2(CVector v1, CVector v2) noexcept
 {
-  float32 fDot = v1.vector4_f32[0] * v2.vector4_f32[0] + 
-                 v1.vector4_f32[1] * v2.vector4_f32[1];
+  float32 fDot = v1.vector4_f32[0] * v2.vector4_f32[0] +
+    v1.vector4_f32[1] * v2.vector4_f32[1];
 
   Vector vResult = Vector::fill(fDot);
   return vResult;
@@ -955,7 +953,7 @@ Vector Vector::normalize2(CVector v) noexcept
   Vector vLength = Vector::lengthSq2(v);
   float32 fLength = vLength.vector4_f32[0];
   float32 fInvLength;
-    
+
   if (fLength > 0.0f)
   {
     fInvLength = 1.0f / fLength;
@@ -1017,8 +1015,8 @@ Vector Vector::dot3(CVector v1, CVector v2, CVector e1, CVector e2, CVector e3, 
 Vector Vector::dot3(CVector v1, CVector v2) noexcept
 {
   float32 fDot = v1.vector4_f32[0] * v2.vector4_f32[0] +
-                 v1.vector4_f32[1] * v2.vector4_f32[1] +
-                 v1.vector4_f32[2] * v2.vector4_f32[2];
+    v1.vector4_f32[1] * v2.vector4_f32[1] +
+    v1.vector4_f32[2] * v2.vector4_f32[2];
 
   Vector vResult = Vector::fill(fDot);
   return vResult;
@@ -1059,7 +1057,7 @@ Vector Vector::normalize3(CVector v) noexcept
   vResult.vector4_f32[1] = v.vector4_f32[1] * fInvLength;
   vResult.vector4_f32[2] = v.vector4_f32[2] * fInvLength;
   vResult.vector4_f32[3] = v.vector4_f32[3];
-  
+
   return vResult;
 }
 
@@ -1105,9 +1103,9 @@ Vector Vector::dot4(CVector v1, CVector v2, CVector e1, CVector e2, CVector e3, 
 Vector Vector::dot4(CVector v1, CVector v2) noexcept
 {
   float32 fDot = v1.vector4_f32[0] * v2.vector4_f32[0] +
-                 v1.vector4_f32[1] * v2.vector4_f32[1] +
-                 v1.vector4_f32[2] * v2.vector4_f32[2] +
-                 v1.vector4_f32[3] * v2.vector4_f32[3];
+    v1.vector4_f32[1] * v2.vector4_f32[1] +
+    v1.vector4_f32[2] * v2.vector4_f32[2] +
+    v1.vector4_f32[3] * v2.vector4_f32[3];
 
   Vector vResult = Vector::fill(fDot);
   return vResult;
@@ -1115,7 +1113,7 @@ Vector Vector::dot4(CVector v1, CVector v2) noexcept
 
 Vector Vector::length4(CVector v) noexcept
 {
-  Vector vOrthoDotResult = Vector::dot3(v, v);
+  Vector vOrthoDotResult = Vector::dot4(v, v);
   float32 fOrthoDotResult = vOrthoDotResult.vector4_f32[0];
   float32 fOrthoNormLength = Scalar::sqrt(fOrthoDotResult);
   Vector vResult = Vector::fill(fOrthoNormLength);
@@ -1133,7 +1131,7 @@ Vector Vector::normalize4(CVector v) noexcept
   Vector vLength = Vector::lengthSq4(v);
   float32 fLength = vLength.vector4_f32[0];
   float32 fInvLength;
-  
+
   if (fLength > 0)
   {
     fInvLength = 1.0f / fLength;
@@ -1216,7 +1214,7 @@ Vector Vector::project4(CVector v1, CVector v2) noexcept
 {
   float32 x = Vector::getX(Vector::dot4(v1, v2));
   float32 y = Vector::getX(Vector::lengthSq4(v2));
-  Vector vResult = Vector::Scale(v2, x / y);
+  Vector vResult = Vector::scale(v2, x / y);
   return vResult;
 }
 

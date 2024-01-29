@@ -147,6 +147,7 @@
     <ClCompile Include="..\..\crude_engine\core\debug\logger.cpp" />
     <ClCompile Include="..\..\crude_engine\core\filesystem.cpp" />
     <ClCompile Include="..\..\crude_engine\core\math\scalar.cpp" />
+    <ClCompile Include="..\..\crude_engine\core\math\vector.cpp" />
     <ClCompile Include="..\..\crude_engine\core\memory\cxx_allocator.cpp" />
     <ClCompile Include="..\..\crude_engine\core\memory\free_rbt_allocator.cpp" />
     <ClCompile Include="..\..\crude_engine\core\memory\linear_allocator.cpp" />
@@ -299,7 +300,6 @@
     <None Include="..\..\crude_engine\core\data_structures\tree_iterator_base.inl" />
     <None Include="..\..\crude_engine\core\debug\logger.inl" />
     <None Include="..\..\crude_engine\core\math\matrix.inl" />
-    <None Include="..\..\crude_engine\core\math\vector.cpp" />
     <None Include="..\..\crude_engine\core\memory\cxx_allocator.inl" />
     <None Include="..\..\crude_engine\core\memory\free_rbt_allocator.inl" />
     <None Include="..\..\crude_engine\core\memory\memory_system.inl" />

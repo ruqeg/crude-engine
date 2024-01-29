@@ -199,6 +199,9 @@
     <ClCompile Include="..\..\crude_engine\core\math\scalar.cpp">
       <Filter>source\core\math</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\crude_engine\core\math\vector.cpp">
+      <Filter>source\core\math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\crude_engine\core\memory\linear_allocator.hpp">
@@ -435,13 +438,13 @@
     <ClInclude Include="..\..\crude_engine\core\math\matrix.hpp">
       <Filter>source\core\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\crude_engine\core\math\vector.hpp">
-      <Filter>source\core\math</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\crude_engine\core\math\scalar.hpp">
       <Filter>source\core\math</Filter>
     </ClInclude>
     <ClInclude Include="..\..\crude_engine\core\math\constants.hpp">
+      <Filter>source\core\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\crude_engine\core\math\vector.hpp">
       <Filter>source\core\math</Filter>
     </ClInclude>
   </ItemGroup>
@@ -505,9 +508,6 @@
       <Filter>source\core\memory</Filter>
     </None>
     <None Include="..\..\crude_engine\core\math\matrix.inl">
-      <Filter>source\core\math</Filter>
-    </None>
-    <None Include="..\..\crude_engine\core\math\vector.cpp">
       <Filter>source\core\math</Filter>
     </None>
   </ItemGroup>

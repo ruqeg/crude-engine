@@ -13,13 +13,34 @@ public:
   using CVector = const Vector&;
 
 public:
-  static Vector zero() noexcept;
-  static Vector set(float32 x, float32 y, float32 z, float32 w) noexcept;
   static Vector setInt(uint32 x, uint32 y, uint32 z, uint32 w) noexcept;
-  static Vector fill(float32 value) noexcept;
   static Vector fillInt(uint32 value) noexcept;
   static Vector trueInt() noexcept;
   static Vector falseInt() noexcept;
+
+  static uint32 getIntX(CVector v) noexcept;
+  static uint32 getIntY(CVector v) noexcept;
+  static uint32 getIntZ(CVector v) noexcept;
+  static uint32 getIntW(CVector v) noexcept;
+
+  static Vector setIntX(CVector v, uint32 x) noexcept;
+  static Vector setIntY(CVector v, uint32 y) noexcept;
+  static Vector setIntZ(CVector v, uint32 z) noexcept;
+  static Vector setIntW(CVector v, uint32 w) noexcept;
+
+  static Vector equalInt(CVector v1, CVector v2) noexcept;
+  static Vector notEqualInt(CVector v1, CVector v2) noexcept;
+
+  static Vector andInt(CVector v1, CVector v2) noexcept;
+  static Vector orInt(CVector v1, CVector v2) noexcept;
+  static Vector norInt(CVector v1, CVector v2) noexcept;
+  static Vector xorInt(CVector v1, CVector v2) noexcept;
+
+  static Vector select(CVector v1, CVector v2, CVector control) noexcept;
+
+  static Vector zero() noexcept;
+  static Vector set(float32 x, float32 y, float32 z, float32 w) noexcept;
+  static Vector fill(float32 value) noexcept;
   static Vector splatX(CVector v) noexcept;
   static Vector splatY(CVector v) noexcept;
   static Vector splatZ(CVector v) noexcept;
@@ -34,26 +55,14 @@ public:
   static float32 getZ(CVector v) noexcept;
   static float32 getW(CVector v) noexcept;
 
-  static uint32 getIntX(CVector v) noexcept;
-  static uint32 getIntY(CVector v) noexcept;
-  static uint32 getIntZ(CVector v) noexcept;
-  static uint32 getIntW(CVector v) noexcept;
-
   static Vector setX(CVector v, float32 x) noexcept;
   static Vector setY(CVector v, float32 y) noexcept;
   static Vector setZ(CVector v, float32 z) noexcept;
   static Vector setW(CVector v, float32 w) noexcept;
 
-  static Vector setIntX(CVector v, uint32 x) noexcept;
-  static Vector setIntY(CVector v, uint32 y) noexcept;
-  static Vector setIntZ(CVector v, uint32 z) noexcept;
-  static Vector setIntW(CVector v, uint32 w) noexcept;
-
   static Vector equal(CVector v1, CVector v2) noexcept;
-  static Vector equalInt(CVector v1, CVector v2) noexcept;
   static Vector nearEqual(CVector v1, CVector v2, CVector vepsilon) noexcept;
   static Vector notEqual(CVector v1, CVector v2) noexcept;
-  static Vector notEqualInt(CVector v1, CVector v2) noexcept;
   static Vector greater(CVector v1, CVector v2) noexcept;
   static Vector greaterOrEqual(CVector v1, CVector v2) noexcept;
   static Vector less(CVector v1, CVector v2) noexcept;
@@ -70,13 +79,6 @@ public:
   static Vector ceil(CVector v) noexcept;
   static Vector trunc(CVector v) noexcept;
   static Vector clamp(CVector v, CVector vmin, CVector vmax) noexcept;
-
-  static Vector andInt(CVector v1, CVector v2) noexcept;
-  static Vector orInt(CVector v1, CVector v2) noexcept;
-  static Vector norInt(CVector v1, CVector v2) noexcept;
-  static Vector xorInt(CVector v1, CVector v2) noexcept;
-
-  static Vector select(CVector v1, CVector v2, CVector control) noexcept;
 
   static Vector negate(CVector v) noexcept;
   static Vector add(CVector v1, CVector v2) noexcept;
@@ -145,7 +147,7 @@ public:
   static Vector project4(CVector v1, CVector v2) noexcept;
   static Vector reject4(CVector v1, CVector v2) noexcept;
 
-private:
+protected:
   union
   {
     float32  vector4_f32[4];
