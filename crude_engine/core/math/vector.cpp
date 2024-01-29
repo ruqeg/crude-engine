@@ -3,7 +3,7 @@
 namespace crude_engine
 {
 
-struct VectorF32
+CRUDE_ALIGNED_STRUCT(16) VectorF32
 {
   union
   {
@@ -14,7 +14,7 @@ struct VectorF32
   operator Vector() const noexcept;
 };
 
-struct VectorU32
+CRUDE_ALIGNED_STRUCT(16) VectorU32
 {
   union
   {
@@ -1270,32 +1270,6 @@ Vector SysVector::cross3(CVector v1, CVector v2) noexcept
     vResult.vector4_f32[3] = 0.0f;
   }
   return vResult;
-}
-
-__vector4::__vector4(const __vector4& other) noexcept
-  :
-  vector4_u32{ other.vector4_u32[0], vector4_u32 [1], vector4_u32 [2], vector4_u32 [3]}
-{}
-
-__vector4& __vector4::operator=(const __vector4& other) noexcept
-{
-  vector4_u32[0] = other.vector4_u32[0];
-  vector4_u32[1] = other.vector4_u32[1];
-  vector4_u32[2] = other.vector4_u32[2];
-  vector4_u32[3] = other.vector4_u32[3];
-}
-
-__vector4::__vector4(__vector4&& other) noexcept
-  :
-  vector4_u32{ other.vector4_u32[0], vector4_u32[1], vector4_u32[2], vector4_u32[3] }
-{}
-
-__vector4& __vector4::operator=(__vector4&& other) noexcept
-{
-  vector4_u32[0] = other.vector4_u32[0];
-  vector4_u32[1] = other.vector4_u32[1];
-  vector4_u32[2] = other.vector4_u32[2];
-  vector4_u32[3] = other.vector4_u32[3];
 }
 
 }

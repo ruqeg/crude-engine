@@ -4,6 +4,9 @@
 #include <core/math/scalar.hpp>
 #include <core/math/constants.hpp>
 
+// !TODO
+#define _CRUDE_NO_INTRINSICS
+
 namespace crude_engine
 {
 
@@ -14,15 +17,9 @@ struct __vector4
     float32   vector4_f32[4];
     uint32    vector4_u32[4];
   };
-
-  __vector4() = default;
-  __vector4(const __vector4& other) noexcept;
-  __vector4& operator=(const __vector4& other) noexcept;
-  __vector4(__vector4&& other) noexcept;
-  __vector4& operator=(__vector4&& other) noexcept;
 };
 
-#ifdef _CRUDE_NO_INTRINSICS_
+#ifdef _CRUDE_NO_INTRINSICS
 using Vector = __vector4;
 #else
 // !TODO

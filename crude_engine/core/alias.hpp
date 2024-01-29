@@ -37,4 +37,6 @@ using nullptr_t = decltype(nullptr);
 
 #define __FILENAME__ __FILE__
 
+#define CRUDE_ALIGNED_STRUCT(a) struct alignas(a)
+
 }

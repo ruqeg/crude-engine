@@ -444,10 +444,10 @@
     <ClInclude Include="..\..\crude_engine\core\math\constants.hpp">
       <Filter>source\core\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\crude_engine\core\math\vector.hpp">
+    <ClInclude Include="..\..\crude_engine\core\math\fuicont.hpp">
       <Filter>source\core\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\crude_engine\core\math\fuicont.hpp">
+    <ClInclude Include="..\..\crude_engine\core\math\vector.hpp">
       <Filter>source\core\math</Filter>
     </ClInclude>
   </ItemGroup>

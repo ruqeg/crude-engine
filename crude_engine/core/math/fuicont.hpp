@@ -27,7 +27,7 @@ struct MFLOAT1
   auto operator<=>(const MFLOAT1&) const = default;
 };
 
-struct alignas(16) MFLOAT1A : public MFLOAT1
+CRUDE_ALIGNED_STRUCT(16) MFLOAT1A : public MFLOAT1
 {
   using MFLOAT1::MFLOAT1;
 };
@@ -53,7 +53,7 @@ struct MFLOAT2
   auto operator<=>(const MFLOAT2&) const = default;
 };
 
-struct alignas(16) MFLOAT2A : public MFLOAT2
+CRUDE_ALIGNED_STRUCT(16) MFLOAT2A : public MFLOAT2
 {
   using MFLOAT2::MFLOAT2;
 };
@@ -80,7 +80,7 @@ struct MFLOAT3
   auto operator<=>(const MFLOAT3&) const = default;
 };
 
-struct alignas(16) MFLOAT3A : public MFLOAT3
+CRUDE_ALIGNED_STRUCT(16) MFLOAT3A : public MFLOAT3
 {
   using MFLOAT3::MFLOAT3;
 };
@@ -108,7 +108,7 @@ struct MFLOAT4
   auto operator<=>(const MFLOAT4&) const = default;
 };
 
-struct alignas(16) MFLOAT4A : public MFLOAT4
+CRUDE_ALIGNED_STRUCT(16) MFLOAT4A : public MFLOAT4
 {
   using MFLOAT4::MFLOAT4;
 };
@@ -133,7 +133,7 @@ struct MINT1
   auto operator<=>(const MINT1&) const = default;
 };
 
-struct alignas(16) MINT1A : public MINT1
+CRUDE_ALIGNED_STRUCT(16) MINT1A : public MINT1
 {
   using MINT1::MINT1;
 };
@@ -159,7 +159,7 @@ struct MINT2
   auto operator<=>(const MINT2&) const = default;
 };
 
-struct alignas(16) MINT2A : public MINT2
+CRUDE_ALIGNED_STRUCT(16) MINT2A : public MINT2
 {
   using MINT2::MINT2;
 };
@@ -186,7 +186,7 @@ struct MINT3
   auto operator<=>(const MINT3&) const = default;
 };
 
-struct alignas(16) MINT3A : public MINT3
+CRUDE_ALIGNED_STRUCT(16) MINT3A : public MINT3
 {
   using MINT3::MINT3;
 };
@@ -214,7 +214,7 @@ struct MINT4
   auto operator<=>(const MINT4&) const = default;
 };
 
-struct alignas(16) MINT4A : public MINT4
+CRUDE_ALIGNED_STRUCT(16) MINT4A : public MINT4
 {
   using MINT4::MINT4;
 };
@@ -239,7 +239,7 @@ struct MUINT1
   auto operator<=>(const MUINT1&) const = default;
 };
 
-struct alignas(16) MUINT1A : public MUINT1
+CRUDE_ALIGNED_STRUCT(16) MUINT1A : public MUINT1
 {
   using MUINT1::MUINT1;
 };
@@ -265,7 +265,7 @@ struct MUINT2
   auto operator<=>(const MUINT2&) const = default;
 };
 
-struct alignas(16) MUINT2A : public MUINT2
+CRUDE_ALIGNED_STRUCT(16) MUINT2A : public MUINT2
 {
   using MUINT2::MUINT2;
 };
@@ -292,7 +292,7 @@ struct MUINT3
   auto operator<=>(const MUINT3&) const = default;
 };
 
-struct alignas(16) MUINT3A : public MUINT3
+CRUDE_ALIGNED_STRUCT(16) MUINT3A : public MUINT3
 {
   using MUINT3::MUINT3;
 };
@@ -320,7 +320,7 @@ struct MUINT4
   auto operator<=>(const MUINT4&) const = default;
 };
 
-struct alignas(16) MUINT4A : public MUINT4
+CRUDE_ALIGNED_STRUCT(16) MUINT4A : public MUINT4
 {
   using MUINT4::MUINT4;
 };
