@@ -1,5 +1,3 @@
-// Thanks to DirectXMath
-
 #pragma once
 
 #include <xmmintrin.h>
@@ -20,7 +18,7 @@ struct __vector4
   };
 };
 
-// !TODO complete _CRUDE_SSE_INTRINSICS (in the next life) or just switch to DirectXMath
+// !TODO complete SIMD (in the next life) or just switch to DirectXMath
 #if defined(_CRUDE_SSE_INTRINSICS) && !defined(_CRUDE_NO_INTRINSICS)
 #error "!TODO"
 using Vector = __m128;

@@ -308,7 +308,7 @@
     <None Include="..\..\crude_engine\core\data_structures\string.inl" />
     <None Include="..\..\crude_engine\core\data_structures\tree_iterator_base.inl" />
     <None Include="..\..\crude_engine\core\debug\logger.inl" />
-    <None Include="..\..\crude_engine\core\math\matrix.inl" />
+    <None Include="..\..\crude_engine\core\math\matrix.cpp" />
     <None Include="..\..\crude_engine\core\memory\cxx_allocator.inl" />
     <None Include="..\..\crude_engine\core\memory\free_rbt_allocator.inl" />
     <None Include="..\..\crude_engine\core\memory\memory_system.inl" />
