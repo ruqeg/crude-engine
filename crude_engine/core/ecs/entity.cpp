@@ -26,4 +26,9 @@ Entity::ID Entity::id() const
   return m_id;
 }
 
+void Entity::destruct()
+{
+  m_world->remove(m_id);
+}
+
 } //namespace crude_engine

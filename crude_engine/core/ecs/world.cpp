@@ -31,4 +31,9 @@ Entity::ID World::newID()
   return id;
 }
 
+void World::remove(Entity::ID id)
+{
+  m_freeIDs.push(id);
+}
+
 }

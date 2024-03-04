@@ -19,10 +19,6 @@ public:
 
   ID id() const;
 
-  bool isValid() const;
-  bool isAlive() const;
-  explicit operator bool() const;
-
   template <class Component>
   const Component& get() const;
 
