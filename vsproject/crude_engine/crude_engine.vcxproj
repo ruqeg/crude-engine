@@ -153,6 +153,8 @@
   <ItemGroup>
     <ClCompile Include="..\..\crude_engine\core\data_structures\string.cpp" />
     <ClCompile Include="..\..\crude_engine\core\debug\logger.cpp" />
+    <ClCompile Include="..\..\crude_engine\core\ecs\entity.cpp" />
+    <ClCompile Include="..\..\crude_engine\core\ecs\world.cpp" />
     <ClCompile Include="..\..\crude_engine\core\filesystem.cpp" />
     <ClCompile Include="..\..\crude_engine\core\math\scalar.cpp" />
     <ClCompile Include="..\..\crude_engine\core\math\vector.cpp" />
@@ -218,7 +220,10 @@
     <ClInclude Include="..\..\crude_engine\core\data_structures\array_unsafe.hpp" />
     <ClInclude Include="..\..\crude_engine\core\data_structures\bs_tree.hpp" />
     <ClInclude Include="..\..\crude_engine\core\data_structures\compare.hpp" />
+    <ClInclude Include="..\..\crude_engine\core\data_structures\hash_table.hpp" />
     <ClInclude Include="..\..\crude_engine\core\data_structures\iterator_base.hpp" />
+    <ClInclude Include="..\..\crude_engine\core\data_structures\list.hpp" />
+    <ClInclude Include="..\..\crude_engine\core\data_structures\list_iterator_base.hpp" />
     <ClInclude Include="..\..\crude_engine\core\data_structures\optional.hpp" />
     <ClInclude Include="..\..\crude_engine\core\data_structures\rb_tree.hpp" />
     <ClInclude Include="..\..\crude_engine\core\data_structures\shared_ptr.hpp" />
@@ -229,6 +234,8 @@
     <ClInclude Include="..\..\crude_engine\core\debug\assert.hpp" />
     <ClInclude Include="..\..\crude_engine\core\debug\debug.hpp" />
     <ClInclude Include="..\..\crude_engine\core\debug\logger.hpp" />
+    <ClInclude Include="..\..\crude_engine\core\ecs\entity.hpp" />
+    <ClInclude Include="..\..\crude_engine\core\ecs\world.hpp" />
     <ClInclude Include="..\..\crude_engine\core\filesystem.hpp" />
     <ClInclude Include="..\..\crude_engine\core\math\constants.hpp" />
     <ClInclude Include="..\..\crude_engine\core\math\matrix.hpp" />
@@ -301,6 +308,8 @@
     <None Include="..\..\crude_engine\core\data_structures\array_unsafe.inl" />
     <None Include="..\..\crude_engine\core\data_structures\bs_tree.inl" />
     <None Include="..\..\crude_engine\core\data_structures\iterator_base.inl" />
+    <None Include="..\..\crude_engine\core\data_structures\list.inl" />
+    <None Include="..\..\crude_engine\core\data_structures\list_iterator_base.inl" />
     <None Include="..\..\crude_engine\core\data_structures\optional.inl" />
     <None Include="..\..\crude_engine\core\data_structures\rb_tree.inl" />
     <None Include="..\..\crude_engine\core\data_structures\shared_ptr.inl" />
@@ -308,6 +317,7 @@
     <None Include="..\..\crude_engine\core\data_structures\string.inl" />
     <None Include="..\..\crude_engine\core\data_structures\tree_iterator_base.inl" />
     <None Include="..\..\crude_engine\core\debug\logger.inl" />
+    <None Include="..\..\crude_engine\core\ecs\entity.inl" />
     <None Include="..\..\crude_engine\core\math\matrix.cpp" />
     <None Include="..\..\crude_engine\core\memory\cxx_allocator.inl" />
     <None Include="..\..\crude_engine\core\memory\free_rbt_allocator.inl" />
@@ -315,7 +325,6 @@
     <None Include="..\..\crude_engine\core\memory\pool_allocator.inl" />
     <None Include="..\..\crude_engine\core\utility.inl" />
     <None Include="..\..\crude_engine\graphics\vulkan\object.inl" />
-    <None Include="cpp.hint" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

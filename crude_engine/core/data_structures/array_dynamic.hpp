@@ -8,6 +8,7 @@
 namespace crude_engine
 {
 
+// !TODO idk make capacity... in the future?
 template<class T, class Allocator = Memory_System::Default_Allocator>
 class Array_Dynamic
 {

@@ -38,7 +38,12 @@
 #include "../crude_engine/graphics/vulkan/write_descriptor_set.hpp"
 #include "../crude_engine/graphics/vulkan/fence.hpp"
 #include "../crude_engine/graphics/vulkan/semaphore.hpp"
+
 #include <core/filesystem.hpp>
+
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
 
 #include <algorithm>
 #include <set>
@@ -48,6 +53,7 @@
 #include <stdexcept>
 #include <limits>
 
+#ifdef ABB
 class Test_Application
 {
 public:
@@ -1069,4 +1075,111 @@ int APIENTRY wWinMain(
 
   return EXIT_SUCCESS;
 }
+#endif
+
+#else
+
+#include <vector>
+#include <unordered_map>
+#include <unordered_set>
+
+using Component_ID  = crude_engine::uint64;
+using Entity_ID     = crude_engine::uint64;
+using Archetype_ID  = crude_engine::uint64;
+using ID = crude_engine::uint64;
+
+struct Column
+{
+  void*                 elements;      // buffer with component data
+  crude_engine::uint64  element_size; // size of a single element
+  crude_engine::uint64  count;        // number of elements
+};
+
+struct Archetype;
+
+struct Archetype_Edge
+{
+  Archetype& m_add;
+  Archetype& m_remove;
+};
+
+struct Archetype
+{
+  std::vector<Component_ID>                          m_type;
+  Archetype_ID                                       m_id;
+  std::vector<Column>                                m_components; // one vector for each component
+  std::unordered_map<Component_ID, Archetype_Edge&>  m_edges;
+};
+
+struct Archetype_Record
+{
+  crude_engine::uint64 m_column;
+};
+
+using Archetype_Map = std::unordered_map<Archetype_ID, Archetype_Record>;
+std::unordered_map<Component_ID, Archetype_Map> component_index;
+
+struct Record
+{
+  Archetype&            m_archetype;
+  crude_engine::uint64  m_row;
+};
+
+std::unordered_map<Entity_ID, Record> entity_index;
+
+//bool has_component(EntityID entity, ComponentID component) {
+//  Record& record = entity_index[entity];
+//  Archetype& archetype = record.archetype;
+//  ArchetypeMap& archetype_set = component_index[component];
+//  return archetype_set.count(archetype.id) != 0;
+//}
+//
+//void* get_component(EntityID entity, ComponentID component) {
+//  Record& record = entity_index[entity];
+//  Archetype& archetype = record.archetype;
+//  ArchetypeMap archetypes = component_index[component];
+//  if (archetypes.count(archetype.id) == 0) {
+//    return nullptr;
+//  }
+//  ArchetypeRecord& a_record = archetypes[archetype.id];
+//  Column& c = archetype.components[a_record.column];
+//  return (std::byte*)c.elements + (c.element_size * record.row);
+//}
+
+#include <core/ecs/world.hpp>
+#include <core/ecs/entity.hpp>
+
+//void add_component(Entity_ID entity, Component_ID component) {
+//  Record& record = entity_index[entity];
+//  Archetype& archetype = record.m_archetype;
+//  Archetype& next_archetype = archetype.m_edges[component].m_add;
+//  move_entity(archetype, record.m_row, next_archetype);
+//}
+//
+//
+//void remove_component(EntityID entity, ComponentID component) {
+//  Record& record = entity_index[entity];
+//  Archetype& archetype = record.archetype;
+//  Archetype& next_archetype = archetype.edges[component].remove;
+//  move_entity(archetype, record.row, next_archetype);
+//}
+
+
+int APIENTRY wWinMain(
+  _In_ HINSTANCE hInstance,
+  _In_opt_ HINSTANCE hPrevInstance,
+  _In_ LPWSTR lpCmdLine,
+  _In_ int nCmdShow)
+{
+  // init console
+  AllocConsole();
+  FILE* dummy;
+  auto s = freopen_s(&dummy, "CONOUT$", "w", stdout);
+
+  crude_engine::World ecs;
+  crude_engine::Entity entity = ecs.entity();
+
+  return EXIT_SUCCESS;
+}
+
 #endif

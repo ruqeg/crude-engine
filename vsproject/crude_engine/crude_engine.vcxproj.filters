@@ -26,6 +26,9 @@
     <Filter Include="source\core\math">
       <UniqueIdentifier>{05918559-44f8-4ebe-978a-83ba487522f7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="source\core\ecs">
+      <UniqueIdentifier>{d79bfde6-60fe-4a37-bb51-d05c1dbde484}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\crude_engine\core\memory\linear_allocator.cpp">
@@ -201,6 +204,12 @@
     </ClCompile>
     <ClCompile Include="..\..\crude_engine\core\math\vector.cpp">
       <Filter>source\core\math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\core\ecs\entity.cpp">
+      <Filter>source\core\ecs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\core\ecs\world.cpp">
+      <Filter>source\core\ecs</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -450,6 +459,21 @@
     <ClInclude Include="..\..\crude_engine\core\math\vector.hpp">
       <Filter>source\core\math</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\crude_engine\core\data_structures\hash_table.hpp">
+      <Filter>source\core\data_structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\crude_engine\core\data_structures\list.hpp">
+      <Filter>source\core\data_structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\crude_engine\core\data_structures\list_iterator_base.hpp">
+      <Filter>source\core\data_structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\crude_engine\core\ecs\entity.hpp">
+      <Filter>source\core\ecs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\crude_engine\core\ecs\world.hpp">
+      <Filter>source\core\ecs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\crude_engine\graphics\vulkan\object.inl">
@@ -494,7 +518,6 @@
     <None Include="..\..\crude_engine\core\memory\pool_allocator.inl">
       <Filter>source\core\memory</Filter>
     </None>
-    <None Include="cpp.hint" />
     <None Include="..\..\crude_engine\core\data_structures\array_unsafe.inl">
       <Filter>source\core\data_structures</Filter>
     </None>
@@ -512,6 +535,15 @@
     </None>
     <None Include="..\..\crude_engine\core\math\matrix.cpp">
       <Filter>source\core\math</Filter>
+    </None>
+    <None Include="..\..\crude_engine\core\data_structures\list.inl">
+      <Filter>source\core\data_structures</Filter>
+    </None>
+    <None Include="..\..\crude_engine\core\data_structures\list_iterator_base.inl">
+      <Filter>source\core\data_structures</Filter>
+    </None>
+    <None Include="..\..\crude_engine\core\ecs\entity.inl">
+      <Filter>source\core\ecs</Filter>
     </None>
   </ItemGroup>
 </Project>
