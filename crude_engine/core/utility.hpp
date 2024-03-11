@@ -65,6 +65,16 @@ struct Aligned_Storage
 template< std::size_t Len, std::size_t Align>
 using Aligned_Storage_T = typename Aligned_Storage<Len, Align>::Type;
 
+// generate unique id for class
+template<typename T> 
+struct CPP_Type
+{
+  static std::size_t id()
+  {
+    return reinterpret_cast<std::size_t>(&CPP_Type<T>::id);
+  }
+};
+
 class Utility
 {
 public:

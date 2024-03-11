@@ -1,29 +1,29 @@
 #pragma once
 
-#include <core/alias.hpp>
+#include <core/utility.hpp>
+#include <core/ecs/world.hpp>
 
 namespace crude_engine
 {
 
-class World;
-
 class Entity
 {
 public:
-  using ID = uint64;
-
-public:
   Entity();
   explicit Entity(World* world);
-  explicit Entity(const World* world, ID id);
+  explicit Entity(const World* world, Entity_ID id);
 
-  ID id() const;
+  Entity_ID id() const;
 
   template <class Component>
   const Component& get() const;
 
   template <class Component>
-  void add() const;
+  Entity& add();
+
+  template <class Component>
+  bool hasComponent() const;
+
 
   template <class Component>
   void remove() const;
@@ -32,10 +32,12 @@ public:
   void destruct();
 
 private:
-  ID      m_id;
-  World*  m_world;
+  Entity_ID  m_id;
+  World*     m_world;
 
   friend class World;
 };
 
 } //namespace crude_engine
+
+#include <core/ecs/entity.inl>

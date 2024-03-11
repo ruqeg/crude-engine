@@ -1165,6 +1165,16 @@ std::unordered_map<Entity_ID, Record> entity_index;
 //}
 
 
+struct Force
+{
+  int x;
+};
+
+struct Speed
+{
+  int x;
+};
+
 int APIENTRY wWinMain(
   _In_ HINSTANCE hInstance,
   _In_opt_ HINSTANCE hPrevInstance,
@@ -1177,7 +1187,11 @@ int APIENTRY wWinMain(
   auto s = freopen_s(&dummy, "CONOUT$", "w", stdout);
 
   crude_engine::World ecs;
-  crude_engine::Entity entity = ecs.entity();
+  crude_engine::Entity entity = ecs.entity()
+    .add<Force>();
+  
+  bool a = entity.hasComponent<Speed>();
+  std::cout << a << std::endl;
 
   return EXIT_SUCCESS;
 }

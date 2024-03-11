@@ -153,6 +153,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\crude_engine\core\data_structures\string.cpp" />
     <ClCompile Include="..\..\crude_engine\core\debug\logger.cpp" />
+    <ClCompile Include="..\..\crude_engine\core\ecs\archetype.cpp" />
     <ClCompile Include="..\..\crude_engine\core\ecs\entity.cpp" />
     <ClCompile Include="..\..\crude_engine\core\ecs\world.cpp" />
     <ClCompile Include="..\..\crude_engine\core\filesystem.cpp" />
@@ -234,6 +235,7 @@
     <ClInclude Include="..\..\crude_engine\core\debug\assert.hpp" />
     <ClInclude Include="..\..\crude_engine\core\debug\debug.hpp" />
     <ClInclude Include="..\..\crude_engine\core\debug\logger.hpp" />
+    <ClInclude Include="..\..\crude_engine\core\ecs\archetype.hpp" />
     <ClInclude Include="..\..\crude_engine\core\ecs\entity.hpp" />
     <ClInclude Include="..\..\crude_engine\core\ecs\world.hpp" />
     <ClInclude Include="..\..\crude_engine\core\filesystem.hpp" />

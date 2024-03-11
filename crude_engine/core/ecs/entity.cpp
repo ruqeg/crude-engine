@@ -1,5 +1,4 @@
 #include <core/ecs/entity.hpp>
-#include <core/ecs/world.hpp>
 
 namespace crude_engine
 {
@@ -15,13 +14,13 @@ Entity::Entity(World* world)
   m_id = world->newID();
 }
 
-Entity::Entity(const World* world, ID id)
+Entity::Entity(const World* world, Entity_ID id)
 {
   m_world = const_cast<World*>(world);
   m_id = id;
 }
 
-Entity::ID Entity::id() const
+Entity_ID Entity::id() const
 {
   return m_id;
 }

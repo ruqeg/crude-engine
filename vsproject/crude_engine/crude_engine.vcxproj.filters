@@ -211,6 +211,9 @@
     <ClCompile Include="..\..\crude_engine\core\ecs\world.cpp">
       <Filter>source\core\ecs</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\crude_engine\core\ecs\archetype.cpp">
+      <Filter>source\core\ecs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\crude_engine\core\memory\linear_allocator.hpp">
@@ -472,6 +475,9 @@
       <Filter>source\core\ecs</Filter>
     </ClInclude>
     <ClInclude Include="..\..\crude_engine\core\ecs\world.hpp">
+      <Filter>source\core\ecs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\crude_engine\core\ecs\archetype.hpp">
       <Filter>source\core\ecs</Filter>
     </ClInclude>
   </ItemGroup>
