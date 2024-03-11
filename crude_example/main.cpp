@@ -1188,7 +1188,8 @@ int APIENTRY wWinMain(
 
   crude_engine::World ecs;
   crude_engine::Entity entity = ecs.entity()
-    .add<Force>();
+    .add<Force>()
+    .add<Speed>();
   
   bool a = entity.hasComponent<Speed>();
   std::cout << a << std::endl;

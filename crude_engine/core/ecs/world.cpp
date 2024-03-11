@@ -63,7 +63,10 @@ void World::add(Entity_ID entity, Component_ID component)
       rec.row;
       m_entityToRecord[entity] = rec;
     }
-    return;
+  }
+  else
+  {
+
   }
   //Archetype& next_archetype = archetype.m_edges[component].m_add;
   //move_entity(archetype, record.m_row, next_archetype);
@@ -71,10 +74,10 @@ void World::add(Entity_ID entity, Component_ID component)
 
 bool World::hasComponent(Entity_ID entity, Component_ID component)
 {
-  Record& record = m_entityToRecord[entity];
-  Archetype& archetype = *record.pArchetype;
-  Archetype_Map& archetype_set = m_componentToArchetypeRecord[component];
-  return archetype_set.count(archetype.m_id) != 0;
+  const Record& record = m_entityToRecord[entity];
+  const Archetype* pArchetype = record.pArchetype;
+  const Archetype_Map& archetype_set = m_componentToArchetypeRecord[component];
+  return archetype_set.count(pArchetype->m_id) != 0;
 }
 
 void World::remove(Entity_ID id)
