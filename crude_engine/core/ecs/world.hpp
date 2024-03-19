@@ -2,6 +2,7 @@
 
 #include <core/ecs/archetype.hpp>
 #include <queue>
+#include <stack>
 #include <unordered_map>
 
 namespace crude_engine
@@ -35,7 +36,7 @@ public:
   Entity_ID newID();
 
   void add(Entity_ID entity, Component_ID component);
-  bool hasComponent(Entity_ID entity, Component_ID component);
+  bool hasComponent(Entity_ID entity, Component_ID component) const;
 
   void remove(Entity_ID id);
 
@@ -47,6 +48,7 @@ private:
   std::unordered_map<Entity_ID, Record>            m_entityToRecord;
   std::unordered_map<Component_ID, Archetype_Map>  m_componentToArchetypeRecord;
   std::vector<Archetype>                           m_archetypes;
+  std::queue<Archetype_ID>                         m_freeArchetypeIDs;
 };
 
 }

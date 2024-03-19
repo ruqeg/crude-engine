@@ -1175,6 +1175,11 @@ struct Speed
   int x;
 };
 
+struct Power
+{
+  int x;
+};
+
 int APIENTRY wWinMain(
   _In_ HINSTANCE hInstance,
   _In_opt_ HINSTANCE hPrevInstance,
@@ -1189,10 +1194,10 @@ int APIENTRY wWinMain(
   crude_engine::World ecs;
   crude_engine::Entity entity = ecs.entity()
     .add<Force>()
-    .add<Speed>();
+    .add<Speed>()
+    .add<Power>();
   
-  bool a = entity.hasComponent<Speed>();
-  std::cout << a << std::endl;
+  std::cout << entity.hasComponent<Force>() << " " << entity.hasComponent<Speed>() << " " << entity.hasComponent<Power>() << " " << std::endl;
 
   return EXIT_SUCCESS;
 }

@@ -32,6 +32,7 @@ public:
   Archetype_ID                                       m_id;
   std::vector<Column>                                m_components; // one vector for each component
   std::unordered_map<Component_ID, Archetype_Edge&>  m_edges;
+  size_t                                             m_componentsNum;
 };
 
 }
