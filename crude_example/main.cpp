@@ -1196,7 +1196,20 @@ int APIENTRY wWinMain(
     .add<Force>()
     .add<Speed>()
     .add<Power>();
-  
+
+  crude_engine::Entity entity2 = ecs.entity()
+    .add<Force>()
+    .add<Speed>()
+    .add<Power>();
+
+  crude_engine::Entity entity3 = ecs.entity()
+    .add<Force>()
+    .add<Speed>();
+
+  crude_engine::Entity entity4 = ecs.entity()
+    .add<Force>()
+    .add<Speed>();
+
   std::cout << entity.hasComponent<Force>() << " " << entity.hasComponent<Speed>() << " " << entity.hasComponent<Power>() << " " << std::endl;
 
   return EXIT_SUCCESS;

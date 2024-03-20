@@ -6,7 +6,7 @@ namespace crude_engine
 template <class Component>
 Entity& Entity::add()
 {
-  m_world->add(m_id, CPP_Type<Component>::id());
+  m_world->addComponent(m_id, CPP_Type<Component>::id());
   return *this;
 }
 

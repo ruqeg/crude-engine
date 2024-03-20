@@ -3,6 +3,7 @@
 #include <core/alias.hpp>
 #include <vector>
 #include <unordered_map>
+#include <set>
 
 namespace crude_engine
 {
@@ -28,7 +29,7 @@ struct Archetype_Edge
 class Archetype
 {
 public:
-  std::vector<Component_ID>                          m_type;
+  std::set<Component_ID>                             m_type;
   Archetype_ID                                       m_id;
   std::vector<Column>                                m_components; // one vector for each component
   std::unordered_map<Component_ID, Archetype_Edge&>  m_edges;

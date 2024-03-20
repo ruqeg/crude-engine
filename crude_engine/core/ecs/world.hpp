@@ -35,10 +35,15 @@ public:
   Entity entity();
   Entity_ID newID();
 
-  void add(Entity_ID entity, Component_ID component);
+  void addComponent(Entity_ID entity, Component_ID component);
   bool hasComponent(Entity_ID entity, Component_ID component) const;
 
   void remove(Entity_ID id);
+
+private:
+  void createArchetypeForComponent(Entity_ID entity, const std::set<Component_ID> type);
+  void addComponentToArchetype(Entity_ID entity, Component_ID component);
+  void addComponentToEntityArchetype(Entity_ID entity, Component_ID component);
 
 private:
   std::queue<Entity_ID>  m_freeEntityIDs;

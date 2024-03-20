@@ -33,7 +33,7 @@ Entity_ID World::newID()
   return id;
 }
 
-void World::add(Entity_ID entity, Component_ID component)
+void World::addComponent(Entity_ID entity, Component_ID component)
 {
   bool noArchetypeForEntity = m_entityToRecord.find(entity) == m_entityToRecord.end();
   if (noArchetypeForEntity)
@@ -41,97 +41,119 @@ void World::add(Entity_ID entity, Component_ID component)
     bool noArchetypeForSoloComponent = m_componentToArchetypeRecord.find(component) == m_componentToArchetypeRecord.end();
     if (noArchetypeForSoloComponent)
     {
-      Archetype newArchertpe;
-
-      newArchertpe.m_type  = { component };
-
-      if (m_freeArchetypeIDs.empty())
-      {
-        newArchertpe.m_id = m_newFreeArchetypeID++;
-      }
-      else
-      {
-        newArchertpe.m_id = m_freeArchetypeIDs.front();
-        m_freeArchetypeIDs.pop();
-      }
-      newArchertpe.m_edges.clear();
-      newArchertpe.m_components.resize(1u);
-      newArchertpe.m_componentsNum = 1u;
-      m_archetypes.push_back(newArchertpe);
-
-      Archetype_Map newArchetypeMap;
-
-      Archetype_Record newArchRec;
-      newArchRec.column = 0u;
-
-      newArchetypeMap[newArchertpe.m_id] = newArchRec;
-
-      m_componentToArchetypeRecord[component] = newArchetypeMap;
-
-      Record rec;
-      rec.pArchetype = &m_archetypes.back();
-      rec.row;
-      m_entityToRecord[entity] = rec;
+      createArchetypeForComponent(entity, { component });
+    }
+    else
+    {
+      addComponentToArchetype(entity, component);
     }
   }
   else
   {
-    Record record = m_entityToRecord[entity];
-    bool noArchetypeForAddComponent = record.pArchetype->m_edges.find(component) == record.pArchetype->m_edges.end();
-    if (noArchetypeForAddComponent)
+    addComponentToEntityArchetype(entity, component);
+  }
+}
+
+void World::createArchetypeForComponent(Entity_ID entity, const std::set<Component_ID> type)
+{
+  Archetype newArchertpe;
+  newArchertpe.m_type = type;
+
+  if (m_freeArchetypeIDs.empty())
+  {
+    newArchertpe.m_id = m_newFreeArchetypeID++;
+  }
+  else
+  {
+    newArchertpe.m_id = m_freeArchetypeIDs.front();
+    m_freeArchetypeIDs.pop();
+  }
+  newArchertpe.m_edges.clear();
+  newArchertpe.m_components.resize(type.size());
+  newArchertpe.m_componentsNum = type.size();
+
+  if (newArchertpe.m_id < m_archetypes.size())
+  {
+    m_archetypes[newArchertpe.m_id] = newArchertpe;
+  }
+  else
+  {
+    m_archetypes.push_back(newArchertpe);
+  }
+
+  Archetype_Map newArchetypeMap;
+
+  Archetype_Record newArchRec;
+  newArchRec.column = 0u;
+
+  newArchetypeMap[newArchertpe.m_id] = newArchRec;
+
+  for (auto& archetypeComponent : m_archetypes[newArchertpe.m_id].m_type)
+  {
+    m_componentToArchetypeRecord[archetypeComponent] = newArchetypeMap;
+  }
+
+  Record rec;
+  rec.pArchetype = &m_archetypes[newArchertpe.m_id];
+  rec.row;
+  m_entityToRecord[entity] = rec;
+}
+
+void World::addComponentToArchetype(Entity_ID entity, Component_ID component)
+{
+  Archetype* pArchetype = nullptr;
+  Archetype_Map archMap = m_componentToArchetypeRecord.at(component);
+  for (auto& rec : archMap)
+  {
+    if (m_archetypes[rec.first].m_type.size() == 1)
     {
-      Archetype newArchertpe;
-      newArchertpe.m_type = record.pArchetype->m_type;
-      newArchertpe.m_type.push_back(component);
-      if (m_freeArchetypeIDs.empty())
-      {
-        newArchertpe.m_id = m_newFreeArchetypeID++;
-      }
-      else
-      {
-        newArchertpe.m_id = m_freeArchetypeIDs.front();
-        m_freeArchetypeIDs.pop();
-      }
-      newArchertpe.m_edges.clear();
-      newArchertpe.m_components.resize(newArchertpe.m_type.size());
-      newArchertpe.m_componentsNum = 1u;
-
-      if (newArchertpe.m_id < m_archetypes.size())
-      {
-        m_archetypes[newArchertpe.m_id] = newArchertpe;
-      }
-      else
-      {
-        m_archetypes.push_back(newArchertpe);
-      }
-
-      Archetype_Map newArchetypeMap;
-
-      Archetype_Record newArchRec;
-      newArchRec.column = 0u;
-
-      newArchetypeMap[newArchertpe.m_id] = newArchRec;
-
-      for (auto& oldArchetypeComponent : record.pArchetype->m_type)
-      {
-        m_componentToArchetypeRecord[oldArchetypeComponent] = newArchetypeMap;
-      }
-      m_componentToArchetypeRecord[component] = newArchetypeMap;
-
-      Record rec;
-      rec.pArchetype = &m_archetypes[newArchertpe.m_id];
-      rec.row;
-      m_entityToRecord[entity] = rec;
-    }
-
-    record.pArchetype->m_componentsNum -= 1;
-    if (record.pArchetype->m_componentsNum == 0)
-    {
-      m_freeArchetypeIDs.push(record.pArchetype->m_id);
+      pArchetype = &m_archetypes[rec.first];
     }
   }
-  //Archetype& next_archetype = archetype.m_edges[component].m_add;
-  //move_entity(archetype, record.m_row, next_archetype);
+
+  if (pArchetype == nullptr)
+  {
+    createArchetypeForComponent(entity, { component });
+  }
+  else
+  {
+    Record rec;
+    rec.pArchetype = pArchetype;
+    rec.row = pArchetype->m_components.size() - 1;
+    m_entityToRecord[entity] = rec;
+  }
+}
+
+void World::addComponentToEntityArchetype(Entity_ID entity, Component_ID component)
+{
+  Record record = m_entityToRecord[entity];
+  std::set<Component_ID> newType = record.pArchetype->m_type;
+  newType.insert(component);
+
+  Archetype* pArchetype = nullptr;
+  Archetype_Map archMap = m_componentToArchetypeRecord.at(component);
+  for (auto& rec : archMap)
+  {
+    if (m_archetypes[rec.first].m_type == newType)
+    {
+      pArchetype = &m_archetypes[rec.first];
+    }
+  }
+
+  if (pArchetype == nullptr)
+  {
+    createArchetypeForComponent(entity, newType);
+  }
+  else
+  {
+    // !TODO
+  }
+
+  record.pArchetype->m_componentsNum -= 1;
+  if (record.pArchetype->m_componentsNum == 0)
+  {
+    m_freeArchetypeIDs.push(record.pArchetype->m_id);
+  }
 }
 
 bool World::hasComponent(Entity_ID entity, Component_ID component) const
