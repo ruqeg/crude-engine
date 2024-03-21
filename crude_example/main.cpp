@@ -1180,6 +1180,11 @@ struct Power
   int x;
 };
 
+struct Length
+{
+  int x;
+};
+
 int APIENTRY wWinMain(
   _In_ HINSTANCE hInstance,
   _In_opt_ HINSTANCE hPrevInstance,
@@ -1198,19 +1203,27 @@ int APIENTRY wWinMain(
     .add<Power>();
 
   crude_engine::Entity entity2 = ecs.entity()
-    .add<Force>()
-    .add<Speed>()
-    .add<Power>();
-
+    .add<Force>();
+  
   crude_engine::Entity entity3 = ecs.entity()
     .add<Force>()
     .add<Speed>();
 
   crude_engine::Entity entity4 = ecs.entity()
     .add<Force>()
-    .add<Speed>();
+    .add<Power>();
 
-  std::cout << entity.hasComponent<Force>() << " " << entity.hasComponent<Speed>() << " " << entity.hasComponent<Power>() << " " << std::endl;
+  crude_engine::Entity entity5 = ecs.entity()
+    .add<Force>()
+    .add<Speed>()
+    .add<Power>()
+    .add<Length>();
+
+  std::cout << entity.hasComponent<Force>() << " " << entity.hasComponent<Speed>() << " " << entity.hasComponent<Power>() << " " << entity.hasComponent<Length>() << std::endl;
+  std::cout << entity2.hasComponent<Force>() << " " << entity2.hasComponent<Speed>() << " " << entity2.hasComponent<Power>() << " " << entity2.hasComponent<Length>() << std::endl;
+  std::cout << entity3.hasComponent<Force>() << " " << entity3.hasComponent<Speed>() << " " << entity3.hasComponent<Power>() << " " << entity3.hasComponent<Length>() << std::endl;
+  std::cout << entity4.hasComponent<Force>() << " " << entity4.hasComponent<Speed>() << " " << entity4.hasComponent<Power>() << " " << entity4.hasComponent<Length>() << std::endl;
+  std::cout << entity5.hasComponent<Force>() << " " << entity5.hasComponent<Speed>() << " " << entity5.hasComponent<Power>() << " " << entity5.hasComponent<Length>() << std::endl;
 
   return EXIT_SUCCESS;
 }
