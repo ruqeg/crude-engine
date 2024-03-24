@@ -14,7 +14,7 @@ using Component_ID  = ID;
 
 struct Record
 {
-  Archetype_ID  archetype;
+  Archetype_ID  archetypeID;
   uint64        row;
 };
 
@@ -46,7 +46,8 @@ private:
   void assigneOrCreateArchetypeForEntity(Entity_ID entity, Component_ID component);
   void reassigneArchetypeForEntity(Entity_ID entity, Component_ID component);
 
-  bool findArchetypeWithComponent(Component_ID component, const std::set<Component_ID>& type, Archetype_ID& dstAcrhetypeID);
+  bool findArchetypeWithComponent(Component_ID component, const std::set<Component_ID>& type, Archetype_ID& archetypeID);
+  bool findArchetypeWithComponent(Component_ID component, Archetype_ID& archetypeID);
 
   void addArchetypeToArray(const Archetype& archetype);
   Archetype& getArchetypeFromID(const Archetype_ID archetypeID);
