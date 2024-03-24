@@ -41,9 +41,11 @@ public:
   void remove(Entity_ID id);
 
 private:
-  void createArchetypeForComponent(Entity_ID entity, const std::set<Component_ID> type);
-  void addComponentToArchetype(Entity_ID entity, Component_ID component);
-  void addComponentToEntityArchetype(Entity_ID entity, Component_ID component);
+  void createArchetypeForEntity(Entity_ID entity, const std::set<Component_ID>& type);
+  void assigneOrCreateArchetypeForEntity(Entity_ID entity, Component_ID component);
+  void reassigneArchetypeForEntity(Entity_ID entity, Component_ID component);
+
+  bool findArchetypeWithComponent(Component_ID component, const std::set<Component_ID>& type, Archetype_ID& dstAcrhetypeID);
 
 private:
   std::queue<Entity_ID>  m_freeEntityIDs;
