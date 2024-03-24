@@ -212,6 +212,7 @@
     <ClCompile Include="..\..\crude_engine\graphics\vulkan\viewport_state_create_info.cpp" />
     <ClCompile Include="..\..\crude_engine\graphics\vulkan\vulkan_allocator.cpp" />
     <ClCompile Include="..\..\crude_engine\graphics\vulkan\write_descriptor_set.cpp" />
+    <ClCompile Include="id_manager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\crude_engine\core\algorithms.hpp" />
@@ -237,6 +238,7 @@
     <ClInclude Include="..\..\crude_engine\core\debug\logger.hpp" />
     <ClInclude Include="..\..\crude_engine\core\ecs\archetype.hpp" />
     <ClInclude Include="..\..\crude_engine\core\ecs\entity.hpp" />
+    <ClInclude Include="..\..\crude_engine\core\ecs\id_manager.hpp" />
     <ClInclude Include="..\..\crude_engine\core\ecs\world.hpp" />
     <ClInclude Include="..\..\crude_engine\core\filesystem.hpp" />
     <ClInclude Include="..\..\crude_engine\core\math\constants.hpp" />

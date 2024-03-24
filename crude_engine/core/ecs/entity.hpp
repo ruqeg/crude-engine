@@ -24,7 +24,6 @@ public:
   template <class Component>
   bool hasComponent() const;
 
-
   template <class Component>
   void remove() const;
 

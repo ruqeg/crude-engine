@@ -1,6 +1,7 @@
 #pragma once
 
 #include <core/ecs/archetype.hpp>
+#include <core/ecs/id_manager.hpp>
 #include <queue>
 #include <stack>
 #include <unordered_map>
@@ -8,13 +9,13 @@
 namespace crude_engine
 {
 
-using Entity_ID     = uint64;
-using Component_ID  = uint64;
+using Entity_ID     = ID;
+using Component_ID  = ID;
 
 struct Record
 {
-  Archetype*  pArchetype;
-  uint64      row;
+  Archetype_ID  archetype;
+  uint64        row;
 };
 
 struct Archetype_Record
@@ -47,15 +48,17 @@ private:
 
   bool findArchetypeWithComponent(Component_ID component, const std::set<Component_ID>& type, Archetype_ID& dstAcrhetypeID);
 
-private:
-  std::queue<Entity_ID>  m_freeEntityIDs;
-  uint64                 m_newFreeEntityID;
-  uint64                 m_newFreeArchetypeID;
+  void addArchetypeToArray(const Archetype& archetype);
+  Archetype& getArchetypeFromID(const Archetype_ID archetypeID);
 
+private:
+  ID_Manager m_entityIDsManager;
+  ID_Manager m_archetypeIDsManager;
+
+  std::unordered_map<Archetype_ID, size_t>         m_archetypeToIndex;
   std::unordered_map<Entity_ID, Record>            m_entityToRecord;
   std::unordered_map<Component_ID, Archetype_Map>  m_componentToArchetypeRecord;
   std::vector<Archetype>                           m_archetypes;
-  std::queue<Archetype_ID>                         m_freeArchetypeIDs;
 };
 
 }
