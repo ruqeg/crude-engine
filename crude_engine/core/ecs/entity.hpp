@@ -1,6 +1,5 @@
 #pragma once
 
-#include <core/utility.hpp>
 #include <core/ecs/world.hpp>
 
 namespace crude_engine
@@ -16,10 +15,19 @@ public:
   Entity_ID id() const;
 
   template <class Component>
+  Entity& add();
+
+  template <class Component>
+  Entity& set(const Component& value);
+
+  template <class Component>
   const Component& get() const;
 
   template <class Component>
-  Entity& add();
+  Component& get();
+
+  //template <class Component>
+  //Entity& set(Component&& component);
 
   template <class Component>
   bool hasComponent() const;

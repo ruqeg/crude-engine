@@ -1225,6 +1225,8 @@ int APIENTRY wWinMain(
   std::cout << entity4.hasComponent<Force>() << " " << entity4.hasComponent<Speed>() << " " << entity4.hasComponent<Power>() << " " << entity4.hasComponent<Length>() << std::endl;
   std::cout << entity5.hasComponent<Force>() << " " << entity5.hasComponent<Speed>() << " " << entity5.hasComponent<Power>() << " " << entity5.hasComponent<Length>() << std::endl;
 
+  entity.set<Force>({ 5 });
+  std::cout << entity.get<Force>().x << std::endl;
   return EXIT_SUCCESS;
 }
 

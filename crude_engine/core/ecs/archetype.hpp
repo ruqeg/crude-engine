@@ -13,17 +13,17 @@ using Archetype_ID = uint64;
 
 struct Column
 {
-  void*   elements;     // buffer with component data
-  uint64  element_size; // size of a single element
-  uint64  count;        // number of elements
+  std::vector<char8>   elements;     // buffer with component data
+  uint64               elementSize; // size of a single element
+  uint64               elementsNum = 0u;
 };
 
 struct Archetype;
 
 struct Archetype_Edge
 {
-  Archetype*  pAdd;
-  Archetype*  pRemove;
+  Archetype_ID  addID;
+  Archetype_ID  removeID;
 };
 
 class Archetype
@@ -33,7 +33,7 @@ public:
   Archetype_ID                                       m_id;
   std::vector<Column>                                m_components; // one vector for each component
   std::unordered_map<Component_ID, Archetype_Edge&>  m_edges;
-  size_t                                             m_componentsNum;
+  size_t                                             m_entitiesNum;
 };
 
 }
