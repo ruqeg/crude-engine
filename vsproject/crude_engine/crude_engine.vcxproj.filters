@@ -214,7 +214,7 @@
     <ClCompile Include="..\..\crude_engine\core\ecs\archetype.cpp">
       <Filter>source\core\ecs</Filter>
     </ClCompile>
-    <ClCompile Include="id_manager.cpp">
+    <ClCompile Include="..\..\crude_engine\core\ecs\id_manager.cpp">
       <Filter>source\core\ecs</Filter>
     </ClCompile>
   </ItemGroup>

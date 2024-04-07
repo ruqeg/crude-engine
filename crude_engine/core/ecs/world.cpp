@@ -107,6 +107,8 @@ void World::removeComponent(Entity_ID entity, Component_ID component)
     removeArchetype(archetype);
   }
 
+  size_t oldRow = entityRec.row.value();
+
   Archetype_ID newArchetypeID;
   if (findArchetypeWithComponent(component, newEntityArchetypeType, newArchetypeID))
   {
@@ -129,14 +131,21 @@ void World::removeComponent(Entity_ID entity, Component_ID component)
       newArchetype.m_freeRow.pop();
     }
 
+    int index = 0u;
     for (int i = 0; i < archetype.m_components.size(); ++i)
     {
       if (i == archetypeRec.column)
         continue;
-      
       auto& oldColumn = archetype.m_components[i];
-      auto& newColumn = newArchetype.m_components[i];
-      m_componentToMoveFunc[component](newColumn.elements.data() + row * m_componentToElementSize[component], oldColumn.elements.data() + row * m_componentToElementSize[component]);
+      auto& newColumn = newArchetype.m_components[index];
+      index++;
+      
+      oldColumn.elementsNum--;
+      newColumn.elementsNum++;
+
+      m_componentToMoveFunc[component](
+        newColumn.elements.data() + row * m_componentToElementSize[component], 
+        oldColumn.elements.data() + oldRow * m_componentToElementSize[component]);
     }
 
     newArchetype.m_entitiesNum++;
@@ -149,8 +158,38 @@ void World::removeComponent(Entity_ID entity, Component_ID component)
   else
   {
     std::vector<uint64> componentsSizes(archetype.m_components.size() - 1u);
-    //!TODO
     createArchetypeForEntity(entity, newEntityArchetypeType);
+    Record& entityNewRec = m_entityToRecord[entity];
+    Archetype& newArchetype = getArchetypeFromID(entityNewRec.archetypeID);
+    newArchetypeID = newArchetype.m_id;
+
+    for (auto& column : newArchetype.m_components)
+    {
+      column.elementsNum = 1u;
+      column.elements.resize(m_componentToElementSize[column.component]);
+    }
+    
+    size_t row = 0u;
+    int index = 0u;
+    for (int i = 0; i < archetype.m_components.size(); ++i)
+    {
+      if (i == archetypeRec.column)
+        continue;
+
+      auto& oldColumn = archetype.m_components[i];
+      auto& newColumn = newArchetype.m_components[index];
+      index++;
+      m_componentToMoveFunc[component](
+        newColumn.elements.data() + row * m_componentToElementSize[component], 
+        oldColumn.elements.data() + oldRow * m_componentToElementSize[component]);
+    }
+
+    newArchetype.m_entitiesNum++;
+
+    Record rec;
+    rec.row = row;
+    rec.archetypeID = newArchetypeID;
+    m_entityToRecord[entity] = rec;
   }
 }
 
