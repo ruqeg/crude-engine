@@ -1,6 +1,6 @@
 #pragma once
 
-#include <core/alias.hpp>
+#include <core/ecs/alias.hpp>
 #include <vector>
 #include <unordered_map>
 #include <set>
@@ -9,17 +9,7 @@
 namespace crude_engine
 {
 
-using Component_ID = uint64;
-using Archetype_ID = uint64;
-
-struct Column
-{
-  std::vector<char8>   elements;     // buffer with component data
-  uint64               elementsNum = 0u;
-  Component_ID         component;
-};
-
-struct Archetype;
+class World;
 
 struct Archetype_Edge
 {
@@ -30,12 +20,42 @@ struct Archetype_Edge
 class Archetype
 {
 public:
-  std::set<Component_ID>                             m_type;
-  Archetype_ID                                       m_id;
-  std::vector<Column>                                m_components; // one vector for each component
-  std::unordered_map<Component_ID, Archetype_Edge&>  m_edges;
-  size_t                                             m_entitiesNum;
-  std::queue<size_t>                                 m_freeRow;
+  struct Column
+  {
+    std::vector<uint8>   m_elements;
+    Component_ID         m_component;
+  };
+
+public:
+  Archetype(World* world, 
+            Archetype_ID id, 
+            const std::set<Component_ID>& type);
+
+  void addEntity();
+  void removeEntity();
+  bool empty();
+  uint64 newRow();
+  void remove(uint64 row);
+  void set(uint64 column, uint64 row, const void* value);
+  void* get(uint64 column, uint64 row);
+  const void* get(uint64 column, uint64 row) const;
+
+  const std::set<Component_ID>& getType() const;
+  Archetype_ID getID() const;
+
+  uint64 getComponentsNum() const;
+
+private:
+  Archetype_ID                                 m_id;
+  std::set<Component_ID>                       m_type;
+  std::vector<Column>                          m_components;
+  //std::unordered_map<Column, Archetype_Edge>   m_edges;
+  uint64                                       m_entitesCapacity;
+  uint64                                       m_entitesSize;
+  std::queue<uint64>                           m_freeRows;
+  uint64                                       m_entitiesNum;
+
+  World* m_world;
 };
 
 }

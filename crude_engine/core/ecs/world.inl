@@ -45,20 +45,8 @@ Component& World::getComponent(Entity_ID entity)
 template<class Component>
 const Component& World::getComponent(Entity_ID entity) const
 {
-  const Component_ID componentID = CPP_Type<Component>::id();
-
-  if (!hasComponent<Component>(entity))
-  {
-    // !TODO
-    CRUDE_ASSERT(false && "TODO");
-  }
-
-  Record& entityRec = m_entityToRecord[entity];
-  Archetype_Map& componentRec = m_componentToArchetypeRecord[componentID];
-  Archetype& archetype = getArchetypeFromID(entityRec.archetypeID);
-  Column& mcolumn = archetype.m_components[componentRec[entityRec.archetypeID].column];
-  Component* value = reinterpret_cast<Component*>(mcolumn.elements.data() + (entityRec.row.value() * mcolumn.elementSize));
-  return *value;
+  void* value = getComponent(entity, CPP_Type<Component>::id());
+  return *reinterpret_cast<Component*>(value);
 }
 
 }

@@ -236,6 +236,7 @@
     <ClInclude Include="..\..\crude_engine\core\debug\assert.hpp" />
     <ClInclude Include="..\..\crude_engine\core\debug\debug.hpp" />
     <ClInclude Include="..\..\crude_engine\core\debug\logger.hpp" />
+    <ClInclude Include="..\..\crude_engine\core\ecs\alias.hpp" />
     <ClInclude Include="..\..\crude_engine\core\ecs\archetype.hpp" />
     <ClInclude Include="..\..\crude_engine\core\ecs\entity.hpp" />
     <ClInclude Include="..\..\crude_engine\core\ecs\id_manager.hpp" />

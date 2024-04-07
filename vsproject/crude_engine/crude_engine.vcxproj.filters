@@ -486,6 +486,9 @@
     <ClInclude Include="..\..\crude_engine\core\ecs\id_manager.hpp">
       <Filter>source\core\ecs</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\crude_engine\core\ecs\alias.hpp">
+      <Filter>source\core\ecs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\crude_engine\graphics\vulkan\object.inl">

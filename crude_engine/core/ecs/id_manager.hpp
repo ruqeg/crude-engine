@@ -1,14 +1,10 @@
 #pragma once
 
-#include <core/alias.hpp>
+#include <core/ecs/alias.hpp>
 #include <queue>
 
 namespace crude_engine
 {
-
-using ID            = uint64;
-using ID_Generation = uint16;
-using ID_Index      = uint64;
 
 class ID_Manager
 {

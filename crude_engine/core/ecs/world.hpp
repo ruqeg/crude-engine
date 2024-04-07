@@ -12,9 +12,6 @@
 namespace crude_engine
 {
 
-using Entity_ID     = ID;
-using Component_ID  = ID;
-
 struct Record
 {
   Archetype_ID           archetypeID;
@@ -60,6 +57,7 @@ private:
   void addComponent(Entity_ID entity, Component_ID component);
   void setComponent(Entity_ID entity, Component_ID component, const void* value);
   void* getComponent(Entity_ID entity, Component_ID component);
+  const void* getComponent(Entity_ID entity, Component_ID component) const;
   void removeComponent(Entity_ID entity, Component_ID component);
   bool hasComponent(Entity_ID entity, Component_ID component) const;
   
@@ -82,6 +80,7 @@ private:
   void removeArchetype(Archetype& archetype);
   void addArchetypeToArray(const Archetype& archetype);
   Archetype& getArchetypeFromID(const Archetype_ID archetypeID);
+  const Archetype& getArchetypeFromID(const Archetype_ID archetypeID) const;
 
 private:
   ID_Manager m_entityIDsManager;
@@ -95,6 +94,7 @@ private:
   std::unordered_map<Component_ID, Copy_Component_Functinon> m_componentToCopyFunc;
 
   friend class Entity;
+  friend class Archetype;
 };
 
 }
