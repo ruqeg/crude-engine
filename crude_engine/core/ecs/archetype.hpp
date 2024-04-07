@@ -4,6 +4,7 @@
 #include <vector>
 #include <unordered_map>
 #include <set>
+#include <queue>
 
 namespace crude_engine
 {
@@ -14,8 +15,8 @@ using Archetype_ID = uint64;
 struct Column
 {
   std::vector<char8>   elements;     // buffer with component data
-  uint64               elementSize; // size of a single element
   uint64               elementsNum = 0u;
+  Component_ID         component;
 };
 
 struct Archetype;
@@ -34,6 +35,7 @@ public:
   std::vector<Column>                                m_components; // one vector for each component
   std::unordered_map<Component_ID, Archetype_Edge&>  m_edges;
   size_t                                             m_entitiesNum;
+  std::queue<size_t>                                 m_freeRow;
 };
 
 }

@@ -26,6 +26,9 @@ struct Archetype_Record
   uint64 column;
 };
 
+using Move_Component_Functinon = void (*)(void* dst, void* src);
+using Copy_Component_Functinon = void (*)(void* dst, const void* src);
+
 class Entity;
 
 class World
@@ -49,9 +52,15 @@ private:
   void setComponent(Entity_ID entity, const Component& value);
 
   template<class Component>
+  void removeComponent(Entity_ID entity);
+
+  template<class Component>
   bool hasComponent(Entity_ID entity) const;
 
-  void addComponent(Entity_ID entity, Component_ID component, uint64 componentSize);
+  void addComponent(Entity_ID entity, Component_ID component);
+  void setComponent(Entity_ID entity, Component_ID component, const void* value);
+  void* getComponent(Entity_ID entity, Component_ID component);
+  void removeComponent(Entity_ID entity, Component_ID component);
   bool hasComponent(Entity_ID entity, Component_ID component) const;
   
   template<class Component>
@@ -63,9 +72,9 @@ private:
   void remove(Entity_ID id);
 
 private:
-  void createArchetypeForEntity(Entity_ID entity, const std::set<Component_ID>& type, const std::vector<uint64>& componentsSizes);
-  void assigneOrCreateArchetypeForEntity(Entity_ID entity, Component_ID component, uint64 componentSize);
-  void reassigneArchetypeForEntity(Entity_ID entity, Component_ID component, uint64 componentSize);
+  void createArchetypeForEntity(Entity_ID entity, const std::set<Component_ID>& type);
+  void assigneOrCreateArchetypeForEntity(Entity_ID entity, Component_ID component);
+  void reassigneArchetypeForEntity(Entity_ID entity, Component_ID component);
 
   bool findArchetypeWithComponent(Component_ID component, const std::set<Component_ID>& type, Archetype_ID& archetypeID);
   bool findArchetypeWithComponent(Component_ID component, Archetype_ID& archetypeID);
@@ -78,10 +87,12 @@ private:
   ID_Manager m_entityIDsManager;
   ID_Manager m_archetypeIDsManager;
 
-  std::unordered_map<Archetype_ID, size_t>         m_archetypeToIndex;
   std::unordered_map<Entity_ID, Record>            m_entityToRecord;
   std::unordered_map<Component_ID, Archetype_Map>  m_componentToArchetypeRecord;
   std::vector<Archetype>                           m_archetypes;
+  std::unordered_map<Component_ID, Move_Component_Functinon> m_componentToMoveFunc;
+  std::unordered_map<Component_ID, size_t>                   m_componentToElementSize;
+  std::unordered_map<Component_ID, Copy_Component_Functinon> m_componentToCopyFunc;
 
   friend class Entity;
 };

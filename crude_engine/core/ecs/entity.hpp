@@ -33,7 +33,7 @@ public:
   bool hasComponent() const;
 
   template <class Component>
-  void remove() const;
+  const Entity& remove() const;
 
   void clear();
   void destruct();

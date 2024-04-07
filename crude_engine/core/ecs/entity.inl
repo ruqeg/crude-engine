@@ -36,4 +36,11 @@ bool Entity::hasComponent() const
   return m_world->hasComponent<Component>(m_id);
 }
 
+template<class Component>
+const Entity& Entity::remove() const
+{
+  m_world->removeComponent<Component>(m_id);
+  return *this;
+}
+
 }

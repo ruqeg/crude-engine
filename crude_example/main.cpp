@@ -1164,24 +1164,36 @@ std::unordered_map<Entity_ID, Record> entity_index;
 //  move_entity(archetype, record.row, next_archetype);
 //}
 
+#define CRUDE_IMPL_COMPONENT_COPY(T)\
+  static void Copy(void* dst, const void* src) { *reinterpret_cast<T*>(dst) = *reinterpret_cast<const T*>(src); }
+#define CRUDE_IMPL_COMPONENT_MOVE(T)\
+  static void Move(void* dst, void* src) { *reinterpret_cast<T*>(dst) = std::move(*reinterpret_cast<T*>(src)); }
 
 struct Force
 {
+  CRUDE_IMPL_COMPONENT_COPY(Force);
+  CRUDE_IMPL_COMPONENT_MOVE(Force);
   int x;
 };
 
 struct Speed
 {
+  CRUDE_IMPL_COMPONENT_COPY(Speed);
+  CRUDE_IMPL_COMPONENT_MOVE(Speed);
   int x;
 };
 
 struct Power
 {
+  CRUDE_IMPL_COMPONENT_COPY(Power);
+  CRUDE_IMPL_COMPONENT_MOVE(Power);
   int x;
 };
 
 struct Length
 {
+  CRUDE_IMPL_COMPONENT_COPY(Length);
+  CRUDE_IMPL_COMPONENT_MOVE(Length);
   int x;
 };
 
@@ -1197,6 +1209,7 @@ int APIENTRY wWinMain(
   auto s = freopen_s(&dummy, "CONOUT$", "w", stdout);
 
   crude_engine::World ecs;
+
   crude_engine::Entity entity = ecs.entity()
     .add<Force>()
     .add<Speed>()
@@ -1219,6 +1232,11 @@ int APIENTRY wWinMain(
     .add<Power>()
     .add<Length>();
 
+  crude_engine::Entity entityCopy = ecs.entity()
+    .add<Force>()
+    .add<Speed>()
+    .add<Power>();
+
   std::cout << entity.hasComponent<Force>() << " " << entity.hasComponent<Speed>() << " " << entity.hasComponent<Power>() << " " << entity.hasComponent<Length>() << std::endl;
   std::cout << entity2.hasComponent<Force>() << " " << entity2.hasComponent<Speed>() << " " << entity2.hasComponent<Power>() << " " << entity2.hasComponent<Length>() << std::endl;
   std::cout << entity3.hasComponent<Force>() << " " << entity3.hasComponent<Speed>() << " " << entity3.hasComponent<Power>() << " " << entity3.hasComponent<Length>() << std::endl;
@@ -1226,6 +1244,11 @@ int APIENTRY wWinMain(
   std::cout << entity5.hasComponent<Force>() << " " << entity5.hasComponent<Speed>() << " " << entity5.hasComponent<Power>() << " " << entity5.hasComponent<Length>() << std::endl;
 
   entity.set<Force>({ 5 });
+  entityCopy.set<Force>({ 4 });
+  std::cout << entity.get<Force>().x << " " << entityCopy.get<Force>().x << std::endl;
+  entityCopy.remove<Force>();
+  std::cout << entity.hasComponent<Force>() << " " << entityCopy.hasComponent<Force>() << std::endl;
+
   std::cout << entity.get<Force>().x << std::endl;
   return EXIT_SUCCESS;
 }
