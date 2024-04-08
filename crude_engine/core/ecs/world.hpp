@@ -19,7 +19,7 @@ class Entity;
 
 class World
 {
-public:
+private:
   struct Entity_Record
   {
     Archetype_ID           archetypeID;
@@ -31,7 +31,7 @@ public:
     uint64 column;
   };
 
-public:
+private:
   using Archetype_Map = std::unordered_map<Archetype_ID, Archetype_Record>;
 
 public:
