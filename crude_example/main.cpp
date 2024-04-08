@@ -1251,6 +1251,7 @@ int APIENTRY wWinMain(
   std::cout << entity.hasComponent<Force>() << " " << entityCopy.hasComponent<Force>() << std::endl;
 
   std::cout << entity.get<Force>().x << std::endl;
+  entity5.remove<Force>();
   return EXIT_SUCCESS;
 }
 

@@ -33,14 +33,17 @@ public:
             Archetype_ID id, 
             const std::set<Component_ID>& type);
 
-  void addEntity();
-  void removeEntity();
-  bool empty();
+  void increaseEntity(int64 num);
+  void reduceEntity(int64 num);
+  uint64 getEntityNum() const;
+  bool entityEmpty() const;
+
   uint64 newRow();
-  void remove(uint64 row);
-  void set(uint64 column, uint64 row, const void* value);
-  void* get(uint64 column, uint64 row);
-  const void* get(uint64 column, uint64 row) const;
+  void removeComponentData(uint64 row);
+  void copyComponentData(uint64 column, uint64 row, const void* value);
+  void moveComponentData(uint64 column, uint64 row, void* value);
+  void* getComponentData(uint64 column, uint64 row);
+  const void* getComponentData(uint64 column, uint64 row) const;
 
   const std::set<Component_ID>& getType() const;
   Archetype_ID getID() const;
@@ -48,12 +51,15 @@ public:
   uint64 getComponentsNum() const;
 
 private:
+  void increaseCapacity();
+
+private:
   Archetype_ID                                 m_id;
   std::set<Component_ID>                       m_type;
   std::vector<Column>                          m_components;
   //std::unordered_map<Column, Archetype_Edge>   m_edges;
-  uint64                                       m_entitesCapacity;
-  uint64                                       m_entitesSize;
+  uint64                                       m_componentsDataCapacity;
+  uint64                                       m_componentsDataSize;
   std::queue<uint64>                           m_freeRows;
   uint64                                       m_entitiesNum;
 
