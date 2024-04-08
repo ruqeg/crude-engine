@@ -217,6 +217,9 @@
     <ClCompile Include="..\..\crude_engine\core\ecs\id_manager.cpp">
       <Filter>source\core\ecs</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\crude_engine\core\ecs\component_register.cpp">
+      <Filter>source\core\ecs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\crude_engine\core\memory\linear_allocator.hpp">
@@ -489,6 +492,9 @@
     <ClInclude Include="..\..\crude_engine\core\ecs\alias.hpp">
       <Filter>source\core\ecs</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\crude_engine\core\ecs\component_register.hpp">
+      <Filter>source\core\ecs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\crude_engine\graphics\vulkan\object.inl">
@@ -561,6 +567,9 @@
       <Filter>source\core\ecs</Filter>
     </None>
     <None Include="..\..\crude_engine\core\ecs\world.inl">
+      <Filter>source\core\ecs</Filter>
+    </None>
+    <None Include="..\..\crude_engine\core\ecs\component_register.inl">
       <Filter>source\core\ecs</Filter>
     </None>
   </ItemGroup>

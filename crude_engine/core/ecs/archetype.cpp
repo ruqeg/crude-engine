@@ -1,12 +1,13 @@
 #include <core/ecs/archetype.hpp>
 #include <core/ecs/world.hpp>
+#include <core/ecs/component_register.hpp>
 
 namespace crude_engine
 {
 
-Archetype::Archetype(World* world, Archetype_ID id, const std::set<Component_ID>& type)
+Archetype::Archetype(Component_Register* pComponentRegister, Archetype_ID id, const std::set<Component_ID>& type)
   :
-  m_world(world),
+  m_pComponentRegister(pComponentRegister),
   m_id(id),
   m_type(type),
   m_componentsDataCapacity(0u),
@@ -81,28 +82,37 @@ void Archetype::removeComponentData(uint64 row)
 void Archetype::copyComponentData(uint64 column, uint64 row, const void* value)
 {
   CRUDE_ASSERT(row < m_componentsDataSize);
+
   const Component_ID component = m_components[column].m_component;
-  const uint64 elementSize = m_world->m_componentToElementSize.at(component);
-  Copy_Component_Functinon funCopy = m_world->m_componentToCopyFunc.at(component);
-  funCopy(m_components[column].m_elements.data() + (row * elementSize), value);
+  const Component_Register::Component_Info& componentInfo = m_pComponentRegister->getComponentInfo(component);
+  const uint64 index = row * componentInfo.bsize;
+  void* pComponentData = m_components[column].m_elements.data() + index;
+
+  componentInfo.fnCopy(pComponentData, value);
 }
 
 void Archetype::moveComponentData(uint64 column, uint64 row, void* value)
 {
   CRUDE_ASSERT(row < m_componentsDataSize);
+
   const Component_ID component = m_components[column].m_component;
-  const uint64 elementSize = m_world->m_componentToElementSize.at(component);
-  Move_Component_Functinon funMove = m_world->m_componentToMoveFunc.at(component);
-  funMove(m_components[column].m_elements.data() + (row * elementSize), value);
+  const Component_Register::Component_Info& componentInfo = m_pComponentRegister->getComponentInfo(component);
+  const uint64 index = row * componentInfo.bsize;
+  void* pComponentData = m_components[column].m_elements.data() + index;
+
+  componentInfo.fnMove(pComponentData, value);
 }
 
 void* Archetype::getComponentData(uint64 column, uint64 row)
 {
-  CRUDE_ASSERT(m_world->m_componentToElementSize.find(m_components[column].m_component) != m_world->m_componentToElementSize.end());
   CRUDE_ASSERT(row < m_componentsDataSize);
 
-  const uint64 elementSize = m_world->m_componentToElementSize.at(m_components[column].m_component);
-  return reinterpret_cast<void*>(m_components[column].m_elements.data() + (row * elementSize));
+  const Component_ID component = m_components[column].m_component;
+  const Component_Register::Component_Info& componentInfo = m_pComponentRegister->getComponentInfo(component);
+  const uint64 index = row * componentInfo.bsize;
+  void* pComponentData = m_components[column].m_elements.data() + index;
+
+  return reinterpret_cast<void*>(pComponentData);
 }
 
 const void* Archetype::getComponentData(uint64 column, uint64 row) const
@@ -127,12 +137,12 @@ uint64 Archetype::getComponentsNum() const
 
 void Archetype::increaseCapacity()
 {
-  m_componentsDataCapacity *= 2;
+  m_componentsDataCapacity *= 2u;
 
   for (auto& column : m_components)
   {
-    const uint64 elementSize = m_world->m_componentToElementSize.at(column.m_component);
-    column.m_elements.resize(m_componentsDataCapacity * elementSize);
+    const Component_Register::Component_Info& componentInfo = m_pComponentRegister->getComponentInfo(column.m_component);
+    column.m_elements.resize(m_componentsDataCapacity * componentInfo.bsize);
   }
 }
 

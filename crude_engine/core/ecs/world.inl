@@ -6,21 +6,15 @@ namespace crude_engine
 template<class Component>
 void World::addComponent(Entity_ID entity)
 {
-  const std::size_t componentID = CPP_Type<Component>::id();
-  m_componentToMoveFunc[componentID]     = Component::Move;
-  m_componentToElementSize[componentID]  = sizeof(Component);
-  m_componentToCopyFunc[componentID]     = Component::Copy;
-  addComponent(entity, componentID);
+  m_componentRegister.registerComponent<Component>();
+  addComponent(entity, CPP_Type<Component>::id());
 }
 
 template<class Component>
 void World::setComponent(Entity_ID entity, const Component& value)
 {
-  const std::size_t componentID = CPP_Type<Component>::id();
-  m_componentToMoveFunc[componentID]    = Component::Move;
-  m_componentToElementSize[componentID] = sizeof(Component);
-  m_componentToCopyFunc[componentID]    = Component::Copy;
-  setComponent(entity, componentID, &value);
+  m_componentRegister.registerComponent<Component>();
+  setComponent(entity, CPP_Type<Component>::id(), &value);
 }
 
 template<class Component>

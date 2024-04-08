@@ -12,26 +12,25 @@ namespace crude_engine
 {
 
 class World;
-
-struct Archetype_Edge
-{
-  Archetype_ID  addID;
-  Archetype_ID  removeID;
-};
+class Component_Register;
 
 class Archetype
 {
-public:
-  struct Column
+private:
+  struct Archetype_Edge
+  {
+    Archetype_ID  addID;
+    Archetype_ID  removeID;
+  };
+
+  struct Archetype_Column
   {
     std::vector<uint8>   m_elements;
     Component_ID         m_component;
   };
 
 public:
-  Archetype(World* world, 
-            Archetype_ID id, 
-            const std::set<Component_ID>& type);
+  Archetype(Component_Register* pComponentRegister, Archetype_ID id, const std::set<Component_ID>& type);
 
   void increaseEntity(int64 num);
   void reduceEntity(int64 num);
@@ -56,14 +55,14 @@ private:
 private:
   Archetype_ID                                 m_id;
   std::set<Component_ID>                       m_type;
-  std::vector<Column>                          m_components;
+  std::vector<Archetype_Column>                m_components;
   //std::unordered_map<Column, Archetype_Edge>   m_edges;
   uint64                                       m_componentsDataCapacity;
   uint64                                       m_componentsDataSize;
   std::queue<uint64>                           m_freeRows;
   uint64                                       m_entitiesNum;
 
-  World* m_world;
+  Component_Register*                          m_pComponentRegister;
 };
 
 }
