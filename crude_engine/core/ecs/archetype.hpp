@@ -6,6 +6,8 @@
 #include <set>
 #include <queue>
 
+// !TODO move to my stl
+
 namespace crude_engine
 {
 

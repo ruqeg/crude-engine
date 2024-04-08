@@ -1,6 +1,8 @@
 #include <core/ecs/archetype.hpp>
 #include <core/ecs/world.hpp>
 
+// !TODO do something with this code pls
+
 namespace crude_engine
 {
 
@@ -49,6 +51,7 @@ uint64 Archetype::newRow()
 
   uint64 row;
 
+  // !TODO make this code more readable ||_||
   if (!m_freeRows.empty())
   {
     row = m_freeRows.front();
@@ -73,6 +76,7 @@ uint64 Archetype::newRow()
   }
   else
   {
+    // !TODO it should be better ||_||
     row = m_entitesSize;
     m_entitesCapacity += 10;
     for (auto& column : m_components)
@@ -91,6 +95,7 @@ void Archetype::remove(uint64 row)
   m_freeRows.push(row);
 }
 
+// !TODO dont dublicate code
 void Archetype::set(uint64 column, uint64 row, const void* value)
 {
   for (auto& component : m_type)
