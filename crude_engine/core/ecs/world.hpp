@@ -52,7 +52,7 @@ public:
 
 public:
   Entity entity();
-  void remove(Entity_ID id);
+  void remove(Entity_ID entity);
 
   template<class Component>
   void addComponent(Entity_ID entity);

@@ -44,9 +44,7 @@ void World::setComponent(Entity_ID entity, Component_ID component, const void* v
 {
   if (!hasComponent(entity, component))
   {
-    // !TODO
-    CRUDE_ASSERT(false && "TODO");
-    return;
+    addComponent(entity, component);
   }
 
   Entity_Record& entityRecord = m_entityToRecord.at(entity);
@@ -69,7 +67,6 @@ void* World::getComponent(Entity_ID entity, Component_ID component)
 {
   if (!hasComponent(entity, component))
   {
-    // !TODO
     CRUDE_ASSERT(false && "TODO");
   }
 
@@ -77,7 +74,6 @@ void* World::getComponent(Entity_ID entity, Component_ID component)
   const bool noComponentData = !entityRecord.row.has_value();
   if (noComponentData)
   {
-    // !TODO
     CRUDE_ASSERT(false && "TODO");
   }
 
@@ -156,10 +152,19 @@ bool World::hasComponent(Entity_ID entity, Component_ID component) const
   return componentRecord.contains(entityRecord.archetypeID);
 }
 
-void World::remove(Entity_ID id)
+void World::remove(Entity_ID entity)
 {
   // !TODO
-  m_entityIDsManager.destroy(id);
+
+  Entity_Record& entityRecord = m_entityToRecord.at(entity);
+  Archetype& archetype = getArchetype(entityRecord.archetypeID);
+  for (const auto& component : archetype.getType())
+  {
+    removeComponent(entity, component);
+  }
+
+  m_entityToRecord.erase(entity);
+  m_entityIDsManager.destroy(entity);
 }
 
 void World::createArchetypeForEntity(Entity_ID entity, const std::set<Component_ID>& type)
