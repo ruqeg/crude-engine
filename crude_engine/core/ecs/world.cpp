@@ -102,50 +102,48 @@ void World::removeComponent(Entity_ID entity, Component_ID component)
     return;
   }
 
-  const Entity_Record entityRecord = m_entityToRecord.at(entity);
-  const uint64 archetypeID = entityRecord.archetypeID;
-  Archetype& archetype = getArchetype(archetypeID);
+  const Entity_Record oldEntityRecord = m_entityToRecord.at(entity);
+  const uint64 oldArchetypeID = oldEntityRecord.archetypeID;
+  Archetype& oldArchetype = getArchetype(oldArchetypeID);
   Archetype_Map& componentRecord = m_componentToArchetypeMap.at(component);
-  Archetype_Record& archetypeRecord = componentRecord.at(entityRecord.archetypeID);
+  Archetype_Record& oldArchetypeRecord = componentRecord.at(oldEntityRecord.archetypeID);
 
-  std::set<Component_ID> newEntityArchetypeType = archetype.getType();
+  std::set<Component_ID> newEntityArchetypeType = oldArchetype.getType();
   newEntityArchetypeType.erase(component);
-
-  auto fun = [this](Entity_Record& srcRecord, Entity_Record& dstRecord) -> void
-  {
-
-  };
 
   Entity_Record newEntityRecord;
   if (findArchetype(component, newEntityArchetypeType, newEntityRecord.archetypeID))
   {
-    Archetype& newArchetype = getArchetype(newEntityRecord.archetypeID);
-    newArchetype.increaseEntity(1u);
-
-    if (entityRecord.row.has_value())
-    {
-      newEntityRecord.row = moveComponentData(entityRecord.row.value(), archetypeRecord.column, archetype, newArchetype);
-    }
+    newEntityRecord = Entity_Record(newEntityRecord.archetypeID);
   }
   else
   {
     createArchetypeForEntity(entity, newEntityArchetypeType);
     newEntityRecord = m_entityToRecord.at(entity);
+  }
 
+  if (oldEntityRecord.row.has_value())
+  {
     Archetype& newArchetype = getArchetype(newEntityRecord.archetypeID);
-    newArchetype.increaseEntity(1u);
+    newEntityRecord.row = newArchetype.newRow();
 
-    if (entityRecord.row.has_value())
-    {
-      newEntityRecord.row = moveComponentData(entityRecord.row.value(), archetypeRecord.column, archetype, newArchetype);
-    }
+    const uint64 oldRow = oldEntityRecord.row.value();
+    const uint64 newRow = newEntityRecord.row.value();
+
+    const uint64 skippedColumn = oldArchetypeRecord.column;
+    moveEntityComponentDataExceptRemoved(skippedColumn, Unsafe_Entity_Record(&oldArchetype, oldRow), Unsafe_Entity_Record(&newArchetype, newRow));
+
+    oldArchetype.removeComponentData(oldRow);
   }
 
   m_entityToRecord[entity] = newEntityRecord;
 
-  archetype.reduceEntity(1u);
-  if (archetype.entityEmpty())
-    removeArchetype(archetype);
+  Archetype& newArchetype = getArchetype(newEntityRecord.archetypeID);
+  newArchetype.increaseEntity(1u);
+
+  oldArchetype.reduceEntity(1u);
+  if (oldArchetype.entityEmpty())
+    removeArchetype(oldArchetype);
 }
 
 bool World::hasComponent(Entity_ID entity, Component_ID component) const
@@ -232,7 +230,19 @@ void World::reassigneArchetypeForEntity(Entity_ID entity, Component_ID component
     newEntityRecord = m_entityToRecord.at(entity);
   }
 
-  moveEntityComponentDataExceptAdded(component, oldEntityRecord, newEntityRecord);
+  if (oldEntityRecord.row.has_value())
+  {
+    Archetype& newArchetype = getArchetype(newEntityRecord.archetypeID);
+    newEntityRecord.row = newArchetype.newRow();
+
+    const uint64 oldRow = oldEntityRecord.row.value();
+    const uint64 newRow = newEntityRecord.row.value();
+
+    const uint64 skippedColumn = m_componentToArchetypeMap.at(component).at(newEntityRecord.archetypeID).column;
+    moveEntityComponentDataExceptAdded(skippedColumn, Unsafe_Entity_Record(&oldArchetype, oldRow), Unsafe_Entity_Record(&newArchetype, newRow));
+
+    oldArchetype.removeComponentData(oldRow);
+  }
 
   m_entityToRecord[entity] = newEntityRecord;
 
@@ -308,52 +318,33 @@ const Archetype& World::getArchetype(const Archetype_ID archetypeID) const
 {
   return m_archetypes[ID_Manager::getIndex(archetypeID)];
 }
-uint64 World::moveComponentData(uint32 srcRow, uint32 srcSkippedColumn, Archetype& srcArchetype, Archetype& dstArchetype)
-{
-  const uint64 row = dstArchetype.newRow();
 
-  uint64 newColumn = 0u;
-  for (uint64 oldColumn = 0u; oldColumn < srcArchetype.getComponentsNum(); ++oldColumn)
+void World::moveEntityComponentDataExceptAdded(uint32 skippedColumn, const Unsafe_Entity_Record& srcRecord, const Unsafe_Entity_Record& dstRecord)
+{
+  const uint64 dstComponentsNum = dstRecord.pArchetype->getComponentsNum();
+
+  for (uint64 newColumn = 0u, oldColumn = 0u; newColumn < dstComponentsNum; ++newColumn)
   {
-    if (oldColumn == srcSkippedColumn)
+    if (newColumn == skippedColumn)
       continue;
 
-    dstArchetype.moveComponentData(newColumn, row, srcArchetype.getComponentData(oldColumn, srcRow));
-    newColumn++;
+    dstRecord.pArchetype->moveComponentData(newColumn, dstRecord.row, srcRecord.pArchetype->getComponentData(oldColumn, srcRecord.row));
+    oldColumn++;
   }
-  srcArchetype.removeComponentData(srcRow);
-  return row;
 }
 
-void World::moveEntityComponentDataExceptAdded(Component_ID addedComponent, const Entity_Record& srcRecord, Entity_Record& dstRecord)
+void World::moveEntityComponentDataExceptRemoved(uint32 skippedColumn, const Unsafe_Entity_Record& srcRecord, const Unsafe_Entity_Record& dstRecord)
 {
-  if (!srcRecord.row.has_value())
-  {
-    return;
-  }
-
-  const Archetype_ID srcArchetypeID = srcRecord.archetypeID;
-  const Archetype_ID dstArchetypeID = dstRecord.archetypeID;
-  Archetype& srcArchetype = getArchetype(srcArchetypeID);
-  Archetype& dstArchetype = getArchetype(dstArchetypeID);
-
-  dstRecord.row = dstArchetype.newRow();
-
-  const uint64 srcRow = srcRecord.row.value();
-  const uint64 dstRow = dstRecord.row.value();
-  const uint64 skippedColumn = m_componentToArchetypeMap.at(addedComponent).at(dstRecord.archetypeID).column;
-  const uint64 srcComponentsNum = srcArchetype.getComponentsNum();
+  const uint64 srcComponentsNum = srcRecord.pArchetype->getComponentsNum();
 
   for (uint64 oldColumn = 0u, newColumn = 0u; oldColumn < srcComponentsNum; ++oldColumn)
   {
     if (oldColumn == skippedColumn)
       continue;
 
-    dstArchetype.moveComponentData(newColumn, dstRow, srcArchetype.getComponentData(oldColumn, srcRow));
+    dstRecord.pArchetype->moveComponentData(newColumn, dstRecord.row, srcRecord.pArchetype->getComponentData(oldColumn, srcRecord.row));
     newColumn++;
   }
-
-  srcArchetype.removeComponentData(srcRow);
 }
 
 }

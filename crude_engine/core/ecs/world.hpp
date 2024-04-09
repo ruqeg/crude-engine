@@ -36,6 +36,14 @@ private:
     uint64 column;
   };
 
+  struct Unsafe_Entity_Record
+  {
+    Unsafe_Entity_Record(Archetype* pArchetype, uint64 row)
+      : pArchetype(pArchetype), row(row) {}
+    Archetype*  pArchetype;
+    uint64      row;
+  };
+
 private:
   using Archetype_Map = std::unordered_map<Archetype_ID, Archetype_Record>;
 
@@ -88,9 +96,8 @@ private:
   Archetype& getArchetype(const Archetype_ID archetypeID);
   const Archetype& getArchetype(const Archetype_ID archetypeID) const;
 
-  uint64 moveComponentData(uint32 srcRow, uint32 srcSkippedColumn, Archetype& srcArchetype, Archetype& dstArchetype);
-
-  void moveEntityComponentDataExceptAdded(Component_ID addedComponent, const Entity_Record& srcRecord, Entity_Record& dstRecord);
+  void moveEntityComponentDataExceptAdded(uint32 skippedColumn, const Unsafe_Entity_Record& srcRecord, const Unsafe_Entity_Record& dstRecord);
+  void moveEntityComponentDataExceptRemoved(uint32 skippedColumn, const Unsafe_Entity_Record& srcRecord, const Unsafe_Entity_Record& dstRecord);
 
 private:
   ID_Manager m_entityIDsManager;
