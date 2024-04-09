@@ -76,8 +76,8 @@ private:
   void assigneOrCreateArchetypeForEntity(Entity_ID entity, Component_ID component);
   void reassigneArchetypeForEntity(Entity_ID entity, Component_ID component);
 
-  bool findArchetypeWithComponent(Component_ID component, const std::set<Component_ID>& type, Archetype_ID& archetypeID);
-  bool findArchetypeWithComponent(Component_ID component, Archetype_ID& archetypeID);
+  bool findArchetype(Component_ID component, const std::set<Component_ID>& type, Archetype_ID& dstArchetypeID);
+  bool findArchetype(Component_ID component, Archetype_ID& dstArchetypeID);
 
   void removeArchetype(Archetype& archetype);
   void addArchetypeToArray(const Archetype& archetype);
@@ -91,7 +91,7 @@ private:
   ID_Manager m_archetypeIDsManager;
 
   std::unordered_map<Entity_ID, Entity_Record>     m_entityToRecord;
-  std::unordered_map<Component_ID, Archetype_Map>  m_componentToArchetypeRecord;
+  std::unordered_map<Component_ID, Archetype_Map>  m_componentToArchetypeMap;
   std::vector<Archetype>                           m_archetypes;
   Component_Register                               m_componentRegister;
 
