@@ -83,7 +83,9 @@ private:
   Archetype& getArchetype(const Archetype_ID archetypeID);
   const Archetype& getArchetype(const Archetype_ID archetypeID) const;
 
-  uint64 moveComponentDataToArchetype(uint32 srcRow, uint32 srcSkippedColumn, Archetype& srcArchetype, Archetype& dstArchetype);
+  uint64 moveComponentData(uint32 srcRow, uint32 srcSkippedColumn, Archetype& srcArchetype, Archetype& dstArchetype);
+
+  void moveComponentDataExceptAdded(Component_ID addedComponent, Entity_Record& srcRecord, Entity_Record& dstRecord);
 
 private:
   ID_Manager m_entityIDsManager;
