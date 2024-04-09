@@ -239,6 +239,7 @@
     <ClInclude Include="..\..\crude_engine\core\debug\logger.hpp" />
     <ClInclude Include="..\..\crude_engine\core\ecs\alias.hpp" />
     <ClInclude Include="..\..\crude_engine\core\ecs\archetype.hpp" />
+    <ClInclude Include="..\..\crude_engine\core\ecs\component_container.hpp" />
     <ClInclude Include="..\..\crude_engine\core\ecs\component_register.hpp" />
     <ClInclude Include="..\..\crude_engine\core\ecs\entity.hpp" />
     <ClInclude Include="..\..\crude_engine\core\ecs\id_manager.hpp" />
@@ -324,6 +325,7 @@
     <None Include="..\..\crude_engine\core\data_structures\string.inl" />
     <None Include="..\..\crude_engine\core\data_structures\tree_iterator_base.inl" />
     <None Include="..\..\crude_engine\core\debug\logger.inl" />
+    <None Include="..\..\crude_engine\core\ecs\component_container.inl" />
     <None Include="..\..\crude_engine\core\ecs\component_register.inl" />
     <None Include="..\..\crude_engine\core\ecs\entity.inl" />
     <None Include="..\..\crude_engine\core\ecs\world.inl" />

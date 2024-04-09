@@ -495,6 +495,9 @@
     <ClInclude Include="..\..\crude_engine\core\ecs\component_register.hpp">
       <Filter>source\core\ecs</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\crude_engine\core\ecs\component_container.hpp">
+      <Filter>source\core\ecs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\crude_engine\graphics\vulkan\object.inl">
@@ -570,6 +573,9 @@
       <Filter>source\core\ecs</Filter>
     </None>
     <None Include="..\..\crude_engine\core\ecs\component_register.inl">
+      <Filter>source\core\ecs</Filter>
+    </None>
+    <None Include="..\..\crude_engine\core\ecs\component_container.inl">
       <Filter>source\core\ecs</Filter>
     </None>
   </ItemGroup>

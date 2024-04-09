@@ -1,7 +1,7 @@
 #pragma once
 
+#include <core/ecs/component_container.hpp>
 #include <core/debug/assert.hpp>
-#include <core/ecs/alias.hpp>
 #include <core/utility.hpp>
 #include <unordered_map>
 
@@ -11,19 +11,13 @@ namespace crude_engine
 class Component_Register
 {
 public:
-  using Create_Functinon   = void (*)(void* self);
-  using Destroy_Functinon  = void (*)(void* self);
-  using Move_Functinon     = void (*)(void* self, void* other);
-  using Copy_Functinon     = void (*)(void* self, const void* other);
-
-public:
   struct Component_Info
   {
-    Create_Functinon   fnCreate;
-    Destroy_Functinon  fnDestroy;
-    Move_Functinon     fnMove;
-    Copy_Functinon     fnCopy;
-    uint64             bsize;
+    Component_Container::Create_Functinon   fnCreate;
+    Component_Container::Destroy_Functinon  fnDestroy;
+    Component_Container::Move_Functinon     fnMove;
+    Component_Container::Copy_Functinon     fnCopy;
+    uint64                                  bsize;
   };
 
 public:
@@ -34,7 +28,6 @@ public:
 
 private:
   std::unordered_map<Component_ID, Component_Info> m_componentIDToInfo;
-
 };
 
 }

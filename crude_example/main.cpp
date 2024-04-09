@@ -1082,118 +1082,26 @@ int APIENTRY wWinMain(
 #include <vector>
 #include <unordered_map>
 #include <unordered_set>
-
-using Component_ID  = crude_engine::uint64;
-using Entity_ID     = crude_engine::uint64;
-using Archetype_ID  = crude_engine::uint64;
-using ID = crude_engine::uint64;
-
-struct Column
-{
-  void*                 elements;      // buffer with component data
-  crude_engine::uint64  element_size; // size of a single element
-  crude_engine::uint64  count;        // number of elements
-};
-
-struct Archetype;
-
-struct Archetype_Edge
-{
-  Archetype& m_add;
-  Archetype& m_remove;
-};
-
-struct Archetype
-{
-  std::vector<Component_ID>                          m_type;
-  Archetype_ID                                       m_id;
-  std::vector<Column>                                m_components; // one vector for each component
-  std::unordered_map<Component_ID, Archetype_Edge&>  m_edges;
-};
-
-struct Archetype_Record
-{
-  crude_engine::uint64 m_column;
-};
-
-using Archetype_Map = std::unordered_map<Archetype_ID, Archetype_Record>;
-std::unordered_map<Component_ID, Archetype_Map> component_index;
-
-struct Record
-{
-  Archetype&            m_archetype;
-  crude_engine::uint64  m_row;
-};
-
-std::unordered_map<Entity_ID, Record> entity_index;
-
-//bool has_component(EntityID entity, ComponentID component) {
-//  Record& record = entity_index[entity];
-//  Archetype& archetype = record.archetype;
-//  ArchetypeMap& archetype_set = component_index[component];
-//  return archetype_set.count(archetype.id) != 0;
-//}
-//
-//void* get_component(EntityID entity, ComponentID component) {
-//  Record& record = entity_index[entity];
-//  Archetype& archetype = record.archetype;
-//  ArchetypeMap archetypes = component_index[component];
-//  if (archetypes.count(archetype.id) == 0) {
-//    return nullptr;
-//  }
-//  ArchetypeRecord& a_record = archetypes[archetype.id];
-//  Column& c = archetype.components[a_record.column];
-//  return (std::byte*)c.elements + (c.element_size * record.row);
-//}
-
 #include <core/ecs/world.hpp>
 #include <core/ecs/entity.hpp>
 
-//void add_component(Entity_ID entity, Component_ID component) {
-//  Record& record = entity_index[entity];
-//  Archetype& archetype = record.m_archetype;
-//  Archetype& next_archetype = archetype.m_edges[component].m_add;
-//  move_entity(archetype, record.m_row, next_archetype);
-//}
-//
-//
-//void remove_component(EntityID entity, ComponentID component) {
-//  Record& record = entity_index[entity];
-//  Archetype& archetype = record.archetype;
-//  Archetype& next_archetype = archetype.edges[component].remove;
-//  move_entity(archetype, record.row, next_archetype);
-//}
-
-#define CRUDE_IMPL_COMPONENT_COPY(T)\
-  static void Copy(void* dst, const void* src) { *reinterpret_cast<T*>(dst) = *reinterpret_cast<const T*>(src); }
-#define CRUDE_IMPL_COMPONENT_MOVE(T)\
-  static void Move(void* dst, void* src) { *reinterpret_cast<T*>(dst) = std::move(*reinterpret_cast<T*>(src)); }
-
-struct Force
+struct Force : public crude_engine::Default_Component_Container<Force>
 {
-  CRUDE_IMPL_COMPONENT_COPY(Force);
-  CRUDE_IMPL_COMPONENT_MOVE(Force);
   int x;
 };
 
-struct Speed
+struct Speed : public crude_engine::Default_Component_Container<Speed>
 {
-  CRUDE_IMPL_COMPONENT_COPY(Speed);
-  CRUDE_IMPL_COMPONENT_MOVE(Speed);
   int x;
 };
 
-struct Power
+struct Power : public crude_engine::Default_Component_Container<Power>
 {
-  CRUDE_IMPL_COMPONENT_COPY(Power);
-  CRUDE_IMPL_COMPONENT_MOVE(Power);
   int x;
 };
 
-struct Length
+struct Length : public crude_engine::Default_Component_Container<Length>
 {
-  CRUDE_IMPL_COMPONENT_COPY(Length);
-  CRUDE_IMPL_COMPONENT_MOVE(Length);
   int x;
 };
 
@@ -1243,9 +1151,11 @@ int APIENTRY wWinMain(
   std::cout << entity4.hasComponent<Force>() << " " << entity4.hasComponent<Speed>() << " " << entity4.hasComponent<Power>() << " " << entity4.hasComponent<Length>() << std::endl;
   std::cout << entity5.hasComponent<Force>() << " " << entity5.hasComponent<Speed>() << " " << entity5.hasComponent<Power>() << " " << entity5.hasComponent<Length>() << std::endl;
 
-  entity.set<Force>({ 5 });
+  Force f1; f1.x = 5;
+  Force f2; f2.x = 4;
+  entity.set<Force>(f1);
   std::cout << entity.get<Force>().x << std::endl;
-  entityCopy.set<Force>({ 4 });
+  entityCopy.set<Force>(f2);
   std::cout << entity.get<Force>().x << " " << entityCopy.get<Force>().x << std::endl;
   entityCopy.remove<Force>();
   std::cout << entity.hasComponent<Force>() << " " << entityCopy.hasComponent<Force>() << std::endl;
