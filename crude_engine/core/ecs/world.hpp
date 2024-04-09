@@ -22,6 +22,11 @@ class World
 private:
   struct Entity_Record
   {
+    Entity_Record() = default;
+    Entity_Record(Archetype_ID archetypeID) 
+      : archetypeID(archetypeID) {};
+    Entity_Record(Archetype_ID archetypeID, uint64 row) 
+      : archetypeID(archetypeID), row(row) {};
     Archetype_ID           archetypeID;
     std::optional<uint64>  row;
   };
@@ -85,7 +90,7 @@ private:
 
   uint64 moveComponentData(uint32 srcRow, uint32 srcSkippedColumn, Archetype& srcArchetype, Archetype& dstArchetype);
 
-  void moveComponentDataExceptAdded(Component_ID addedComponent, Entity_Record& srcRecord, Entity_Record& dstRecord);
+  void moveEntityComponentDataExceptAdded(Component_ID addedComponent, const Entity_Record& srcRecord, Entity_Record& dstRecord);
 
 private:
   ID_Manager m_entityIDsManager;

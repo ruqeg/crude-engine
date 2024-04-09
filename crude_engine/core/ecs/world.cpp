@@ -214,29 +214,35 @@ void World::assigneOrCreateArchetypeForEntity(Entity_ID entity, Component_ID com
 
 void World::reassigneArchetypeForEntity(Entity_ID entity, Component_ID component)
 {
-  Entity_Record oldEntityRecord = m_entityToRecord[entity];
-  Archetype& archetype = getArchetype(oldEntityRecord.archetypeID);
+  const Entity_Record oldEntityRecord = m_entityToRecord[entity];
+  const Archetype_ID oldArchetypeID = oldEntityRecord.archetypeID;
+  Archetype& oldArchetype = getArchetype(oldArchetypeID);
 
-  std::set<Component_ID> newEntityArchetypeType = archetype.getType();
-  newEntityArchetypeType.insert(component);
+  std::set<Component_ID> newArchetypeType = oldArchetype.getType();
+  newArchetypeType.insert(component);
   
   Entity_Record newEntityRecord;
-  if (!findArchetype(component, newEntityArchetypeType, newEntityRecord.archetypeID))
+  if (findArchetype(component, newArchetypeType, newEntityRecord.archetypeID))
   {
-    createArchetypeForEntity(entity, newEntityArchetypeType);
+    newEntityRecord = Entity_Record(newEntityRecord.archetypeID);
+  }
+  else
+  {
+    createArchetypeForEntity(entity, newArchetypeType);
     newEntityRecord = m_entityToRecord.at(entity);
   }
 
-  moveComponentDataExceptAdded(component, oldEntityRecord, newEntityRecord);
-
-  getArchetype(newEntityRecord.archetypeID).increaseEntity(1u);
+  moveEntityComponentDataExceptAdded(component, oldEntityRecord, newEntityRecord);
 
   m_entityToRecord[entity] = newEntityRecord;
 
-  archetype.reduceEntity(1u);
-  if (archetype.entityEmpty())
+  Archetype& newArchetype = getArchetype(newEntityRecord.archetypeID);
+  newArchetype.increaseEntity(1u);
+
+  oldArchetype.reduceEntity(1u);
+  if (oldArchetype.entityEmpty())
   {
-    removeArchetype(archetype);
+    removeArchetype(oldArchetype);
   }
 }
 
@@ -319,7 +325,7 @@ uint64 World::moveComponentData(uint32 srcRow, uint32 srcSkippedColumn, Archetyp
   return row;
 }
 
-void World::moveComponentDataExceptAdded(Component_ID addedComponent, Entity_Record& srcRecord, Entity_Record& dstRecord)
+void World::moveEntityComponentDataExceptAdded(Component_ID addedComponent, const Entity_Record& srcRecord, Entity_Record& dstRecord)
 {
   if (!srcRecord.row.has_value())
   {
