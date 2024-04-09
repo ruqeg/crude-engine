@@ -92,6 +92,7 @@ private:
   bool findArchetype(Component_ID component, const std::set<Component_ID>& type, Archetype_ID& dstArchetypeID);
   bool findArchetype(Component_ID component, Archetype_ID& dstArchetypeID);
 
+  void addArchetype(Archetype& archetype);
   void removeArchetype(Archetype& archetype);
   Archetype& getArchetype(const Archetype_ID archetypeID);
   const Archetype& getArchetype(const Archetype_ID archetypeID) const;
@@ -106,7 +107,7 @@ private:
   std::unordered_map<Entity_ID, Entity_Record>     m_entityToRecord;
   std::unordered_map<Component_ID, Archetype_Map>  m_componentToArchetypeMap;
   std::vector<Archetype>                           m_archetypes;
-  Component_Register                               m_componentRegister;
+  std::shared_ptr<Component_Register>              m_componentRegister;
 
   friend class Entity;
   friend class Archetype;

@@ -7,7 +7,7 @@ namespace crude_engine
 
 World::World()
 {
-  m_archetypes.reserve(1000);
+  m_componentRegister = std::make_shared<Component_Register>();
 }
 
 Entity World::entity()
@@ -139,7 +139,9 @@ void World::removeComponent(Entity_ID entity, Component_ID component)
 
   oldArchetype.reduceEntity(1u);
   if (oldArchetype.entityEmpty())
+  {
     removeArchetype(oldArchetype);
+  }
 }
 
 bool World::hasComponent(Entity_ID entity, Component_ID component) const
@@ -169,7 +171,7 @@ void World::remove(Entity_ID entity)
 
 void World::createArchetypeForEntity(Entity_ID entity, const std::set<Component_ID>& type)
 {
-  Archetype archertype(&m_componentRegister, m_archetypeIDsManager.generate(), type);
+  Archetype archertype(m_componentRegister, m_archetypeIDsManager.generate(), type);
   const Archetype_ID archetypeID = archertype.getID();
 
   uint64 column = 0u;
@@ -181,15 +183,7 @@ void World::createArchetypeForEntity(Entity_ID entity, const std::set<Component_
   }
   archertype.increaseEntity(1u);
 
-  const ID_Index archetypeIndex = ID_Manager::getIndex(archetypeID);
-  if (archetypeIndex < m_archetypes.size())
-  {
-    m_archetypes[archetypeIndex] = archertype;
-  }
-  else
-  {
-    m_archetypes.push_back(archertype);
-  }
+  addArchetype(archertype);
 
   Entity_Record entityRecord;
   entityRecord.archetypeID = archetypeID;
@@ -303,9 +297,28 @@ bool World::findArchetype(Component_ID component, Archetype_ID& dstArchetypeID)
   return false;
 }
 
+void World::addArchetype(Archetype& archetype)
+{
+  // !TODO UNSAFE
+  const ID_Index archetypeIndex = ID_Manager::getIndex(archetype.getID());
+  CRUDE_ASSERT(archetypeIndex <= m_archetypes.size() && "!TODO");
+
+  if (archetypeIndex < m_archetypes.size())
+  {
+    m_archetypes[archetypeIndex] = archetype;
+  }
+  else
+  {
+    m_archetypes.push_back(archetype);
+  }
+}
+
 void World::removeArchetype(Archetype& archetype)
 {
   const Archetype_ID archetypeID = archetype.getID();
+
+  archetype.clear();
+
   for (auto& component : archetype.getType())
   {
     m_componentToArchetypeMap.at(component).erase(archetypeID);

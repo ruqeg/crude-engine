@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <set>
 #include <queue>
+#include <memory>
 
 // !TODO move to my stl
 
@@ -30,7 +31,10 @@ private:
   };
 
 public:
-  Archetype(Component_Register* pComponentRegister, Archetype_ID id, const std::set<Component_ID>& type);
+  Archetype(std::shared_ptr<Component_Register> componentRegister, Archetype_ID id, const std::set<Component_ID>& type);
+  ~Archetype();
+
+  void clear();
 
   void increaseEntity(int64 num);
   void reduceEntity(int64 num);
@@ -62,7 +66,7 @@ private:
   std::queue<uint64>                           m_freeRows;
   uint64                                       m_entitiesNum;
 
-  Component_Register*                          m_pComponentRegister;
+  std::shared_ptr<Component_Register>          m_componentRegister;
 };
 
 }

@@ -12,7 +12,7 @@ void Component_Register::registerComponent()
   info.bsize      = sizeof(Component);
   info.fnCopy     = Component::copy;
   //info.fnCreate;
-  //info.fnDestroy;
+  info.fnDestroy  = Component::destroy;
   info.fnMove     = Component::move;
 
   m_componentIDToInfo[component] = info;

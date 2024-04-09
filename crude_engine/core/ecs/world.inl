@@ -6,14 +6,14 @@ namespace crude_engine
 template<class Component>
 void World::addComponent(Entity_ID entity)
 {
-  m_componentRegister.registerComponent<Component>();
+  m_componentRegister->registerComponent<Component>();
   addComponent(entity, CPP_Type<Component>::id());
 }
 
 template<class Component>
 void World::setComponent(Entity_ID entity, const Component& value)
 {
-  m_componentRegister.registerComponent<Component>();
+  m_componentRegister->registerComponent<Component>();
   setComponent(entity, CPP_Type<Component>::id(), &value);
 }
 

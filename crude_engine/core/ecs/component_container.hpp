@@ -9,10 +9,10 @@ namespace crude_engine
 class Component_Container
 {
 public:
-  using Create_Functinon = void (*)(void* self);
+  using Create_Functinon  = void (*)(void* self);
   using Destroy_Functinon = void (*)(void* self);
-  using Move_Functinon = void (*)(void* self, void* other);
-  using Copy_Functinon = void (*)(void* self, const void* other);
+  using Move_Functinon    = void (*)(void* self, void* other);
+  using Copy_Functinon    = void (*)(void* self, const void* other);
 };
 
 template<class Component>
