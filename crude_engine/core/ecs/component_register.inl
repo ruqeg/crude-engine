@@ -11,7 +11,7 @@ void Component_Register::registerComponent()
   Component_Info info;
   info.bsize      = sizeof(Component);
   info.fnCopy     = Component::copy;
-  //info.fnCreate;
+  info.fnCreate   = Component::create;
   info.fnDestroy  = Component::destroy;
   info.fnMove     = Component::move;
 

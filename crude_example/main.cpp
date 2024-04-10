@@ -1092,9 +1092,30 @@ struct Force : public crude_engine::Default_Component_Container<Force>
   {
     a = new char[100000000];
   }
+  Force(const Force& other)
+  {
+    a = new char[100000000];
+  }
+  Force& operator=(const Force& other)
+  {
+    return *this;
+  }
+  Force(Force&& other)
+  {
+    a = other.a;
+    other.a = nullptr;
+  }
+  Force& operator=(Force&& other)
+  {
+    a = other.a;
+    other.a = nullptr;
+    return *this;
+  }
+
   ~Force()
   {
-    delete[] a;
+    if (a != nullptr)
+      delete[] a;
   }
   int x;
 };
