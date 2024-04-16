@@ -2,7 +2,7 @@
 #include <graphics/vulkan/physical_device.hpp>
 #include <graphics/vulkan/queue.hpp>
 #include <graphics/vulkan/fence.hpp>
-#include <core/data_structures/array_dynamic.hpp>
+#include <core/array_dynamic.hpp>
 
 namespace crude_engine
 {

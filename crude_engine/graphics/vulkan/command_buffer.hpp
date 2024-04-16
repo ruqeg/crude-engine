@@ -1,6 +1,6 @@
 #pragma once
 
-#include <core/data_structures/array_unsafe.hpp>
+#include <core/array_unsafe.hpp>
 #include <graphics/vulkan/object.hpp>
 #include <graphics/vulkan/image_memory_barrier.hpp>
 

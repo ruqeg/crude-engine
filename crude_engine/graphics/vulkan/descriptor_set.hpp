@@ -2,8 +2,8 @@
 
 #include <graphics/vulkan/include_vulkan.hpp>
 #include <graphics/vulkan/object.hpp>
-#include <core/data_structures/array_dynamic.hpp>
-#include <core/data_structures/shared_ptr.hpp>
+#include <core/array_dynamic.hpp>
+#include <core/shared_ptr.hpp>
 
 namespace crude_engine
 {

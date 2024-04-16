@@ -1082,8 +1082,8 @@ int APIENTRY wWinMain(
 #include <vector>
 #include <unordered_map>
 #include <unordered_set>
-#include <core/ecs/world.hpp>
-#include <core/ecs/entity.hpp>
+#include <ecs/world.hpp>
+#include <ecs/entity.hpp>
 
 struct Force : public crude_engine::Default_Component_Container<Force>
 {
@@ -1192,6 +1192,15 @@ int APIENTRY wWinMain(
 
     std::cout << entity.get<Force>().x << std::endl;
     entity5.remove<Force>();
+
+    //crude_engine::System forceSystem = ecs.system<Force, const Speed>()
+    //  .each([](crude_engine::Entity e, Force& f, const Speed& s) {
+    //    f.x += s.x;
+    //    std::cout << ": {" << f.x << ", " << s.y << "}\n";
+    //  });
+    //forceSystem.run();
+
+   // crude_engine::Query q = ecs.query<Force>();
   }
   return EXIT_SUCCESS;
 }

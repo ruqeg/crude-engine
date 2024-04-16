@@ -3,7 +3,7 @@
 #include <graphics/vulkan/fence.hpp>
 #include <graphics/vulkan/semaphore.hpp>
 #include <graphics/vulkan/swap_chain.hpp>
-#include <core/data_structures/array_dynamic.hpp>
+#include <core/array_dynamic.hpp>
 
 namespace crude_engine
 {

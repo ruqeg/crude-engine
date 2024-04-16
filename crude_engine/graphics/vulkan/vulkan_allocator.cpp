@@ -1,6 +1,6 @@
 #include <graphics/vulkan/vulkan_allocator.hpp>
-#include <core/memory/memory_system.hpp>
-#include <core/debug/assert.hpp>
+#include <core/memory_system.hpp>
+#include <core/assert.hpp>
 
 namespace crude_engine
 {

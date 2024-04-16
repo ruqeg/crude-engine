@@ -1,6 +1,6 @@
 #pragma once
 
-#include <core/data_structures/shared_ptr.hpp>
+#include <core/shared_ptr.hpp>
 #include <graphics/vulkan/object.hpp>
 #include <graphics/vulkan/include_vulkan.hpp>
 

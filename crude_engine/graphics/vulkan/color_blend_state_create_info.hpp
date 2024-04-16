@@ -1,7 +1,7 @@
 #pragma once
 
-#include <core/data_structures/array_unsafe.hpp>
-#include <core/data_structures/array_stack.hpp>
+#include <core/array_unsafe.hpp>
+#include <core/array_stack.hpp>
 #include <graphics/vulkan/include_vulkan.hpp>
 
 namespace crude_engine

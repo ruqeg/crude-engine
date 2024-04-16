@@ -1,9 +1,9 @@
 #pragma once
 
 #include <graphics/vulkan/include_vulkan.hpp>
-#include <core/data_structures/shared_ptr.hpp>
-#include <core/data_structures/array_dynamic.hpp>
-#include <core/data_structures/array_unsafe.hpp>
+#include <core/shared_ptr.hpp>
+#include <core/array_dynamic.hpp>
+#include <core/array_unsafe.hpp>
 #include <graphics/vulkan/application.hpp>
 #include <graphics/vulkan/object.hpp>
 

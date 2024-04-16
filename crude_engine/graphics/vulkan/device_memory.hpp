@@ -1,7 +1,7 @@
 #pragma once
 
-#include <core/data_structures/shared_ptr.hpp>
-#include <core/data_structures/optional.hpp>
+#include <core/shared_ptr.hpp>
+#include <core/optional.hpp>
 #include <graphics/vulkan/include_vulkan.hpp>
 #include <graphics/vulkan/object.hpp>
 

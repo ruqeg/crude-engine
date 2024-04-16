@@ -1,7 +1,7 @@
 #pragma once
 
-#include <core/data_structures/array_dynamic.hpp>
-#include <core/data_structures/array_unsafe.hpp>
+#include <core/array_dynamic.hpp>
+#include <core/array_unsafe.hpp>
 
 namespace crude_engine
 {

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <core/data_structures/array_unsafe.hpp>
-#include <core/data_structures/shared_ptr.hpp>
+#include <core/array_unsafe.hpp>
+#include <core/shared_ptr.hpp>
 #include <graphics/vulkan/subpass_dependency.hpp>
 #include <graphics/vulkan/subpass_description.hpp>
 #include <graphics/vulkan/attachment_description.hpp>

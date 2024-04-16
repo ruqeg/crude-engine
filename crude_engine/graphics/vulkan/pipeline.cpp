@@ -2,7 +2,7 @@
 #include <graphics/vulkan/device.hpp>
 #include <graphics/vulkan/pipeline_layout.hpp>
 #include <graphics/vulkan/render_pass.hpp>
-#include <core/data_structures/array_dynamic.hpp>
+#include <core/array_dynamic.hpp>
 
 namespace crude_engine
 {
