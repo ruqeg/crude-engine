@@ -106,11 +106,10 @@ void World::removeComponent(Entity_ID entity, Component_ID component)
 
   const Entity_Record oldEntityRecord = m_entityToRecord.at(entity);
   const uint64 oldArchetypeID = oldEntityRecord.archetypeID;
-  Archetype& oldArchetype = getArchetype(oldArchetypeID);
   Archetype_Map& componentRecord = m_componentToArchetypeMap.at(component);
   Archetype_Record& oldArchetypeRecord = componentRecord.at(oldEntityRecord.archetypeID);
 
-  std::set<Component_ID> newEntityArchetypeType = oldArchetype.type();
+  std::set<Component_ID> newEntityArchetypeType = getArchetype(oldArchetypeID).type();
   newEntityArchetypeType.erase(component);
 
   Entity_Record newEntityRecord;
@@ -133,9 +132,9 @@ void World::removeComponent(Entity_ID entity, Component_ID component)
     const uint64 newRow = newEntityRecord.row.value();
 
     const uint64 skippedColumn = oldArchetypeRecord.column;
-    moveEntityComponentDataExceptRemoved(skippedColumn, Unsafe_Entity_Record(&oldArchetype, oldRow), Unsafe_Entity_Record(&newArchetype, newRow));
+    moveEntityComponentDataExceptRemoved(skippedColumn, Unsafe_Entity_Record(&getArchetype(oldArchetypeID), oldRow), Unsafe_Entity_Record(&newArchetype, newRow));
 
-    oldArchetype.removeComponentData(oldRow);
+    getArchetype(oldArchetypeID).removeComponentData(oldRow);
   }
 
   m_entityToRecord[entity] = newEntityRecord;
@@ -143,10 +142,10 @@ void World::removeComponent(Entity_ID entity, Component_ID component)
   Archetype& newArchetype = getArchetype(newEntityRecord.archetypeID);
   newArchetype.increaseEntity(1u);
 
-  oldArchetype.reduceEntity(1u);
-  if (oldArchetype.entityEmpty())
+  getArchetype(oldArchetypeID).reduceEntity(1u);
+  if (getArchetype(oldArchetypeID).entityEmpty())
   {
-    removeArchetype(oldArchetype);
+    removeArchetype(getArchetype(oldArchetypeID));
   }
 }
 
@@ -178,6 +177,7 @@ void World::remove(Entity_ID entity)
 void World::createArchetypeForEntity(Entity_ID entity, const std::set<Component_ID>& type)
 {
   Archetype archertype(m_componentRegister, m_archetypeIDsManager.generate(), type);
+  const Archetype_ID archertypeID = archertype.id();
 
   uint64 column = 0u;
   for (auto& component : type)
@@ -188,10 +188,10 @@ void World::createArchetypeForEntity(Entity_ID entity, const std::set<Component_
   }
   archertype.increaseEntity(1u);
 
-  addArchetype(archertype);
+  addArchetype(Utility::move(archertype));
 
   Entity_Record entityRecord;
-  entityRecord.archetypeID = archertype.id();
+  entityRecord.archetypeID = archertypeID;
   entityRecord.row = std::nullopt;
   m_entityToRecord[entity] = entityRecord;
 }
@@ -218,9 +218,8 @@ void World::reassigneArchetypeForEntity(Entity_ID entity, Component_ID component
 {
   const Entity_Record oldEntityRecord = m_entityToRecord[entity];
   const Archetype_ID oldArchetypeID = oldEntityRecord.archetypeID;
-  Archetype& oldArchetype = getArchetype(oldArchetypeID);
 
-  std::set<Component_ID> newArchetypeType = oldArchetype.type();
+  std::set<Component_ID> newArchetypeType = getArchetype(oldArchetypeID).type();
   newArchetypeType.insert(component);
   
   Entity_Record newEntityRecord;
@@ -243,9 +242,12 @@ void World::reassigneArchetypeForEntity(Entity_ID entity, Component_ID component
     const uint64 newRow = newEntityRecord.row.value();
 
     const uint64 skippedColumn = m_componentToArchetypeMap.at(component).at(newEntityRecord.archetypeID).column;
-    moveEntityComponentDataExceptAdded(skippedColumn, Unsafe_Entity_Record(&oldArchetype, oldRow), Unsafe_Entity_Record(&newArchetype, newRow));
+    moveEntityComponentDataExceptAdded(
+      skippedColumn, 
+      Unsafe_Entity_Record(&getArchetype(oldArchetypeID), oldRow), 
+      Unsafe_Entity_Record(&newArchetype, newRow));
 
-    oldArchetype.removeComponentData(oldRow);
+    getArchetype(oldArchetypeID).removeComponentData(oldRow);
   }
 
   m_entityToRecord[entity] = newEntityRecord;
@@ -253,10 +255,10 @@ void World::reassigneArchetypeForEntity(Entity_ID entity, Component_ID component
   Archetype& newArchetype = getArchetype(newEntityRecord.archetypeID);
   newArchetype.increaseEntity(1u);
 
-  oldArchetype.reduceEntity(1u);
-  if (oldArchetype.entityEmpty())
+  getArchetype(oldArchetypeID).reduceEntity(1u);
+  if (getArchetype(oldArchetypeID).entityEmpty())
   {
-    removeArchetype(oldArchetype);
+    removeArchetype(getArchetype(oldArchetypeID));
   }
 }
 
@@ -302,7 +304,7 @@ bool World::findArchetype(Component_ID component, Archetype_ID& dstArchetypeID)
   return false;
 }
 
-void World::addArchetype(Archetype& archetype)
+void World::addArchetype(Archetype&& archetype)
 {
   // !TODO UNSAFE
   const ID_Index archetypeIndex = ID_Manager::getIndex(archetype.id());
@@ -342,9 +344,9 @@ const Archetype& World::getArchetype(const Archetype_ID archetypeID) const
 
 void World::moveEntityComponentDataExceptAdded(uint32 skippedColumn, const Unsafe_Entity_Record& srcRecord, const Unsafe_Entity_Record& dstRecord)
 {
-  const uint64 dstComponentsNum = dstRecord.pArchetype->getComponentsNum();
+  const uint64 dstColumnsNum = dstRecord.pArchetype->getColumnsNum();
 
-  for (uint64 newColumn = 0u, oldColumn = 0u; newColumn < dstComponentsNum; ++newColumn)
+  for (uint64 newColumn = 0u, oldColumn = 0u; newColumn < dstColumnsNum; ++newColumn)
   {
     if (newColumn == skippedColumn)
       continue;
@@ -356,9 +358,9 @@ void World::moveEntityComponentDataExceptAdded(uint32 skippedColumn, const Unsaf
 
 void World::moveEntityComponentDataExceptRemoved(uint32 skippedColumn, const Unsafe_Entity_Record& srcRecord, const Unsafe_Entity_Record& dstRecord)
 {
-  const uint64 srcComponentsNum = srcRecord.pArchetype->getComponentsNum();
+  const uint64 srcColumnsNum = srcRecord.pArchetype->getColumnsNum();
 
-  for (uint64 oldColumn = 0u, newColumn = 0u; oldColumn < srcComponentsNum; ++oldColumn)
+  for (uint64 oldColumn = 0u, newColumn = 0u; oldColumn < srcColumnsNum; ++oldColumn)
   {
     if (oldColumn == skippedColumn)
       continue;

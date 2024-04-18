@@ -68,6 +68,8 @@ uint64 Archetype::newRow()
   {
     const uint64 row = m_freeRows.front();
     m_freeRows.pop();
+    deinitializeRowData(row);
+    initializeRowData(row);
     return row;
   }
 
@@ -77,18 +79,20 @@ uint64 Archetype::newRow()
     m_componentsDataCapacity = 1u;
     m_componentsDataSize = 1u;
     increaseCapacity();
-
+    initializeRowData(row);
     return row;
   }
   
   if (m_componentsDataSize < m_componentsDataCapacity)
   {
     const uint32 row = m_componentsDataSize++;
+    initializeRowData(row);
     return row;
   }
 
   const uint32 row = m_componentsDataSize++;
   increaseCapacity();
+  initializeRowData(row);
   return row;
 }
 
@@ -138,6 +142,11 @@ const void* Archetype::getComponentData(uint64 column, uint64 row) const
   return reinterpret_cast<const void*>(getComponentData(column, row));
 }
 
+uint64 Archetype::getRowsNum() const
+{
+  return m_componentsDataSize;
+}
+
 const std::set<Component_ID>& Archetype::type() const
 {
   return m_type;
@@ -148,7 +157,7 @@ Archetype_ID Archetype::id() const
   return m_id;
 }
 
-uint64 Archetype::getComponentsNum() const
+uint64 Archetype::getColumnsNum() const
 {
   return m_components.size();
 }
@@ -161,6 +170,24 @@ void Archetype::increaseCapacity()
   {
     const Component_Register::Component_Info& componentInfo = m_componentRegister->getComponentInfo(column.m_component);
     column.m_elements.resize(m_componentsDataCapacity * componentInfo.bsize);
+  }
+}
+
+void Archetype::initializeRowData(uint64 row)
+{
+  for (auto& column : m_components)
+  {
+    const Component_Register::Component_Info& componentInfo = m_componentRegister->getComponentInfo(column.m_component);
+    componentInfo.fnCreate(column.m_elements.data() + row * componentInfo.bsize);
+  }
+}
+
+void Archetype::deinitializeRowData(uint64 row)
+{
+  for (auto& column : m_components)
+  {
+    const Component_Register::Component_Info& componentInfo = m_componentRegister->getComponentInfo(column.m_component);
+    componentInfo.fnDestroy(column.m_elements.data() + row * componentInfo.bsize);
   }
 }
 

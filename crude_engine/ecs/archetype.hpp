@@ -51,10 +51,13 @@ public:
   const std::set<Component_ID>& type() const;
   Archetype_ID id() const;
 
-  uint64 getComponentsNum() const;
+  uint64 getRowsNum() const;
+  uint64 getColumnsNum() const;
 
 private:
   void increaseCapacity();
+  void initializeRowData(uint64 row);
+  void deinitializeRowData(uint64 row);
 
 private:
   Archetype_ID                                 m_id;

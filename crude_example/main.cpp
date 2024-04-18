@@ -1084,54 +1084,33 @@ int APIENTRY wWinMain(
 #include <unordered_set>
 #include <ecs/world.hpp>
 #include <ecs/entity.hpp>
+#include <ecs/query.hpp>
 
 struct Force : public crude_engine::Default_Component_Container<Force>
 {
-  char* a;
-  Force()
-  {
-    a = new char[100000000];
-  }
-  Force(const Force& other)
-  {
-    a = new char[100000000];
-  }
-  Force& operator=(const Force& other)
-  {
-    return *this;
-  }
-  Force(Force&& other)
-  {
-    a = other.a;
-    other.a = nullptr;
-  }
-  Force& operator=(Force&& other)
-  {
-    a = other.a;
-    other.a = nullptr;
-    return *this;
-  }
-
-  ~Force()
-  {
-    if (a != nullptr)
-      delete[] a;
-  }
+  Force() = default;
+  Force(int x) : x(x) {}
   int x;
 };
 
 struct Speed : public crude_engine::Default_Component_Container<Speed>
 {
+  Speed() = default;
+  Speed(int x) : x(x) {}
   int x;
 };
 
 struct Power : public crude_engine::Default_Component_Container<Power>
 {
+  Power() = default;
+  Power(int x) : x(x) {}
   int x;
 };
 
 struct Length : public crude_engine::Default_Component_Container<Length>
 {
+  Length() = default;
+  Length(int x) : x(x) {}
   int x;
 };
 
@@ -1146,53 +1125,90 @@ int APIENTRY wWinMain(
   FILE* dummy;
   auto s = freopen_s(&dummy, "CONOUT$", "w", stdout);
   {
+    //crude_engine::World ecs;
+    //
+    //crude_engine::Entity entity = ecs.entity()
+    //  .add<Force>()
+    //  .add<Speed>()
+    //  .add<Power>();
+    //
+    //crude_engine::Entity entity2 = ecs.entity()
+    //  .add<Force>();
+    //
+    //crude_engine::Entity entity3 = ecs.entity()
+    //  .add<Force>()
+    //  .add<Speed>();
+    //
+    //crude_engine::Entity entity4 = ecs.entity()
+    //  .add<Force>()
+    //  .add<Power>();
+    //
+    //crude_engine::Entity entity5 = ecs.entity()
+    //  .add<Force>()
+    //  .add<Speed>()
+    //  .add<Power>()
+    //  .add<Length>();
+    //
+    //crude_engine::Entity entityCopy = ecs.entity()
+    //  .add<Force>()
+    //  .add<Speed>()
+    //  .add<Power>();
+    //
+    //std::cout << entity.hasComponent<Force>() << " " << entity.hasComponent<Speed>() << " " << entity.hasComponent<Power>() << " " << entity.hasComponent<Length>() << std::endl;
+    //std::cout << entity2.hasComponent<Force>() << " " << entity2.hasComponent<Speed>() << " " << entity2.hasComponent<Power>() << " " << entity2.hasComponent<Length>() << std::endl;
+    //std::cout << entity3.hasComponent<Force>() << " " << entity3.hasComponent<Speed>() << " " << entity3.hasComponent<Power>() << " " << entity3.hasComponent<Length>() << std::endl;
+    //std::cout << entity4.hasComponent<Force>() << " " << entity4.hasComponent<Speed>() << " " << entity4.hasComponent<Power>() << " " << entity4.hasComponent<Length>() << std::endl;
+    //std::cout << entity5.hasComponent<Force>() << " " << entity5.hasComponent<Speed>() << " " << entity5.hasComponent<Power>() << " " << entity5.hasComponent<Length>() << std::endl;
+    //
+    //Force f1; f1.x = 5;
+    //Force f2; f2.x = 4;
+    //entity.set<Force>(f1);
+    //std::cout << entity.get<Force>().x << std::endl;
+    //entityCopy.set<Force>(f2);
+    //std::cout << entity.get<Force>().x << " " << entityCopy.get<Force>().x << std::endl;
+    //entityCopy.remove<Force>();
+    //std::cout << entity.hasComponent<Force>() << " " << entityCopy.hasComponent<Force>() << std::endl;
+    //
+    //std::cout << entity.get<Force>().x << std::endl;
+    //entity5.remove<Force>();
+    //
+    //crude_engine::Query<Force, Speed> q(&ecs);
+    //q.each([](crude_engine::Entity e, Force& f, Speed& s) {
+    //  f.x += s.x;
+    //  std::cout << ": {" << f.x << ", " << s.x << "}\n";
+    //});
+
+
     crude_engine::World ecs;
 
-    crude_engine::Entity entity = ecs.entity()
-      .add<Force>()
-      .add<Speed>()
-      .add<Power>();
-
+    crude_engine::Entity entity1 = ecs.entity()
+      .set<Force>({ 1 })
+      .set<Speed>({ 1 });
+    
     crude_engine::Entity entity2 = ecs.entity()
-      .add<Force>();
-
+      .set<Force>({ 1 })
+      .set<Speed>({ 1 });
+    
     crude_engine::Entity entity3 = ecs.entity()
-      .add<Force>()
-      .add<Speed>();
-
+      .set<Force>({ 1 })
+      .set<Speed>({ 1 })
+      .set<Power>({ 1 });
+    
     crude_engine::Entity entity4 = ecs.entity()
-      .add<Force>()
-      .add<Power>();
+      .set<Force>({ 1 })
+      .set<Power>({ 1 });
 
-    crude_engine::Entity entity5 = ecs.entity()
-      .add<Force>()
-      .add<Speed>()
-      .add<Power>()
-      .add<Length>();
+    crude_engine::Query<Force, Speed> q(&ecs);
+    q.each([](Force& f, Speed& s) {
+      f.x += 1;
+      s.x += 1;
+    });
 
-    crude_engine::Entity entityCopy = ecs.entity()
-      .add<Force>()
-      .add<Speed>()
-      .add<Power>();
-
-    std::cout << entity.hasComponent<Force>() << " " << entity.hasComponent<Speed>() << " " << entity.hasComponent<Power>() << " " << entity.hasComponent<Length>() << std::endl;
-    std::cout << entity2.hasComponent<Force>() << " " << entity2.hasComponent<Speed>() << " " << entity2.hasComponent<Power>() << " " << entity2.hasComponent<Length>() << std::endl;
-    std::cout << entity3.hasComponent<Force>() << " " << entity3.hasComponent<Speed>() << " " << entity3.hasComponent<Power>() << " " << entity3.hasComponent<Length>() << std::endl;
-    std::cout << entity4.hasComponent<Force>() << " " << entity4.hasComponent<Speed>() << " " << entity4.hasComponent<Power>() << " " << entity4.hasComponent<Length>() << std::endl;
-    std::cout << entity5.hasComponent<Force>() << " " << entity5.hasComponent<Speed>() << " " << entity5.hasComponent<Power>() << " " << entity5.hasComponent<Length>() << std::endl;
-
-    Force f1; f1.x = 5;
-    Force f2; f2.x = 4;
-    entity.set<Force>(f1);
-    std::cout << entity.get<Force>().x << std::endl;
-    entityCopy.set<Force>(f2);
-    std::cout << entity.get<Force>().x << " " << entityCopy.get<Force>().x << std::endl;
-    entityCopy.remove<Force>();
-    std::cout << entity.hasComponent<Force>() << " " << entityCopy.hasComponent<Force>() << std::endl;
-
-    std::cout << entity.get<Force>().x << std::endl;
-    entity5.remove<Force>();
-
+    std::cout << "entity1" << "force: " << entity1.get<Force>().x << " speed: " << entity1.get<Speed>().x << std::endl;
+    std::cout << "entity2" << "force: " << entity2.get<Force>().x << " speed: " << entity2.get<Speed>().x << std::endl;
+    std::cout << "entity3" << "force: " << entity3.get<Force>().x << " speed: " << entity3.get<Speed>().x << std::endl;
+    std::cout << "entity4" << "force: " << entity4.get<Force>().x << " speed: " << entity4.hasComponent<Speed>() << std::endl;
+     
     //crude_engine::System forceSystem = ecs.system<Force, const Speed>()
     //  .each([](crude_engine::Entity e, Force& f, const Speed& s) {
     //    f.x += s.x;
