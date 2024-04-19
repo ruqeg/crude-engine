@@ -575,5 +575,8 @@
     <None Include="..\..\crude_engine\ecs\world.inl">
       <Filter>source\ecs</Filter>
     </None>
+    <None Include="..\..\crude_engine\ecs\query.inl">
+      <Filter>source\ecs</Filter>
+    </None>
   </ItemGroup>
 </Project>

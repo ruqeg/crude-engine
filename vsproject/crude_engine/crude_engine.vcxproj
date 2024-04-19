@@ -336,6 +336,7 @@
     <None Include="..\..\crude_engine\ecs\component_container.inl" />
     <None Include="..\..\crude_engine\ecs\component_register.inl" />
     <None Include="..\..\crude_engine\ecs\entity.inl" />
+    <None Include="..\..\crude_engine\ecs\query.inl" />
     <None Include="..\..\crude_engine\ecs\world.inl" />
     <None Include="..\..\crude_engine\graphics\vulkan\object.inl" />
   </ItemGroup>

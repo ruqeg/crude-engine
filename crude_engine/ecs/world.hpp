@@ -54,8 +54,8 @@ public:
 public:
   Entity entity();
 
-  //template<class... Components>
-  //Query query() const;
+  template<class... Components>
+  Query<Components...> query();
 
   void remove(Entity_ID entity);
 

@@ -2,14 +2,14 @@
 
 namespace crude_engine
 {
-//template<class ...Components>
-//Query World::query() const
-//{
-//  // !TODO
-//  std::vector<Component_ID> components;
-//  (components.push_back(CPP_Type<Components>::id()), ...);
-//  return Query(this, components);
-//}
+
+template<class ...Components>
+Query<Components...> World::query()
+{
+  std::vector<Component_ID> components;
+  (components.push_back(CPP_Type<Components>::id()), ...);
+  return Query<Components...>(this, components);
+}
 
 template<class Component>
 void World::addComponent(Entity_ID entity)

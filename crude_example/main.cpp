@@ -1198,11 +1198,11 @@ int APIENTRY wWinMain(
       .set<Force>({ 1 })
       .set<Power>({ 1 });
 
-    crude_engine::Query<Force, Speed> q(&ecs);
-    q.each([](Force& f, Speed& s) {
-      f.x += 1;
-      s.x += 1;
-    });
+    ecs.query<Force, Speed>()
+      .each([](Force& f, Speed& s) {
+        f.x += 1;
+        s.x += 1;
+      });
 
     std::cout << "entity1" << "force: " << entity1.get<Force>().x << " speed: " << entity1.get<Speed>().x << std::endl;
     std::cout << "entity2" << "force: " << entity2.get<Force>().x << " speed: " << entity2.get<Speed>().x << std::endl;
