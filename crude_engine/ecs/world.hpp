@@ -2,11 +2,9 @@
 
 #include <ecs/archetype.hpp>
 #include <ecs/id_manager.hpp>
-#include <queue>
-#include <stack>
 #include <unordered_map>
 #include <core/utility.hpp>
-#include <optional>
+#include <core/optional.hpp>
 #include <core/assert.hpp>
 #include <ecs/component_register.hpp>
 #include <vector>
@@ -31,8 +29,8 @@ private:
       : archetypeID(archetypeID) {};
     Entity_Record(Archetype_ID archetypeID, uint64 row) 
       : archetypeID(archetypeID), row(row) {};
-    Archetype_ID           archetypeID;
-    std::optional<uint64>  row;
+    Archetype_ID      archetypeID;
+    Optional<uint64>  row;
   };
 
   struct Archetype_Record

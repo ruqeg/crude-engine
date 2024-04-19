@@ -59,7 +59,7 @@ void World::setComponent(Entity_ID entity, Component_ID component, const void* v
   const Archetype_Map& componentRecord = m_componentToArchetypeMap.at(component);
   const uint64 column = componentRecord.at(archetypeID).column;
 
-  const bool noComponentData = !entityRecord.row.has_value();
+  const bool noComponentData = !entityRecord.row.hasValue();
   if (noComponentData)
   {
     entityRecord.row = archetype.newRow();
@@ -77,7 +77,7 @@ void* World::getComponent(Entity_ID entity, Component_ID component)
   }
 
   Entity_Record& entityRecord = m_entityToRecord.at(entity);
-  const bool noComponentData = !entityRecord.row.has_value();
+  const bool noComponentData = !entityRecord.row.hasValue();
   if (noComponentData)
   {
     CRUDE_ASSERT(false && "TODO");
@@ -123,7 +123,7 @@ void World::removeComponent(Entity_ID entity, Component_ID component)
     newEntityRecord = m_entityToRecord.at(entity);
   }
 
-  if (oldEntityRecord.row.has_value())
+  if (oldEntityRecord.row.hasValue())
   {
     Archetype& newArchetype = getArchetype(newEntityRecord.archetypeID);
     newEntityRecord.row = newArchetype.newRow();
@@ -192,7 +192,7 @@ void World::createArchetypeForEntity(Entity_ID entity, const std::set<Component_
 
   Entity_Record entityRecord;
   entityRecord.archetypeID = archertypeID;
-  entityRecord.row = std::nullopt;
+  entityRecord.row = nullopt;
   m_entityToRecord[entity] = entityRecord;
 }
 
@@ -210,7 +210,7 @@ void World::assigneOrCreateArchetypeForEntity(Entity_ID entity, Component_ID com
 
   Entity_Record entityRecord;
   entityRecord.archetypeID = archetypeID;
-  entityRecord.row = std::nullopt;
+  entityRecord.row = nullopt;
   m_entityToRecord[entity] = entityRecord;
 }
 
@@ -233,7 +233,7 @@ void World::reassigneArchetypeForEntity(Entity_ID entity, Component_ID component
     newEntityRecord = m_entityToRecord.at(entity);
   }
 
-  if (oldEntityRecord.row.has_value())
+  if (oldEntityRecord.row.hasValue())
   {
     Archetype& newArchetype = getArchetype(newEntityRecord.archetypeID);
     newEntityRecord.row = newArchetype.newRow();

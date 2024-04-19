@@ -1,5 +1,6 @@
 #pragma once
 
+#include <core/assert.hpp>
 #include <core/utility.hpp>
 
 namespace crude_engine
