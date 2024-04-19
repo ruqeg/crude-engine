@@ -12,6 +12,5 @@ using ID_Index      = uint64;
 using Component_ID  = ID;
 using Archetype_ID  = ID;
 using Entity_ID     = ID;
-using System_ID     = ID;
 
 }
