@@ -231,7 +231,7 @@ template<typename... Args>
 void Optional<T>::construct(Args&&... args) noexcept
 {
   CRUDE_ASSERT(!hasValue());
-  Utility::constructAt<Value_Type>(getStorage(), std::forward<Args>(args)...);
+  Utility::constructAt<Value_Type>(getStorage(), Utility::forward<Args>(args)...);
   m_engaged = true;
 }
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <type_traits>
 #include <core/assert.hpp>
 #include <core/utility.hpp>
 

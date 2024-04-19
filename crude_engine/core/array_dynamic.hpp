@@ -86,6 +86,8 @@ public:
   Reference operator[](std::size_t index) noexcept;
   Const_Reference operator[](std::size_t index) const noexcept;
 
+  void clear();
+
   bool empty() const noexcept;
 
   Size_Type size() const noexcept;

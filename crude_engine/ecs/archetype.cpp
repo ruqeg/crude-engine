@@ -5,9 +5,9 @@
 namespace crude_engine
 {
 
-Archetype::Archetype(std::shared_ptr<Component_Register> componentRegister, Archetype_ID id, const std::set<Component_ID>& type)
+Archetype::Archetype(Component_Register* pComponentRegister, Archetype_ID id, const std::set<Component_ID>& type)
   :
-  m_componentRegister(componentRegister),
+  m_pComponentRegister(pComponentRegister),
   m_id(id),
   m_type(type),
   m_componentsDataCapacity(0u),
@@ -33,13 +33,20 @@ void Archetype::clear()
 {
   for (Archetype_Column& column : m_components)
   {
-    const Component_Register::Component_Info& componentInfo = m_componentRegister->getComponentInfo(column.m_component);
+    const Component_Register::Component_Info& componentInfo = m_pComponentRegister->getComponentInfo(column.m_component);
 
     for (uint32 row = 0; row < m_componentsDataSize; ++row)
     {
       componentInfo.fnDestroy(column.m_elements.data() + row * componentInfo.bsize);
     }
+
+    column.m_elements.clear();
   }
+  
+  m_componentsDataCapacity = 0u;
+  m_componentsDataSize = 0u;
+  m_entitiesNum = 0u;
+  m_freeRows = {};
 }
 
 void Archetype::increaseEntity(int64 num)
@@ -106,7 +113,7 @@ void Archetype::copyComponentData(uint64 column, uint64 row, const void* value)
   CRUDE_ASSERT(row < m_componentsDataSize);
 
   const Component_ID component = m_components[column].m_component;
-  const Component_Register::Component_Info& componentInfo = m_componentRegister->getComponentInfo(component);
+  const Component_Register::Component_Info& componentInfo = m_pComponentRegister->getComponentInfo(component);
   const uint64 index = row * componentInfo.bsize;
   void* pComponentData = m_components[column].m_elements.data() + index;
 
@@ -118,7 +125,7 @@ void Archetype::moveComponentData(uint64 column, uint64 row, void* value)
   CRUDE_ASSERT(row < m_componentsDataSize);
 
   const Component_ID component = m_components[column].m_component;
-  const Component_Register::Component_Info& componentInfo = m_componentRegister->getComponentInfo(component);
+  const Component_Register::Component_Info& componentInfo = m_pComponentRegister->getComponentInfo(component);
   const uint64 index = row * componentInfo.bsize;
   void* pComponentData = m_components[column].m_elements.data() + index;
 
@@ -130,7 +137,7 @@ void* Archetype::getComponentData(uint64 column, uint64 row)
   CRUDE_ASSERT(row < m_componentsDataSize);
 
   const Component_ID component = m_components[column].m_component;
-  const Component_Register::Component_Info& componentInfo = m_componentRegister->getComponentInfo(component);
+  const Component_Register::Component_Info& componentInfo = m_pComponentRegister->getComponentInfo(component);
   const uint64 index = row * componentInfo.bsize;
   void* pComponentData = m_components[column].m_elements.data() + index;
 
@@ -168,7 +175,7 @@ void Archetype::increaseCapacity()
 
   for (auto& column : m_components)
   {
-    const Component_Register::Component_Info& componentInfo = m_componentRegister->getComponentInfo(column.m_component);
+    const Component_Register::Component_Info& componentInfo = m_pComponentRegister->getComponentInfo(column.m_component);
     column.m_elements.resize(m_componentsDataCapacity * componentInfo.bsize);
   }
 }
@@ -177,7 +184,7 @@ void Archetype::initializeRowData(uint64 row)
 {
   for (auto& column : m_components)
   {
-    const Component_Register::Component_Info& componentInfo = m_componentRegister->getComponentInfo(column.m_component);
+    const Component_Register::Component_Info& componentInfo = m_pComponentRegister->getComponentInfo(column.m_component);
     componentInfo.fnCreate(column.m_elements.data() + row * componentInfo.bsize);
   }
 }
@@ -186,7 +193,7 @@ void Archetype::deinitializeRowData(uint64 row)
 {
   for (auto& column : m_components)
   {
-    const Component_Register::Component_Info& componentInfo = m_componentRegister->getComponentInfo(column.m_component);
+    const Component_Register::Component_Info& componentInfo = m_pComponentRegister->getComponentInfo(column.m_component);
     componentInfo.fnDestroy(column.m_elements.data() + row * componentInfo.bsize);
   }
 }

@@ -1,11 +1,10 @@
 #pragma once
 
+#include <core/array_dynamic.hpp>
 #include <ecs/alias.hpp>
-#include <vector>
 #include <unordered_map>
 #include <set>
 #include <queue>
-#include <memory>
 
 // !TODO move to my stl
 
@@ -26,12 +25,12 @@ private:
 
   struct Archetype_Column
   {
-    std::vector<uint8>   m_elements;
-    Component_ID         m_component;
+    Array_Dynamic<uint8>  m_elements;
+    Component_ID          m_component;
   };
 
 public:
-  Archetype(std::shared_ptr<Component_Register> componentRegister, Archetype_ID id, const std::set<Component_ID>& type);
+  Archetype(Component_Register* pComponentRegister, Archetype_ID id, const std::set<Component_ID>& type);
   ~Archetype();
 
   void clear();
@@ -62,14 +61,14 @@ private:
 private:
   Archetype_ID                                 m_id;
   std::set<Component_ID>                       m_type;
-  std::vector<Archetype_Column>                m_components;
+  Array_Dynamic<Archetype_Column>              m_components;
   //std::unordered_map<Column, Archetype_Edge>   m_edges;
   uint64                                       m_componentsDataCapacity;
   uint64                                       m_componentsDataSize;
   std::queue<uint64>                           m_freeRows;
   uint64                                       m_entitiesNum;
 
-  std::shared_ptr<Component_Register>          m_componentRegister;
+  Component_Register*                          m_pComponentRegister;
 };
 
 }

@@ -5,11 +5,6 @@
 namespace crude_engine
 {
 
-World::World()
-{
-  m_componentRegister = std::make_shared<Component_Register>();
-}
-
 Entity World::entity()
 {
   return Entity(this, newEntityID());
@@ -176,7 +171,7 @@ void World::remove(Entity_ID entity)
 
 void World::createArchetypeForEntity(Entity_ID entity, const std::set<Component_ID>& type)
 {
-  Archetype archertype(m_componentRegister, m_archetypeIDsManager.generate(), type);
+  Archetype archertype(&m_componentRegister, m_archetypeIDsManager.generate(), type);
   const Archetype_ID archertypeID = archertype.id();
 
   uint64 column = 0u;

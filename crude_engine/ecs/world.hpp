@@ -1,12 +1,11 @@
 #pragma once
 
+#include <core/optional.hpp>
+#include <ecs/component_register.hpp>
 #include <ecs/archetype.hpp>
 #include <ecs/id_manager.hpp>
+
 #include <unordered_map>
-#include <core/utility.hpp>
-#include <core/optional.hpp>
-#include <core/assert.hpp>
-#include <ecs/component_register.hpp>
 #include <vector>
 
 // !TODO move to my stl
@@ -50,7 +49,7 @@ private:
   using Archetype_Map = std::unordered_map<Archetype_ID, Archetype_Record>;
 
 public:
-  World();
+  World() = default;
 
 public:
   Entity entity();
@@ -114,8 +113,11 @@ private:
 
   std::unordered_map<Entity_ID, Entity_Record>     m_entityToRecord;
   std::unordered_map<Component_ID, Archetype_Map>  m_componentToArchetypeMap;
+  
+  // !TODO m_componentRegister should be destroyed after m_archetypes so currently its HUGE UNSAFE, 
+  // but im too lazy to do something with this
+  Component_Register                               m_componentRegister;
   std::vector<Archetype>                           m_archetypes;
-  std::shared_ptr<Component_Register>              m_componentRegister;
 
   template<class ...Components>
   friend class Query;

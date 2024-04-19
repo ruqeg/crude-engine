@@ -99,11 +99,21 @@ Array_Dynamic<T, Allocator>& Array_Dynamic<T, Allocator>::operator=(Array_Dynami
 template<class T, class Allocator>
 void Array_Dynamic<T, Allocator>::resize(Size_Type newSize) noexcept
 {
-  Pointer newData = Allocator::mnewArray<T>(newSize);
+  Pointer newData;
+  if (newSize == 0u)
+  {
+    newData = nullptr;
+  }
+  else
+  {
+    newData = Allocator::mnewArray<T>(newSize);
+  }
 
   if (m_data)
   {
-    Algorithms::copy(begin(), end(), Iterator(newData));
+    if (newData)
+      Algorithms::copy(begin(), end(), Iterator(newData));
+
     Allocator::mdeleteArray<T>(m_size, m_data);
   }
 
@@ -156,6 +166,12 @@ Array_Dynamic<T, Allocator>::Const_Reference Array_Dynamic<T, Allocator>::operat
 {
   CRUDE_ASSERT("Array_Stack::operator[] index out of range" && index < m_size);
   return m_data[index];
+}
+
+template<class T, class Allocator>
+void Array_Dynamic<T, Allocator>::clear()
+{
+  resize(0u);
 }
 
 template<class T, class Allocator>
