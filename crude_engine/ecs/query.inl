@@ -2,11 +2,18 @@
 
 namespace crude_engine
 {
+
 template<class ...Components>
 Query<Components...>::Query()
   :
   m_world(nullptr)
 {}
+
+template<class ...Components>
+Query<Components...>::Query(World * world)
+{
+  *this = world->query();
+}
 
 template<class ...Components>
 Query<Components...>::Query(World* world, std::vector<Component_ID> components)
@@ -73,6 +80,14 @@ template<typename Func, typename Tuple, int ...S>
 void Query<Components...>::callFunction(Func&& func, Tuple&& params, Seq<S...>)
 {
   func((*std::get<S>(Utility::forward<Tuple>(params))) ...);
+}
+
+template<class ...Components>
+Query<Components...> World::query()
+{
+  std::vector<Component_ID> components;
+  (components.push_back(CPP_Type<Components>::id()), ...);
+  return Query<Components...>(this, components);
 }
 
 }

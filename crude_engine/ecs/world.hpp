@@ -9,7 +9,6 @@
 #include <optional>
 #include <core/assert.hpp>
 #include <ecs/component_register.hpp>
-#include <ecs/query.hpp>
 #include <vector>
 
 // !TODO move to my stl
@@ -17,7 +16,11 @@
 namespace crude_engine
 {
 
+template<class... Components>
+class Query;
+
 class Entity;
+
 class World
 {
 private:

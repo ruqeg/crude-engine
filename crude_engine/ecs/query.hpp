@@ -3,14 +3,12 @@
 #include <tuple>
 #include <core/utility.hpp>
 #include <functional>
-#include <ecs/alias.hpp>
+#include <ecs/world.hpp>
 #include <array>
 #include <algorithm>
 
 namespace crude_engine
 {
-
-class World;
 
 template<class ...Components>
 class Query
@@ -30,6 +28,7 @@ private:
 
 public:
   Query();
+  explicit Query(World* world);
   explicit Query(World* world, std::vector<Component_ID> components);
 
   template <class Func>
@@ -49,5 +48,4 @@ private:
 
 }
 
-#include <ecs/world.hpp>
 #include <ecs/query.inl>
