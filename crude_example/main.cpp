@@ -1208,15 +1208,6 @@ int APIENTRY wWinMain(
     std::cout << "entity2" << "force: " << entity2.get<Force>().x << " speed: " << entity2.get<Speed>().x << std::endl;
     std::cout << "entity3" << "force: " << entity3.get<Force>().x << " speed: " << entity3.get<Speed>().x << std::endl;
     std::cout << "entity4" << "force: " << entity4.get<Force>().x << " speed: " << entity4.hasComponent<Speed>() << std::endl;
-     
-    //crude_engine::System forceSystem = ecs.system<Force, const Speed>()
-    //  .each([](crude_engine::Entity e, Force& f, const Speed& s) {
-    //    f.x += s.x;
-    //    std::cout << ": {" << f.x << ", " << s.y << "}\n";
-    //  });
-    //forceSystem.run();
-
-   // crude_engine::Query q = ecs.query<Force>();
   }
   return EXIT_SUCCESS;
 }

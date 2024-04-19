@@ -1,11 +1,9 @@
 #pragma once
 
-#include <tuple>
+#include <core/array_stack.hpp>
 #include <core/utility.hpp>
-#include <functional>
 #include <ecs/world.hpp>
-#include <array>
-#include <algorithm>
+#include <tuple>
 
 namespace crude_engine
 {
@@ -13,6 +11,9 @@ namespace crude_engine
 template<class ...Components>
 class Query
 {
+private:
+  static constexpr uint64 cFunctionComponentsNum = sizeof...(Components);
+
 private:
   template<int ...>
   struct Seq {};
@@ -29,7 +30,7 @@ private:
 public:
   Query();
   explicit Query(World* world);
-  explicit Query(World* world, std::vector<Component_ID> components);
+  explicit Query(World* world, const Array_Stack<Component_ID, cFunctionComponentsNum>& components);
 
   template <class Func>
   void each(const Func& func);
@@ -42,8 +43,8 @@ private:
   void callFunction(Func&& func, Tuple&& params);
 
 private:
-  World*                     m_world;
-  std::vector<Component_ID>  m_components;
+  World*                                             m_world;
+  Array_Stack<Component_ID, cFunctionComponentsNum>  m_components;
 };
 
 }

@@ -20,6 +20,7 @@ template<class T, std::size_t N>
 Array_Stack<T, N>& Array_Stack<T, N>::operator=(const Array_Stack<T, N>& other)
 {
   Algorithms::copy(other.begin(), other.end(), begin());
+  return *this;
 }
 
 template<class T, std::size_t N>

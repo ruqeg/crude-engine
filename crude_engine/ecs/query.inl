@@ -16,7 +16,7 @@ Query<Components...>::Query(World * world)
 }
 
 template<class ...Components>
-Query<Components...>::Query(World* world, std::vector<Component_ID> components)
+Query<Components...>::Query(World* world, const Array_Stack<Component_ID, cFunctionComponentsNum>& components)
 {
   m_world = world;
   m_components = components;
@@ -30,11 +30,10 @@ void Query<Components...>::each(const Func& func)
 
   for (Archetype& archetype : m_world->m_archetypes)
   {
-    constexpr uint64 funcComponentsNum = sizeof...(Components);
-    std::array<uint64, funcComponentsNum> funcIdxToArchetypeIdx;
+    Array_Stack<uint64, cFunctionComponentsNum> funcIdxToArchetypeIdx;
 
     uint64 matchComponentsNum = 0;
-    for (uint64 funcComponentIndex = 0u; funcComponentIndex < funcComponentsNum; ++funcComponentIndex)
+    for (uint64 funcComponentIndex = 0u; funcComponentIndex < cFunctionComponentsNum; ++funcComponentIndex)
     {
       const auto& archetypeType = archetype.type();
 
@@ -47,7 +46,7 @@ void Query<Components...>::each(const Func& func)
       matchComponentsNum++;
     }
 
-    if (matchComponentsNum == funcComponentsNum)
+    if (matchComponentsNum == cFunctionComponentsNum)
     {
       for (uint64 row = 0u; row < archetype.getRowsNum(); ++row)
       {
@@ -60,7 +59,7 @@ void Query<Components...>::each(const Func& func)
         auto fsSetFuncArgumentToComponentRowData = [&]<auto... I>(std::index_sequence<I...>) {
           (fnSetFuncArgument(&std::get<I>(funcArgumnetsPtr), archetype.getComponentData(funcIdxToArchetypeIdx[I], row)), ...);
         };
-        fsSetFuncArgumentToComponentRowData(std::make_index_sequence<funcComponentsNum>{});
+        fsSetFuncArgumentToComponentRowData(std::make_index_sequence<cFunctionComponentsNum>{});
 
         callFunction(func, std::forward<std::tuple<Components*...>>(funcArgumnetsPtr));
       }
@@ -85,8 +84,11 @@ void Query<Components...>::callFunction(Func&& func, Tuple&& params, Seq<S...>)
 template<class ...Components>
 Query<Components...> World::query()
 {
-  std::vector<Component_ID> components;
-  (components.push_back(CPP_Type<Components>::id()), ...);
+  uint64 index = 0u;
+  Array_Stack<Component_ID, sizeof...(Components)> components;
+  ([&]() {
+    components[index++] = CPP_Type<Components>::id(); 
+    }(), ...);
   return Query<Components...>(this, components);
 }
 
