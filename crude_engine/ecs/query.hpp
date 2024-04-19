@@ -4,6 +4,7 @@
 #include <core/utility.hpp>
 #include <ecs/world.hpp>
 #include <functional>
+#include <array>
 #include <algorithm>
 
 namespace crude_engine
@@ -79,13 +80,22 @@ void Query<Components...>::each(const Func& func)
 {
   for (Archetype& archetype : m_world->m_archetypes)
   {
+    std::array<int64, sizeof...(Components)> arr;
     int same = 0;
+    int i = 0u;
     for (auto component : m_components)
     {
+      int k = 0u;
       for (auto archetypeComp : archetype.type())
       {
         if (component == archetypeComp)
+        {
           same++;
+          arr[i] = k;
+          i++;
+          break;
+        }
+        k++;
       }
     }
 
@@ -94,10 +104,10 @@ void Query<Components...>::each(const Func& func)
       for (uint64 row = 0u; row < archetype.getRowsNum(); ++row)
       {
         std::tuple<Components*...> tpl;
-        [&row, &tpl, &archetype] <auto... I>(std::index_sequence<I...>) {
-          (printElem(&std::get<I>(tpl), archetype.getComponentData(I, row)), ...);
+        [&arr, &row, &tpl, &archetype] <auto... I>(std::index_sequence<I...>) {
+          (printElem(&std::get<I>(tpl), archetype.getComponentData(arr[I], row)), ...);
         }(std::make_index_sequence<std::tuple_size_v<decltype(tpl)>>{});
-        iterate(std::forward<Func>(func), std::forward<std::tuple<Components*...>>(tpl));
+        iterate(func, std::forward<std::tuple<Components*...>>(tpl));
       }
     }
   }
