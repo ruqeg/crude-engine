@@ -1181,33 +1181,15 @@ int APIENTRY wWinMain(
 
     crude_engine::World ecs;
 
-    crude_engine::Entity entity1 = ecs.entity()
-      .set<Force>({ 1 })
-      .set<Speed>({ 1 });
-    
-    crude_engine::Entity entity2 = ecs.entity()
-      .set<Force>({ 1 })
-      .set<Speed>({ 1 });
-    
     crude_engine::Entity entity3 = ecs.entity()
       .set<Force>({ 1 })
       .set<Speed>({ 1 })
       .set<Power>({ 1 });
-    
+
     crude_engine::Entity entity4 = ecs.entity()
-      .set<Force>({ 1 })
-      .set<Power>({ 1 });
+      .add<Force>();
 
-    ecs.query<Force, Speed>()
-      .each([](Force& f, Speed& s) {
-        f.x += 1;
-        s.x += 1;
-      });
-
-    std::cout << "entity1" << "force: " << entity1.get<Force>().x << " speed: " << entity1.get<Speed>().x << std::endl;
-    std::cout << "entity2" << "force: " << entity2.get<Force>().x << " speed: " << entity2.get<Speed>().x << std::endl;
-    std::cout << "entity3" << "force: " << entity3.get<Force>().x << " speed: " << entity3.get<Speed>().x << std::endl;
-    std::cout << "entity4" << "force: " << entity4.get<Force>().x << " speed: " << entity4.hasComponent<Speed>() << std::endl;
+    entity4.set<Force>({ 1 });
   }
   return EXIT_SUCCESS;
 }

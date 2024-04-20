@@ -90,15 +90,15 @@ uint64 Archetype::newRow()
     return row;
   }
   
-  if (m_componentsDataSize < m_componentsDataCapacity)
+  if (m_componentsDataCapacity <= m_componentsDataSize)
   {
     const uint32 row = m_componentsDataSize++;
+    increaseCapacity();
     initializeRowData(row);
     return row;
   }
 
   const uint32 row = m_componentsDataSize++;
-  increaseCapacity();
   initializeRowData(row);
   return row;
 }

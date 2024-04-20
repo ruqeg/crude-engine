@@ -43,6 +43,7 @@ void* Free_RBT_Allocator::allocate(std::size_t size) noexcept
   //CRUDE_ASSERT("Allocation size must be bigger" && size >= sizeof(Node));
   const Red_Black_Tree<Node>::Iterator& allocatedHeaderIt = m_rbt.lowerBound(requiredSize);
   
+  CRUDE_ASSERT(allocatedHeaderIt->free);
   CRUDE_ASSERT("The allocator is full" && allocatedHeaderIt != nullptr);
 
   Node* allocatedHeader = &*allocatedHeaderIt;

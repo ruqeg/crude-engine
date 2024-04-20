@@ -91,6 +91,7 @@ Array_Dynamic<T, Allocator>& Array_Dynamic<T, Allocator>::operator=(const Array_
 {
   if (m_data)
   {
+    CRUDE_ASSERT(m_size > 0u);
     Allocator::mdeleteArray<T>(m_size, m_data);
     m_data = nullptr;
   }
@@ -146,6 +147,7 @@ void Array_Dynamic<T, Allocator>::resize(Size_Type newSize) noexcept
       Algorithms::copy(begin(), end(), Iterator(newData));
     }
 
+    CRUDE_ASSERT(m_size > 0u);
     Allocator::mdeleteArray<T>(m_size, m_data);
   }
 

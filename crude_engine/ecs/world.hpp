@@ -98,7 +98,7 @@ private:
   bool findArchetype(Component_ID component, const std::set<Component_ID>& type, Archetype_ID& dstArchetypeID);
   bool findArchetype(Component_ID component, Archetype_ID& dstArchetypeID);
 
-  void addArchetype(Archetype&& archetype);
+  void addArchetype(Archetype& archetype);
   void removeArchetype(Archetype& archetype);
   Archetype& getArchetype(const Archetype_ID archetypeID);
   const Archetype& getArchetype(const Archetype_ID archetypeID) const;

@@ -183,7 +183,7 @@ void World::createArchetypeForEntity(Entity_ID entity, const std::set<Component_
   }
   archertype.increaseEntity(1u);
 
-  addArchetype(Utility::move(archertype));
+  addArchetype(archertype);
 
   Entity_Record entityRecord;
   entityRecord.archetypeID = archertypeID;
@@ -299,7 +299,7 @@ bool World::findArchetype(Component_ID component, Archetype_ID& dstArchetypeID)
   return false;
 }
 
-void World::addArchetype(Archetype&& archetype)
+void World::addArchetype(Archetype& archetype)
 {
   // !TODO UNSAFE
   const ID_Index archetypeIndex = ID_Manager::getIndex(archetype.id());
