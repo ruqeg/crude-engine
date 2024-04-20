@@ -13,16 +13,24 @@ Array_Dynamic<T, Allocator>::Array_Dynamic()
 template<class T, class Allocator>
 Array_Dynamic<T, Allocator>::Array_Dynamic(Size_Type size)
   :
+  m_data(nullptr),
   m_size(size)
 {
+  if (m_size == 0u)
+    return;
+  
   m_data = Allocator::mnewArray<T>(m_size);
 }
 
 template<class T, class Allocator>
 Array_Dynamic<T, Allocator>::Array_Dynamic(Size_Type size, Const_Reference value)
   :
+  m_data(nullptr),
   m_size(size)
 {
+  if (m_size == 0u)
+    return;
+
   m_data = Allocator::mnewArray<T>(m_size, value);
 }
 
@@ -38,8 +46,12 @@ Array_Dynamic<T, Allocator>::~Array_Dynamic()
 template<class T, class Allocator>
 Array_Dynamic<T, Allocator>::Array_Dynamic(std::initializer_list<Value_Type> initList)
   :
+  m_data(nullptr),
   m_size(initList.size())
 {
+  if (m_size == 0u)
+    return;
+
   m_data = reinterpret_cast<Pointer>(Allocator::allocate(sizeof(T) * m_size));
 
   Algorithms::copyc(initList.begin(), initList.end(), begin(), [](auto src, auto dst) -> void {
@@ -50,8 +62,12 @@ Array_Dynamic<T, Allocator>::Array_Dynamic(std::initializer_list<Value_Type> ini
 template<class T, class Allocator>
 Array_Dynamic<T, Allocator>::Array_Dynamic(const Array_Dynamic& other)
   :
+  m_data(nullptr),
   m_size(other.m_size)
 {
+  if (m_size == 0u)
+    return;
+
   m_data = reinterpret_cast<Pointer>(Allocator::allocate(sizeof(T) * m_size));
 
   Algorithms::copyc(other.begin(), other.end(), begin(), [](auto src, auto dst) -> void {
@@ -73,13 +89,22 @@ Array_Dynamic<T, Allocator>::Array_Dynamic(Array_Dynamic&& other)
 template<class T, class Allocator>
 Array_Dynamic<T, Allocator>& Array_Dynamic<T, Allocator>::operator=(const Array_Dynamic<T, Allocator>& other)
 {
+  if (m_data)
+  {
+    Allocator::mdeleteArray<T>(m_size, m_data);
+    m_data = nullptr;
+  }
+
   m_size = other.m_size;
 
-  m_data = reinterpret_cast<Pointer>(Allocator::allocate(sizeof(T) * m_size));
+  if (m_size > 0u)
+  {
+    m_data = reinterpret_cast<Pointer>(Allocator::allocate(sizeof(T) * m_size));
 
-  Algorithms::copyc(other.begin(), other.end(), begin(), [](auto src, auto dst) -> void {
-    Utility::constructAt(&(*dst), *src);
-  });
+    Algorithms::copyc(other.begin(), other.end(), begin(), [](auto src, auto dst) -> void {
+      Utility::constructAt(&(*dst), *src);
+      });
+  }
 
   return *this;
 }
@@ -87,6 +112,11 @@ Array_Dynamic<T, Allocator>& Array_Dynamic<T, Allocator>::operator=(const Array_
 template<class T, class Allocator>
 Array_Dynamic<T, Allocator>& Array_Dynamic<T, Allocator>::operator=(Array_Dynamic<T, Allocator>&& other)
 {
+  if (m_data)
+  {
+    Allocator::mdeleteArray<T>(m_size, m_data);
+  }
+
   m_data = other.m_data;
   m_size = other.m_size;
 
@@ -112,7 +142,9 @@ void Array_Dynamic<T, Allocator>::resize(Size_Type newSize) noexcept
   if (m_data)
   {
     if (newData)
+    {
       Algorithms::copy(begin(), end(), Iterator(newData));
+    }
 
     Allocator::mdeleteArray<T>(m_size, m_data);
   }
