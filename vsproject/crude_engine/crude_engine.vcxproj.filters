@@ -160,7 +160,7 @@
     <ClCompile Include="..\..\crude_engine\graphics\vulkan\vulkan_allocator.cpp">
       <Filter>source\graphics\vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\crude_engine\core\cxx_allocator.cpp">
+    <ClCompile Include="..\..\crude_engine\core\system_allocator.cpp">
       <Filter>source\core</Filter>
     </ClCompile>
     <ClCompile Include="..\..\crude_engine\core\filesystem.cpp">
@@ -384,7 +384,7 @@
     <ClInclude Include="..\..\crude_engine\core\compare.hpp">
       <Filter>source\core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\crude_engine\core\cxx_allocator.hpp">
+    <ClInclude Include="..\..\crude_engine\core\system_allocator.hpp">
       <Filter>source\core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\crude_engine\core\debug.hpp">
@@ -492,6 +492,9 @@
     <ClInclude Include="..\..\crude_engine\core\std_containers.hpp">
       <Filter>source\core</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\crude_engine\core\cxx_allocator_container.hpp">
+      <Filter>source\core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\crude_engine\graphics\vulkan\object.inl">
@@ -512,12 +515,6 @@
     <None Include="..\..\crude_engine\core\bs_tree.inl">
       <Filter>source\core</Filter>
     </None>
-    <None Include="..\..\crude_engine\core\cxx_allocator.inl">
-      <Filter>source\core</Filter>
-    </None>
-    <None Include="..\..\crude_engine\core\free_rbt_allocator.inl">
-      <Filter>source\core</Filter>
-    </None>
     <None Include="..\..\crude_engine\core\iterator_base.inl">
       <Filter>source\core</Filter>
     </None>
@@ -528,9 +525,6 @@
       <Filter>source\core</Filter>
     </None>
     <None Include="..\..\crude_engine\core\optional.inl">
-      <Filter>source\core</Filter>
-    </None>
-    <None Include="..\..\crude_engine\core\pool_allocator.inl">
       <Filter>source\core</Filter>
     </None>
     <None Include="..\..\crude_engine\core\rb_tree.inl">
@@ -567,6 +561,9 @@
       <Filter>source\ecs</Filter>
     </None>
     <None Include="..\..\crude_engine\core\std_allocator.inl">
+      <Filter>source\core</Filter>
+    </None>
+    <None Include="..\..\crude_engine\core\cxx_allocator_container.inl">
       <Filter>source\core</Filter>
     </None>
   </ItemGroup>

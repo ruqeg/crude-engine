@@ -19,18 +19,6 @@ public:
   void deallocate(void* ptr) noexcept override;
   void reset() noexcept;
 
-  template<class T, typename... Args>
-  CRUDE_NODISCARD T* mnew(Args&&... args) noexcept;
-
-  template<class T, typename... Args>
-  CRUDE_NODISCARD T* mnewArray(std::size_t n, Args&&... args) noexcept;
-
-  template<class T>
-  void mdelete(T* ptr) noexcept;
-
-  template<class T>
-  void mdeleteArray(std::size_t n, T* ptr) noexcept;
-
 protected:
   std::byte*                      m_heap{ nullptr};
   std::size_t                     m_heapSize;
@@ -40,5 +28,3 @@ protected:
 };
 
 }
-
-#include <core/pool_allocator.inl>

@@ -151,7 +151,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\crude_engine\core\cxx_allocator.cpp" />
+    <ClCompile Include="..\..\crude_engine\core\system_allocator.cpp" />
     <ClCompile Include="..\..\crude_engine\core\filesystem.cpp" />
     <ClCompile Include="..\..\crude_engine\core\free_rbt_allocator.cpp" />
     <ClCompile Include="..\..\crude_engine\core\linear_allocator.cpp" />
@@ -225,7 +225,7 @@
     <ClInclude Include="..\..\crude_engine\core\assert.hpp" />
     <ClInclude Include="..\..\crude_engine\core\bs_tree.hpp" />
     <ClInclude Include="..\..\crude_engine\core\compare.hpp" />
-    <ClInclude Include="..\..\crude_engine\core\cxx_allocator.hpp" />
+    <ClInclude Include="..\..\crude_engine\core\system_allocator.hpp" />
     <ClInclude Include="..\..\crude_engine\core\debug.hpp" />
     <ClInclude Include="..\..\crude_engine\core\filesystem.hpp" />
     <ClInclude Include="..\..\crude_engine\core\free_rbt_allocator.hpp" />
@@ -247,6 +247,7 @@
     <ClInclude Include="..\..\crude_engine\core\std_containers.hpp" />
     <ClInclude Include="..\..\crude_engine\core\string.hpp" />
     <ClInclude Include="..\..\crude_engine\core\tree_iterator_base.hpp" />
+    <ClInclude Include="..\..\crude_engine\core\cxx_allocator_container.hpp" />
     <ClInclude Include="..\..\crude_engine\core\utility.hpp" />
     <ClInclude Include="..\..\crude_engine\ecs\alias.hpp" />
     <ClInclude Include="..\..\crude_engine\ecs\archetype.hpp" />
@@ -316,19 +317,17 @@
     <None Include="..\..\crude_engine\core\array_stack.inl" />
     <None Include="..\..\crude_engine\core\array_unsafe.inl" />
     <None Include="..\..\crude_engine\core\bs_tree.inl" />
-    <None Include="..\..\crude_engine\core\cxx_allocator.inl" />
-    <None Include="..\..\crude_engine\core\free_rbt_allocator.inl" />
     <None Include="..\..\crude_engine\core\iterator_base.inl" />
     <None Include="..\..\crude_engine\core\logger.inl" />
     <None Include="..\..\crude_engine\core\memory_system.inl" />
     <None Include="..\..\crude_engine\core\optional.inl" />
-    <None Include="..\..\crude_engine\core\pool_allocator.inl" />
     <None Include="..\..\crude_engine\core\rb_tree.inl" />
     <None Include="..\..\crude_engine\core\shared_ptr.inl" />
     <None Include="..\..\crude_engine\core\stack_linked_list.inl" />
     <None Include="..\..\crude_engine\core\std_allocator.inl" />
     <None Include="..\..\crude_engine\core\string.inl" />
     <None Include="..\..\crude_engine\core\tree_iterator_base.inl" />
+    <None Include="..\..\crude_engine\core\cxx_allocator_container.inl" />
     <None Include="..\..\crude_engine\core\utility.inl" />
     <None Include="..\..\crude_engine\ecs\component_container.inl" />
     <None Include="..\..\crude_engine\ecs\component_register.inl" />

@@ -13,9 +13,9 @@ Free_RBT_Allocator& Memory_Manager::getDefaultFreeRBTAllocators() noexcept
   return m_defaultFreeRBTAllocators;
 }
 
-CXX_Allocator& Memory_Manager::getDefaultCxxAllocators() noexcept
+System_Allocator& Memory_Manager::getDefaultSystemAllocators() noexcept
 {
-  return m_defaultCxxAllocators;
+  return m_defaultSystemAllocators;
 }
 
 Memory_Manager& Memory_Manager::getInstance() noexcept

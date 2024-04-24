@@ -2,8 +2,7 @@
 
 #include <core/array_stack.hpp>
 #include <core/free_rbt_allocator.hpp>
-#include <core/pool_allocator.hpp>
-#include <core/cxx_allocator.hpp>
+#include <core/system_allocator.hpp>
 
 namespace crude_engine
 {
@@ -12,7 +11,7 @@ class Memory_Manager
 {
 public:
   Free_RBT_Allocator& getDefaultFreeRBTAllocators() noexcept;
-  CXX_Allocator& getDefaultCxxAllocators() noexcept;
+  System_Allocator& getDefaultSystemAllocators() noexcept;
 
 public:
   static Memory_Manager& getInstance() noexcept;
@@ -26,7 +25,7 @@ private:
 
 private:
   Free_RBT_Allocator  m_defaultFreeRBTAllocators;
-  CXX_Allocator       m_defaultCxxAllocators;
+  System_Allocator    m_defaultSystemAllocators;
 };
 
 }  // namespace crude_engine

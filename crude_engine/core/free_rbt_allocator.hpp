@@ -1,13 +1,13 @@
 #pragma once
 
-#include <core/iallocator.hpp>
+#include <core/cxx_allocator_container.hpp>
 #include <core/rb_tree.hpp>
 #include <core/logger.hpp>
 
 namespace crude_engine
 {
 
-class Free_RBT_Allocator : public IAllocator
+class Free_RBT_Allocator : public CXX_Allocator_Container
 {
 public:
   enum Placement_Policy
@@ -35,18 +35,6 @@ public:
   void deallocate(void* ptr) noexcept override; // O(log(n))
   void reset() noexcept;
 
-  template<class T, typename... Args>
-  CRUDE_NODISCARD T* mnew(Args&&... args) noexcept;
-
-  template<class T, typename... Args>
-  CRUDE_NODISCARD T* mnewArray(std::size_t n, Args&&... args) noexcept;
-
-  template<class T>
-  void mdelete(T* ptr) noexcept;
-
-  template<class T>
-  void mdeleteArray(std::size_t n, T* ptr) noexcept;
-
 private:
   std::byte*            m_heap{ nullptr };
   std::size_t           m_heapSize;
@@ -56,5 +44,3 @@ private:
 };
 
 }
-
-#include <core/free_rbt_allocator.inl>
