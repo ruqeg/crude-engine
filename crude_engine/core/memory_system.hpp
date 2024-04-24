@@ -13,25 +13,25 @@ public:
   {
   public:
     template<class T, typename... Args>
-    static CRUDE_NODISCARD T* mnew(Args&&... args) noexcept
+    static CRUDE_NODISCARD T* cxxAllocate(Args&&... args) noexcept
     {
       return Memory_Manager::getInstance().getDefaultFreeRBTAllocators().cxxAllocate<T>(Utility::forward<Args>(args)...);
     }
 
     template<class T, typename... Args>
-    static CRUDE_NODISCARD T* mnewArray(std::size_t n, Args&&... args) noexcept
+    static CRUDE_NODISCARD T* cxxAllocate(std::size_t n, Args&&... args) noexcept
     {
       return Memory_Manager::getInstance().getDefaultFreeRBTAllocators().cxxAllocate<T>(n, Utility::forward<Args>(args)...);
     }
 
     template<class T>
-    static void mdelete(T* ptr) noexcept
+    static void cxxDeallocate(T* ptr) noexcept
     {
       return Memory_Manager::getInstance().getDefaultFreeRBTAllocators().cxxDeallocate<T>(ptr);
     }
 
     template<class T>
-    static void mdeleteArray(std::size_t n, T* ptr) noexcept
+    static void cxxDeallocate(std::size_t n, T* ptr) noexcept
     {
       return Memory_Manager::getInstance().getDefaultFreeRBTAllocators().cxxDeallocate<T>(n, ptr);
     }
@@ -56,25 +56,25 @@ public:
   {
   public:
     template<class T, typename... Args>
-    static CRUDE_NODISCARD T* mnew(Args&&... args) noexcept
+    static CRUDE_NODISCARD T* cxxAllocate(Args&&... args) noexcept
     {
       return Memory_Manager::getInstance().getDefaultSystemAllocators().cxxAllocate<T>(Utility::forward<Args>(args)...);
     }
 
     template<class T, typename... Args>
-    static CRUDE_NODISCARD T* mnewArray(std::size_t n, Args&&... args) noexcept
+    static CRUDE_NODISCARD T* cxxAllocate(std::size_t n, Args&&... args) noexcept
     {
       return Memory_Manager::getInstance().getDefaultSystemAllocators().cxxAllocate<T>(n, Utility::forward<Args>(args)...);
     }
 
     template<class T>
-    static void mdelete(T* ptr) noexcept
+    static void cxxDeallocate(T* ptr) noexcept
     {
       return Memory_Manager::getInstance().getDefaultSystemAllocators().cxxDeallocate<T>(ptr);
     }
 
     template<class T>
-    static void mdeleteArray(std::size_t n, T* ptr) noexcept
+    static void cxxDeallocate(std::size_t n, T* ptr) noexcept
     {
       return Memory_Manager::getInstance().getDefaultSystemAllocators().cxxDeallocate<T>(n, ptr);
     }

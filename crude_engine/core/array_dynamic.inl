@@ -19,7 +19,7 @@ Array_Dynamic<T, Allocator>::Array_Dynamic(Size_Type size)
   if (m_size == 0u)
     return;
   
-  m_data = Allocator::mnewArray<T>(m_size);
+  m_data = Allocator::cxxAllocate<T>(m_size);
 }
 
 template<class T, class Allocator>
@@ -31,7 +31,7 @@ Array_Dynamic<T, Allocator>::Array_Dynamic(Size_Type size, Const_Reference value
   if (m_size == 0u)
     return;
 
-  m_data = Allocator::mnewArray<T>(m_size, value);
+  m_data = Allocator::cxxAllocate<T>(m_size, value);
 }
 
 template<class T, class Allocator>
@@ -39,7 +39,7 @@ Array_Dynamic<T, Allocator>::~Array_Dynamic()
 {
   if (m_data)
   {
-    Allocator::mdeleteArray<T>(m_size, m_data);
+    Allocator::cxxDeallocate<T>(m_size, m_data);
   }
 }
 
@@ -92,7 +92,7 @@ Array_Dynamic<T, Allocator>& Array_Dynamic<T, Allocator>::operator=(const Array_
   if (m_data)
   {
     CRUDE_ASSERT(m_size > 0u);
-    Allocator::mdeleteArray<T>(m_size, m_data);
+    Allocator::cxxDeallocate<T>(m_size, m_data);
     m_data = nullptr;
   }
 
@@ -115,7 +115,7 @@ Array_Dynamic<T, Allocator>& Array_Dynamic<T, Allocator>::operator=(Array_Dynami
 {
   if (m_data)
   {
-    Allocator::mdeleteArray<T>(m_size, m_data);
+    Allocator::cxxDeallocate<T>(m_size, m_data);
   }
 
   m_data = other.m_data;
@@ -137,7 +137,7 @@ void Array_Dynamic<T, Allocator>::resize(Size_Type newSize) noexcept
   }
   else
   {
-    newData = Allocator::mnewArray<T>(newSize);
+    newData = Allocator::cxxAllocate<T>(newSize);
   }
 
   if (m_data)
@@ -148,7 +148,7 @@ void Array_Dynamic<T, Allocator>::resize(Size_Type newSize) noexcept
     }
 
     CRUDE_ASSERT(m_size > 0u);
-    Allocator::mdeleteArray<T>(m_size, m_data);
+    Allocator::cxxDeallocate<T>(m_size, m_data);
   }
 
   m_data = newData;
