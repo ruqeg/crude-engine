@@ -2,8 +2,6 @@
 
 #include <ecs/component_container.hpp>
 #include <core/std_containers.hpp>
-#include <core/assert.hpp>
-#include <core/utility.hpp>
 
 namespace crude_engine
 {

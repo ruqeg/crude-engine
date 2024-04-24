@@ -1,6 +1,5 @@
 #pragma once
 
-#include <core/array_stack.hpp>
 #include <core/free_rbt_allocator.hpp>
 #include <core/system_allocator.hpp>
 

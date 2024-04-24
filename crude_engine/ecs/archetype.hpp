@@ -2,7 +2,6 @@
 
 #include <ecs/alias.hpp>
 #include <core/std_containers.hpp>
-#include <core/array_dynamic.hpp>
 
 namespace crude_engine
 {

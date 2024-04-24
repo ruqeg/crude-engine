@@ -1,7 +1,6 @@
 #pragma once
 
 #include <core/array_stack.hpp>
-#include <core/utility.hpp>
 #include <ecs/world.hpp>
 #include <tuple>
 
