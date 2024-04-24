@@ -5,7 +5,7 @@
 namespace crude_engine
 {
 
-Archetype::Archetype(Component_Register* pComponentRegister, Archetype_ID id, const std::set<Component_ID>& type)
+Archetype::Archetype(Component_Register* pComponentRegister, Archetype_ID id, const set<Component_ID>& type)
   :
   m_pComponentRegister(pComponentRegister),
   m_id(id),
@@ -154,7 +154,7 @@ uint64 Archetype::getRowsNum() const
   return m_componentsDataSize;
 }
 
-const std::set<Component_ID>& Archetype::type() const
+const set<Component_ID>& Archetype::type() const
 {
   return m_type;
 }

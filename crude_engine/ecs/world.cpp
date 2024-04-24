@@ -104,7 +104,7 @@ void World::removeComponent(Entity_ID entity, Component_ID component)
   Archetype_Map& componentRecord = m_componentToArchetypeMap.at(component);
   Archetype_Record& oldArchetypeRecord = componentRecord.at(oldEntityRecord.archetypeID);
 
-  std::set<Component_ID> newEntityArchetypeType = getArchetype(oldArchetypeID).type();
+  set<Component_ID> newEntityArchetypeType = getArchetype(oldArchetypeID).type();
   newEntityArchetypeType.erase(component);
 
   Entity_Record newEntityRecord;
@@ -169,7 +169,7 @@ void World::remove(Entity_ID entity)
   m_entityIDsManager.destroy(entity);
 }
 
-void World::createArchetypeForEntity(Entity_ID entity, const std::set<Component_ID>& type)
+void World::createArchetypeForEntity(Entity_ID entity, const set<Component_ID>& type)
 {
   Archetype archertype(&m_componentRegister, m_archetypeIDsManager.generate(), type);
   const Archetype_ID archertypeID = archertype.id();
@@ -214,7 +214,7 @@ void World::reassigneArchetypeForEntity(Entity_ID entity, Component_ID component
   const Entity_Record oldEntityRecord = m_entityToRecord[entity];
   const Archetype_ID oldArchetypeID = oldEntityRecord.archetypeID;
 
-  std::set<Component_ID> newArchetypeType = getArchetype(oldArchetypeID).type();
+  set<Component_ID> newArchetypeType = getArchetype(oldArchetypeID).type();
   newArchetypeType.insert(component);
   
   Entity_Record newEntityRecord;
@@ -232,6 +232,7 @@ void World::reassigneArchetypeForEntity(Entity_ID entity, Component_ID component
   {
     Archetype& newArchetype = getArchetype(newEntityRecord.archetypeID);
     newEntityRecord.row = newArchetype.newRow();
+    return;
 
     const uint64 oldRow = oldEntityRecord.row.value();
     const uint64 newRow = newEntityRecord.row.value();
@@ -257,7 +258,7 @@ void World::reassigneArchetypeForEntity(Entity_ID entity, Component_ID component
   }
 }
 
-bool World::findArchetype(Component_ID component, const std::set<Component_ID>& type, Archetype_ID& dstArchetypeID)
+bool World::findArchetype(Component_ID component, const set<Component_ID>& type, Archetype_ID& dstArchetypeID)
 {
   if (!m_componentToArchetypeMap.contains(component))
   {

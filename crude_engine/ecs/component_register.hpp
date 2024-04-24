@@ -1,9 +1,9 @@
 #pragma once
 
 #include <ecs/component_container.hpp>
+#include <core/std_containers.hpp>
 #include <core/assert.hpp>
 #include <core/utility.hpp>
-#include <unordered_map>
 
 namespace crude_engine
 {
@@ -27,7 +27,7 @@ public:
   const Component_Info& getComponentInfo(Component_ID component) const;
 
 private:
-  std::unordered_map<Component_ID, Component_Info> m_componentIDToInfo;
+  unordered_map<Component_ID, Component_Info> m_componentIDToInfo;
 };
 
 }

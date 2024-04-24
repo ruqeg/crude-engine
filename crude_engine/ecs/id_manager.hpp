@@ -1,7 +1,7 @@
 #pragma once
 
 #include <ecs/alias.hpp>
-#include <queue>
+#include <core/std_containers.hpp>
 
 namespace crude_engine
 {
@@ -21,7 +21,7 @@ public:
   static ID_Index getIndex(ID id);
 
 private:
-  std::queue<ID> m_freeIDs;
+  queue<ID> m_freeIDs;
   uint64 m_newFreeIndex;
 };
 

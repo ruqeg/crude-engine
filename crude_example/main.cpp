@@ -1178,18 +1178,30 @@ int APIENTRY wWinMain(
     //  std::cout << ": {" << f.x << ", " << s.x << "}\n";
     //});
 
+    // ! TO CHECK
+    //
+    //crude_engine::World ecs;
+    //
+    //crude_engine::Entity entity3 = ecs.entity()
+    //  .set<Speed>({ 1 })
+    //  .set<Power>({ 1 });
+    //
+    //crude_engine::Entity entity4 = ecs.entity()
+    //  .set<Force>({ 1 })
+    //  .set<Power>({ 1 });
+
 
     crude_engine::World ecs;
 
     crude_engine::Entity entity3 = ecs.entity()
-      .set<Force>({ 1 })
-      .set<Speed>({ 1 })
-      .set<Power>({ 1 });
+      .add<Power>();
 
     crude_engine::Entity entity4 = ecs.entity()
-      .add<Force>();
+      .set<Force>({ 1 });
 
-    entity4.set<Force>({ 1 });
+    OutputDebugStringA("SDFSDFSDF\n");
+    entity4
+      .add<Power>();
   }
   return EXIT_SUCCESS;
 }

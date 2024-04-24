@@ -25,8 +25,8 @@ private:
   static constexpr std::size_t FREE_RBT_ALLOCATOR_CAPCITY = 10000000u;
 
 private:
-  Free_RBT_Allocator m_defaultFreeRBTAllocators;
-  CXX_Allocator m_defaultCxxAllocators;
+  Free_RBT_Allocator  m_defaultFreeRBTAllocators;
+  CXX_Allocator       m_defaultCxxAllocators;
 };
 
 }  // namespace crude_engine

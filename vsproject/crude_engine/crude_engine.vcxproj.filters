@@ -495,6 +495,12 @@
     <ClInclude Include="..\..\crude_engine\math\vector.hpp">
       <Filter>source\math</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\crude_engine\core\std_allocator.hpp">
+      <Filter>source\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\crude_engine\core\std_containers.hpp">
+      <Filter>source\core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\crude_engine\graphics\vulkan\object.inl">
@@ -574,6 +580,9 @@
     </None>
     <None Include="..\..\crude_engine\ecs\query.inl">
       <Filter>source\ecs</Filter>
+    </None>
+    <None Include="..\..\crude_engine\core\std_allocator.inl">
+      <Filter>source\core</Filter>
     </None>
   </ItemGroup>
 </Project>

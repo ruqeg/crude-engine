@@ -1,12 +1,8 @@
 #pragma once
 
-#include <core/array_dynamic.hpp>
 #include <ecs/alias.hpp>
-#include <unordered_map>
-#include <set>
-#include <queue>
-
-// !TODO move to my stl
+#include <core/std_containers.hpp>
+#include <core/array_dynamic.hpp>
 
 namespace crude_engine
 {
@@ -25,12 +21,12 @@ private:
 
   struct Archetype_Column
   {
-    Array_Dynamic<uint8>  m_elements;
-    Component_ID          m_component;
+    vector<uint8>  m_elements;
+    Component_ID   m_component;
   };
 
 public:
-  Archetype(Component_Register* pComponentRegister, Archetype_ID id, const std::set<Component_ID>& type);
+  Archetype(Component_Register* pComponentRegister, Archetype_ID id, const set<Component_ID>& type);
   ~Archetype();
 
   void clear();
@@ -47,7 +43,7 @@ public:
   void* getComponentData(uint64 column, uint64 row);
   const void* getComponentData(uint64 column, uint64 row) const;
 
-  const std::set<Component_ID>& type() const;
+  const set<Component_ID>& type() const;
   Archetype_ID id() const;
 
   uint64 getRowsNum() const;
@@ -59,16 +55,16 @@ private:
   void deinitializeRowData(uint64 row);
 
 private:
-  Archetype_ID                                 m_id;
-  std::set<Component_ID>                       m_type;
-  Array_Dynamic<Archetype_Column>              m_components;
+  Archetype_ID              m_id;
+  set<Component_ID>         m_type;
+  vector<Archetype_Column>  m_components;
   //std::unordered_map<Column, Archetype_Edge>   m_edges;
-  uint64                                       m_componentsDataCapacity;
-  uint64                                       m_componentsDataSize;
-  std::queue<uint64>                           m_freeRows;
-  uint64                                       m_entitiesNum;
+  uint64                    m_componentsDataCapacity;
+  uint64                    m_componentsDataSize;
+  queue<uint64>             m_freeRows;
+  uint64                    m_entitiesNum;
 
-  Component_Register*                          m_pComponentRegister;
+  Component_Register*       m_pComponentRegister;
 };
 
 }

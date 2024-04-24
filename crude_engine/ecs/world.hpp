@@ -5,9 +5,6 @@
 #include <ecs/archetype.hpp>
 #include <ecs/id_manager.hpp>
 
-#include <unordered_map>
-#include <vector>
-
 // !TODO move to my stl
 
 namespace crude_engine
@@ -46,7 +43,7 @@ private:
   };
 
 private:
-  using Archetype_Map = std::unordered_map<Archetype_ID, Archetype_Record>;
+  using Archetype_Map = unordered_map<Archetype_ID, Archetype_Record>;
 
 public:
   World() = default;
@@ -91,11 +88,11 @@ private:
   
   bool hasComponent(Entity_ID entity, Component_ID component) const;
 
-  void createArchetypeForEntity(Entity_ID entity, const std::set<Component_ID>& type);
+  void createArchetypeForEntity(Entity_ID entity, const set<Component_ID>& type);
   void assigneOrCreateArchetypeForEntity(Entity_ID entity, Component_ID component);
   void reassigneArchetypeForEntity(Entity_ID entity, Component_ID component);
 
-  bool findArchetype(Component_ID component, const std::set<Component_ID>& type, Archetype_ID& dstArchetypeID);
+  bool findArchetype(Component_ID component, const set<Component_ID>& type, Archetype_ID& dstArchetypeID);
   bool findArchetype(Component_ID component, Archetype_ID& dstArchetypeID);
 
   void addArchetype(Archetype& archetype);
@@ -111,13 +108,13 @@ private:
   ID_Manager m_systemIDsManager;
   ID_Manager m_archetypeIDsManager;
 
-  std::unordered_map<Entity_ID, Entity_Record>     m_entityToRecord;
-  std::unordered_map<Component_ID, Archetype_Map>  m_componentToArchetypeMap;
+  unordered_map<Entity_ID, Entity_Record>     m_entityToRecord;
+  unordered_map<Component_ID, Archetype_Map>  m_componentToArchetypeMap;
   
   // !TODO m_componentRegister should be destroyed after m_archetypes so currently its HUGE UNSAFE, 
   // but im too lazy to do something with this
   Component_Register                               m_componentRegister;
-  std::vector<Archetype>                           m_archetypes;
+  vector<Archetype>                           m_archetypes;
 
   template<class ...Components>
   friend class Query;

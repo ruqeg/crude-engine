@@ -52,7 +52,6 @@ public:
     }
   };
 
-
   class Default_CXX_Allocator
   {
   public:
@@ -96,7 +95,6 @@ public:
     }
   };
 
-  // !TODO
   class Default_Aligned_Allocator
   {
   public:
