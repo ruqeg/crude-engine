@@ -41,7 +41,7 @@ void* Pool_Allocator::allocate(std::size_t size) noexcept
   return resultPtr;
 }
 
-void Pool_Allocator::free(void* ptr) noexcept
+void Pool_Allocator::deallocate(void* ptr) noexcept
 {
   CRUDE_ASSERT(ptr);
 

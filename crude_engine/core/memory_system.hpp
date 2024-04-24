@@ -43,7 +43,7 @@ public:
 
     static void free(void* ptr) noexcept
     {
-      return Memory_Manager::getInstance().getDefaultFreeRBTAllocators().free(ptr);
+      return Memory_Manager::getInstance().getDefaultFreeRBTAllocators().deallocate(ptr);
     }
 
     static void reset() noexcept
@@ -86,7 +86,7 @@ public:
 
     static void free(void* ptr) noexcept
     {
-      return Memory_Manager::getInstance().getDefaultCxxAllocators().free(ptr);
+      return Memory_Manager::getInstance().getDefaultCxxAllocators().deallocate(ptr);
     }
 
     static void reset() noexcept

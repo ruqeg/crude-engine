@@ -11,7 +11,7 @@ void* CXX_Allocator::allocate(std::size_t size) noexcept
   return ptr;
 }
 
-void CXX_Allocator::free(void* ptr) noexcept
+void CXX_Allocator::deallocate(void* ptr) noexcept
 {
   CRUDE_ASSERT(ptr);
   Memory_Utils::free(ptr);

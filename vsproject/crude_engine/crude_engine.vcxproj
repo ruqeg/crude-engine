@@ -229,12 +229,9 @@
     <ClInclude Include="..\..\crude_engine\core\debug.hpp" />
     <ClInclude Include="..\..\crude_engine\core\filesystem.hpp" />
     <ClInclude Include="..\..\crude_engine\core\free_rbt_allocator.hpp" />
-    <ClInclude Include="..\..\crude_engine\core\hash_table.hpp" />
     <ClInclude Include="..\..\crude_engine\core\iallocator.hpp" />
     <ClInclude Include="..\..\crude_engine\core\iterator_base.hpp" />
     <ClInclude Include="..\..\crude_engine\core\linear_allocator.hpp" />
-    <ClInclude Include="..\..\crude_engine\core\list.hpp" />
-    <ClInclude Include="..\..\crude_engine\core\list_iterator_base.hpp" />
     <ClInclude Include="..\..\crude_engine\core\logger.hpp" />
     <ClInclude Include="..\..\crude_engine\core\memory_manager.hpp" />
     <ClInclude Include="..\..\crude_engine\core\memory_system.hpp" />
@@ -322,8 +319,6 @@
     <None Include="..\..\crude_engine\core\cxx_allocator.inl" />
     <None Include="..\..\crude_engine\core\free_rbt_allocator.inl" />
     <None Include="..\..\crude_engine\core\iterator_base.inl" />
-    <None Include="..\..\crude_engine\core\list.inl" />
-    <None Include="..\..\crude_engine\core\list_iterator_base.inl" />
     <None Include="..\..\crude_engine\core\logger.inl" />
     <None Include="..\..\crude_engine\core\memory_system.inl" />
     <None Include="..\..\crude_engine\core\optional.inl" />

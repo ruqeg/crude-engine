@@ -16,7 +16,7 @@ public:
   Pool_Allocator(const std::size_t capacity, const std::size_t chunkSize) noexcept;
   ~Pool_Allocator() noexcept;
   CRUDE_NODISCARD void* allocate(std::size_t size) noexcept override;
-  void free(void* ptr) noexcept override;
+  void deallocate(void* ptr) noexcept override;
   void reset() noexcept;
 
   template<class T, typename... Args>

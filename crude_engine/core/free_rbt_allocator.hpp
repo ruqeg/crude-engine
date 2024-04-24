@@ -32,7 +32,7 @@ public:
   Free_RBT_Allocator(const std::size_t capacity, Placement_Policy placementPolicy = PLACEMANT_POLICY_FIND_BEST) noexcept;
   ~Free_RBT_Allocator() noexcept;
   CRUDE_NODISCARD void* allocate(std::size_t size) noexcept override; // O(log(n))
-  void free(void* ptr) noexcept override; // O(log(n))
+  void deallocate(void* ptr) noexcept override; // O(log(n))
   void reset() noexcept;
 
   template<class T, typename... Args>

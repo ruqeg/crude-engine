@@ -9,8 +9,8 @@ namespace crude_engine
 class CXX_Allocator : public IAllocator
 {
 public:
-  CRUDE_NODISCARD void* allocate(std::size_t size) noexcept override;
-  void free(void* ptr) noexcept override;
+  CRUDE_NODISCARD void* allocate(size_t size) noexcept override;
+  void deallocate(void* ptr) noexcept override;
 
   template<class T, typename... Args>
   CRUDE_NODISCARD T* mnew(Args&&... args) noexcept;

@@ -72,7 +72,7 @@ void* Free_RBT_Allocator::allocate(std::size_t size) noexcept
   return resultAddress;
 }
 
-void Free_RBT_Allocator::free(void* ptr) noexcept
+void Free_RBT_Allocator::deallocate(void* ptr) noexcept
 {
   CRUDE_ASSERT(ptr);
 
@@ -81,7 +81,7 @@ void Free_RBT_Allocator::free(void* ptr) noexcept
   Node* allocatedHeader = reinterpret_cast<Node*>(allocatedHeaderAddress);
 
   CRUDE_ASSERT(!allocatedHeader->free && !allocatedHeader->getParent() && !allocatedHeader->getLeft() && !allocatedHeader->getRight());
-  CRUDE_LOG_INFO(Debug::Channel::Memory, "Free_RBT_Allocator::free() blockSize: %i", allocatedHeader->blockSize);
+  CRUDE_LOG_INFO(Debug::Channel::Memory, "Free_RBT_Allocator::deallocate() blockSize: %i", allocatedHeader->blockSize);
 
   *allocatedHeader = Node(allocatedHeader->blockSize, true, allocatedHeader->prev, allocatedHeader->next);
 
