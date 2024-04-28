@@ -20,6 +20,9 @@
     <Filter Include="source\math">
       <UniqueIdentifier>{b2c2924c-85a4-4936-ad92-96c64e678fbd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="source\networking">
+      <UniqueIdentifier>{ff36a0ad-9ff3-4725-baeb-e1b629c6cad3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\crude_engine\graphics\vulkan\application.cpp">

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <core/memory_system.hpp>
+#include <core/assert.hpp>
 #include <iterator>
 
 namespace crude_engine
