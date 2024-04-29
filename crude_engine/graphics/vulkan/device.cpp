@@ -2,7 +2,7 @@
 #include <graphics/vulkan/physical_device.hpp>
 #include <graphics/vulkan/queue.hpp>
 #include <graphics/vulkan/fence.hpp>
-#include <core/array_dynamic.hpp>
+#include <core/std_containers.hpp>
 
 namespace crude_engine
 {
@@ -63,13 +63,13 @@ Shared_Ptr<Queue> Device::getQueue(uint32 queueFamilyIndex, uint32 queueIndex) c
 void Device::updateDescriptorSets(const Array_Unsafe<Write_Descriptor_Set>&  descriptorWrites,
                                   const Array_Unsafe<VkCopyDescriptorSet>&   descriptorCopies)
 {
-  Array_Dynamic<VkWriteDescriptorSet> vkDescriptorWrites(descriptorWrites.size());
+  vector<VkWriteDescriptorSet> vkDescriptorWrites(descriptorWrites.size());
 
 
   //!TODO WTF???
   Array_Unsafe<Write_Descriptor_Set>::Const_Iterator first = descriptorWrites.begin();
   Array_Unsafe<Write_Descriptor_Set>::Const_Iterator last = descriptorWrites.end();
-  Array_Dynamic<VkWriteDescriptorSet>::Iterator dFirst = vkDescriptorWrites.begin();
+  vector<VkWriteDescriptorSet>::iterator dFirst = vkDescriptorWrites.begin();
   //Algorithms::copy(first, last, dFirst);
 
   while (first != last)
@@ -93,7 +93,7 @@ void Device::waitIdle()
 
 bool Device::waitForFences(Array_Unsafe<Fence> fences, bool waitAll, uint64 timeout) const
 {
-  Array_Dynamic<VkFence> fencesHandles(fences.size());
+  vector<VkFence> fencesHandles(fences.size());
   Algorithms::copyc(fences.begin(), fences.end(), fencesHandles.begin(), [](auto& s, auto& d) -> void {
     *d = CRUDE_OBJECT_HANDLE(s);
   });
@@ -105,7 +105,7 @@ bool Device::waitForFences(Array_Unsafe<Fence> fences, bool waitAll, uint64 time
 
 bool Device::resetForFences(Array_Unsafe<Fence> fences) const
 {
-  Array_Dynamic<VkFence> fencesHandles(fences.size());
+  vector<VkFence> fencesHandles(fences.size());
   Algorithms::copyc(fences.begin(), fences.end(), fencesHandles.begin(), [](auto& s, auto& d) -> void {
     *d = CRUDE_OBJECT_HANDLE(s);
   });

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <core/array_dynamic.hpp>
+#include <core/std_containers.hpp>
 #include <core/array_unsafe.hpp>
 
 namespace crude_engine
@@ -26,7 +26,7 @@ public:
 
 public:
   Result read(const char* filename, crude_engine::Array_Unsafe<char>& buffer);
-  Result read(const char* filename, crude_engine::Array_Dynamic<char>& buffer);
+  Result read(const char* filename, vector<char>& buffer);
   //void readAsync(char const *fileName);
 
   bool fileAccess(const char* filename);

@@ -67,7 +67,7 @@ Swap_Chain::~Swap_Chain()
   vkDestroySwapchainKHR(CRUDE_OBJECT_HANDLE(m_device), m_handle, getPVkAllocationCallbacks());
 }
   
-const Array_Dynamic<Shared_Ptr<Swap_Chain_Image>>& Swap_Chain::getSwapchainImages()
+const vector<Shared_Ptr<Swap_Chain_Image>>& Swap_Chain::getSwapchainImages()
 {
   if (!m_swapChainImages.empty())
   {
@@ -82,7 +82,7 @@ const Array_Dynamic<Shared_Ptr<Swap_Chain_Image>>& Swap_Chain::getSwapchainImage
     return m_swapChainImages;
   }
 
-  Array_Dynamic<VkImage> vkSwapchainImages(imageCount);
+  vector<VkImage> vkSwapchainImages(imageCount);
   vkGetSwapchainImagesKHR(CRUDE_OBJECT_HANDLE(m_device), m_handle, &imageCount, vkSwapchainImages.data());
 
   m_swapChainImages.resize(imageCount);

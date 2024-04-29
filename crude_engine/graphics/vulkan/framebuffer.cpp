@@ -7,18 +7,18 @@ namespace crude_engine
 {
 
 
-Framebuffer::Framebuffer(Shared_Ptr<const Device>                      device,
-                         Shared_Ptr<Render_Pass>                       renderPass,
-                         const Array_Dynamic<Shared_Ptr<Image_View>>&  attachments,
-                         uint32                                        width,
-                         uint32                                        height,
-                         uint32                                        layers)
+Framebuffer::Framebuffer(Shared_Ptr<const Device>               device,
+                         Shared_Ptr<Render_Pass>                renderPass,
+                         const vector<Shared_Ptr<Image_View>>&  attachments,
+                         uint32                                 width,
+                         uint32                                 height,
+                         uint32                                 layers)
   :
   m_device(device),
   m_attachments(attachments),
   m_renderPass(renderPass)
 {
-  Array_Dynamic<VkImageView> attachmentsHandles(m_attachments.size());
+  vector<VkImageView> attachmentsHandles(m_attachments.size());
   Algorithms::copyc(m_attachments.begin(), m_attachments.end(), attachmentsHandles.begin(), [](auto& src, auto& dst) -> void {
     *dst = CRUDE_OBJECT_HANDLE(*src);
   });

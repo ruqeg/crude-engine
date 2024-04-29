@@ -2,7 +2,7 @@
 
 #include <graphics/vulkan/include_vulkan.hpp>
 #include <core/shared_ptr.hpp>
-#include <core/array_dynamic.hpp>
+#include <core/std_containers.hpp>
 #include <core/array_unsafe.hpp>
 #include <graphics/vulkan/application.hpp>
 #include <graphics/vulkan/object.hpp>
@@ -25,7 +25,7 @@ public:
                      const Array_Unsafe<const char*>&      enabledLayers      = {},
                      VkInstanceCreateFlags                 flags              = 0u);
   ~Instance();
-  Array_Dynamic<Shared_Ptr<Physical_Device>> getPhysicalDevices();
+  vector<Shared_Ptr<Physical_Device>> getPhysicalDevices();
 };
 
 }

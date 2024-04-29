@@ -3,7 +3,7 @@
 #include <graphics/vulkan/fence.hpp>
 #include <graphics/vulkan/semaphore.hpp>
 #include <graphics/vulkan/swap_chain.hpp>
-#include <core/array_dynamic.hpp>
+#include <core/std_containers.hpp>
 
 namespace crude_engine
 {
@@ -25,17 +25,17 @@ bool Queue::sumbit(const Array_Unsafe<Shared_Ptr<Command_Buffer>>&  commandBuffe
     return false;
   }
 
-  Array_Dynamic<VkCommandBuffer> commandBuffersHandles(commandBuffers.size());
+  vector<VkCommandBuffer> commandBuffersHandles(commandBuffers.size());
   Algorithms::copyc(commandBuffers.begin(), commandBuffers.end(), commandBuffersHandles.begin(), [](auto& src, auto& dst) -> void {
     *dst = CRUDE_OBJECT_HANDLE(*src);
   });
 
-  Array_Dynamic<VkSemaphore> waitSemaphoreHandles(waitSemaphores.size());
+  vector<VkSemaphore> waitSemaphoreHandles(waitSemaphores.size());
   Algorithms::copyc(waitSemaphores.begin(), waitSemaphores.end(), waitSemaphoreHandles.begin(), [](auto& src, auto& dst) -> void {
     *dst = CRUDE_OBJECT_HANDLE(*src);
     });
 
-  Array_Dynamic<VkSemaphore> signalSemaphoreHandles(signalSemaphores.size());
+  vector<VkSemaphore> signalSemaphoreHandles(signalSemaphores.size());
   Algorithms::copyc(signalSemaphores.begin(), signalSemaphores.end(), signalSemaphoreHandles.begin(), [](auto& src, auto& dst) -> void {
     *dst = CRUDE_OBJECT_HANDLE(*src);
     });
@@ -59,12 +59,12 @@ Queue_Present_Result Queue::present(const Array_Unsafe<Shared_Ptr<Swap_Chain>>& 
                                     const Array_Unsafe<uint32>&                  imageIndices,
                                     const Array_Unsafe<Shared_Ptr<Semaphore>>&   waitSemaphores)
 {
-  Array_Dynamic<VkSemaphore> waitSemaphoreHandles(waitSemaphores.size());
+  vector<VkSemaphore> waitSemaphoreHandles(waitSemaphores.size());
   Algorithms::copyc(waitSemaphores.begin(), waitSemaphores.end(), waitSemaphoreHandles.begin(), [](auto& src, auto& dst) -> void {
     *dst = CRUDE_OBJECT_HANDLE(*src);
     });
 
-  Array_Dynamic<VkSwapchainKHR> swapchainHandles(swapchains.size());
+  vector<VkSwapchainKHR> swapchainHandles(swapchains.size());
   Algorithms::copyc(swapchains.begin(), swapchains.end(), swapchainHandles.begin(), [](auto& src, auto& dst) -> void {
     *dst = CRUDE_OBJECT_HANDLE(*src);
     });

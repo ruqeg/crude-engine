@@ -30,7 +30,7 @@ VkSurfaceCapabilitiesKHR Physical_Device::getSurfaceCapabilitis(Shared_Ptr<const
   return capabilities;
 }
    
-Array_Dynamic<VkSurfaceFormatKHR> Physical_Device::getSurfaceFormats(Shared_Ptr<const Surface> surface)
+vector<VkSurfaceFormatKHR> Physical_Device::getSurfaceFormats(Shared_Ptr<const Surface> surface)
 {
   uint32 formatCount;
   vkGetPhysicalDeviceSurfaceFormatsKHR(
@@ -44,7 +44,7 @@ Array_Dynamic<VkSurfaceFormatKHR> Physical_Device::getSurfaceFormats(Shared_Ptr<
     return {};
   }
 
-  Array_Dynamic<VkSurfaceFormatKHR> formats(formatCount);
+  vector<VkSurfaceFormatKHR> formats(formatCount);
   vkGetPhysicalDeviceSurfaceFormatsKHR(
     m_handle, 
     CRUDE_OBJECT_HANDLE(surface),
@@ -53,7 +53,7 @@ Array_Dynamic<VkSurfaceFormatKHR> Physical_Device::getSurfaceFormats(Shared_Ptr<
   return formats;
 }
 
-Array_Dynamic<VkPresentModeKHR> Physical_Device::getSurfacePresentModes(Shared_Ptr<const Surface> surface)
+vector<VkPresentModeKHR> Physical_Device::getSurfacePresentModes(Shared_Ptr<const Surface> surface)
 {
   uint32 presentModeCount;
   vkGetPhysicalDeviceSurfacePresentModesKHR(
@@ -67,7 +67,7 @@ Array_Dynamic<VkPresentModeKHR> Physical_Device::getSurfacePresentModes(Shared_P
     return {};
   }
 
-  Array_Dynamic<VkPresentModeKHR> presentModes(presentModeCount);
+  vector<VkPresentModeKHR> presentModes(presentModeCount);
   vkGetPhysicalDeviceSurfacePresentModesKHR(
     m_handle, 
     CRUDE_OBJECT_HANDLE(surface),
@@ -77,7 +77,7 @@ Array_Dynamic<VkPresentModeKHR> Physical_Device::getSurfacePresentModes(Shared_P
   return presentModes;
 }
 
-Array_Dynamic<VkQueueFamilyProperties> Physical_Device::getQueueFamilyProperties() const
+vector<VkQueueFamilyProperties> Physical_Device::getQueueFamilyProperties() const
 {
   uint32 queueFamilyCount = 0u;
   vkGetPhysicalDeviceQueueFamilyProperties(
@@ -90,7 +90,7 @@ Array_Dynamic<VkQueueFamilyProperties> Physical_Device::getQueueFamilyProperties
     return {};
   }
 
-  Array_Dynamic<VkQueueFamilyProperties> queueFamiliesProperties(queueFamilyCount);
+  vector<VkQueueFamilyProperties> queueFamiliesProperties(queueFamilyCount);
   vkGetPhysicalDeviceQueueFamilyProperties(
     m_handle, 
     &queueFamilyCount, 
@@ -99,7 +99,7 @@ Array_Dynamic<VkQueueFamilyProperties> Physical_Device::getQueueFamilyProperties
   return queueFamiliesProperties;
 }
   
-Array_Dynamic<VkExtensionProperties> Physical_Device::getExtensionProperties() const
+vector<VkExtensionProperties> Physical_Device::getExtensionProperties() const
 {
   uint32 extensionCount = 0u;
   vkEnumerateDeviceExtensionProperties(m_handle, nullptr, &extensionCount, nullptr);
@@ -108,7 +108,7 @@ Array_Dynamic<VkExtensionProperties> Physical_Device::getExtensionProperties() c
     return {};
   }
     
-  Array_Dynamic<VkExtensionProperties> extensions(extensionCount);
+  vector<VkExtensionProperties> extensions(extensionCount);
   vkEnumerateDeviceExtensionProperties(m_handle, nullptr, &extensionCount, extensions.data());
   
   return extensions;

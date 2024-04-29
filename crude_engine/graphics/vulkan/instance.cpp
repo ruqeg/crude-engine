@@ -73,7 +73,7 @@ Instance::~Instance()
   vkDestroyInstance(m_handle, getPVkAllocationCallbacks());
 }
   
-Array_Dynamic<Shared_Ptr<Physical_Device>> Instance::getPhysicalDevices()
+vector<Shared_Ptr<Physical_Device>> Instance::getPhysicalDevices()
 {
   uint32 vkPhysicalDeviceCount = 0u;
   vkEnumeratePhysicalDevices(
@@ -86,13 +86,13 @@ Array_Dynamic<Shared_Ptr<Physical_Device>> Instance::getPhysicalDevices()
     return {};
   }
 
-  Array_Dynamic<VkPhysicalDevice> vkPhysicalDevices(vkPhysicalDeviceCount);
+  vector<VkPhysicalDevice> vkPhysicalDevices(vkPhysicalDeviceCount);
   vkEnumeratePhysicalDevices(
       m_handle, 
       &vkPhysicalDeviceCount,
       vkPhysicalDevices.data());
 
-  Array_Dynamic<Shared_Ptr<Physical_Device>> physicaDevices(vkPhysicalDeviceCount);
+  vector<Shared_Ptr<Physical_Device>> physicaDevices(vkPhysicalDeviceCount);
   for (uint32 i = 0u; i < vkPhysicalDeviceCount; ++i) 
   {
     physicaDevices[i] = makeShared<Physical_Device>(vkPhysicalDevices[i]);

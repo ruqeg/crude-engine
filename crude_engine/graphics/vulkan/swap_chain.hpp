@@ -1,7 +1,7 @@
 #pragma once
 
 #include <core/shared_ptr.hpp>
-#include <core/array_dynamic.hpp>
+#include <core/std_containers.hpp>
 #include <core/array_unsafe.hpp>
 #include <core/optional.hpp>
 #include <graphics/vulkan/object.hpp>
@@ -52,7 +52,7 @@ public:
                       VkSwapchainCreateFlagsKHR      flags,
                       Shared_Ptr<Swap_Chain>         oldSwapchain);
   ~Swap_Chain();
-  const Array_Dynamic<Shared_Ptr<Swap_Chain_Image>>& getSwapchainImages();
+  const vector<Shared_Ptr<Swap_Chain_Image>>& getSwapchainImages();
   Swap_Chain_Next_Image acquireNextImage(const Optional<Shared_Ptr<Semaphore>>&  semaphore = nullopt,
                                          const Optional<Shared_Ptr<Fence>>&      fence = nullopt,
                                          uint64                                  timeout = UINT64_MAX);
@@ -61,9 +61,9 @@ public:
   const VkExtent2D getExtent() const;
 
 private:
-  Shared_Ptr<const Device>                    m_device;
-  Shared_Ptr<const Surface>                   m_surface;
-  Array_Dynamic<Shared_Ptr<Swap_Chain_Image>> m_swapChainImages;
+  Shared_Ptr<const Device>             m_device;
+  Shared_Ptr<const Surface>            m_surface;
+  vector<Shared_Ptr<Swap_Chain_Image>> m_swapChainImages;
 
   const VkImageUsageFlags  m_imageUsage;
   const VkSurfaceFormatKHR m_surfaceFormat;

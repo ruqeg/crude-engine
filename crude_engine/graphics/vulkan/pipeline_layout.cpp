@@ -1,7 +1,7 @@
 #include <graphics/vulkan/pipeline_layout.hpp>
 #include <graphics/vulkan/device.hpp>
 #include <graphics/vulkan/descriptor_set_layout.hpp>
-#include <core/array_dynamic.hpp>
+#include <core/std_containers.hpp>
 
 namespace crude_engine
 {
@@ -12,7 +12,7 @@ Pipeline_Layout::Pipeline_Layout(Shared_Ptr<const Device>                       
   :
   m_device(device)
 {
-  Array_Dynamic<VkDescriptorSetLayout> vkDescriptorSetLayoutHandles(descriptorSetLayouts.size());
+  vector<VkDescriptorSetLayout> vkDescriptorSetLayoutHandles(descriptorSetLayouts.size());
   Algorithms::copyc(descriptorSetLayouts.begin(), descriptorSetLayouts.end(), vkDescriptorSetLayoutHandles.begin(), [](auto& src, auto& dst) -> void {
     *dst = CRUDE_OBJECT_HANDLE(*src);
   });

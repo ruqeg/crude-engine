@@ -114,7 +114,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_DEPRECATE;_CRUDE_NO_INTRINSICS;;_CRUDE_NO_INTRINSICS;;_CRUDE_SSE_INTRINSICS;</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_DEPRECATE;_CRUDE_NO_INTRINSICS;_CRUDE_SSE_INTRINSICS;WIN32_LEAN_</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(VULKAN_SDK)\Include;$(ProjectDir)..\..\crude_engine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -134,7 +134,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_DEPRECATE;_CRUDE_NO_INTRINSICS;;_CRUDE_NO_INTRINSICS;;_CRUDE_SSE_INTRINSICS;</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_DEPRECATE;_CRUDE_NO_INTRINSICS;;_CRUDE_NO_INTRINSICS;;_CRUDE_SSE_INTRINSICS;;WIN32_LEAN_;</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(VULKAN_SDK)\Include;$(ProjectDir)..\..\crude_engine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -215,16 +215,17 @@
     <ClCompile Include="..\..\crude_engine\math\matrix.cpp" />
     <ClCompile Include="..\..\crude_engine\math\scalar.cpp" />
     <ClCompile Include="..\..\crude_engine\math\vector.cpp" />
+    <ClCompile Include="..\..\crude_engine\network\socket_address.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\crude_engine\core\algorithms.hpp" />
     <ClInclude Include="..\..\crude_engine\core\alias.hpp" />
-    <ClInclude Include="..\..\crude_engine\core\array_dynamic.hpp" />
     <ClInclude Include="..\..\crude_engine\core\array_stack.hpp" />
     <ClInclude Include="..\..\crude_engine\core\array_unsafe.hpp" />
     <ClInclude Include="..\..\crude_engine\core\assert.hpp" />
     <ClInclude Include="..\..\crude_engine\core\bs_tree.hpp" />
     <ClInclude Include="..\..\crude_engine\core\compare.hpp" />
+    <ClInclude Include="..\..\crude_engine\core\shared_ptr.hpp" />
     <ClInclude Include="..\..\crude_engine\core\system_allocator.hpp" />
     <ClInclude Include="..\..\crude_engine\core\debug.hpp" />
     <ClInclude Include="..\..\crude_engine\core\filesystem.hpp" />
@@ -239,7 +240,6 @@
     <ClInclude Include="..\..\crude_engine\core\optional.hpp" />
     <ClInclude Include="..\..\crude_engine\core\pool_allocator.hpp" />
     <ClInclude Include="..\..\crude_engine\core\rb_tree.hpp" />
-    <ClInclude Include="..\..\crude_engine\core\shared_ptr.hpp" />
     <ClInclude Include="..\..\crude_engine\core\size_holder.hpp" />
     <ClInclude Include="..\..\crude_engine\core\stack_allocator.hpp" />
     <ClInclude Include="..\..\crude_engine\core\stack_linked_list.hpp" />
@@ -310,10 +310,10 @@
     <ClInclude Include="..\..\crude_engine\math\matrix.hpp" />
     <ClInclude Include="..\..\crude_engine\math\scalar.hpp" />
     <ClInclude Include="..\..\crude_engine\math\vector.hpp" />
+    <ClInclude Include="..\..\crude_engine\network\socket_address.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\crude_engine\core\algorithms.inl" />
-    <None Include="..\..\crude_engine\core\array_dynamic.inl" />
     <None Include="..\..\crude_engine\core\array_stack.inl" />
     <None Include="..\..\crude_engine\core\array_unsafe.inl" />
     <None Include="..\..\crude_engine\core\bs_tree.inl" />

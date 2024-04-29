@@ -2,7 +2,7 @@
 
 #include <graphics/vulkan/include_vulkan.hpp>
 #include <graphics/vulkan/object.hpp>
-#include <core/array_dynamic.hpp>
+#include <core/std_containers.hpp>
 #include <core/shared_ptr.hpp>
 
 namespace crude_engine
@@ -15,13 +15,13 @@ class Descriptor_Pool;
 class Descriptor_Set : public TObject<VkDescriptorSet>
 {
 public:
-  explicit Descriptor_Set(Shared_Ptr<const Device>                                 device,
-                          const Array_Dynamic<Shared_Ptr<Descriptor_Set_Layout>>&  setLayouts,
-                          Shared_Ptr<Descriptor_Pool>                              pool);
+  explicit Descriptor_Set(Shared_Ptr<const Device>                          device,
+                          const vector<Shared_Ptr<Descriptor_Set_Layout>>&  setLayouts,
+                          Shared_Ptr<Descriptor_Pool>                       pool);
   ~Descriptor_Set();
 private:
   Shared_Ptr<const Device>                          m_device;
-  Array_Dynamic<Shared_Ptr<Descriptor_Set_Layout>>  m_setLayouts;
+  vector<Shared_Ptr<Descriptor_Set_Layout>>  m_setLayouts;
   Shared_Ptr<Descriptor_Pool>                       m_pool;
 };
 

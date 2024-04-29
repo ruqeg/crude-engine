@@ -8,7 +8,7 @@
 #include <graphics/vulkan/pipeline.hpp>
 #include <graphics/vulkan/pipeline_layout.hpp>
 #include <graphics/vulkan/descriptor_set.hpp>
-#include <core/array_dynamic.hpp>
+#include <core/std_containers.hpp>
 
 namespace crude_engine
 {
@@ -66,7 +66,7 @@ void Command_Buffer::barrier(VkPipelineStageFlags                srcStage,
 {
   CRUDE_ASSERT(imageMemoryBarriers.data());
 
-  Array_Dynamic<VkImageMemoryBarrier> pVkImageMemoryBarriers(imageMemoryBarriers.size());
+  vector<VkImageMemoryBarrier> pVkImageMemoryBarriers(imageMemoryBarriers.size());
   Algorithms::copy(imageMemoryBarriers.begin(), imageMemoryBarriers.end(), pVkImageMemoryBarriers.begin());
 
   vkCmdPipelineBarrier(
@@ -173,7 +173,7 @@ void Command_Buffer::bindDescriptorSets(Shared_Ptr<Pipeline>                    
 {
   constexpr uint32 offset = 0u;
 
-  Array_Dynamic<VkDescriptorSet> descriptorSetsHandles(descriptorSets.size());
+  vector<VkDescriptorSet> descriptorSetsHandles(descriptorSets.size());
   Algorithms::copyc(descriptorSets.begin(), descriptorSets.end(), descriptorSetsHandles.begin(), [](auto& src, auto& dst) -> void {
     *dst = CRUDE_OBJECT_HANDLE(*src);
   });

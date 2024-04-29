@@ -20,7 +20,7 @@
     <Filter Include="source\math">
       <UniqueIdentifier>{b2c2924c-85a4-4936-ad92-96c64e678fbd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="source\networking">
+    <Filter Include="source\network">
       <UniqueIdentifier>{ff36a0ad-9ff3-4725-baeb-e1b629c6cad3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -217,6 +217,9 @@
     <ClCompile Include="..\..\crude_engine\math\vector.cpp">
       <Filter>source\math</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\crude_engine\network\socket_address.cpp">
+      <Filter>source\network</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\crude_engine\graphics\vulkan\application.hpp">
@@ -369,9 +372,6 @@
     <ClInclude Include="..\..\crude_engine\core\alias.hpp">
       <Filter>source\core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\crude_engine\core\array_dynamic.hpp">
-      <Filter>source\core</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\crude_engine\core\array_stack.hpp">
       <Filter>source\core</Filter>
     </ClInclude>
@@ -427,9 +427,6 @@
       <Filter>source\core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\crude_engine\core\rb_tree.hpp">
-      <Filter>source\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\crude_engine\core\shared_ptr.hpp">
       <Filter>source\core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\crude_engine\core\size_holder.hpp">
@@ -498,15 +495,18 @@
     <ClInclude Include="..\..\crude_engine\core\cxx_allocator_container.hpp">
       <Filter>source\core</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\crude_engine\network\socket_address.hpp">
+      <Filter>source\network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\crude_engine\core\shared_ptr.hpp">
+      <Filter>source\core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\crude_engine\graphics\vulkan\object.inl">
       <Filter>source\graphics\vulkan</Filter>
     </None>
     <None Include="..\..\crude_engine\core\algorithms.inl">
-      <Filter>source\core</Filter>
-    </None>
-    <None Include="..\..\crude_engine\core\array_dynamic.inl">
       <Filter>source\core</Filter>
     </None>
     <None Include="..\..\crude_engine\core\array_stack.inl">
@@ -531,9 +531,6 @@
       <Filter>source\core</Filter>
     </None>
     <None Include="..\..\crude_engine\core\rb_tree.inl">
-      <Filter>source\core</Filter>
-    </None>
-    <None Include="..\..\crude_engine\core\shared_ptr.inl">
       <Filter>source\core</Filter>
     </None>
     <None Include="..\..\crude_engine\core\stack_linked_list.inl">
@@ -567,6 +564,9 @@
       <Filter>source\core</Filter>
     </None>
     <None Include="..\..\crude_engine\core\cxx_allocator_container.inl">
+      <Filter>source\core</Filter>
+    </None>
+    <None Include="..\..\crude_engine\core\shared_ptr.inl">
       <Filter>source\core</Filter>
     </None>
   </ItemGroup>

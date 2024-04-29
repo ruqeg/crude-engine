@@ -37,7 +37,7 @@ Filesystem::Result Filesystem::read(const char* filename, crude_engine::Array_Un
   return RESULT_SUCCESS;
 }
 
-Filesystem::Result Filesystem::read(const char* filename, crude_engine::Array_Dynamic<char>& buffer)
+Filesystem::Result Filesystem::read(const char* filename, vector<char>& buffer)
 {
   FILE* file = fopen(filename, "rb");
   fseek(file, 0, SEEK_END);
