@@ -2,7 +2,6 @@
 
 #include <core/shared_ptr.hpp>
 #include <core/std_containers.hpp>
-#include <core/array_unsafe.hpp>
 #include <core/optional.hpp>
 #include <graphics/vulkan/object.hpp>
 #include <graphics/vulkan/include_vulkan.hpp>
@@ -44,7 +43,7 @@ public:
                       uint32_t                       minImageCount,
                       uint32_t                       imageArrayLayers,
                       VkSharingMode                  imageSharingMode,
-                      const Array_Unsafe<uint32>&    queueFamilyIndices,
+                      const span<uint32>&            queueFamilyIndices,
                       VkSurfaceTransformFlagBitsKHR  preTransform,
                       VkCompositeAlphaFlagBitsKHR    compositeAlpha,
                       VkPresentModeKHR               presentMode,

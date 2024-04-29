@@ -4,10 +4,10 @@
 namespace crude_engine 
 {
   
-Render_Pass::Render_Pass(Shared_Ptr<const Device>                     device,
-                         const Array_Unsafe<Subpass_Description>&     subpasses,
-                         const Array_Unsafe<Subpass_Dependency>&      subpassesDependencies,
-                         const Array_Unsafe<Attachment_Description>&  attachments)
+Render_Pass::Render_Pass(Shared_Ptr<const Device>             device,
+                         const span<Subpass_Description>&     subpasses,
+                         const span<Subpass_Dependency>&      subpassesDependencies,
+                         const span<Attachment_Description>&  attachments)
   :
   m_device(device)
 {

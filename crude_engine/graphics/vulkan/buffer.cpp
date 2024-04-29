@@ -8,7 +8,7 @@ Buffer::Buffer(Shared_Ptr<const Device>  device,
                VkDeviceSize              size,
                VkBufferUsageFlags        usage,
                VkSharingMode             sharingMode,
-               Array_Unsafe<uint32>      queueFamilyIndices)
+               span<uint32>              queueFamilyIndices)
   :
   m_device(device)
 {

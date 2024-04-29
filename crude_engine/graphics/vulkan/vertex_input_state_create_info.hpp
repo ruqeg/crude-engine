@@ -1,6 +1,6 @@
 #pragma once
 
-#include <core/array_unsafe.hpp>
+#include <core/std_containers.hpp>
 #include <graphics/vulkan/viewport_state_create_info.hpp>
 
 namespace crude_engine 
@@ -9,8 +9,8 @@ namespace crude_engine
 class Vertex_Input_State_Create_Info : public VkPipelineVertexInputStateCreateInfo
 {
 public:
-  explicit Vertex_Input_State_Create_Info(const Array_Unsafe<VkVertexInputBindingDescription>&    bindingDescriptions,
-                                          const Array_Unsafe<VkVertexInputAttributeDescription>&  attributeDescriptions);
+  explicit Vertex_Input_State_Create_Info(const span<VkVertexInputBindingDescription>&    bindingDescriptions,
+                                          const span<VkVertexInputAttributeDescription>&  attributeDescriptions);
 };
 
 }

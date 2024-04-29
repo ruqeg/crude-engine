@@ -1,7 +1,7 @@
 #pragma once
 
 #include <core/shared_ptr.hpp>
-#include <core/array_unsafe.hpp>
+#include <core/std_containers.hpp>
 #include <graphics/vulkan/object.hpp>
 #include <graphics/vulkan/include_vulkan.hpp>
 
@@ -13,7 +13,7 @@ class Device;
 class Shader_Module : public TObject<VkShaderModule>
 {
 public:
-  explicit Shader_Module(Shared_Ptr<const Device> device, Array_Unsafe<const char> code);
+  explicit Shader_Module(Shared_Ptr<const Device> device, span<const char> code);
   ~Shader_Module();
 private:
   Shared_Ptr<const Device>  m_device;

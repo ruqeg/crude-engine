@@ -3,12 +3,12 @@
 namespace crude_engine
 {
 
-Subpass_Description::Subpass_Description(VkPipelineBindPoint                           pipelineBindPoint,
-                                         const Array_Unsafe<VkAttachmentReference>&    inputAttachments,
-                                         const Array_Unsafe<VkAttachmentReference>&    colorAttachments,
+Subpass_Description::Subpass_Description(VkPipelineBindPoint                      pipelineBindPoint,
+                                         const span<VkAttachmentReference>&       inputAttachments,
+                                         const span<VkAttachmentReference>&       colorAttachments,
                                          //!TODO const Array_Unsafe<Attachment_Reference>&  resolveAttachments,
-                                         const Optional<VkAttachmentReference*>&       depthStencilAttachment,
-                                         const Array_Unsafe<uint32>&                   preserveAttachments)
+                                         const Optional<VkAttachmentReference*>&  depthStencilAttachment,
+                                         const span<uint32>&                      preserveAttachments)
 {
   this->flags = 0u;
 

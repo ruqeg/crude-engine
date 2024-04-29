@@ -2,6 +2,7 @@
 #include <graphics/vulkan/descriptor_pool.hpp>
 #include <graphics/vulkan/descriptor_set_layout.hpp>
 #include <graphics/vulkan/device.hpp>
+#include <core/algorithms.hpp>
 
 namespace crude_engine
 {

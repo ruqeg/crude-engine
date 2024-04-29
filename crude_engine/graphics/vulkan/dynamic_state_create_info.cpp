@@ -3,7 +3,7 @@
 namespace crude_engine
 {
 
-Dynamic_State_Create_Info::Dynamic_State_Create_Info(const Array_Unsafe<VkDynamicState>& dynamicStates)
+Dynamic_State_Create_Info::Dynamic_State_Create_Info(const span<VkDynamicState>& dynamicStates)
 {
   this->sType             = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
   this->pNext             = nullptr;

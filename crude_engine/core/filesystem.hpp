@@ -1,7 +1,6 @@
 #pragma once
 
 #include <core/std_containers.hpp>
-#include <core/array_unsafe.hpp>
 
 namespace crude_engine
 {
@@ -25,7 +24,7 @@ public:
   static Filesystem& getInstance();
 
 public:
-  Result read(const char* filename, crude_engine::Array_Unsafe<char>& buffer);
+  Result read(const char* filename, span<char>& buffer);
   Result read(const char* filename, vector<char>& buffer);
   //void readAsync(char const *fileName);
 

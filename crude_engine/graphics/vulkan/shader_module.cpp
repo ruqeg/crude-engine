@@ -4,7 +4,7 @@
 namespace crude_engine 
 {
 
-Shader_Module::Shader_Module(Shared_Ptr<const Device> device, Array_Unsafe<const char> code)
+Shader_Module::Shader_Module(Shared_Ptr<const Device> device, span<const char> code)
   :
   m_device(device)
 {

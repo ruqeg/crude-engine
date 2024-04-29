@@ -372,9 +372,6 @@
     <ClInclude Include="..\..\crude_engine\core\alias.hpp">
       <Filter>source\core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\crude_engine\core\array_unsafe.hpp">
-      <Filter>source\core</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\crude_engine\core\assert.hpp">
       <Filter>source\core</Filter>
     </ClInclude>
@@ -504,9 +501,6 @@
       <Filter>source\graphics\vulkan</Filter>
     </None>
     <None Include="..\..\crude_engine\core\algorithms.inl">
-      <Filter>source\core</Filter>
-    </None>
-    <None Include="..\..\crude_engine\core\array_unsafe.inl">
       <Filter>source\core</Filter>
     </None>
     <None Include="..\..\crude_engine\core\bs_tree.inl">

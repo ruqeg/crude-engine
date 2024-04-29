@@ -1,6 +1,6 @@
 #pragma once
 
-#include <core/array_unsafe.hpp>
+#include <core/std_containers.hpp>
 #include <graphics/vulkan/object.hpp>
 #include <graphics/vulkan/image_memory_barrier.hpp>
 
@@ -28,31 +28,31 @@ public:
 
   bool end();
   
-  void barrier(VkPipelineStageFlags                srcStage, 
-               VkPipelineStageFlags                dstStage, 
-               Array_Unsafe<Image_Memory_Barrier>  imageMemoryBarriers);
+  void barrier(VkPipelineStageFlags        srcStage, 
+               VkPipelineStageFlags        dstStage, 
+               span<Image_Memory_Barrier>  imageMemoryBarriers);
   
-  void copyBufferToImage(Shared_Ptr<Buffer>              srcBuffer, 
-                         Shared_Ptr<Image>               dstImage, 
-                         Array_Unsafe<VkBufferImageCopy> regions);
+  void copyBufferToImage(Shared_Ptr<Buffer>       srcBuffer, 
+                         Shared_Ptr<Image>        dstImage, 
+                         span<VkBufferImageCopy>  regions);
   
   bool reset(VkCommandBufferResetFlags flags = VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
 
-  void beginRenderPass(Shared_Ptr<Render_Pass>     renderPass,
-                       Shared_Ptr<Framebuffer>     framebuffer,
-                       Array_Unsafe<VkClearValue>  clearValues,
-                       const VkRect2D&             renderArea = {0, 0, 0, 0}, 
-                       VkSubpassContents           contents = VK_SUBPASS_CONTENTS_INLINE);
+  void beginRenderPass(Shared_Ptr<Render_Pass>  renderPass,
+                       Shared_Ptr<Framebuffer>  framebuffer,
+                       span<VkClearValue>       clearValues,
+                       const VkRect2D&          renderArea = {0, 0, 0, 0}, 
+                       VkSubpassContents        contents = VK_SUBPASS_CONTENTS_INLINE);
 
   void bindPipeline(Shared_Ptr<Pipeline> pipeline);
 
-  void setViewport(Array_Unsafe<VkViewport> viewports);
+  void setViewport(span<VkViewport> viewports);
 
-  void setScissor(Array_Unsafe<VkRect2D> scissors);
+  void setScissor(span<VkRect2D> scissors);
 
-  void bindDescriptorSets(Shared_Ptr<Pipeline>                      pipeline,
-                          Array_Unsafe<Shared_Ptr<Descriptor_Set>>  descriptorSets, 
-                          Array_Unsafe<uint32>                      dynamicOffsets = {});
+  void bindDescriptorSets(Shared_Ptr<Pipeline>              pipeline,
+                          span<Shared_Ptr<Descriptor_Set>>  descriptorSets, 
+                          span<uint32>                      dynamicOffsets = {});
 
   void draw(uint32 vertexCount, uint32 instanceCount = 0u, uint32 firstVertex = 0u, uint32 firstInstance = 0u);
 

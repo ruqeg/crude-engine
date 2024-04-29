@@ -3,8 +3,8 @@
 namespace crude_engine
 {
 
-Viewport_State_Create_Info::Viewport_State_Create_Info(const Array_Unsafe<VkViewport>&  viewports,
-                                                       const Array_Unsafe<VkRect2D>&    scissors)
+Viewport_State_Create_Info::Viewport_State_Create_Info(const span<VkViewport>&  viewports,
+                                                       const span<VkRect2D>&    scissors)
 {
   this->sType          = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
   this->flags          = 0u;

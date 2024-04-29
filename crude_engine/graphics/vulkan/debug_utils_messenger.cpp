@@ -56,10 +56,10 @@ Debug_Utils_Messenger::~Debug_Utils_Messenger()
   destroyDebugUtilsMessengerEXT(CRUDE_OBJECT_HANDLE(m_instance), m_handle, getPVkAllocationCallbacks());
 }
 
-const Array_Unsafe<const char*> Debug_Utils_Messenger::requiredExtensions()
+const span<const char*> Debug_Utils_Messenger::requiredExtensions()
 {
   static const char* extensions[] = {VK_EXT_DEBUG_UTILS_EXTENSION_NAME};
-  return Array_Unsafe<const char*>(extensions, 1u);
+  return span<const char*>(extensions, 1u);
 }
 
 }

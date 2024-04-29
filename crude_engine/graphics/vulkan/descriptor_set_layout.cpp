@@ -4,8 +4,8 @@
 namespace crude_engine
 {
   
-Descriptor_Set_Layout::Descriptor_Set_Layout(Shared_Ptr<const Device>                           device,
-                                             const Array_Unsafe<VkDescriptorSetLayoutBinding>&  bindings)
+Descriptor_Set_Layout::Descriptor_Set_Layout(Shared_Ptr<const Device>                   device,
+                                             const span<VkDescriptorSetLayoutBinding>&  bindings)
   :
   m_device(device)
 {

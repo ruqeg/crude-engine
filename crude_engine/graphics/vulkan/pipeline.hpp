@@ -3,7 +3,6 @@
 #pragma once
 
 #include <core/shared_ptr.hpp>
-#include <core/array_unsafe.hpp>
 #include <core/optional.hpp>
 #include <graphics/vulkan/shader_stage_create_info.hpp>
 #include <graphics/vulkan/vertex_input_state_create_info.hpp>
@@ -32,7 +31,7 @@ public:
                     Shared_Ptr<const Render_Pass>                      renderPass,
                     Shared_Ptr<const Pipeline_Layout>                  pipelineLayout,
                     Shared_Ptr<const Pipeline>                         basePipeline,
-                    const Array_Unsafe<Shader_Stage_Create_Info>&      shaderStages,
+                    const span<Shader_Stage_Create_Info>&              shaderStages,
                     const Optional<Vertex_Input_State_Create_Info>&    vertexInputState,
                     const Optional<Tessellation_State_Create_Info>&    tessellationState,
                     const Optional<Input_Assembly_State_Create_Info>&  inputAsseblyState,

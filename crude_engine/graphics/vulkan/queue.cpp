@@ -3,7 +3,7 @@
 #include <graphics/vulkan/fence.hpp>
 #include <graphics/vulkan/semaphore.hpp>
 #include <graphics/vulkan/swap_chain.hpp>
-#include <core/std_containers.hpp>
+#include <core/algorithms.hpp>
 
 namespace crude_engine
 {
@@ -14,10 +14,10 @@ Queue::Queue(uint32 familyIndex, uint32 index)
   m_index(index)
 {}
 
-bool Queue::sumbit(const Array_Unsafe<Shared_Ptr<Command_Buffer>>&  commandBuffers,
-                   const Array_Unsafe<VkPipelineStageFlags>&        waitStageMasks, 
-                   const Array_Unsafe<Shared_Ptr<Semaphore>>&       waitSemaphores,
-                   const Array_Unsafe<Shared_Ptr<Semaphore>>&       signalSemaphores,
+bool Queue::sumbit(const span<Shared_Ptr<Command_Buffer>>&  commandBuffers,
+                   const span<VkPipelineStageFlags>&        waitStageMasks,
+                   const span<Shared_Ptr<Semaphore>>&       waitSemaphores,
+                   const span<Shared_Ptr<Semaphore>>&       signalSemaphores,
                    const Optional<Shared_Ptr<Fence>>&               fence)
 {
   if (waitSemaphores.size() != waitStageMasks.size())
@@ -55,9 +55,9 @@ bool Queue::sumbit(const Array_Unsafe<Shared_Ptr<Command_Buffer>>&  commandBuffe
   return result == VK_SUCCESS;
 }
 
-Queue_Present_Result Queue::present(const Array_Unsafe<Shared_Ptr<Swap_Chain>>&  swapchains,
-                                    const Array_Unsafe<uint32>&                  imageIndices,
-                                    const Array_Unsafe<Shared_Ptr<Semaphore>>&   waitSemaphores)
+Queue_Present_Result Queue::present(const span<Shared_Ptr<Swap_Chain>>&  swapchains,
+                                    const span<uint32>&                  imageIndices,
+                                    const span<Shared_Ptr<Semaphore>>&   waitSemaphores)
 {
   vector<VkSemaphore> waitSemaphoreHandles(waitSemaphores.size());
   Algorithms::copyc(waitSemaphores.begin(), waitSemaphores.end(), waitSemaphoreHandles.begin(), [](auto& src, auto& dst) -> void {

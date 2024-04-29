@@ -1,7 +1,6 @@
 #pragma once
 
 #include <core/shared_ptr.hpp>
-#include <core/array_unsafe.hpp>
 #include <core/std_containers.hpp>
 #include <graphics/vulkan/object.hpp>
 #include <graphics/vulkan/include_vulkan.hpp>

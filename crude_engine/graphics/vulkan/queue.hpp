@@ -1,7 +1,7 @@
 #pragma once
 
 #include <core/shared_ptr.hpp>
-#include <core/array_unsafe.hpp>
+#include <core/std_containers.hpp>
 #include <core/optional.hpp>
 #include <graphics/vulkan/object.hpp>
 #include <graphics/vulkan/include_vulkan.hpp>
@@ -34,14 +34,14 @@ class Queue : public TObject<VkQueue>
 {
 public:
   explicit Queue(uint32 familyIndex, uint32 index);
-  bool sumbit(const Array_Unsafe<Shared_Ptr<Command_Buffer>>&  commandBuffers, 
-              const Array_Unsafe<VkPipelineStageFlags>&        waitStageMasks = {}, 
-              const Array_Unsafe<Shared_Ptr<Semaphore>>&       waitSemaphores = {},
-              const Array_Unsafe<Shared_Ptr<Semaphore>>&       signalSemaphores = {},
+  bool sumbit(const span<Shared_Ptr<Command_Buffer>>&  commandBuffers,
+              const span<VkPipelineStageFlags>&        waitStageMasks = {},
+              const span<Shared_Ptr<Semaphore>>&       waitSemaphores = {},
+              const span<Shared_Ptr<Semaphore>>&       signalSemaphores = {},
               const Optional<Shared_Ptr<Fence>>&               fence = nullopt);
-  Queue_Present_Result present(const Array_Unsafe<Shared_Ptr<Swap_Chain>>&  swapchains,
-                               const Array_Unsafe<uint32>&                  imageIndices,
-                               const Array_Unsafe<Shared_Ptr<Semaphore>>&   waitSemaphores = {});
+  Queue_Present_Result present(const span<Shared_Ptr<Swap_Chain>>&  swapchains,
+                               const span<uint32>&                  imageIndices,
+                               const span<Shared_Ptr<Semaphore>>&   waitSemaphores = {});
   void waitIdle();
   ~Queue() = default;
 private:

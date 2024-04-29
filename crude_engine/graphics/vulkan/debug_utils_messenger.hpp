@@ -1,6 +1,6 @@
 #pragma once
 
-#include <core/array_unsafe.hpp>
+#include <core/std_containers.hpp>
 #include <core/shared_ptr.hpp>
 #include <graphics/vulkan/object.hpp>
 #include <graphics/vulkan/include_vulkan.hpp>
@@ -22,7 +22,7 @@ public:
                         VkDebugUtilsMessengerCreateFlagsEXT   flags           = 0u);
   ~Debug_Utils_Messenger();
 public:
-  static const Array_Unsafe<const char*> requiredExtensions();
+  static const span<const char*> requiredExtensions();
 private:
   void destroyDebugUtilsMessengerEXT(VkInstance instance, 
                                      VkDebugUtilsMessengerEXT debugMessenger, 

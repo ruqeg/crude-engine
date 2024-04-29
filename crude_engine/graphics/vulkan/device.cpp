@@ -3,12 +3,13 @@
 #include <graphics/vulkan/queue.hpp>
 #include <graphics/vulkan/fence.hpp>
 #include <core/std_containers.hpp>
+#include <core/algorithms.hpp>
 
 namespace crude_engine
 {
 
-Device_Queue_Create_Info::Device_Queue_Create_Info(uint32                        queueFamilyIndex,
-                                                   const Array_Unsafe<float32>&  queuePriorities)
+Device_Queue_Create_Info::Device_Queue_Create_Info(uint32                queueFamilyIndex,
+                                                   const span<float32>&  queuePriorities)
 {
   this->sType             = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
   this->pQueuePriorities  = queuePriorities.data();
@@ -18,11 +19,11 @@ Device_Queue_Create_Info::Device_Queue_Create_Info(uint32                       
   this->queueFamilyIndex  = queueFamilyIndex;
 }
 
-Device::Device(Shared_Ptr<const Physical_Device>              physicalDevice,
-               const Array_Unsafe<Device_Queue_Create_Info>&  queueDescriptors,
-               const VkPhysicalDeviceFeatures&                enabledFeatures,
-               Array_Unsafe<const char*>                      enabledExtensions,
-               Array_Unsafe<const char*>                      enabledLayers)
+Device::Device(Shared_Ptr<const Physical_Device>      physicalDevice,
+               const span<Device_Queue_Create_Info>&  queueDescriptors,
+               const VkPhysicalDeviceFeatures&        enabledFeatures,
+               span<const char*>                      enabledExtensions,
+               span<const char*>                      enabledLayers)
   :
   m_physicalDevice(physicalDevice)
 {
@@ -60,15 +61,15 @@ Shared_Ptr<Queue> Device::getQueue(uint32 queueFamilyIndex, uint32 queueIndex) c
   return queue;
 }
 
-void Device::updateDescriptorSets(const Array_Unsafe<Write_Descriptor_Set>&  descriptorWrites,
-                                  const Array_Unsafe<VkCopyDescriptorSet>&   descriptorCopies)
+void Device::updateDescriptorSets(const span<Write_Descriptor_Set>&  descriptorWrites,
+                                  const span<VkCopyDescriptorSet>&   descriptorCopies)
 {
   vector<VkWriteDescriptorSet> vkDescriptorWrites(descriptorWrites.size());
 
 
   //!TODO WTF???
-  Array_Unsafe<Write_Descriptor_Set>::Const_Iterator first = descriptorWrites.begin();
-  Array_Unsafe<Write_Descriptor_Set>::Const_Iterator last = descriptorWrites.end();
+  auto first = descriptorWrites.begin();
+  auto last = descriptorWrites.end();
   vector<VkWriteDescriptorSet>::iterator dFirst = vkDescriptorWrites.begin();
   //Algorithms::copy(first, last, dFirst);
 
@@ -91,7 +92,7 @@ void Device::waitIdle()
   vkDeviceWaitIdle(m_handle);
 }
 
-bool Device::waitForFences(Array_Unsafe<Fence> fences, bool waitAll, uint64 timeout) const
+bool Device::waitForFences(span<Fence> fences, bool waitAll, uint64 timeout) const
 {
   vector<VkFence> fencesHandles(fences.size());
   Algorithms::copyc(fences.begin(), fences.end(), fencesHandles.begin(), [](auto& s, auto& d) -> void {
@@ -103,7 +104,7 @@ bool Device::waitForFences(Array_Unsafe<Fence> fences, bool waitAll, uint64 time
   return result != VK_TIMEOUT;
 }
 
-bool Device::resetForFences(Array_Unsafe<Fence> fences) const
+bool Device::resetForFences(span<Fence> fences) const
 {
   vector<VkFence> fencesHandles(fences.size());
   Algorithms::copyc(fences.begin(), fences.end(), fencesHandles.begin(), [](auto& s, auto& d) -> void {

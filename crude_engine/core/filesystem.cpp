@@ -17,7 +17,7 @@ Filesystem& Filesystem::getInstance()
   return instance;
 }
 
-Filesystem::Result Filesystem::read(const char* filename, crude_engine::Array_Unsafe<char>& buffer)
+Filesystem::Result Filesystem::read(const char* filename, span<char>& buffer)
 {
   FILE *file = fopen(filename, "rb");
   fseek(file, 0, SEEK_END);

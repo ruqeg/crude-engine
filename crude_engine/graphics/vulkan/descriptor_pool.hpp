@@ -1,6 +1,6 @@
 #pragma once
 
-#include <core/array_unsafe.hpp>
+#include <core/std_containers.hpp>
 #include <core/shared_ptr.hpp>
 #include <graphics/vulkan/object.hpp>
 #include <graphics/vulkan/include_vulkan.hpp>
@@ -13,10 +13,10 @@ class Device;
 class Descriptor_Pool : public TObject<VkDescriptorPool>
 {
 public:
-  explicit Descriptor_Pool(Shared_Ptr<const Device>                   device,
-                           const Array_Unsafe<VkDescriptorPoolSize>&  poolSizes,
-                           uint32                                     maxSets,
-                           bool                                       freeDescriptorSet = false);
+  explicit Descriptor_Pool(Shared_Ptr<const Device>           device,
+                           const span<VkDescriptorPoolSize>&  poolSizes,
+                           uint32                             maxSets,
+                           bool                               freeDescriptorSet = false);
   ~Descriptor_Pool();
   bool canFreeDescriptorSet() const;
 private:

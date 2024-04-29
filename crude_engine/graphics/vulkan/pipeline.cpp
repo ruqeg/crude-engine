@@ -2,7 +2,7 @@
 #include <graphics/vulkan/device.hpp>
 #include <graphics/vulkan/pipeline_layout.hpp>
 #include <graphics/vulkan/render_pass.hpp>
-#include <core/std_containers.hpp>
+#include <core/algorithms.hpp>
 
 namespace crude_engine
 {
@@ -11,7 +11,7 @@ Pipeline::Pipeline(Shared_Ptr<const Device>                           device,
                    Shared_Ptr<const Render_Pass>                      renderPass,
                    Shared_Ptr<const Pipeline_Layout>                  pipelineLayout,
                    Shared_Ptr<const Pipeline>                         basePipeline,
-                   const Array_Unsafe<Shader_Stage_Create_Info>&      shaderStages,
+                   const span<Shader_Stage_Create_Info>&              shaderStages,
                    const Optional<Vertex_Input_State_Create_Info>&    vertexInputState,
                    const Optional<Tessellation_State_Create_Info>&    tessellationState,
                    const Optional<Input_Assembly_State_Create_Info>&  inputAsseblyState,

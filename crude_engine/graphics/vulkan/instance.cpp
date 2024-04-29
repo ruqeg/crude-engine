@@ -10,8 +10,8 @@ Instance::Instance(
                    PFN_vkDebugUtilsMessengerCallbackEXT  debugUtilsCallback,
 #endif // VK_EXT_debug_utils
                    const Application&                    application,
-                   const Array_Unsafe<const char*>&      enabledExtensions,
-                   const Array_Unsafe<const char*>&      enabledLayers,
+                   const span<const char*>&              enabledExtensions,
+                   const span<const char*>&              enabledLayers,
                    VkInstanceCreateFlags                 flags)
 {
   VkInstanceCreateInfo vkInstanceCreateInfo{};

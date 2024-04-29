@@ -1,14 +1,14 @@
 #include <graphics/vulkan/pipeline_layout.hpp>
 #include <graphics/vulkan/device.hpp>
 #include <graphics/vulkan/descriptor_set_layout.hpp>
-#include <core/std_containers.hpp>
+#include <core/algorithms.hpp>
 
 namespace crude_engine
 {
 
 Pipeline_Layout::Pipeline_Layout(Shared_Ptr<const Device>                                device,
-                                 const Array_Unsafe<Shared_Ptr<Descriptor_Set_Layout>>&  descriptorSetLayouts,
-                                 const Array_Unsafe<VkPushConstantRange>&                pushConstantRanges)
+                                 const span<Shared_Ptr<Descriptor_Set_Layout>>&  descriptorSetLayouts,
+                                 const span<VkPushConstantRange>&                pushConstantRanges)
   :
   m_device(device)
 {

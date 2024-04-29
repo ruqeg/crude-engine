@@ -1,7 +1,7 @@
 #pragma once
 
 #include <core/shared_ptr.hpp>
-#include <core/array_unsafe.hpp>
+#include <core/std_containers.hpp>
 #include <graphics/vulkan/include_vulkan.hpp>
 #include <graphics/vulkan/object.hpp>
 
@@ -17,7 +17,7 @@ public:
                   VkDeviceSize              size,
                   VkBufferUsageFlags        usage,
                   VkSharingMode             sharingMode,
-                  Array_Unsafe<uint32>      queueFamilyIndices);
+                  span<uint32>              queueFamilyIndices);
   ~Buffer();
   VkMemoryRequirements getMemoryRequirements() const;
 private:

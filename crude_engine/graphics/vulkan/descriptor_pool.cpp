@@ -5,7 +5,7 @@ namespace crude_engine
 {
 
 Descriptor_Pool::Descriptor_Pool(Shared_Ptr<const Device>                   device,
-                                 const Array_Unsafe<VkDescriptorPoolSize>&  poolSizes,
+                                 const span<VkDescriptorPoolSize>&  poolSizes,
                                  uint32                                     maxSets,
                                  bool                                       freeDescriptorSet)
   :

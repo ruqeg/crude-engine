@@ -8,7 +8,7 @@
 #include <graphics/vulkan/pipeline.hpp>
 #include <graphics/vulkan/pipeline_layout.hpp>
 #include <graphics/vulkan/descriptor_set.hpp>
-#include <core/std_containers.hpp>
+#include <core/algorithms.hpp>
 
 namespace crude_engine
 {
@@ -60,9 +60,9 @@ bool Command_Buffer::end()
   return result == VK_SUCCESS;
 }
 
-void Command_Buffer::barrier(VkPipelineStageFlags                srcStage, 
-                             VkPipelineStageFlags                dstStage, 
-                             Array_Unsafe<Image_Memory_Barrier>  imageMemoryBarriers)
+void Command_Buffer::barrier(VkPipelineStageFlags        srcStage, 
+                             VkPipelineStageFlags        dstStage, 
+                             span<Image_Memory_Barrier>  imageMemoryBarriers)
 {
   CRUDE_ASSERT(imageMemoryBarriers.data());
 
@@ -87,9 +87,9 @@ void Command_Buffer::barrier(VkPipelineStageFlags                srcStage,
   }
 }
   
-void Command_Buffer::copyBufferToImage(Shared_Ptr<Buffer>              srcBuffer, 
-                                       Shared_Ptr<Image>               dstImage, 
-                                       Array_Unsafe<VkBufferImageCopy> regions)
+void Command_Buffer::copyBufferToImage(Shared_Ptr<Buffer>       srcBuffer, 
+                                       Shared_Ptr<Image>        dstImage, 
+                                       span<VkBufferImageCopy>  regions)
 {
   CRUDE_ASSERT(srcBuffer);
   CRUDE_ASSERT(dstImage);
@@ -110,11 +110,11 @@ bool Command_Buffer::reset(VkCommandBufferResetFlags flags)
   return result != VK_ERROR_OUT_OF_DEVICE_MEMORY;
 }
 
-void Command_Buffer::beginRenderPass(Shared_Ptr<Render_Pass>     renderPass,
-                                     Shared_Ptr<Framebuffer>     framebuffer,
-                                     Array_Unsafe<VkClearValue>  clearValues,
-                                     const VkRect2D&             renderArea, 
-                                     VkSubpassContents           contents)
+void Command_Buffer::beginRenderPass(Shared_Ptr<Render_Pass>  renderPass,
+                                     Shared_Ptr<Framebuffer>  framebuffer,
+                                     span<VkClearValue>       clearValues,
+                                     const VkRect2D&          renderArea, 
+                                     VkSubpassContents        contents)
 {
   CRUDE_ASSERT(renderPass);
   CRUDE_ASSERT(framebuffer);
@@ -147,7 +147,7 @@ void Command_Buffer::bindPipeline(Shared_Ptr<Pipeline> pipeline)
     CRUDE_OBJECT_HANDLE(pipeline));
 }
 
-void Command_Buffer::setViewport(Array_Unsafe<VkViewport> viewports)
+void Command_Buffer::setViewport(span<VkViewport> viewports)
 {
   constexpr uint32 offset = 0u;
   vkCmdSetViewport(
@@ -157,7 +157,7 @@ void Command_Buffer::setViewport(Array_Unsafe<VkViewport> viewports)
     viewports.data());
 }
 
-void Command_Buffer::setScissor(Array_Unsafe<VkRect2D> scissors)
+void Command_Buffer::setScissor(span<VkRect2D> scissors)
 {
   constexpr uint32 offset = 0u;
   vkCmdSetScissor(
@@ -167,9 +167,9 @@ void Command_Buffer::setScissor(Array_Unsafe<VkRect2D> scissors)
     scissors.data());
 }
 
-void Command_Buffer::bindDescriptorSets(Shared_Ptr<Pipeline>                      pipeline,
-                                        Array_Unsafe<Shared_Ptr<Descriptor_Set>>  descriptorSets, 
-                                        Array_Unsafe<uint32>                      dynamicOffsets)
+void Command_Buffer::bindDescriptorSets(Shared_Ptr<Pipeline>              pipeline,
+                                        span<Shared_Ptr<Descriptor_Set>>  descriptorSets, 
+                                        span<uint32>                      dynamicOffsets)
 {
   constexpr uint32 offset = 0u;
 

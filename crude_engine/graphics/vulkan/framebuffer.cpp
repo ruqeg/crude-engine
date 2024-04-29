@@ -2,6 +2,7 @@
 #include <graphics/vulkan/render_pass.hpp>
 #include <graphics/vulkan/image_view.hpp>
 #include <graphics/vulkan/device.hpp>
+#include <core/algorithms.hpp>
 
 namespace crude_engine
 {

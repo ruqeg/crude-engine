@@ -1,7 +1,7 @@
 #pragma once
 
+#include <core/std_containers.hpp>
 #include <core/shared_ptr.hpp>
-#include <core/array_unsafe.hpp>
 #include <graphics/vulkan/include_vulkan.hpp>
 #include <graphics/vulkan/object.hpp>
 
@@ -55,10 +55,10 @@ public:
     return m_hwnd;
   }
 
-  static const Array_Unsafe<const char*> requiredExtensions()
+  static const span<const char*> requiredExtensions()
   {
     static const char* extensions[] = {"VK_KHR_win32_surface", "VK_KHR_surface"};
-    return Array_Unsafe<const char*>(extensions, 2u);
+    return span<const char*>(extensions, 2u);
   }
 private:
   const HWND       m_hwnd;
