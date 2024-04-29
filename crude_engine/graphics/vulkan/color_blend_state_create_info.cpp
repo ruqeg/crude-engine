@@ -4,10 +4,10 @@ namespace crude_engine
 {
 
 Color_Blend_State_Create_Info::Color_Blend_State_Create_Info(const crude_engine::Array_Unsafe<VkPipelineColorBlendAttachmentState>&  attachments,
-                                                             const Array_Stack<float32, 4>&                                          blendConstants,
+                                                             const array<float32, 4>&                                                blendConstants,
                                                              VkBool32                                                                logicOpEnable,
                                                              VkLogicOp                                                               logicOp)
-{
+ {
   this->sType              = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
   this->pNext              = nullptr;
   this->flags              = 0u;

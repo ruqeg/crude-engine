@@ -1,6 +1,6 @@
 #pragma once
 
-#include <core/array_stack.hpp>
+#include <core/std_containers.hpp>
 #include <ecs/world.hpp>
 #include <tuple>
 
@@ -29,7 +29,7 @@ private:
 public:
   Query();
   explicit Query(World* world);
-  explicit Query(World* world, const Array_Stack<Component_ID, cFunctionComponentsNum>& components);
+  explicit Query(World* world, const array<Component_ID, cFunctionComponentsNum>& components);
 
   template <class Func>
   void each(const Func& func);
@@ -42,8 +42,8 @@ private:
   void callFunction(Func&& func, Tuple&& params);
 
 private:
-  World*                                             m_world;
-  Array_Stack<Component_ID, cFunctionComponentsNum>  m_components;
+  World*                                       m_world;
+  array<Component_ID, cFunctionComponentsNum>  m_components;
 };
 
 }

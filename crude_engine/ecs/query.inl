@@ -16,7 +16,7 @@ Query<Components...>::Query(World * world)
 }
 
 template<class ...Components>
-Query<Components...>::Query(World* world, const Array_Stack<Component_ID, cFunctionComponentsNum>& components)
+Query<Components...>::Query(World* world, const array<Component_ID, cFunctionComponentsNum>& components)
 {
   m_world = world;
   m_components = components;
@@ -30,7 +30,7 @@ void Query<Components...>::each(const Func& func)
 
   for (Archetype& archetype : m_world->m_archetypes)
   {
-    Array_Stack<uint64, cFunctionComponentsNum> funcIdxToArchetypeIdx;
+    array<uint64, cFunctionComponentsNum> funcIdxToArchetypeIdx;
 
     uint64 matchComponentsNum = 0;
     for (uint64 funcComponentIndex = 0u; funcComponentIndex < cFunctionComponentsNum; ++funcComponentIndex)
@@ -85,7 +85,7 @@ template<class ...Components>
 Query<Components...> World::query()
 {
   uint64 index = 0u;
-  Array_Stack<Component_ID, sizeof...(Components)> components;
+  array<Component_ID, sizeof...(Components)> components;
   ([&]() {
     components[index++] = CPP_Type<Components>::id(); 
     }(), ...);

@@ -2,7 +2,7 @@
 #include <graphics/vulkan/device.hpp>
 #include <graphics/vulkan/pipeline_layout.hpp>
 #include <graphics/vulkan/render_pass.hpp>
-#include <core/array_dynamic.hpp>
+#include <core/std_containers.hpp>
 
 namespace crude_engine
 {
@@ -29,7 +29,7 @@ Pipeline::Pipeline(Shared_Ptr<const Device>                           device,
   m_renderPass(renderPass),
   m_basePipeline(basePipeline)
 {
-  Array_Dynamic<VkPipelineShaderStageCreateInfo> vkShaderStages(shaderStages.size());
+  vector<VkPipelineShaderStageCreateInfo> vkShaderStages(shaderStages.size());
   Algorithms::copy(shaderStages.begin(), shaderStages.end(), vkShaderStages.begin());
 
   VkGraphicsPipelineCreateInfo vkCreateInfo{};

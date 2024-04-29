@@ -220,7 +220,6 @@
   <ItemGroup>
     <ClInclude Include="..\..\crude_engine\core\algorithms.hpp" />
     <ClInclude Include="..\..\crude_engine\core\alias.hpp" />
-    <ClInclude Include="..\..\crude_engine\core\array_stack.hpp" />
     <ClInclude Include="..\..\crude_engine\core\array_unsafe.hpp" />
     <ClInclude Include="..\..\crude_engine\core\assert.hpp" />
     <ClInclude Include="..\..\crude_engine\core\bs_tree.hpp" />
@@ -314,7 +313,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\crude_engine\core\algorithms.inl" />
-    <None Include="..\..\crude_engine\core\array_stack.inl" />
     <None Include="..\..\crude_engine\core\array_unsafe.inl" />
     <None Include="..\..\crude_engine\core\bs_tree.inl" />
     <None Include="..\..\crude_engine\core\iterator_base.inl" />

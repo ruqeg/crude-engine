@@ -6,6 +6,7 @@
 #include <set>
 #include <vector>
 #include <queue>
+#include <array>
 
 namespace crude_engine
 {
@@ -21,5 +22,8 @@ using set = std::set<T, Cmp, Allocator>;
 
 template<class T, class Allocator = STD_Allocator<T>>
 using queue = std::queue<T, std::deque<T, Allocator>>;
+
+template<class T, size_t N>
+using array = std::array<T, N>;
 
 }
