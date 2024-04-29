@@ -396,9 +396,6 @@
     <ClInclude Include="..\..\crude_engine\core\iallocator.hpp">
       <Filter>source\core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\crude_engine\core\iterator_base.hpp">
-      <Filter>source\core</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\crude_engine\core\linear_allocator.hpp">
       <Filter>source\core</Filter>
     </ClInclude>
@@ -504,9 +501,6 @@
       <Filter>source\core</Filter>
     </None>
     <None Include="..\..\crude_engine\core\bs_tree.inl">
-      <Filter>source\core</Filter>
-    </None>
-    <None Include="..\..\crude_engine\core\iterator_base.inl">
       <Filter>source\core</Filter>
     </None>
     <None Include="..\..\crude_engine\core\logger.inl">

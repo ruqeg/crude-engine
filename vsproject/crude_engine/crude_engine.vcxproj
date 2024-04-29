@@ -229,7 +229,6 @@
     <ClInclude Include="..\..\crude_engine\core\filesystem.hpp" />
     <ClInclude Include="..\..\crude_engine\core\free_rbt_allocator.hpp" />
     <ClInclude Include="..\..\crude_engine\core\iallocator.hpp" />
-    <ClInclude Include="..\..\crude_engine\core\iterator_base.hpp" />
     <ClInclude Include="..\..\crude_engine\core\linear_allocator.hpp" />
     <ClInclude Include="..\..\crude_engine\core\logger.hpp" />
     <ClInclude Include="..\..\crude_engine\core\memory_manager.hpp" />
@@ -313,7 +312,6 @@
   <ItemGroup>
     <None Include="..\..\crude_engine\core\algorithms.inl" />
     <None Include="..\..\crude_engine\core\bs_tree.inl" />
-    <None Include="..\..\crude_engine\core\iterator_base.inl" />
     <None Include="..\..\crude_engine\core\logger.inl" />
     <None Include="..\..\crude_engine\core\memory_system.inl" />
     <None Include="..\..\crude_engine\core\optional.inl" />
