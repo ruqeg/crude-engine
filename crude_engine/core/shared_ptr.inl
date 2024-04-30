@@ -198,7 +198,7 @@ CRUDE_INLINE void Shared_Ptr<T, Allocator>::release() noexcept
   if (*getRefCount() == 0)
   {
     Utility::destructorAt(getPtr());
-    Allocator::free(m_memBlock);
+    Allocator::deallocate(m_memBlock);
     m_memBlock = nullptr;
   }
   return;

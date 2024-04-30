@@ -51,7 +51,7 @@ void Vulkan_Allocator::free(
 {
   CRUDE_ASSERT(pMemory);
 
-  Memory_System::Default_Aligned_Allocator::free(pMemory);
+  Memory_System::Default_Aligned_Allocator::deallocate(pMemory);
 }
 
 void VKAPI_CALL Vulkan_Allocator::free(

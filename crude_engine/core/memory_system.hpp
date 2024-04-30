@@ -41,7 +41,7 @@ public:
       return Memory_Manager::getInstance().getDefaultFreeRBTAllocators().allocate(size);
     }
 
-    static void free(void* ptr) noexcept
+    static void deallocate(void* ptr) noexcept
     {
       return Memory_Manager::getInstance().getDefaultFreeRBTAllocators().deallocate(ptr);
     }
@@ -84,7 +84,7 @@ public:
       return Memory_Manager::getInstance().getDefaultSystemAllocators().allocate(size);
     }
 
-    static void free(void* ptr) noexcept
+    static void deallocate(void* ptr) noexcept
     {
       return Memory_Manager::getInstance().getDefaultSystemAllocators().deallocate(ptr);
     }
@@ -105,7 +105,7 @@ public:
     {
       return _aligned_realloc(ptr, size, alignment);
     }
-    static void free(void* ptr)
+    static void deallocate(void* ptr)
     {
       _aligned_free(ptr);
     }
