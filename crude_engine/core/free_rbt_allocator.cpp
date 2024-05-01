@@ -27,8 +27,14 @@ Free_RBT_Allocator::Free_RBT_Allocator(const std::size_t capacity, Placement_Pol
 
 Free_RBT_Allocator::~Free_RBT_Allocator() noexcept
 {
-  CRUDE_ASSERT("Memory leak" && (m_rbt.size() == 1));
-  CRUDE_ASSERT("Memory ???" && (m_rbt.begin()->blockSize == m_capacity));
+  if (m_rbt.begin()->blockSize != m_capacity)
+  {
+    CRUDE_LOG_INFO(Debug::Channel::Memory, "[Memory leak] Free_RBT_Allocator::~Free_RBT_Allocator\n\tm_capacity: %i\n\tblockSize: %i\n\tm_capacity != blockSize\n", m_capacity, m_rbt.begin()->blockSize);
+  }
+
+  CRUDE_ASSERT("Memory ???" && (m_rbt.size() == 1));
+  CRUDE_ASSERT("Memory leak" && (m_rbt.begin()->blockSize == m_capacity));
+
   Memory_Utils::free(m_heap);
   m_heap = nullptr;
 }
