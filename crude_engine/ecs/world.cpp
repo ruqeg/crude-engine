@@ -113,7 +113,7 @@ void World::removeComponent(Entity_ID entity, Component_ID component)
   newEntityArchetypeType.erase(component);
 
   Entity_Record newEntityRecord;
-  if (findArchetype(component, newEntityArchetypeType, newEntityRecord.archetypeID))
+  if (findArchetype(newEntityArchetypeType, newEntityRecord.archetypeID))
   {
     newEntityRecord = Entity_Record(newEntityRecord.archetypeID);
   }
@@ -199,7 +199,7 @@ void World::createArchetypeForEntity(Entity_ID entity, const set<Component_ID>& 
 void World::assigneOrCreateArchetypeForEntity(Entity_ID entity, Component_ID component)
 {
   Archetype_ID archetypeID;
-  if (!findArchetype(component, archetypeID))
+  if (!findArchetypeWithComponent(component, archetypeID))
   {
     createArchetypeForEntity(entity, { component });
     return;
@@ -223,7 +223,7 @@ void World::reassigneArchetypeForEntity(Entity_ID entity, Component_ID component
   newArchetypeType.insert(component);
   
   Entity_Record newEntityRecord;
-  if (findArchetype(component, newArchetypeType, newEntityRecord.archetypeID))
+  if (findArchetypeWithComponent(component, newArchetypeType, newEntityRecord.archetypeID))
   {
     newEntityRecord = Entity_Record(newEntityRecord.archetypeID);
   }
@@ -263,7 +263,7 @@ void World::reassigneArchetypeForEntity(Entity_ID entity, Component_ID component
   }
 }
 
-bool World::findArchetype(Component_ID component, const set<Component_ID>& type, Archetype_ID& dstArchetypeID)
+bool World::findArchetypeWithComponent(Component_ID component, const set<Component_ID>& type, Archetype_ID& dstArchetypeID)
 {
   if (!m_componentToArchetypeMap.contains(component))
   {
@@ -284,7 +284,7 @@ bool World::findArchetype(Component_ID component, const set<Component_ID>& type,
   return false;
 }
 
-bool World::findArchetype(Component_ID component, Archetype_ID& dstArchetypeID)
+bool World::findArchetypeWithComponent(Component_ID component, Archetype_ID& dstArchetypeID)
 {
   if (!m_componentToArchetypeMap.contains(component))
   {
@@ -299,6 +299,19 @@ bool World::findArchetype(Component_ID component, Archetype_ID& dstArchetypeID)
     if (archetype.type().size() == 1u)
     {
       dstArchetypeID = archetypeID;
+      return true;
+    }
+  }
+  return false;
+}
+
+bool World::findArchetype(const set<Component_ID>& type, Archetype_ID& dstArchetypeID)
+{
+  for (const auto& archetype : m_archetypes)
+  {
+    if (archetype.type() == type)
+    {
+      dstArchetypeID = archetype.id();
       return true;
     }
   }

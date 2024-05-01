@@ -22,7 +22,7 @@ template<class T, class Cmp = std::less<T>, class Allocator = STD_Allocator<T>>
 using set = std::set<T, Cmp, Allocator>;
 
 template<class T, class Allocator = STD_Allocator<T>>
-using queue = std::queue<T, std::deque<T, Allocator>>;
+using queue = std::queue<T, std::deque<T,  Allocator>>;
 
 template<class T, size_t N>
 using array = std::array<T, N>;

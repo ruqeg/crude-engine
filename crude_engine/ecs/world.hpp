@@ -90,8 +90,9 @@ private:
   void assigneOrCreateArchetypeForEntity(Entity_ID entity, Component_ID component);
   void reassigneArchetypeForEntity(Entity_ID entity, Component_ID component);
 
-  bool findArchetype(Component_ID component, const set<Component_ID>& type, Archetype_ID& dstArchetypeID);
-  bool findArchetype(Component_ID component, Archetype_ID& dstArchetypeID);
+  bool findArchetypeWithComponent(Component_ID component, const set<Component_ID>& type, Archetype_ID& dstArchetypeID);
+  bool findArchetypeWithComponent(Component_ID component, Archetype_ID& dstArchetypeID);
+  bool findArchetype(const set<Component_ID>& type, Archetype_ID& dstArchetypeID);
 
   void addArchetype(Archetype& archetype);
   void removeArchetype(Archetype& archetype);
