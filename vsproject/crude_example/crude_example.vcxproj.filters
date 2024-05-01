@@ -5,10 +5,19 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
+    <Filter Include="source\basic_ecs_example">
+      <UniqueIdentifier>{11b1dc47-7039-4b00-9993-8dd55f4bf0ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\basic_triangle_examle">
+      <UniqueIdentifier>{c58d48e8-8105-4160-80e5-5462745d415e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\crude_example\main.cpp">
-      <Filter>source</Filter>
+    <ClCompile Include="..\..\crude_example\basic_ecs_example\main.cpp">
+      <Filter>source\basic_ecs_example</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_example\basic_triangle_examle\main.cpp">
+      <Filter>source\basic_triangle_examle</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

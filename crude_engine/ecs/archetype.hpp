@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ecs/alias.hpp>
+#include <core/shared_ptr.hpp>
 #include <core/std_containers.hpp>
 
 namespace crude_engine
@@ -25,7 +26,7 @@ private:
   };
 
 public:
-  Archetype(Component_Register* pComponentRegister, Archetype_ID id, const set<Component_ID>& type);
+  Archetype(Shared_Ptr<Component_Register> componentRegister, Archetype_ID id, const set<Component_ID>& type);
   ~Archetype();
 
   void clear();
@@ -54,16 +55,16 @@ private:
   void deinitializeRowData(uint64 row);
 
 private:
-  Archetype_ID              m_id;
-  set<Component_ID>         m_type;
-  vector<Archetype_Column>  m_components;
-  //std::unordered_map<Column, Archetype_Edge>   m_edges;
-  uint64                    m_componentsDataCapacity;
-  uint64                    m_componentsDataSize;
-  queue<uint64>             m_freeRows;
-  uint64                    m_entitiesNum;
+  Archetype_ID                    m_id;
+  set<Component_ID>               m_type;
+  vector<Archetype_Column>        m_components;
+  uint64                          m_componentsDataCapacity;
+  uint64                          m_componentsDataSize;
+  queue<uint64>                   m_freeRows;
+  uint64                          m_entitiesNum;
+  Shared_Ptr<Component_Register>  m_componentRegister;
 
-  Component_Register*       m_pComponentRegister;
+  // !TODO std::unordered_map<Column, Archetype_Edge>   m_edges;
 };
 
 }

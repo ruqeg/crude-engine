@@ -12,7 +12,7 @@ Query<Components...>::Query()
 template<class ...Components>
 Query<Components...>::Query(World * world)
 {
-  *this = world->query();
+  *this = world->query<Components...>();
 }
 
 template<class ...Components>

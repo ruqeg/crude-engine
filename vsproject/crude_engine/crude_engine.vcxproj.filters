@@ -223,12 +223,6 @@
     <ClCompile Include="..\..\crude_engine\network\udp_socket.cpp">
       <Filter>source\network</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\crude_engine\network\socket_impl_unix.cpp">
-      <Filter>source\network</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\crude_engine\network\socket_impl_win32.cpp">
-      <Filter>source\network</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\crude_engine\graphics\vulkan\application.hpp">
@@ -502,12 +496,6 @@
       <Filter>source\core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\crude_engine\network\udp_socket.hpp">
-      <Filter>source\network</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\crude_engine\network\socket_handle.hpp">
-      <Filter>source\network</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\crude_engine\network\socket_impl.hpp">
       <Filter>source\network</Filter>
     </ClInclude>
   </ItemGroup>

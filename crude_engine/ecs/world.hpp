@@ -5,8 +5,6 @@
 #include <ecs/archetype.hpp>
 #include <ecs/id_manager.hpp>
 
-// !TODO move to my stl
-
 namespace crude_engine
 {
 
@@ -46,7 +44,7 @@ private:
   using Archetype_Map = unordered_map<Archetype_ID, Archetype_Record>;
 
 public:
-  World() = default;
+  World();
 
 public:
   Entity entity();
@@ -110,10 +108,7 @@ private:
 
   unordered_map<Entity_ID, Entity_Record>     m_entityToRecord;
   unordered_map<Component_ID, Archetype_Map>  m_componentToArchetypeMap;
-  
-  // !TODO m_componentRegister should be destroyed after m_archetypes so currently its HUGE UNSAFE, 
-  // but im too lazy to do something with this
-  Component_Register                               m_componentRegister;
+  Shared_Ptr<Component_Register>              m_componentRegister;
   vector<Archetype>                           m_archetypes;
 
   template<class ...Components>

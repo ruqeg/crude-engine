@@ -21,7 +21,9 @@ private:
   sockaddr_in6* getAsSockAddrIn6();
 
 private:
-  sockaddr m_handle;
+  sockaddr m_sockddr;
+
+  friend class UDP_Socket;
 };
 
 }

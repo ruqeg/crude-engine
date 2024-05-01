@@ -13,7 +13,7 @@ Socket_Address::Socket_Address(const char* address, uint16 port)
 
 Socket_Address::Socket_Address(const sockaddr& otherSockaddr)
 {
-  memcpy(&m_handle, &otherSockaddr, sizeof(sockaddr));
+  memcpy(&m_sockddr, &otherSockaddr, sizeof(sockaddr));
 }
 
 uint64 Socket_Address::getSize() const
@@ -23,7 +23,7 @@ uint64 Socket_Address::getSize() const
 
 sockaddr_in6* Socket_Address::getAsSockAddrIn6()
 {
-  return reinterpret_cast<sockaddr_in6*>(&m_handle);
+  return reinterpret_cast<sockaddr_in6*>(&m_sockddr);
 }
 
 }
