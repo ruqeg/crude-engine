@@ -114,7 +114,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_DEPRECATE;_CRUDE_NO_INTRINSICS;_CRUDE_SSE_INTRINSICS;WIN32_LEAN_</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_DEPRECATE;_CRUDE_NO_INTRINSICS;_CRUDE_SSE_INTRINSICS;WIN32_LEAN_;_CRUDE_FREE_RBT_ALLOCATOR_MASSIVE_ASSERT;</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(VULKAN_SDK)\Include;$(ProjectDir)..\..\crude_engine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>

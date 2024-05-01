@@ -32,11 +32,15 @@ Free_RBT_Allocator::~Free_RBT_Allocator() noexcept
     CRUDE_LOG_INFO(Debug::Channel::Memory, "[Memory leak] Free_RBT_Allocator::~Free_RBT_Allocator\n\tm_capacity: %i\n\tblockSize: %i\n\tm_capacity != blockSize\n", m_capacity, m_rbt.begin()->blockSize);
   }
 
-  CRUDE_ASSERT("Memory ???" && (m_rbt.size() == 1));
+  CRUDE_ASSERT("Memory leak" && (m_rbt.size() == 1));
   CRUDE_ASSERT("Memory leak" && (m_rbt.begin()->blockSize == m_capacity));
 
   Memory_Utils::free(m_heap);
   m_heap = nullptr;
+
+#ifdef _CRUDE_FREE_RBT_ALLOCATOR_MASSIVE_ASSERT
+  CRUDE_ASSERT("Memory leak" && (m_unfree == 0u));
+#endif
 }
 
 void* Free_RBT_Allocator::allocate(std::size_t size) noexcept
@@ -75,6 +79,11 @@ void* Free_RBT_Allocator::allocate(std::size_t size) noexcept
     *allocatedHeader = Node(allocatedHeader->blockSize, false, allocatedHeader->prev, allocatedHeader->next);
   }
 
+#ifdef _CRUDE_FREE_RBT_ALLOCATOR_MASSIVE_ASSERT
+  m_unfree += allocatedHeader->blockSize;
+  assertUnfreeMemory();
+#endif
+
   return resultAddress;
 }
 
@@ -93,6 +102,8 @@ void Free_RBT_Allocator::deallocate(void* ptr) noexcept
 
   if (allocatedHeader->prev && (allocatedHeader->prev->free))
   {
+    CRUDE_ASSERT(allocatedHeader->prev->next == allocatedHeader);
+
     m_rbt.remove(*allocatedHeader->prev);
 
     allocatedHeader = allocatedHeader->prev;
@@ -105,6 +116,8 @@ void Free_RBT_Allocator::deallocate(void* ptr) noexcept
   
   if (allocatedHeader->next && (allocatedHeader->next->free))
   {
+    CRUDE_ASSERT(allocatedHeader->next->prev == allocatedHeader);
+
     m_rbt.remove(*allocatedHeader->next);
 
     *allocatedHeader = Node(allocatedHeader->blockSize + allocatedHeader->next->blockSize, true, allocatedHeader->prev, allocatedHeader->next->next);
@@ -115,6 +128,12 @@ void Free_RBT_Allocator::deallocate(void* ptr) noexcept
   }
   
   m_rbt.insert(*allocatedHeader);
+
+#ifdef _CRUDE_FREE_RBT_ALLOCATOR_MASSIVE_ASSERT
+  m_unfree -= allocatedHeader->blockSize;
+  assertUnfreeMemory();
+  assertUnmergedMemoryBlocks();
+#endif
 
   return;
 }
@@ -127,15 +146,71 @@ void Free_RBT_Allocator::reset() noexcept
   *firstNode = Node(m_capacity, true, nullptr, nullptr);
   
   m_rbt.insert(*firstNode);
+
+#ifdef _CRUDE_FREE_RBT_ALLOCATOR_MASSIVE_ASSERT
+  m_unfree = 0u;
+#endif
 }
 
-Free_RBT_Allocator::Node::Node(std::size_t blockSize, bool64 free, Node* prev, Node* next) noexcept
-  :
-  RBT_Node_Base<Node>(),
-  next(next),
-  prev(prev),
-  blockSize(blockSize),
-  free(free)
-{}
+void Free_RBT_Allocator::assertUnfreeMemory()
+{
+#ifdef _CRUDE_FREE_RBT_ALLOCATOR_MASSIVE_ASSERT
+  CRUDE_ASSERT([this]() -> bool {
+    Node* header = &*m_rbt.begin();
+    while (header->prev)
+    {
+      header = header->prev;
+    }
+
+    std::size_t curUnfree = 0u;
+    while (header)
+    {
+      if (!header->free)
+      {
+        curUnfree += header->blockSize;
+      }
+
+      header = header->next;
+    }
+
+    if (m_unfree != curUnfree)
+    {
+      CRUDE_LOG_INFO(
+        Debug::Channel::Memory,
+        "Free_RBT_Allocator::assertUnfreeMemory.\n"
+        "\tcurUnfree: %i\n"
+        "\tm_unfree: %i\n",
+        curUnfree, m_unfree);
+    }
+
+    return (m_unfree == curUnfree);
+    }());
+#endif
+}
+
+void Free_RBT_Allocator::assertUnmergedMemoryBlocks()
+{
+#ifdef _CRUDE_FREE_RBT_ALLOCATOR_MASSIVE_ASSERT
+  CRUDE_ASSERT([this]() -> bool {
+    for (auto it = m_rbt.begin(); it != m_rbt.end(); ++it)
+    {
+      if ((it->next && it->free && it->next->free) || (it->prev && it->free && it->prev->free))
+      {
+        CRUDE_LOG_INFO(
+          Debug::Channel::Memory,
+          "Free_RBT_Allocator::assertUnmergedMemoryBlocks.\n"
+          "\tit: %#.8x. it->free: %i\n"
+          "\tit->next: %#.8x. it->next->free: %i\n"
+          "\tit->prev: %#.8x. it->prev->free: %i\n",
+          it, it->free,
+          it->next, it->next ? it->next->free : 0,
+          it->prev, it->prev ? it->prev->free : 0);
+        return false;
+      }
+    }
+    return true;
+    }());
+#endif
+}
 
 }
