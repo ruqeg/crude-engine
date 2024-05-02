@@ -9,12 +9,24 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "crude_engine", "..\crude_en
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug ECS Example|x64 = Debug ECS Example|x64
+		Debug ECS Example|x86 = Debug ECS Example|x86
+		Debug Triangle Example|x64 = Debug Triangle Example|x64
+		Debug Triangle Example|x86 = Debug Triangle Example|x86
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4EB17210-A8C5-4929-B479-4B32E7295BFA}.Debug ECS Example|x64.ActiveCfg = Debug ECS Example|x64
+		{4EB17210-A8C5-4929-B479-4B32E7295BFA}.Debug ECS Example|x64.Build.0 = Debug ECS Example|x64
+		{4EB17210-A8C5-4929-B479-4B32E7295BFA}.Debug ECS Example|x86.ActiveCfg = Debug ECS Example|Win32
+		{4EB17210-A8C5-4929-B479-4B32E7295BFA}.Debug ECS Example|x86.Build.0 = Debug ECS Example|Win32
+		{4EB17210-A8C5-4929-B479-4B32E7295BFA}.Debug Triangle Example|x64.ActiveCfg = Debug Triangle Example|x64
+		{4EB17210-A8C5-4929-B479-4B32E7295BFA}.Debug Triangle Example|x64.Build.0 = Debug Triangle Example|x64
+		{4EB17210-A8C5-4929-B479-4B32E7295BFA}.Debug Triangle Example|x86.ActiveCfg = Debug Triangle Example|Win32
+		{4EB17210-A8C5-4929-B479-4B32E7295BFA}.Debug Triangle Example|x86.Build.0 = Debug Triangle Example|Win32
 		{4EB17210-A8C5-4929-B479-4B32E7295BFA}.Debug|x64.ActiveCfg = Debug|x64
 		{4EB17210-A8C5-4929-B479-4B32E7295BFA}.Debug|x64.Build.0 = Debug|x64
 		{4EB17210-A8C5-4929-B479-4B32E7295BFA}.Debug|x86.ActiveCfg = Debug|Win32
@@ -23,6 +35,14 @@ Global
 		{4EB17210-A8C5-4929-B479-4B32E7295BFA}.Release|x64.Build.0 = Release|x64
 		{4EB17210-A8C5-4929-B479-4B32E7295BFA}.Release|x86.ActiveCfg = Release|Win32
 		{4EB17210-A8C5-4929-B479-4B32E7295BFA}.Release|x86.Build.0 = Release|Win32
+		{B9993B4E-28F0-4B5B-972B-877AEFBAF42C}.Debug ECS Example|x64.ActiveCfg = Debug|x64
+		{B9993B4E-28F0-4B5B-972B-877AEFBAF42C}.Debug ECS Example|x64.Build.0 = Debug|x64
+		{B9993B4E-28F0-4B5B-972B-877AEFBAF42C}.Debug ECS Example|x86.ActiveCfg = Debug|Win32
+		{B9993B4E-28F0-4B5B-972B-877AEFBAF42C}.Debug ECS Example|x86.Build.0 = Debug|Win32
+		{B9993B4E-28F0-4B5B-972B-877AEFBAF42C}.Debug Triangle Example|x64.ActiveCfg = Debug|x64
+		{B9993B4E-28F0-4B5B-972B-877AEFBAF42C}.Debug Triangle Example|x64.Build.0 = Debug|x64
+		{B9993B4E-28F0-4B5B-972B-877AEFBAF42C}.Debug Triangle Example|x86.ActiveCfg = Debug|Win32
+		{B9993B4E-28F0-4B5B-972B-877AEFBAF42C}.Debug Triangle Example|x86.Build.0 = Debug|Win32
 		{B9993B4E-28F0-4B5B-972B-877AEFBAF42C}.Debug|x64.ActiveCfg = Debug|x64
 		{B9993B4E-28F0-4B5B-972B-877AEFBAF42C}.Debug|x64.Build.0 = Debug|x64
 		{B9993B4E-28F0-4B5B-972B-877AEFBAF42C}.Debug|x86.ActiveCfg = Debug|Win32

@@ -45,7 +45,8 @@ public:
   void reset() noexcept;
 
 private:
-  void assertUnfreeMemory();
+  void assertLostMemoryBlock();
+  void assertCorruptedMemoryList();
   void assertUnmergedMemoryBlocks();
 
 private:
@@ -54,11 +55,6 @@ private:
   const std::size_t     m_capacity;
   Red_Black_Tree<Node>  m_rbt;
   Placement_Policy      m_pPolicy;
-
-private:
-#ifdef _CRUDE_FREE_RBT_ALLOCATOR_MASSIVE_ASSERT
-  std::size_t           m_unfree;
-#endif
 };
 
 }
