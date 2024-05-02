@@ -41,14 +41,6 @@ Free_RBT_Allocator::~Free_RBT_Allocator() noexcept
 
 void* Free_RBT_Allocator::allocate(std::size_t size) noexcept
 {
-  static int counter = 0u;
-  
-  if (counter == 5)
-  {
-    static int a = 0;
-    a++;
-  }
-  
   const std::size_t requiredSize = static_cast<std::size_t>(size + sizeof(Node));
 
   CRUDE_LOG_INFO(Debug::Channel::Memory, "Free_RBT_Allocator::allocate() blockSize: %i", requiredSize);
@@ -71,6 +63,10 @@ void* Free_RBT_Allocator::allocate(std::size_t size) noexcept
   {
     Node* newFreeHeader = reinterpret_cast<Node*>(resultAddress + size);
     *newFreeHeader = Node(remainingBlockSize, true, allocatedHeader, allocatedHeader->next);
+    if (newFreeHeader->next)
+    {
+      newFreeHeader->next->prev = newFreeHeader;
+    }
 
     m_rbt.remove(*allocatedHeader);
     *allocatedHeader = Node(requiredSize, false, allocatedHeader->prev, newFreeHeader);
@@ -82,7 +78,6 @@ void* Free_RBT_Allocator::allocate(std::size_t size) noexcept
     m_rbt.remove(*allocatedHeader);
     *allocatedHeader = Node(allocatedHeader->blockSize, false, allocatedHeader->prev, allocatedHeader->next);
   }
-  counter++;
 
 #ifdef _CRUDE_FREE_RBT_ALLOCATOR_MASSIVE_ASSERT
   assertLostMemoryBlock();
@@ -198,7 +193,7 @@ void Free_RBT_Allocator::assertCorruptedMemoryList()
 
     while (header)
     {
-      if (header->next && (header->next->prev != header))
+      if ((header->next && (header->next->prev != header)) || (header->prev && (header->prev->next != header)))
       {
         return false;
       }
