@@ -223,6 +223,9 @@
     <ClCompile Include="..\..\crude_engine\network\udp_socket.cpp">
       <Filter>source\network</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\crude_engine\network\socket_util.cpp">
+      <Filter>source\network</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\crude_engine\graphics\vulkan\application.hpp">
@@ -489,13 +492,19 @@
     <ClInclude Include="..\..\crude_engine\core\cxx_allocator_container.hpp">
       <Filter>source\core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\crude_engine\network\socket_address.hpp">
-      <Filter>source\network</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\crude_engine\core\shared_ptr.hpp">
       <Filter>source\core</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\crude_engine\network\socket_address.hpp">
+      <Filter>source\network</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\crude_engine\network\udp_socket.hpp">
+      <Filter>source\network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\crude_engine\core\std_containers_naloc.hpp">
+      <Filter>source\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\crude_engine\network\socket_util.hpp">
       <Filter>source\network</Filter>
     </ClInclude>
   </ItemGroup>

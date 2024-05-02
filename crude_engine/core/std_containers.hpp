@@ -1,14 +1,13 @@
 #pragma once
 
 #include <core/std_allocator.hpp>
+#include <core/std_containers_naloc.hpp>
 
 #include <unordered_map>
 #include <set>
 #include <vector>
 #include <deque>
 #include <queue>
-#include <array>
-#include <span>
 
 namespace crude_engine
 {
@@ -27,11 +26,5 @@ using deque = std::deque<T, Allocator>;
 
 template<class T, class Allocator = STD_Allocator<T>>
 using queue = std::queue<T, deque<T,  Allocator>>;
-
-template<class T, size_t N>
-using array = std::array<T, N>;
-
-template<class T, std::size_t N = std::dynamic_extent>
-using span = std::span<T, N>;
 
 }

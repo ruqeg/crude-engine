@@ -18,7 +18,7 @@ void Logger::debugPrintF(const char*             filename,
   String::strncat(formatBuffer, sizeof(formatBuffer), format);
   String::strncat(formatBuffer, sizeof(formatBuffer), "\n");
   String::snprintf(messageBuffer, sizeof(messageBuffer), formatBuffer, Debug::toString(channel), Debug::toString(verbosity), filename, line, Utility::forward<Args>(args)...);
-  OutputDebugStringA((LPCSTR)messageBuffer);
+  outputStr(messageBuffer);
 }
 
 template<typename ...Args>

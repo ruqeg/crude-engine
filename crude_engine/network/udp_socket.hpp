@@ -1,5 +1,6 @@
 #pragma once
 
+#include <core/std_containers_naloc.hpp>
 #include <network/socket_address.hpp>
 
 namespace crude_engine
@@ -32,8 +33,8 @@ public:
 
 public:
   Socket_Bind_Result bind(const Socket_Address& inBindAddress);
-  Socket_Send_Result send(const void* inData, int64 inLen, const Socket_Address& inToAddress);
-  Socket_Recv_Result receive(void* outBuffer, int64 inMaxLen, Socket_Address& outFromAddress);
+  Socket_Send_Result send(const span<const char>& inData, const Socket_Address& inToAddress);
+  Socket_Recv_Result receive(span<char>& outBuffer, Socket_Address& outFromAddress);
 
 private:
   SOCKET m_socket;

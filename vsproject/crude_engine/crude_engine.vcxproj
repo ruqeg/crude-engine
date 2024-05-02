@@ -117,7 +117,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_DEPRECATE;_CRUDE_NO_INTRINSICS;_CRUDE_SSE_INTRINSICS;WIN32_LEAN_;_CRUDE_FREE_RBT_ALLOCATOR_MASSIVE_ASSERT;</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(VULKAN_SDK)\Include;$(ProjectDir)..\..\crude_engine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VULKAN_SDK)\Include;$(ProjectDir)..\..\crude_engine;_WINSOCKAPI_;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
     </ClCompile>
@@ -216,6 +216,7 @@
     <ClCompile Include="..\..\crude_engine\math\scalar.cpp" />
     <ClCompile Include="..\..\crude_engine\math\vector.cpp" />
     <ClCompile Include="..\..\crude_engine\network\socket_address.cpp" />
+    <ClCompile Include="..\..\crude_engine\network\socket_util.cpp" />
     <ClCompile Include="..\..\crude_engine\network\udp_socket.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -225,6 +226,7 @@
     <ClInclude Include="..\..\crude_engine\core\bs_tree.hpp" />
     <ClInclude Include="..\..\crude_engine\core\compare.hpp" />
     <ClInclude Include="..\..\crude_engine\core\shared_ptr.hpp" />
+    <ClInclude Include="..\..\crude_engine\core\std_containers_naloc.hpp" />
     <ClInclude Include="..\..\crude_engine\core\system_allocator.hpp" />
     <ClInclude Include="..\..\crude_engine\core\debug.hpp" />
     <ClInclude Include="..\..\crude_engine\core\filesystem.hpp" />
@@ -309,6 +311,7 @@
     <ClInclude Include="..\..\crude_engine\math\scalar.hpp" />
     <ClInclude Include="..\..\crude_engine\math\vector.hpp" />
     <ClInclude Include="..\..\crude_engine\network\socket_address.hpp" />
+    <ClInclude Include="..\..\crude_engine\network\socket_util.hpp" />
     <ClInclude Include="..\..\crude_engine\network\udp_socket.hpp" />
   </ItemGroup>
   <ItemGroup>

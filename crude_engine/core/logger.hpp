@@ -3,7 +3,6 @@
 #include <core/string.hpp>
 #include <core/debug.hpp>
 #include <core/utility.hpp>
-#include <Windows.h>
 
 
 #define CRUDE_LOG \
@@ -32,6 +31,10 @@ public:
                           const Debug::Verbosity  verbosity,
                           const char*             format, 
                           Args&&...               args) noexcept;
+
+private:
+  static void outputStr(const char* str);
+
 private:
   Logger() = default;
 };

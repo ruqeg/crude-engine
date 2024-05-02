@@ -1,5 +1,7 @@
 #ifdef _CRUDE_EXAMPLE_BASIC_ECS
 
+#include <Windows.h>
+
 #include <ecs/world.hpp>
 #include <ecs/entity.hpp>
 #include <ecs/query.hpp>

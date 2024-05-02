@@ -1,4 +1,5 @@
 #include <core/logger.hpp>
+#include <Windows.h>
 
 namespace crude_engine
 {
@@ -16,5 +17,10 @@ Log_Object::Log_Object(const char* filename, const int32 line, Debug::Verbosity 
   m_line(line),
   m_verbosity(verbosity)
 {}
+
+void Logger::outputStr(const char* str)
+{
+  OutputDebugStringA((LPCSTR)str);
+}
 
 }

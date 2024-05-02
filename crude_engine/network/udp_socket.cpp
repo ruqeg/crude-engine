@@ -25,9 +25,9 @@ Socket_Bind_Result UDP_Socket::bind(const Socket_Address& inBindAddress)
   return SOCKET_BIND_RESULT_SUCCESS;
 }
 
-Socket_Send_Result UDP_Socket::send(const void* inData, int64 inLen, const Socket_Address& inToAddress)
+Socket_Send_Result UDP_Socket::send(const span<const char>& inData, const Socket_Address& inToAddress)
 {
-  int byteSendCount = ::sendto(m_socket, static_cast<const char*>(inData), inLen, 0, &inToAddress.m_sockddr, inToAddress.getSize());
+  int byteSendCount = ::sendto(m_socket, inData.data(), inData.size_bytes(), 0, &inToAddress.m_sockddr, inToAddress.getSize());
   if (byteSendCount == SOCKET_ERROR)
   {
     // !TODO handle error
@@ -37,10 +37,10 @@ Socket_Send_Result UDP_Socket::send(const void* inData, int64 inLen, const Socke
   return SOCKET_SEND_RESULT_SUCCESS;
 }
 
-Socket_Recv_Result UDP_Socket::receive(void* outBuffer, int64 inMaxLen, Socket_Address& outFromAddress)
+Socket_Recv_Result UDP_Socket::receive(span<char>& outBuffer, Socket_Address& outFromAddress)
 {
   int fromLength = outFromAddress.getSize();
-  int readByteCount = ::recvfrom(m_socket, static_cast<char*>(outBuffer), inMaxLen, 0, &outFromAddress.m_sockddr, &fromLength);
+  int readByteCount = ::recvfrom(m_socket, outBuffer.data(), outBuffer.size_bytes(), 0, &outFromAddress.m_sockddr, &fromLength);
   if (readByteCount == SOCKET_ERROR)
   {
     // !TODO handle error
