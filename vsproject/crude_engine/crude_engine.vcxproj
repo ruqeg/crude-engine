@@ -217,6 +217,7 @@
     <ClCompile Include="..\..\crude_engine\math\vector.cpp" />
     <ClCompile Include="..\..\crude_engine\network\socket_address.cpp" />
     <ClCompile Include="..\..\crude_engine\network\socket_util.cpp" />
+    <ClCompile Include="..\..\crude_engine\network\tcp_socket.cpp" />
     <ClCompile Include="..\..\crude_engine\network\udp_socket.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -312,6 +313,7 @@
     <ClInclude Include="..\..\crude_engine\math\vector.hpp" />
     <ClInclude Include="..\..\crude_engine\network\socket_address.hpp" />
     <ClInclude Include="..\..\crude_engine\network\socket_util.hpp" />
+    <ClInclude Include="..\..\crude_engine\network\tcp_socket.hpp" />
     <ClInclude Include="..\..\crude_engine\network\udp_socket.hpp" />
   </ItemGroup>
   <ItemGroup>

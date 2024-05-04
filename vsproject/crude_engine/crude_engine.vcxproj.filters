@@ -226,6 +226,9 @@
     <ClCompile Include="..\..\crude_engine\network\socket_util.cpp">
       <Filter>source\network</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\crude_engine\network\tcp_socket.cpp">
+      <Filter>source\network</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\crude_engine\graphics\vulkan\application.hpp">
@@ -505,6 +508,9 @@
       <Filter>source\core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\crude_engine\network\socket_util.hpp">
+      <Filter>source\network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\crude_engine\network\tcp_socket.hpp">
       <Filter>source\network</Filter>
     </ClInclude>
   </ItemGroup>

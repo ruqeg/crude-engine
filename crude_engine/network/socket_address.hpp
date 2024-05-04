@@ -23,6 +23,7 @@ private:
   sockaddr m_sockddr;
 
   friend class UDP_Socket;
+  friend class TCP_Socket;
 };
 
 }
