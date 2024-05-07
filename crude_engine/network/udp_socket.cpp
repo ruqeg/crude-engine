@@ -14,38 +14,30 @@ UDP_Socket::~UDP_Socket()
   closesocket(m_socket);
 }
 
-UDP_Socket_Bind_Result UDP_Socket::bind(const Socket_Address& inBindAddress)
+int64 UDP_Socket::bind(const Socket_Address& inBindAddress)
 {
-  int err = ::bind(m_socket, &inBindAddress.m_sockddr, inBindAddress.getSize());
-  if (err == SOCKET_ERROR)
-  {
-    return UDP_SOCKET_BIND_RESULT_UNKOWN_ERROR;
-  }
-
-  return UDP_SOCKET_BIND_RESULT_SUCCESS;
+  int result = ::bind(m_socket, &inBindAddress.m_sockddr, inBindAddress.getSize());
+  return result;
 }
 
-UDP_Socket_Send_Result UDP_Socket::send(const span<const char>& inData, const Socket_Address& inToAddress)
+int64 UDP_Socket::send(const span<const char>& inData, const Socket_Address& inToAddress)
 {
   int byteSendCount = ::sendto(m_socket, inData.data(), inData.size_bytes(), 0, &inToAddress.m_sockddr, inToAddress.getSize());
-  if (byteSendCount == SOCKET_ERROR)
-  {
-    return UDP_SOCKET_SEND_RESULT_UNKOWN_ERROR;
-  }
-
-  return UDP_SOCKET_SEND_RESULT_SUCCESS;
+  return byteSendCount;
 }
 
-UDP_Socket_Recv_Result UDP_Socket::receive(const span<char>& outBuffer, Socket_Address& outFromAddress)
+int64 UDP_Socket::receive(const span<char>& outBuffer, Socket_Address& outFromAddress)
 {
   int fromLength = outFromAddress.getSize();
   int readByteCount = ::recvfrom(m_socket, outBuffer.data(), outBuffer.size_bytes(), 0, &outFromAddress.m_sockddr, &fromLength);
-  if (readByteCount == SOCKET_ERROR)
-  {
-    return UDP_SOCKET_RECV_RESULT_UNKOWN_ERROR;
-  }
+  return readByteCount;
+}
 
-  return UDP_SOCKET_RECV_RESULT_SUCCESS;
+int64 UDP_Socket::setNonBlockingMode(bool inShouldBeNonBlocking)
+{
+  u_long arg = inShouldBeNonBlocking ? 1 : 0;
+  int result = ioctlsocket(m_socket, FIONBIO, &arg);
+  return result;
 }
 
 }

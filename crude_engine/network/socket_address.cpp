@@ -3,12 +3,11 @@
 namespace crude_engine
 {
 
-Socket_Address::Socket_Address(const char* address, uint16 port)
+Socket_Address::Socket_Address(uint32 inAddress, uint16 inPort)
 {
-  *getAsSockAddrIn6() = {};
-  getAsSockAddrIn6()->sin6_family = AF_INET6;
-  getAsSockAddrIn6()->sin6_port = htons(port);
-  inet_pton(AF_INET6, address, &getAsSockAddrIn6()->sin6_addr);
+  getAsSockAddrIn()->sin_family = AF_INET;
+  getAsSockAddrIn()->sin_port = htons(inPort);
+  getAsSockAddrIn()->sin_addr.S_un.S_addr = htonl(inAddress);
 }
 
 Socket_Address::Socket_Address(const sockaddr& otherSockaddr)
@@ -21,9 +20,9 @@ uint64 Socket_Address::getSize() const
   return sizeof(sockaddr);
 }
 
-sockaddr_in6* Socket_Address::getAsSockAddrIn6()
+sockaddr_in* Socket_Address::getAsSockAddrIn()
 {
-  return reinterpret_cast<sockaddr_in6*>(&m_sockddr);
+  return reinterpret_cast<sockaddr_in*>(&m_sockddr);
 }
 
 }

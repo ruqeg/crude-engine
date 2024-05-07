@@ -1,6 +1,8 @@
 #pragma once
 
-#include <core/utility.hpp>
+#pragma comment(lib, "Ws2_32.lib")
+
+#include <core/alias.hpp>
 
 #include <winsock2.h>
 #include <ws2tcpip.h>
@@ -11,13 +13,14 @@ namespace crude_engine
 class Socket_Address
 {
 public:
-  Socket_Address(const char* address, uint16 port);
+  Socket_Address() = default;
+  Socket_Address(uint32 inAddress, uint16 inPort);
   Socket_Address(const sockaddr& otherSockaddr);
 
   uint64 getSize() const;
 
 private:
-  sockaddr_in6* getAsSockAddrIn6();
+  sockaddr_in* getAsSockAddrIn();
 
 private:
   sockaddr m_sockddr;

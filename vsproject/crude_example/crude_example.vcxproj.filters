@@ -11,6 +11,9 @@
     <Filter Include="source\basic_triangle_examle">
       <UniqueIdentifier>{c58d48e8-8105-4160-80e5-5462745d415e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="source\basic_network_example">
+      <UniqueIdentifier>{632e4cb1-ce88-478c-b883-62a859f98f48}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\crude_example\basic_ecs_example\main.cpp">
@@ -18,6 +21,9 @@
     </ClCompile>
     <ClCompile Include="..\..\crude_example\basic_triangle_examle\main.cpp">
       <Filter>source\basic_triangle_examle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_example\basic_network_example\main.cpp">
+      <Filter>source\basic_network_example</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

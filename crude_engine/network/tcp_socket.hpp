@@ -7,41 +7,8 @@
 namespace crude_engine
 {
 
-enum TCP_Socket_Connect_Result
-{
-  TCP_SOCKET_CONNECT_RESULT_SUCCESS,
-  TCP_SOCKET_CONNECT_RESULT_UNKOWN_ERROR,
-};
-
-enum TCP_Socket_Bind_Result
-{
-  TCP_SOCKET_BIND_RESULT_SUCCESS,
-  TCP_SOCKET_BIND_RESULT_UNKOWN_ERROR,
-};
-
-enum TCP_Socket_Listen_Result
-{
-  TCP_SOCKET_LISTEN_RESULT_SUCCESS,
-  TCP_SOCKET_LISTEN_RESULT_UNKOWN_ERROR,
-};
-
-enum TCP_Socket_Accept_Result
-{
-  TCP_SOCKET_ACCEPT_RESULT_SUCCESS,
-  TCP_SOCKET_ACCEPT_RESULT_UNKOWN_ERROR,
-};
-
-enum TCP_Socket_Send_Result
-{
-  TCP_SOCKET_SEND_RESULT_SUCCESS,
-  TCP_SOCKET_SEND_RESULT_UNKOWN_ERROR,
-};
-
-enum TCP_Socket_Recv_Result
-{
-  TCP_SOCKET_RECV_RESULT_SUCCESS,
-  TCP_SOCKET_RECV_RESULT_UNKOWN_ERROR,
-};
+class TCP_Socket;
+using TCP_Socket_Ptr = Shared_Ptr<TCP_Socket>;
 
 class TCP_Socket
 {
@@ -51,15 +18,17 @@ public:
   TCP_Socket(SOCKET inSocket);
 
 public:
-  TCP_Socket_Connect_Result connect(const Socket_Address& inAddress);
-  TCP_Socket_Bind_Result bind(const Socket_Address& inToAddress);
-  TCP_Socket_Listen_Result listen(int64 inBackLog = SOMAXCONN);
-  Shared_Ptr<TCP_Socket> accept(Socket_Address& inFromAddress);
-  TCP_Socket_Send_Result send(const span<const char>& inData);
-  TCP_Socket_Recv_Result receive(const span<char>& outBuffer);
+  int64 connect(const Socket_Address& inAddress);
+  int64 bind(const Socket_Address& inToAddress);
+  int64 listen(int64 inBackLog = SOMAXCONN);
+  TCP_Socket_Ptr accept(Socket_Address& inFromAddress);
+  int64 send(const span<const char>& inData);
+  int64 receive(const span<char>& outBuffer);
 
 private:
   SOCKET m_socket;
+
+  friend class Socket_Util;
 };
 
 }
