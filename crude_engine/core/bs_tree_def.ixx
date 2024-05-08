@@ -1,6 +1,10 @@
-module crude_engine.core.bs_tree;
+module;
 
-namespace crude_engine
+export module crude_engine.core.bs_tree.def;
+
+export import crude_engine.core.bs_tree.decl;
+
+export namespace crude_engine
 {
 
 template<class Node>

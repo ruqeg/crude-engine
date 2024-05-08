@@ -3,9 +3,9 @@ module;
 export module crude_engine.core.free_rbt_allocator;
 
 export import crude_engine.core.alias;
-export import crude_engine.core.rb_tree;
 
 import crude_engine.core.cxx_allocator_container;
+import crude_engine.core.rb_tree;
 
 export namespace crude_engine
 {

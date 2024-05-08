@@ -1,10 +1,11 @@
+module;
+
 #include <type_traits>
 
-module crude_engine.core.optional;
+export module crude_engine.core.optional.def;
+export import crude_engine.core.optional.decl;
 
-import crude_engine.core.assert;
-
-namespace crude_engine
+export namespace crude_engine
 {
 
 template<class T>
