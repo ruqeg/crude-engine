@@ -1,24 +1,25 @@
-#include <core/pool_allocator.hpp>
-#include <core/memory_utils.hpp>
-#include <core/assert.hpp>
+module crude_engine.pool_allocator;
+
+ import crude_engine.memory_utils;
+ import crude_engine.assert;
 
 namespace crude_engine
 {
 
-Pool_Allocator::Pool_Allocator(const std::size_t capacity, const std::size_t chunkSize) noexcept
+Pool_Allocator::Pool_Allocator(const size_t capacity, const size_t chunkSize) noexcept
   :
   m_capacity(capacity),
   m_chunkSize(chunkSize)
 {
-  CRUDE_ASSERT(chunkSize >= 8 && "Chunk size must be greater or equal to 8");
-  CRUDE_ASSERT(capacity % chunkSize == 0 && "Capacity must be a multiple of Chunk Size");
+  assert(chunkSize >= 8 && "Chunk size must be greater or equal to 8");
+  assert(capacity % chunkSize == 0 && "Capacity must be a multiple of Chunk Size");
 
   if (m_heap != nullptr)
   {
     Memory_Utils::free(m_heap);
   }
 
-  m_heap = reinterpret_cast<std::byte*>(Memory_Utils::allocate(capacity));
+  m_heap = reinterpret_cast<byte*>(Memory_Utils::allocate(capacity));
 
   reset();
 }
@@ -29,12 +30,12 @@ Pool_Allocator::~Pool_Allocator() noexcept
   m_heap = nullptr;
 }
 
-void* Pool_Allocator::allocate(std::size_t size) noexcept
+void* Pool_Allocator::allocate(size_t size) noexcept
 {
-  CRUDE_ASSERT(size == this->m_chunkSize && "Allocation size must be equal to chunk size");
+  assert(size == this->m_chunkSize && "Allocation size must be equal to chunk size");
 
   Node* resultPtr = m_freeList.pop();
-  CRUDE_ASSERT(resultPtr != nullptr && "The pool allocator is full");
+  assert(resultPtr != nullptr && "The pool allocator is full");
 
   m_heapSize += m_chunkSize;
 
@@ -43,7 +44,7 @@ void* Pool_Allocator::allocate(std::size_t size) noexcept
 
 void Pool_Allocator::deallocate(void* ptr) noexcept
 {
-  CRUDE_ASSERT(ptr);
+  assert(ptr);
 
   m_heapSize -= m_chunkSize;
   m_freeList.push(reinterpret_cast<Node*>(ptr));
@@ -53,10 +54,10 @@ void Pool_Allocator::reset() noexcept
 {
   m_heapSize = 0u;
 
-  const std::size_t chunksNum = m_capacity / m_chunkSize;
-  for (std::size_t i = 0; i < chunksNum; ++i)
+  const size_t chunksNum = m_capacity / m_chunkSize;
+  for (size_t i = 0; i < chunksNum; ++i)
   {
-    const std::size_t address = (std::size_t)m_heap + i * m_chunkSize;
+    const size_t address = (size_t)m_heap + i * m_chunkSize;
     m_freeList.push(reinterpret_cast<Node*>(address));
   }
 }

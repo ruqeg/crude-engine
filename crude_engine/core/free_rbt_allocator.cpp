@@ -1,9 +1,24 @@
-#include <core/free_rbt_allocator.hpp>
-#include <core/assert.hpp>
-#include <core/memory_utils.hpp>
+module crude_engine.free_rbt_allocator;
+
+import crude_engine.assert;
+import crude_engine.memory_utils;
 
 namespace crude_engine
 {
+
+Free_RBT_Allocator::Node(size_t blockSize, bool64 free, Node* prev, Node* next) noexcept
+  :
+  RBT_Node_Base<Node>(),
+  next(next),
+  prev(prev),
+  blockSize(blockSize),
+  free(free)
+{}
+
+inline bool Free_RBT_Allocator::operator<(const Node & other) const
+{
+  return blockSize < other.blockSize;
+}
 
 bool operator<(const Free_RBT_Allocator::Node& lhs, int rhs)
 {

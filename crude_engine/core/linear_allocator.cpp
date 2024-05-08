@@ -1,11 +1,12 @@
-#include <core/linear_allocator.hpp>
-#include <core/memory_utils.hpp>
-#include <core/assert.hpp>
+module linear_allocator;
+
+import crude_engine.memory_utils;
+import crude_engine.assert;
 
 namespace crude_engine
 {
 
-Linear_Allocator::Linear_Allocator(const std::size_t capacity) noexcept
+Linear_Allocator::Linear_Allocator(const size_t capacity) noexcept
   :
   m_capacity(capacity)
 {
@@ -14,7 +15,7 @@ Linear_Allocator::Linear_Allocator(const std::size_t capacity) noexcept
     Memory_Utils::free(m_heap);
   }
 
-  m_heap = reinterpret_cast<std::byte*>(Memory_Utils::allocate(capacity));
+  m_heap = reinterpret_cast<byte*>(Memory_Utils::allocate(capacity));
   m_heapSize = 0u;
 }
 
@@ -24,9 +25,9 @@ Linear_Allocator::~Linear_Allocator()
   m_heap = nullptr;
 }
 
-void* Linear_Allocator::allocate(std::size_t size) noexcept
+void* Linear_Allocator::allocate(size_t size) noexcept
 {
-  CRUDE_ASSERT(m_heapSize + size <= m_capacity);
+  assert(m_heapSize + size <= m_capacity);
 
   void* resultPtr = m_heap + m_heapSize;
   m_heapSize += size;

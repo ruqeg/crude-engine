@@ -229,6 +229,12 @@
     <ClCompile Include="..\..\crude_engine\network\udp_socket.cpp">
       <Filter>source\network</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\crude_engine\core\assert.cpp">
+      <Filter>source\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\crude_engine.ixx">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\crude_engine\graphics\vulkan\application.hpp">
@@ -375,76 +381,76 @@
     <ClInclude Include="..\..\crude_engine\graphics\vulkan\vulkan_allocator.hpp">
       <Filter>source\graphics\vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\crude_engine\core\algorithms.hpp">
+    <ClInclude Include="..\..\crude_engine\core\algorithms.ixx">
       <Filter>source\core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\crude_engine\core\alias.hpp">
+    <ClInclude Include="..\..\crude_engine\core\alias.ixx">
       <Filter>source\core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\crude_engine\core\assert.hpp">
+    <ClInclude Include="..\..\crude_engine\core\assert.ixx">
       <Filter>source\core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\crude_engine\core\bs_tree.hpp">
+    <ClInclude Include="..\..\crude_engine\core\bs_tree.ixx">
       <Filter>source\core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\crude_engine\core\compare.hpp">
+    <ClInclude Include="..\..\crude_engine\core\compare.ixx">
       <Filter>source\core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\crude_engine\core\system_allocator.hpp">
+    <ClInclude Include="..\..\crude_engine\core\system_allocator.ixx">
       <Filter>source\core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\crude_engine\core\debug.hpp">
+    <ClInclude Include="..\..\crude_engine\core\debug.ixx">
       <Filter>source\core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\crude_engine\core\filesystem.hpp">
+    <ClInclude Include="..\..\crude_engine\core\filesystem.ixx">
       <Filter>source\core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\crude_engine\core\free_rbt_allocator.hpp">
+    <ClInclude Include="..\..\crude_engine\core\free_rbt_allocator.ixx">
       <Filter>source\core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\crude_engine\core\iallocator.hpp">
+    <ClInclude Include="..\..\crude_engine\core\iallocator.ixx">
       <Filter>source\core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\crude_engine\core\linear_allocator.hpp">
+    <ClInclude Include="..\..\crude_engine\core\linear_allocator.ixx">
       <Filter>source\core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\crude_engine\core\logger.hpp">
+    <ClInclude Include="..\..\crude_engine\core\logger.ixx">
       <Filter>source\core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\crude_engine\core\memory_manager.hpp">
+    <ClInclude Include="..\..\crude_engine\core\memory_manager.ixx">
       <Filter>source\core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\crude_engine\core\memory_system.hpp">
+    <ClInclude Include="..\..\crude_engine\core\memory_system.ixx">
       <Filter>source\core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\crude_engine\core\memory_utils.hpp">
+    <ClInclude Include="..\..\crude_engine\core\memory_utils.ixx">
       <Filter>source\core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\crude_engine\core\optional.hpp">
+    <ClInclude Include="..\..\crude_engine\core\optional.ixx">
       <Filter>source\core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\crude_engine\core\pool_allocator.hpp">
+    <ClInclude Include="..\..\crude_engine\core\pool_allocator.ixx">
       <Filter>source\core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\crude_engine\core\rb_tree.hpp">
+    <ClInclude Include="..\..\crude_engine\core\rb_tree.ixx">
       <Filter>source\core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\crude_engine\core\size_holder.hpp">
+    <ClInclude Include="..\..\crude_engine\core\size_holder.ixx">
       <Filter>source\core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\crude_engine\core\stack_allocator.hpp">
+    <ClInclude Include="..\..\crude_engine\core\stack_allocator.ixx">
       <Filter>source\core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\crude_engine\core\stack_linked_list.hpp">
+    <ClInclude Include="..\..\crude_engine\core\stack_linked_list.ixx">
       <Filter>source\core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\crude_engine\core\string.hpp">
+    <ClInclude Include="..\..\crude_engine\core\string.ixx">
       <Filter>source\core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\crude_engine\core\tree_iterator_base.hpp">
+    <ClInclude Include="..\..\crude_engine\core\tree_iterator_base.ixx">
       <Filter>source\core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\crude_engine\core\utility.hpp">
+    <ClInclude Include="..\..\crude_engine\core\utility.ixx">
       <Filter>source\core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\crude_engine\ecs\alias.hpp">
@@ -486,19 +492,19 @@
     <ClInclude Include="..\..\crude_engine\math\vector.hpp">
       <Filter>source\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\crude_engine\core\std_allocator.hpp">
+    <ClInclude Include="..\..\crude_engine\core\std_allocator.ixx">
       <Filter>source\core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\crude_engine\core\std_containers.hpp">
+    <ClInclude Include="..\..\crude_engine\core\std_containers_heap.ixx">
       <Filter>source\core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\crude_engine\core\cxx_allocator_container.hpp">
+    <ClInclude Include="..\..\crude_engine\core\cxx_allocator_container.ixx">
       <Filter>source\core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\crude_engine\core\shared_ptr.hpp">
+    <ClInclude Include="..\..\crude_engine\core\shared_ptr.ixx">
       <Filter>source\core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\crude_engine\core\std_containers_naloc.hpp">
+    <ClInclude Include="..\..\crude_engine\core\std_containers_stack.ixx">
       <Filter>source\core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\crude_engine\network\socket_util.hpp">
@@ -518,34 +524,25 @@
     <None Include="..\..\crude_engine\graphics\vulkan\object.inl">
       <Filter>source\graphics\vulkan</Filter>
     </None>
-    <None Include="..\..\crude_engine\core\algorithms.inl">
+    <None Include="..\..\crude_engine\core\algorithms.cpp">
       <Filter>source\core</Filter>
     </None>
-    <None Include="..\..\crude_engine\core\bs_tree.inl">
+    <None Include="..\..\crude_engine\core\bs_tree.cpp">
       <Filter>source\core</Filter>
     </None>
-    <None Include="..\..\crude_engine\core\logger.inl">
+    <None Include="..\..\crude_engine\core\optional.cpp">
       <Filter>source\core</Filter>
     </None>
-    <None Include="..\..\crude_engine\core\memory_system.inl">
+    <None Include="..\..\crude_engine\core\rb_tree.cpp">
       <Filter>source\core</Filter>
     </None>
-    <None Include="..\..\crude_engine\core\optional.inl">
+    <None Include="..\..\crude_engine\core\stack_linked_list.cpp">
       <Filter>source\core</Filter>
     </None>
-    <None Include="..\..\crude_engine\core\rb_tree.inl">
+    <None Include="..\..\crude_engine\core\tree_iterator_base.cpp">
       <Filter>source\core</Filter>
     </None>
-    <None Include="..\..\crude_engine\core\stack_linked_list.inl">
-      <Filter>source\core</Filter>
-    </None>
-    <None Include="..\..\crude_engine\core\string.inl">
-      <Filter>source\core</Filter>
-    </None>
-    <None Include="..\..\crude_engine\core\tree_iterator_base.inl">
-      <Filter>source\core</Filter>
-    </None>
-    <None Include="..\..\crude_engine\core\utility.inl">
+    <None Include="..\..\crude_engine\core\utility.cpp">
       <Filter>source\core</Filter>
     </None>
     <None Include="..\..\crude_engine\ecs\component_container.inl">
@@ -563,13 +560,13 @@
     <None Include="..\..\crude_engine\ecs\query.inl">
       <Filter>source\ecs</Filter>
     </None>
-    <None Include="..\..\crude_engine\core\std_allocator.inl">
+    <None Include="..\..\crude_engine\core\std_allocator.cpp">
       <Filter>source\core</Filter>
     </None>
-    <None Include="..\..\crude_engine\core\cxx_allocator_container.inl">
+    <None Include="..\..\crude_engine\core\cxx_allocator_container.cpp">
       <Filter>source\core</Filter>
     </None>
-    <None Include="..\..\crude_engine\core\shared_ptr.inl">
+    <None Include="..\..\crude_engine\core\shared_ptr.cpp">
       <Filter>source\core</Filter>
     </None>
   </ItemGroup>

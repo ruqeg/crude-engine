@@ -1,11 +1,13 @@
-#include <core/string.hpp>
+#include <stdio.h>
+
+module crude_engine.string;
 
 namespace crude_engine
 {
 
-std::size_t String::strlen(char* const buffer) noexcept
+size_t strlen(char* const buffer) noexcept
 {
-  std::size_t len = 0u;
+  size_t len = 0u;
 
   while (buffer[len] != '\0')
   {
@@ -15,7 +17,7 @@ std::size_t String::strlen(char* const buffer) noexcept
   return len;
 }
 
-char* String::strncat(char* const buffer, const std::size_t bufferCount, const char* const source) noexcept
+char* strncat(char* const buffer, const size_t bufferCount, const char* const source) noexcept
 {
   size_t bufferLen = strlen(buffer);
   size_t i;
@@ -26,6 +28,13 @@ char* String::strncat(char* const buffer, const std::size_t bufferCount, const c
   }
   buffer[bufferLen + i] = '\0';
 
+  return buffer;
+}
+
+template<typename ...Args>
+char* snprintf(char* const buffer, const size_t bufferCount, const char* const format, Args && ...args) noexcept
+{
+  ::snprintf(buffer, bufferCount, format, forward<Args>(args)...);
   return buffer;
 }
 

@@ -1,5 +1,3 @@
-#include <core/filesystem.hpp>
-
 #ifdef _WIN32
 #include <io.h>
 #define F_OK 0
@@ -7,6 +5,8 @@
 #else
 #include <unistd.h>
 #endif
+
+module crude_engine.filesystem;
 
 namespace crude_engine
 {
