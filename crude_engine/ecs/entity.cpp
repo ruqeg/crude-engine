@@ -1,4 +1,4 @@
-#include <ecs/entity.hpp>
+module crude_engine.ecs.entity;
 
 namespace crude_engine
 {

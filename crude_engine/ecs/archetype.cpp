@@ -1,6 +1,10 @@
-#include <ecs/archetype.hpp>
-#include <ecs/world.hpp>
-#include <ecs/component_register.hpp>
+#include <vector>
+
+module crude_engine.ecs.archetype;
+
+import crude_engine.core.assert;
+import crude_engine.ecs.world;
+import crude_engine.ecs.component_register;
 
 namespace crude_engine
 {
@@ -110,7 +114,7 @@ void Archetype::removeComponentData(uint64 row)
 
 void Archetype::copyComponentData(uint64 column, uint64 row, const void* value)
 {
-  CRUDE_ASSERT(row < m_componentsDataSize);
+  assert(row < m_componentsDataSize);
 
   const Component_ID component = m_components[column].m_component;
   const Component_Register::Component_Info& componentInfo = m_componentRegister->getComponentInfo(component);
@@ -122,7 +126,7 @@ void Archetype::copyComponentData(uint64 column, uint64 row, const void* value)
 
 void Archetype::moveComponentData(uint64 column, uint64 row, void* value)
 {
-  CRUDE_ASSERT(row < m_componentsDataSize);
+  assert(row < m_componentsDataSize);
 
   const Component_ID component = m_components[column].m_component;
   const Component_Register::Component_Info& componentInfo = m_componentRegister->getComponentInfo(component);
@@ -134,7 +138,7 @@ void Archetype::moveComponentData(uint64 column, uint64 row, void* value)
 
 void* Archetype::getComponentData(uint64 column, uint64 row)
 {
-  CRUDE_ASSERT(row < m_componentsDataSize);
+  assert(row < m_componentsDataSize);
 
   const Component_ID component = m_components[column].m_component;
   const Component_Register::Component_Info& componentInfo = m_componentRegister->getComponentInfo(component);

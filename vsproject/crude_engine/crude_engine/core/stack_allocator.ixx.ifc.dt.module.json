@@ -1,0 +1,11 @@
+{
+    "Version": "1.1",
+    "Data": {
+        "Source": "c:\\users\\user\\projects\\crude_engine\\crude_engine\\core\\stack_allocator.ixx",
+        "ProvidedModule": "crude_engine.core.stack_allocator",
+        "ImportedModules": [
+            "crude_engine.core.iallocator"
+        ],
+        "ImportedHeaderUnits": []
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "c:\\users\\user\\projects\\crude_engine\\crude_engine\\core\\filesystem.ixx",
+        "ProvidedModule": "crude_engine.core.filesystem",
+        "Includes": [],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}

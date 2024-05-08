@@ -1,4 +1,4 @@
-#include <ecs/id_manager.hpp>
+module crude_engine.ecs.id_manager;
 
 namespace crude_engine
 {

@@ -1,0 +1,39 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "c:\\users\\user\\projects\\crude_engine\\crude_engine\\ecs\\archetype.ixx",
+        "ProvidedModule": "crude_engine.ecs.archetype",
+        "Includes": [],
+        "ImportedModules": [
+            {
+                "Name": "crude_engine.ecs.alias",
+                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\ecs\\alias.ixx.ifc"
+            },
+            {
+                "Name": "crude_engine.core.alias",
+                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\core\\alias.ixx.ifc"
+            },
+            {
+                "Name": "crude_engine.core.shared_ptr",
+                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\core\\shared_ptr.ixx.ifc"
+            },
+            {
+                "Name": "crude_engine.core.memory_system",
+                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\core\\memory_system.ixx.ifc"
+            },
+            {
+                "Name": "crude_engine.core.std_containers_heap",
+                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\core\\std_containers_heap.ixx.ifc"
+            },
+            {
+                "Name": "crude_engine.core.std_allocator",
+                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\core\\std_allocator.ixx.ifc"
+            },
+            {
+                "Name": "crude_engine.core.utility",
+                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\core\\utility.ixx.ifc"
+            }
+        ],
+        "ImportedHeaderUnits": []
+    }
+}

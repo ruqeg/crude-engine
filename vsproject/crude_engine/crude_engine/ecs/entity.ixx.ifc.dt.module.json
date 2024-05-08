@@ -1,0 +1,12 @@
+{
+    "Version": "1.1",
+    "Data": {
+        "Source": "c:\\users\\user\\projects\\crude_engine\\crude_engine\\ecs\\entity.ixx",
+        "ProvidedModule": "crude_engine.ecs.entity",
+        "ImportedModules": [
+            "crude_engine.ecs.alias",
+            "crude_engine.ecs.world"
+        ],
+        "ImportedHeaderUnits": []
+    }
+}

@@ -1,0 +1,23 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "c:\\users\\user\\projects\\crude_engine\\crude_engine\\core\\pool_allocator.ixx",
+        "ProvidedModule": "crude_engine.core.pool_allocator",
+        "Includes": [],
+        "ImportedModules": [
+            {
+                "Name": "crude_engine.core.iallocator",
+                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\core\\iallocator.ixx.ifc"
+            },
+            {
+                "Name": "crude_engine.core.alias",
+                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\core\\alias.ixx.ifc"
+            },
+            {
+                "Name": "crude_engine.core.stack_linked_list",
+                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\core\\stack_linked_list.ixx.ifc"
+            }
+        ],
+        "ImportedHeaderUnits": []
+    }
+}

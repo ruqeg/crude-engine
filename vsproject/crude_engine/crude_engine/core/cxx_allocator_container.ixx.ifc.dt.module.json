@@ -1,0 +1,11 @@
+{
+    "Version": "1.1",
+    "Data": {
+        "Source": "c:\\users\\user\\projects\\crude_engine\\crude_engine\\core\\cxx_allocator_container.ixx",
+        "ProvidedModule": "crude_engine.core.cxx_allocator_container",
+        "ImportedModules": [
+            "crude_engine.core.iallocator"
+        ],
+        "ImportedHeaderUnits": []
+    }
+}

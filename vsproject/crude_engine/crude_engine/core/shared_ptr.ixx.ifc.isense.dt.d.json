@@ -1,0 +1,27 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "c:\\users\\user\\projects\\crude_engine\\crude_engine\\core\\shared_ptr.ixx",
+        "ProvidedModule": "crude_engine.core.shared_ptr",
+        "Includes": [],
+        "ImportedModules": [
+            {
+                "Name": "crude_engine.core.memory_system",
+                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\core\\memory_system.ixx.ifc.dt"
+            },
+            {
+                "Name": "crude_engine.core.alias",
+                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\core\\alias.ixx.ifc.dt"
+            },
+            {
+                "Name": "crude_engine.core.assert",
+                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\core\\assert.ixx.ifc.dt"
+            },
+            {
+                "Name": "crude_engine.core.utility",
+                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\core\\utility.ixx.ifc.dt"
+            }
+        ],
+        "ImportedHeaderUnits": []
+    }
+}

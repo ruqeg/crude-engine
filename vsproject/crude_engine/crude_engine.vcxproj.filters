@@ -125,5 +125,44 @@
     <ClCompile Include="..\..\crude_engine\network\udp_socket.ixx">
       <Filter>source\network</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\crude_engine\ecs\alias.ixx">
+      <Filter>source\ecs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\ecs\archetype.cpp">
+      <Filter>source\ecs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\ecs\archetype.ixx">
+      <Filter>source\ecs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\ecs\component_container.ixx">
+      <Filter>source\ecs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\ecs\component_register.cpp">
+      <Filter>source\ecs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\ecs\component_register.ixx">
+      <Filter>source\ecs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\ecs\entity.cpp">
+      <Filter>source\ecs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\ecs\entity.ixx">
+      <Filter>source\ecs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\ecs\id_manager.cpp">
+      <Filter>source\ecs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\ecs\id_manager.ixx">
+      <Filter>source\ecs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\ecs\query.ixx">
+      <Filter>source\ecs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\ecs\world.cpp">
+      <Filter>source\ecs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\ecs\world.ixx">
+      <Filter>source\ecs</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

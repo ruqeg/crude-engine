@@ -2,9 +2,10 @@
 
 #include <Windows.h>
 
-#include <ecs/world.hpp>
-#include <ecs/entity.hpp>
-#include <ecs/query.hpp>
+import crude_engine.ecs.world;
+import crude_engine.ecs.entity;
+import crude_engine.ecs.component_container;
+import crude_engine.ecs.query;
 
 #include <iostream>
 

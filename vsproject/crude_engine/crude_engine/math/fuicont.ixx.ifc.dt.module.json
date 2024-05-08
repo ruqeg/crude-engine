@@ -1,0 +1,11 @@
+{
+    "Version": "1.1",
+    "Data": {
+        "Source": "c:\\users\\user\\projects\\crude_engine\\crude_engine\\math\\fuicont.ixx",
+        "ProvidedModule": "crude_engine.math.fuicont",
+        "ImportedModules": [
+            "crude_engine.core.alias"
+        ],
+        "ImportedHeaderUnits": []
+    }
+}

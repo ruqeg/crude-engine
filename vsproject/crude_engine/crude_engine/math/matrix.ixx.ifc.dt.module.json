@@ -1,0 +1,11 @@
+{
+    "Version": "1.1",
+    "Data": {
+        "Source": "c:\\users\\user\\projects\\crude_engine\\crude_engine\\math\\matrix.ixx",
+        "ProvidedModule": "crude_engine.math.matrix",
+        "ImportedModules": [
+            "crude_engine.math.vector"
+        ],
+        "ImportedHeaderUnits": []
+    }
+}

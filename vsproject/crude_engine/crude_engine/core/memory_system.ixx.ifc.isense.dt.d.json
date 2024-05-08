@@ -1,0 +1,63 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "c:\\users\\user\\projects\\crude_engine\\crude_engine\\core\\memory_system.ixx",
+        "ProvidedModule": "crude_engine.core.memory_system",
+        "Includes": [
+            "c:\\program files (x86)\\windows kits\\10\\include\\10.0.22000.0\\ucrt\\malloc.h",
+            "c:\\program files (x86)\\windows kits\\10\\include\\10.0.22000.0\\ucrt\\corecrt.h",
+            "c:\\program files\\microsoft visual studio\\2022\\community\\vc\\tools\\msvc\\14.38.33130\\include\\vcruntime.h",
+            "c:\\program files\\microsoft visual studio\\2022\\community\\vc\\tools\\msvc\\14.38.33130\\include\\sal.h",
+            "c:\\program files\\microsoft visual studio\\2022\\community\\vc\\tools\\msvc\\14.38.33130\\include\\concurrencysal.h",
+            "c:\\program files\\microsoft visual studio\\2022\\community\\vc\\tools\\msvc\\14.38.33130\\include\\vadefs.h",
+            "c:\\program files (x86)\\windows kits\\10\\include\\10.0.22000.0\\ucrt\\corecrt_malloc.h"
+        ],
+        "ImportedModules": [
+            {
+                "Name": "crude_engine.core.memory_manager",
+                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\core\\memory_manager.ixx.ifc.dt"
+            },
+            {
+                "Name": "crude_engine.core.free_rbt_allocator",
+                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\core\\free_rbt_allocator.ixx.ifc.dt"
+            },
+            {
+                "Name": "crude_engine.core.alias",
+                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\core\\alias.ixx.ifc.dt"
+            },
+            {
+                "Name": "crude_engine.core.cxx_allocator_container",
+                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\core\\cxx_allocator_container.ixx.ifc.dt"
+            },
+            {
+                "Name": "crude_engine.core.iallocator",
+                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\core\\iallocator.ixx.ifc.dt"
+            },
+            {
+                "Name": "crude_engine.core.system_allocator",
+                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\core\\system_allocator.ixx.ifc.dt"
+            },
+            {
+                "Name": "crude_engine.core.rb_tree",
+                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\core\\rb_tree.ixx.ifc.dt"
+            },
+            {
+                "Name": "crude_engine.core.bs_tree",
+                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\core\\bs_tree.ixx.ifc.dt"
+            },
+            {
+                "Name": "crude_engine.core.compare",
+                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\core\\compare.ixx.ifc.dt"
+            },
+            {
+                "Name": "crude_engine.core.tree_iterator_base",
+                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\core\\tree_iterator_base.ixx.ifc.dt"
+            },
+            {
+                "Name": "crude_engine.core.size_holder",
+                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\core\\size_holder.ixx.ifc.dt"
+            }
+        ],
+        "ImportedHeaderUnits": []
+    }
+}

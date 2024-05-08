@@ -1,0 +1,12 @@
+{
+    "Version": "1.1",
+    "Data": {
+        "Source": "c:\\users\\user\\projects\\crude_engine\\crude_engine\\core\\optional.ixx",
+        "ProvidedModule": "crude_engine.core.optional",
+        "ImportedModules": [
+            "crude_engine.core.assert",
+            "crude_engine.core.utility"
+        ],
+        "ImportedHeaderUnits": []
+    }
+}

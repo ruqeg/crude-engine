@@ -1,6 +1,11 @@
-#include <ecs/world.hpp>
-#include <ecs/entity.hpp>
-#include <core/algorithms.hpp>
+#include <vector>
+#include <set>
+
+module crude_engine.ecs.world;
+
+import crude_engine.core.algorithms;
+import crude_engine.core.assert;
+import crude_engine.ecs.entity;
 
 namespace crude_engine
 {
@@ -73,14 +78,14 @@ void* World::getComponent(Entity_ID entity, Component_ID component)
 {
   if (!hasComponent(entity, component))
   {
-    CRUDE_ASSERT(false && "TODO");
+    assert(false && "TODO");
   }
 
   Entity_Record& entityRecord = m_entityToRecord.at(entity);
   const bool noComponentData = !entityRecord.row.hasValue();
   if (noComponentData)
   {
-    CRUDE_ASSERT(false && "TODO");
+    assert(false && "TODO");
   }
 
   const Archetype_ID archetypeID = entityRecord.archetypeID;
@@ -322,7 +327,7 @@ void World::addArchetype(Archetype& archetype)
 {
   // !TODO UNSAFE
   const ID_Index archetypeIndex = ID_Manager::getIndex(archetype.id());
-  CRUDE_ASSERT(archetypeIndex <= m_archetypes.size() && "!TODO");
+  assert(archetypeIndex <= m_archetypes.size() && "!TODO");
 
   if (archetypeIndex < m_archetypes.size())
   {

@@ -1,0 +1,14 @@
+{
+    "Version": "1.1",
+    "Data": {
+        "Source": "c:\\users\\user\\projects\\crude_engine\\crude_engine\\core\\rb_tree.ixx",
+        "ProvidedModule": "crude_engine.core.rb_tree",
+        "ImportedModules": [
+            "crude_engine.core.bs_tree",
+            "crude_engine.core.alias",
+            "crude_engine.core.compare",
+            "crude_engine.core.utility"
+        ],
+        "ImportedHeaderUnits": []
+    }
+}
