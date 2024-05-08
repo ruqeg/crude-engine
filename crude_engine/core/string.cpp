@@ -1,4 +1,3 @@
-#include <stdio.h>
 
 module crude_engine.core.string;
 
@@ -28,13 +27,6 @@ char* strncat(char* const buffer, const size_t bufferCount, const char* const so
   }
   buffer[bufferLen + i] = '\0';
 
-  return buffer;
-}
-
-template<typename ...Args>
-char* snprintf(char* const buffer, const size_t bufferCount, const char* const format, Args && ...args) noexcept
-{
-  ::snprintf(buffer, bufferCount, format, forward<Args>(args)...);
   return buffer;
 }
 

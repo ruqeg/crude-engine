@@ -19,9 +19,9 @@ using TCP_Socket_Ptr = Shared_Ptr<TCP_Socket>;
 class TCP_Socket
 {
 public:
+  TCP_Socket(SOCKET inSocket);
   TCP_Socket() = delete;
   ~TCP_Socket();
-  TCP_Socket(SOCKET inSocket);
 
 public:
   int64 connect(const Socket_Address& inAddress);

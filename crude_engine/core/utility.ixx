@@ -1,5 +1,7 @@
 module; 
 
+#include <new>
+
 export module crude_engine.core.utility;
 
 export import crude_engine.core.alias;

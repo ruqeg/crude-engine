@@ -23,9 +23,9 @@ public:
   static UDP_Socket_Ptr createUDPSocket(Socket_Address_Family inFamily);
   static TCP_Socket_Ptr createTCPSocket(Socket_Address_Family inFamily);
   static fd_set* fillSetFromArray(fd_set& outSet, const vector<TCP_Socket_Ptr>* inSockets);
-  static void fillArrayFromSet(vector<TCP_Socket_Ptr>*         outSockets,
-                                const vector<TCP_Socket_Ptr>  *inSockets,
-                                const fd_set&                  inSet);
+  static void fillArrayFromSet(vector<TCP_Socket_Ptr>*        outSockets,
+                               const vector<TCP_Socket_Ptr>*  inSockets,
+                               const fd_set&                  inSet);
   static int select(const vector<TCP_Socket_Ptr>*  inReadSet = nullptr,
                     vector<TCP_Socket_Ptr>*        outReadSet = nullptr,
                     const vector<TCP_Socket_Ptr>*  inWriteSet = nullptr,

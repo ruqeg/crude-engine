@@ -183,7 +183,8 @@
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
       <EnableModules>true</EnableModules>
-      <BuildStlModules>true</BuildStlModules>
+      <BuildStlModules>
+      </BuildStlModules>
     </ClCompile>
     <Link>
       <SubSystem>NotSet</SubSystem>
@@ -216,24 +217,27 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\crude_engine\core\assert.cpp" />
-    <ClCompile Include="..\..\crude_engine\core\system_allocator.cpp" />
     <ClCompile Include="..\..\crude_engine\core\filesystem.cpp" />
     <ClCompile Include="..\..\crude_engine\core\free_rbt_allocator.cpp" />
     <ClCompile Include="..\..\crude_engine\core\linear_allocator.cpp" />
-    <ClCompile Include="..\..\crude_engine\core\logger.cpp" />
     <ClCompile Include="..\..\crude_engine\core\memory_manager.cpp" />
     <ClCompile Include="..\..\crude_engine\core\memory_utils.cpp" />
     <ClCompile Include="..\..\crude_engine\core\pool_allocator.cpp" />
     <ClCompile Include="..\..\crude_engine\core\stack_allocator.cpp" />
     <ClCompile Include="..\..\crude_engine\core\string.cpp" />
+    <ClCompile Include="..\..\crude_engine\core\system_allocator.cpp" />
     <ClCompile Include="..\..\crude_engine\crude_engine.ixx" />
     <ClCompile Include="..\..\crude_engine\math\matrix.cpp" />
     <ClCompile Include="..\..\crude_engine\math\scalar.cpp" />
     <ClCompile Include="..\..\crude_engine\math\vector.cpp" />
     <ClCompile Include="..\..\crude_engine\network\socket_address.cpp" />
+    <ClCompile Include="..\..\crude_engine\network\socket_address.ixx" />
     <ClCompile Include="..\..\crude_engine\network\socket_util.cpp" />
+    <ClCompile Include="..\..\crude_engine\network\socket_util.ixx" />
     <ClCompile Include="..\..\crude_engine\network\tcp_socket.cpp" />
+    <ClCompile Include="..\..\crude_engine\network\tcp_socket.ixx" />
     <ClCompile Include="..\..\crude_engine\network\udp_socket.cpp" />
+    <ClCompile Include="..\..\crude_engine\network\udp_socket.ixx" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\crude_engine\core\algorithms.ixx">
@@ -338,30 +342,9 @@
     <ClCompile Include="..\..\crude_engine\math\vector.ixx">
       <FileType>Document</FileType>
     </ClCompile>
-    <ClCompile Include="..\..\crude_engine\network\socket_address.ixx">
-      <FileType>Document</FileType>
-    </ClCompile>
-    <ClCompile Include="..\..\crude_engine\network\socket_util.ixx">
-      <FileType>Document</FileType>
-    </ClCompile>
-    <ClCompile Include="..\..\crude_engine\network\tcp_socket.ixx">
-      <FileType>Document</FileType>
-    </ClCompile>
-    <ClCompile Include="..\..\crude_engine\network\udp_socket.ixx">
-      <FileType>Document</FileType>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\crude_engine\core\algorithms.cpp" />
-    <ClCompile Include="..\..\crude_engine\core\bs_tree.cpp" />
-    <ClCompile Include="..\..\crude_engine\core\optional.cpp" />
-    <ClCompile Include="..\..\crude_engine\core\rb_tree.cpp" />
-    <ClCompile Include="..\..\crude_engine\core\shared_ptr.cpp" />
-    <ClCompile Include="..\..\crude_engine\core\stack_linked_list.cpp" />
-    <ClCompile Include="..\..\crude_engine\core\std_allocator.cpp" />
-    <ClCompile Include="..\..\crude_engine\core\tree_iterator_base.cpp" />
     <ClCompile Include="..\..\crude_engine\core\cxx_allocator_container.cpp" />
-    <ClCompile Include="..\..\crude_engine\core\utility.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

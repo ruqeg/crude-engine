@@ -19,8 +19,8 @@ using UDP_Socket_Ptr = Shared_Ptr<UDP_Socket>;
 class UDP_Socket
 {
 public:
-  UDP_Socket() = delete;
   UDP_Socket(SOCKET inSocket);
+  UDP_Socket() = delete;
   ~UDP_Socket();
 
 public:

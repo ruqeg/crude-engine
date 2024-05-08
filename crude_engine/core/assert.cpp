@@ -1,29 +1,21 @@
+module crude_engine.core.assert;
+
 #include <stdexcept>
 
-module crude_engine.core.assert;
+import crude_engine.core.debug;
 
 namespace crude_engine
 {
 
-template<class T>
-void assert(T&& assertion) noexcept requires(gDebug)
+void assert(bool assertion) noexcept
 {
-  if (!static_cast<bool>(assertion))
+  if constexpr (gDebug)
   {
-    staticAssert(false);
-    return;
+    if (!assertion)
+    {
+      throw std::exception();
+    }
   }
-
-  if (!assertion) 
-  {
-    throw std::exception();
-  }
-}
-
-template<class T>
-void staticAssert(T&& assertion)
-{
-  static_assert(assertion);
 }
 
 }
