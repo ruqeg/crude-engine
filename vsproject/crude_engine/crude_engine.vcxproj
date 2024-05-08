@@ -182,6 +182,8 @@
       <AdditionalIncludeDirectories>$(VULKAN_SDK)\Include;$(ProjectDir)..\..\crude_engine;_WINSOCKAPI_;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
+      <EnableModules>true</EnableModules>
+      <BuildStlModules>true</BuildStlModules>
     </ClCompile>
     <Link>
       <SubSystem>NotSet</SubSystem>
@@ -225,57 +227,6 @@
     <ClCompile Include="..\..\crude_engine\core\stack_allocator.cpp" />
     <ClCompile Include="..\..\crude_engine\core\string.cpp" />
     <ClCompile Include="..\..\crude_engine\crude_engine.ixx" />
-    <ClCompile Include="..\..\crude_engine\ecs\archetype.cpp" />
-    <ClCompile Include="..\..\crude_engine\ecs\component_register.cpp" />
-    <ClCompile Include="..\..\crude_engine\ecs\entity.cpp" />
-    <ClCompile Include="..\..\crude_engine\ecs\id_manager.cpp" />
-    <ClCompile Include="..\..\crude_engine\ecs\world.cpp" />
-    <ClCompile Include="..\..\crude_engine\graphics\vulkan\application.cpp" />
-    <ClCompile Include="..\..\crude_engine\graphics\vulkan\attachment_description.cpp" />
-    <ClCompile Include="..\..\crude_engine\graphics\vulkan\buffer.cpp" />
-    <ClCompile Include="..\..\crude_engine\graphics\vulkan\color_blend_state_create_info.cpp" />
-    <ClCompile Include="..\..\crude_engine\graphics\vulkan\command_buffer.cpp" />
-    <ClCompile Include="..\..\crude_engine\graphics\vulkan\command_pool.cpp" />
-    <ClCompile Include="..\..\crude_engine\graphics\vulkan\debug_utils_messenger.cpp" />
-    <ClCompile Include="..\..\crude_engine\graphics\vulkan\depth_stencil_state_create_info.cpp" />
-    <ClCompile Include="..\..\crude_engine\graphics\vulkan\descriptor_buffer_info.cpp" />
-    <ClCompile Include="..\..\crude_engine\graphics\vulkan\descriptor_image_info.cpp" />
-    <ClCompile Include="..\..\crude_engine\graphics\vulkan\descriptor_pool.cpp" />
-    <ClCompile Include="..\..\crude_engine\graphics\vulkan\descriptor_set.cpp" />
-    <ClCompile Include="..\..\crude_engine\graphics\vulkan\descriptor_set_layout.cpp" />
-    <ClCompile Include="..\..\crude_engine\graphics\vulkan\device.cpp" />
-    <ClCompile Include="..\..\crude_engine\graphics\vulkan\device_memory.cpp" />
-    <ClCompile Include="..\..\crude_engine\graphics\vulkan\dynamic_state_create_info.cpp" />
-    <ClCompile Include="..\..\crude_engine\graphics\vulkan\fence.cpp" />
-    <ClCompile Include="..\..\crude_engine\graphics\vulkan\format.cpp" />
-    <ClCompile Include="..\..\crude_engine\graphics\vulkan\framebuffer.cpp" />
-    <ClCompile Include="..\..\crude_engine\graphics\vulkan\image.cpp" />
-    <ClCompile Include="..\..\crude_engine\graphics\vulkan\image_memory_barrier.cpp" />
-    <ClCompile Include="..\..\crude_engine\graphics\vulkan\image_subresource_range.cpp" />
-    <ClCompile Include="..\..\crude_engine\graphics\vulkan\image_view.cpp" />
-    <ClCompile Include="..\..\crude_engine\graphics\vulkan\input_assembly_state_create_info.cpp" />
-    <ClCompile Include="..\..\crude_engine\graphics\vulkan\instance.cpp" />
-    <ClCompile Include="..\..\crude_engine\graphics\vulkan\multisample_state_create_info.cpp" />
-    <ClCompile Include="..\..\crude_engine\graphics\vulkan\physical_device.cpp" />
-    <ClCompile Include="..\..\crude_engine\graphics\vulkan\pipeline.cpp" />
-    <ClCompile Include="..\..\crude_engine\graphics\vulkan\pipeline_layout.cpp" />
-    <ClCompile Include="..\..\crude_engine\graphics\vulkan\queue.cpp" />
-    <ClCompile Include="..\..\crude_engine\graphics\vulkan\rasterization_state_create_info.cpp" />
-    <ClCompile Include="..\..\crude_engine\graphics\vulkan\render_pass.cpp" />
-    <ClCompile Include="..\..\crude_engine\graphics\vulkan\sampler.cpp" />
-    <ClCompile Include="..\..\crude_engine\graphics\vulkan\semaphore.cpp" />
-    <ClCompile Include="..\..\crude_engine\graphics\vulkan\shader_module.cpp" />
-    <ClCompile Include="..\..\crude_engine\graphics\vulkan\shader_stage_create_info.cpp" />
-    <ClCompile Include="..\..\crude_engine\graphics\vulkan\subpass_dependency.cpp" />
-    <ClCompile Include="..\..\crude_engine\graphics\vulkan\subpass_description.cpp" />
-    <ClCompile Include="..\..\crude_engine\graphics\vulkan\surface.cpp" />
-    <ClCompile Include="..\..\crude_engine\graphics\vulkan\swap_chain.cpp" />
-    <ClCompile Include="..\..\crude_engine\graphics\vulkan\swap_chain_image.cpp" />
-    <ClCompile Include="..\..\crude_engine\graphics\vulkan\tessellation_state_create_info.cpp" />
-    <ClCompile Include="..\..\crude_engine\graphics\vulkan\vertex_input_state_create_info.cpp" />
-    <ClCompile Include="..\..\crude_engine\graphics\vulkan\viewport_state_create_info.cpp" />
-    <ClCompile Include="..\..\crude_engine\graphics\vulkan\vulkan_allocator.cpp" />
-    <ClCompile Include="..\..\crude_engine\graphics\vulkan\write_descriptor_set.cpp" />
     <ClCompile Include="..\..\crude_engine\math\matrix.cpp" />
     <ClCompile Include="..\..\crude_engine\math\scalar.cpp" />
     <ClCompile Include="..\..\crude_engine\math\vector.cpp" />
@@ -285,118 +236,132 @@
     <ClCompile Include="..\..\crude_engine\network\udp_socket.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\crude_engine\core\algorithms.ixx" />
-    <ClInclude Include="..\..\crude_engine\core\alias.ixx" />
-    <ClInclude Include="..\..\crude_engine\core\assert.ixx" />
-    <ClInclude Include="..\..\crude_engine\core\bs_tree.ixx" />
-    <ClInclude Include="..\..\crude_engine\core\compare.ixx" />
-    <ClInclude Include="..\..\crude_engine\core\shared_ptr.ixx" />
-    <ClInclude Include="..\..\crude_engine\core\std_containers_stack.ixx" />
-    <ClInclude Include="..\..\crude_engine\core\system_allocator.ixx" />
-    <ClInclude Include="..\..\crude_engine\core\debug.ixx" />
-    <ClInclude Include="..\..\crude_engine\core\filesystem.ixx" />
-    <ClInclude Include="..\..\crude_engine\core\free_rbt_allocator.ixx" />
-    <ClInclude Include="..\..\crude_engine\core\iallocator.ixx" />
-    <ClInclude Include="..\..\crude_engine\core\linear_allocator.ixx" />
-    <ClInclude Include="..\..\crude_engine\core\logger.ixx" />
-    <ClInclude Include="..\..\crude_engine\core\memory_manager.ixx" />
-    <ClInclude Include="..\..\crude_engine\core\memory_system.ixx" />
-    <ClInclude Include="..\..\crude_engine\core\memory_utils.ixx" />
-    <ClInclude Include="..\..\crude_engine\core\optional.ixx" />
-    <ClInclude Include="..\..\crude_engine\core\pool_allocator.ixx" />
-    <ClInclude Include="..\..\crude_engine\core\rb_tree.ixx" />
-    <ClInclude Include="..\..\crude_engine\core\size_holder.ixx" />
-    <ClInclude Include="..\..\crude_engine\core\stack_allocator.ixx" />
-    <ClInclude Include="..\..\crude_engine\core\stack_linked_list.ixx" />
-    <ClInclude Include="..\..\crude_engine\core\std_allocator.ixx" />
-    <ClInclude Include="..\..\crude_engine\core\std_containers_heap.ixx" />
-    <ClInclude Include="..\..\crude_engine\core\string.ixx" />
-    <ClInclude Include="..\..\crude_engine\core\tree_iterator_base.ixx" />
-    <ClInclude Include="..\..\crude_engine\core\cxx_allocator_container.ixx" />
-    <ClInclude Include="..\..\crude_engine\core\utility.ixx" />
-    <ClInclude Include="..\..\crude_engine\ecs\alias.hpp" />
-    <ClInclude Include="..\..\crude_engine\ecs\archetype.hpp" />
-    <ClInclude Include="..\..\crude_engine\ecs\component_container.hpp" />
-    <ClInclude Include="..\..\crude_engine\ecs\component_register.hpp" />
-    <ClInclude Include="..\..\crude_engine\ecs\entity.hpp" />
-    <ClInclude Include="..\..\crude_engine\ecs\id_manager.hpp" />
-    <ClInclude Include="..\..\crude_engine\ecs\query.hpp" />
-    <ClInclude Include="..\..\crude_engine\ecs\world.hpp" />
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\application.hpp" />
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\attachment_description.hpp" />
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\buffer.hpp" />
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\color_blend_state_create_info.hpp" />
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\command_buffer.hpp" />
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\command_pool.hpp" />
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\debug_utils_messenger.hpp" />
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\depth_stencil_state_create_info.hpp" />
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\descriptor_buffer_info.hpp" />
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\descriptor_image_info.hpp" />
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\descriptor_pool.hpp" />
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\descriptor_set.hpp" />
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\descriptor_set_layout.hpp" />
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\device.hpp" />
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\device_memory.hpp" />
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\dynamic_state_create_info.hpp" />
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\fence.hpp" />
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\format.hpp" />
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\framebuffer.hpp" />
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\image.hpp" />
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\image_memory_barrier.hpp" />
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\image_subresource_range.hpp" />
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\image_view.hpp" />
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\include_vulkan.hpp" />
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\input_assembly_state_create_info.hpp" />
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\instance.hpp" />
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\multisample_state_create_info.hpp" />
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\object.hpp" />
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\physical_device.hpp" />
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\pipeline.hpp" />
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\pipeline_layout.hpp" />
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\queue.hpp" />
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\rasterization_state_create_info.hpp" />
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\render_pass.hpp" />
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\sampler.hpp" />
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\semaphore.hpp" />
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\shader_module.hpp" />
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\shader_stage_create_info.hpp" />
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\subpass_dependency.hpp" />
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\subpass_description.hpp" />
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\surface.hpp" />
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\swap_chain.hpp" />
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\swap_chain_image.hpp" />
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\tessellation_state_create_info.hpp" />
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\vertex_input_state_create_info.hpp" />
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\viewport_state_create_info.hpp" />
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\vulkan_allocator.hpp" />
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\write_descriptor_set.hpp" />
-    <ClInclude Include="..\..\crude_engine\math\constants.hpp" />
-    <ClInclude Include="..\..\crude_engine\math\fuicont.hpp" />
-    <ClInclude Include="..\..\crude_engine\math\matrix.hpp" />
-    <ClInclude Include="..\..\crude_engine\math\scalar.hpp" />
-    <ClInclude Include="..\..\crude_engine\math\vector.hpp" />
-    <ClInclude Include="..\..\crude_engine\network\socket_address.hpp" />
-    <ClInclude Include="..\..\crude_engine\network\socket_util.hpp" />
-    <ClInclude Include="..\..\crude_engine\network\tcp_socket.hpp" />
-    <ClInclude Include="..\..\crude_engine\network\udp_socket.hpp" />
+    <ClCompile Include="..\..\crude_engine\core\algorithms.ixx">
+      <FileType>Document</FileType>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\core\alias.ixx">
+      <FileType>Document</FileType>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\core\assert.ixx">
+      <FileType>Document</FileType>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\core\bs_tree.ixx">
+      <FileType>Document</FileType>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\core\compare.ixx">
+      <FileType>Document</FileType>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\core\shared_ptr.ixx">
+      <FileType>Document</FileType>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\core\std_containers_stack.ixx">
+      <FileType>Document</FileType>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\core\system_allocator.ixx">
+      <FileType>Document</FileType>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\core\debug.ixx">
+      <FileType>Document</FileType>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\core\filesystem.ixx">
+      <FileType>Document</FileType>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\core\free_rbt_allocator.ixx">
+      <FileType>Document</FileType>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\core\iallocator.ixx">
+      <FileType>Document</FileType>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\core\linear_allocator.ixx">
+      <FileType>Document</FileType>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\core\logger.ixx">
+      <FileType>Document</FileType>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\core\memory_manager.ixx">
+      <FileType>Document</FileType>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\core\memory_system.ixx">
+      <FileType>Document</FileType>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\core\memory_utils.ixx">
+      <FileType>Document</FileType>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\core\optional.ixx">
+      <FileType>Document</FileType>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\core\pool_allocator.ixx">
+      <FileType>Document</FileType>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\core\rb_tree.ixx">
+      <FileType>Document</FileType>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\core\size_holder.ixx">
+      <FileType>Document</FileType>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\core\stack_allocator.ixx">
+      <FileType>Document</FileType>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\core\stack_linked_list.ixx">
+      <FileType>Document</FileType>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\core\std_allocator.ixx">
+      <FileType>Document</FileType>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\core\std_containers_heap.ixx">
+      <FileType>Document</FileType>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\core\string.ixx">
+      <FileType>Document</FileType>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\core\tree_iterator_base.ixx">
+      <FileType>Document</FileType>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\core\cxx_allocator_container.ixx">
+      <FileType>Document</FileType>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\core\utility.ixx">
+      <FileType>Document</FileType>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\math\constants.ixx">
+      <FileType>Document</FileType>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\math\fuicont.ixx">
+      <FileType>Document</FileType>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\math\matrix.ixx">
+      <FileType>Document</FileType>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\math\scalar.ixx">
+      <FileType>Document</FileType>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\math\vector.ixx">
+      <FileType>Document</FileType>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\network\socket_address.ixx">
+      <FileType>Document</FileType>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\network\socket_util.ixx">
+      <FileType>Document</FileType>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\network\tcp_socket.ixx">
+      <FileType>Document</FileType>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\network\udp_socket.ixx">
+      <FileType>Document</FileType>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\crude_engine\core\algorithms.cpp" />
-    <None Include="..\..\crude_engine\core\bs_tree.cpp" />
-    <None Include="..\..\crude_engine\core\optional.cpp" />
-    <None Include="..\..\crude_engine\core\rb_tree.cpp" />
-    <None Include="..\..\crude_engine\core\shared_ptr.cpp" />
-    <None Include="..\..\crude_engine\core\stack_linked_list.cpp" />
-    <None Include="..\..\crude_engine\core\std_allocator.cpp" />
-    <None Include="..\..\crude_engine\core\tree_iterator_base.cpp" />
-    <None Include="..\..\crude_engine\core\cxx_allocator_container.cpp" />
-    <None Include="..\..\crude_engine\core\utility.cpp" />
-    <None Include="..\..\crude_engine\ecs\component_container.inl" />
-    <None Include="..\..\crude_engine\ecs\component_register.inl" />
-    <None Include="..\..\crude_engine\ecs\entity.inl" />
-    <None Include="..\..\crude_engine\ecs\query.inl" />
-    <None Include="..\..\crude_engine\ecs\world.inl" />
-    <None Include="..\..\crude_engine\graphics\vulkan\object.inl" />
+    <ClCompile Include="..\..\crude_engine\core\algorithms.cpp" />
+    <ClCompile Include="..\..\crude_engine\core\bs_tree.cpp" />
+    <ClCompile Include="..\..\crude_engine\core\optional.cpp" />
+    <ClCompile Include="..\..\crude_engine\core\rb_tree.cpp" />
+    <ClCompile Include="..\..\crude_engine\core\shared_ptr.cpp" />
+    <ClCompile Include="..\..\crude_engine\core\stack_linked_list.cpp" />
+    <ClCompile Include="..\..\crude_engine\core\std_allocator.cpp" />
+    <ClCompile Include="..\..\crude_engine\core\tree_iterator_base.cpp" />
+    <ClCompile Include="..\..\crude_engine\core\cxx_allocator_container.cpp" />
+    <ClCompile Include="..\..\crude_engine\core\utility.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

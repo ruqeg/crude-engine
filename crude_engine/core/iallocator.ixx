@@ -1,8 +1,8 @@
 module;
 
-export module crude_engine.iallocator;
+export module crude_engine.core.iallocator;
 
-import crude_engine.alias;
+export import crude_engine.core.alias;
 
 export namespace crude_engine
 {

@@ -1,6 +1,6 @@
 #include <cstdlib>
 
-module crude_engine.memory_utils;
+module crude_engine.core.memory_utils;
 
 namespace crude_engine
 {

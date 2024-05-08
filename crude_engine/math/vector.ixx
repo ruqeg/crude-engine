@@ -1,10 +1,13 @@
-#pragma once
+module;
 
 #include <xmmintrin.h>
 #include <emmintrin.h>
-#include <core/alias.hpp>
-#include <math/scalar.hpp>
-#include <math/constants.hpp>
+
+export module crude_engine.math.vector;
+
+import crude_engine.core.alias;
+import crude_engine.math.scalar;
+import crude_engine.math.constants;
 
 namespace crude_engine
 {
@@ -18,6 +21,10 @@ struct __vector4
   };
 };
 
+}
+
+export namespace crude_engine
+{
 // !TODO complete SIMD (in the next life) or just switch to DirectXMath
 #if defined(_CRUDE_SSE_INTRINSICS) && !defined(_CRUDE_NO_INTRINSICS)
 #error "!TODO"

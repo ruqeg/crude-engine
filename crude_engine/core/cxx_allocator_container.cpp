@@ -1,6 +1,6 @@
-module crude_engine.cxx_allocator_container;
+module crude_engine.core.cxx_allocator_container;
 
-import crude_engine.utility;
+import crude_engine.core.utility;
 
 namespace crude_engine
 {

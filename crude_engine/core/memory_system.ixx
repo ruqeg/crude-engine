@@ -2,9 +2,9 @@ module;
 
 #include <malloc.h>
 
-export module crude_engine.memory_system;
+export module crude_engine.core.memory_system;
 
-import crude_engine.memory_manager;
+import crude_engine.core.memory_manager;
 
 export namespace crude_engine
 {

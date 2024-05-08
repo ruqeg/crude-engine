@@ -1,8 +1,8 @@
 module;
 
-export module crude_engine.optional;
+export module crude_engine.core.optional;
 
-import crude_engine.utility;
+import crude_engine.core.utility;
 
 export namespace crude_engine
 {

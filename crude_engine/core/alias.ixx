@@ -4,7 +4,7 @@ module;
 #include <cstddef>
 #include <uchar.h>
 
-export module crude_engine.alias;
+export module crude_engine.core.alias;
 
 export namespace crude_engine
 {

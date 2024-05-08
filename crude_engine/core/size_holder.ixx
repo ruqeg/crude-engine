@@ -1,8 +1,8 @@
 module;
 
-export module crude_engine.size_holder;
+export module crude_engine.core.size_holder;
 
-import crude_engine.alias;
+import crude_engine.core.alias;
 
 export namespace crude_engine
 {

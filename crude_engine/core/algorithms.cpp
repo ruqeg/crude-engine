@@ -1,4 +1,4 @@
-module crude_engine.algorithms;
+module crude_engine.core.algorithms;
 
 namespace crude_engine
 {

@@ -1,8 +1,8 @@
 #include <type_traits>
 
-module crude_engine.optional;
+module crude_engine.core.optional;
 
-import crude_engine.assert;
+import crude_engine.core.assert;
 
 namespace crude_engine
 {

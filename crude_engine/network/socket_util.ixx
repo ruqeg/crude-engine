@@ -1,10 +1,14 @@
-#pragma once
+module;
 
-#include <core/std_containers.hpp>
-#include <network/udp_socket.hpp>
-#include <network/tcp_socket.hpp>
+#include <winsock2.h>
+#include <ws2tcpip.h>
 
-namespace crude_engine
+export module crude_engine.network.socket_util;
+import crude_engine.core.std_containers_heap;
+import crude_engine.network.udp_socket;
+import crude_engine.network.tcp_socket;
+
+export namespace crude_engine
 {
 
 enum Socket_Address_Family
@@ -20,8 +24,8 @@ public:
   static TCP_Socket_Ptr createTCPSocket(Socket_Address_Family inFamily);
   static fd_set* fillSetFromArray(fd_set& outSet, const vector<TCP_Socket_Ptr>* inSockets);
   static void fillArrayFromSet(vector<TCP_Socket_Ptr>*         outSockets,
-                                const vector<TCP_Socket_Ptr>*  inSockets,
-                                const fd_set&                inSet);
+                                const vector<TCP_Socket_Ptr>  *inSockets,
+                                const fd_set&                  inSet);
   static int select(const vector<TCP_Socket_Ptr>*  inReadSet = nullptr,
                     vector<TCP_Socket_Ptr>*        outReadSet = nullptr,
                     const vector<TCP_Socket_Ptr>*  inWriteSet = nullptr,

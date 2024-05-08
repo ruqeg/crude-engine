@@ -1,13 +1,15 @@
-#pragma once
+module;
 
 #pragma comment(lib, "Ws2_32.lib")
-
-#include <core/alias.hpp>
 
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
-namespace crude_engine
+export module crude_engine.network.socket_address;
+
+export import crude_engine.core.alias;
+
+export namespace crude_engine
 {
 
 class Socket_Address

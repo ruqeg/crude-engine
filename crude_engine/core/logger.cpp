@@ -1,33 +1,35 @@
 #include <Windows.h>
 
-module crude_engine.logger;
+module crude_engine.core.logger;
 
-import crude_engine.string;
-import crude_engine.utility;
+import crude_engine.core.string;
+import crude_engine.core.utility;
 
 namespace crude_engine
 {
 
-inline void log()
+template<typename... Args>
+inline void log(const Debug::Channel channel, const char* format, Args&&... args)
 {
-  crude_engine::Log_Object(__FILE__, __LINE__);
+  Log_Object(__FILE__, __LINE__)(channel, format, forward<Args>(args)...);
 }
 
-inline void logInfo()
+template<typename... Args>
+inline void logInfo(const Debug::Channel channel, const char* format, Args&&... args)
 {
-  crude_engine::Log_Object(__FILE__, __LINE__, Debug::Verbosity::Info);
+  Log_Object(__FILE__, __LINE__, Debug::Verbosity::Info)(channel, format, forward<Args>(args)...);
 }
 
-
-inline void logWarning()
+template<typename... Args>
+inline void logWarning(const Debug::Channel channel, const char* format, Args&&... args)
 {
-  crude_engine::Log_Object(__FILE__, __LINE__, Debug::Verbosity::Warning);
+  Log_Object(__FILE__, __LINE__, Debug::Verbosity::Warning)(channel, format, forward<Args>(args)...);
 }
 
-
-inline void logError()
+template<typename... Args>
+inline void logError(const Debug::Channel channel, const char* format, Args&&... args)
 {
-  crude_engine::Log_Object(__FILE__, __LINE__, Debug::Verbosity::Error);
+  Log_Object(__FILE__, __LINE__, Debug::Verbosity::Error)(channel, format, forward<Args>(args)...);
 }
 
 Log_Object::Log_Object(const char* filename, const int32 line)

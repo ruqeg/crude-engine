@@ -1,8 +1,8 @@
 module;
 
-export module linear_allocator;
+export module crude_engine.core.linear_allocator;
 
-import crude_engine.iallocator;
+import crude_engine.core.iallocator;
 
 export namespace crude_engine
 {

@@ -1,9 +1,9 @@
 module;
 
-export module crude_engine.memory_utils;
+export module crude_engine.core.memory_utils;
 
-import crude_engine.alias;
-import crude_engine.utility;
+import crude_engine.core.alias;
+import crude_engine.core.utility;
 
 export namespace crude_engine
 {

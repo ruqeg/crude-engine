@@ -1,8 +1,8 @@
 module;
 
-export module crude_engine.debug;
+export module crude_engine.core.debug;
 
-import crude_engine.alias;
+import crude_engine.core.alias;
 
 export namespace crude_engine
 {

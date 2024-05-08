@@ -6,9 +6,9 @@ module;
 #include <deque>
 #include <queue>
 
-export module crude_engine.std_containers_heap;
+export module crude_engine.core.std_containers_heap;
 
-import crude_engine.std_allocator;
+export import crude_engine.core.std_allocator;
 
 export namespace crude_engine
 {

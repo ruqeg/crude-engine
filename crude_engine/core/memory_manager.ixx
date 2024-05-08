@@ -1,9 +1,9 @@
 module;
 
-export module crude_engine.memory_manager;
+export module crude_engine.core.memory_manager;
 
-import crude_engine.free_rbt_allocator;
-import crude_engine.system_allocator;
+import crude_engine.core.free_rbt_allocator;
+import crude_engine.core.system_allocator;
 
 export namespace crude_engine
 {

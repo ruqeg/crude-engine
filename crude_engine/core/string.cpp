@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-module crude_engine.string;
+module crude_engine.core.string;
 
 namespace crude_engine
 {

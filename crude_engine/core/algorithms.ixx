@@ -1,8 +1,6 @@
 module;
 
-export module crude_engine.algorithms;
-
-import crude_engine.alias;
+export module crude_engine.core.algorithms;
 
 export namespace crude_engine
 {

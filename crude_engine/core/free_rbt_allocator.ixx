@@ -1,10 +1,11 @@
 module;
 
-export module crude_engine.free_rbt_allocator;
+export module crude_engine.core.free_rbt_allocator;
 
-import crude_engine.cxx_allocator_container;
-import crude_engine.rb_tree;
-import crude_engine.alias;
+export import crude_engine.core.alias;
+export import crude_engine.core.rb_tree;
+
+import crude_engine.core.cxx_allocator_container;
 
 export namespace crude_engine
 {
@@ -20,12 +21,22 @@ public:
 
   struct Node : public RBT_Node_Base<Node>
   {
-    Node(size_t blockSize, bool64 free, Node* prev, Node* next) noexcept;
+    Node(size_t blockSize, bool64 free, Node* prev, Node* next) noexcept
+      :
+      RBT_Node_Base<Node>(),
+      next(next),
+      prev(prev),
+      blockSize(blockSize),
+      free(free)
+    {}
     Node*       next;
     Node*       prev;
     size_t      blockSize;
     bool64      free;
-    inline bool operator<(const Node& other) const;
+    inline bool operator<(const Node& other) const
+    {
+      return blockSize < other.blockSize;
+    }
   };
 
 public:

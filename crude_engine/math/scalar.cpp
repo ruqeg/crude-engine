@@ -1,5 +1,6 @@
-#include <math/scalar.hpp>
 #include <math.h>
+
+module crude_engine.math.scalar;
 
 namespace crude_engine
 {

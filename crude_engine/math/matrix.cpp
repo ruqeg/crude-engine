@@ -1,5 +1,7 @@
-#include <math/matrix.hpp>
-#include <core/assert.hpp>
+module crude_engine.math.matrix;
+
+import crude_engine.math.scalar;
+import crude_engine.core.assert;
 
 namespace crude_engine
 {
@@ -123,19 +125,19 @@ Matrix SysMatrix::multiplyTranspose(CMatrix m1, CMatrix m2) noexcept
 
 Matrix SysMatrix::transpose(CMatrix m) noexcept
 {
-  CRUDE_ASSERT(false && "!TODO");
+  assert(false && "!TODO");
   return Matrix();
 }
 
 Matrix SysMatrix::inverse(Vector* pDeterminant, CMatrix m) noexcept
 {
-  CRUDE_ASSERT(false && "!TODO");
+  assert(false && "!TODO");
   return Matrix();
 }
 
 Vector SysMatrix::determinant(CMatrix m) noexcept
 {
-  CRUDE_ASSERT(false && "!TODO");
+  assert(false && "!TODO");
   return Vector();
 }
 
@@ -435,97 +437,97 @@ Matrix SysMatrix::rotationRollPitchYawFromVector(CVector angles) noexcept
 
 Matrix SysMatrix::rotationNormal(CVector normalAxis, float32 angle) noexcept
 {
-  CRUDE_ASSERT(false && "!TODO");
+  assert(false && "!TODO");
   return Matrix();
 }
 
 Matrix SysMatrix::rotationAxis(CVector axis, float32 angle) noexcept
 {
-  CRUDE_ASSERT(false && "!TODO");
+  assert(false && "!TODO");
   return Matrix();
 }
 
 Matrix SysMatrix::reflect(CVector reflectionPlane) noexcept
 {
-  CRUDE_ASSERT(false && "!TODO");
+  assert(false && "!TODO");
   return Matrix();
 }
 
 Matrix SysMatrix::lookAtLH(CVector eyePosition, CVector focusPosition, CVector upDirection) noexcept
 {
-  CRUDE_ASSERT(false && "!TODO");
+  assert(false && "!TODO");
   return Matrix();
 }
 
 Matrix SysMatrix::lookAtRH(CVector eyePosition, CVector focusPosition, CVector upDirection) noexcept
 {
-  CRUDE_ASSERT(false && "!TODO");
+  assert(false && "!TODO");
   return Matrix();
 }
 
 Matrix SysMatrix::lookToLH(CVector eyePosition, CVector eyeDirection, CVector upDirection) noexcept
 {
-  CRUDE_ASSERT(false && "!TODO");
+  assert(false && "!TODO");
   return Matrix();
 }
 
 Matrix SysMatrix::lookToRH(CVector eyePosition, CVector eyeDirection, CVector upDirection) noexcept
 {
-  CRUDE_ASSERT(false && "!TODO");
+  assert(false && "!TODO");
   return Matrix();
 }
 
 Matrix SysMatrix::perspectiveLH(float32 viewWidth, float32 viewHeight, float32 nearZ, float32 farZ) noexcept
 {
-  CRUDE_ASSERT(false && "!TODO");
+  assert(false && "!TODO");
   return Matrix();
 }
 
 Matrix SysMatrix::perspectiveRH(float32 viewWidth, float32 viewHeight, float32 nearZ, float32 farZ) noexcept
 {
-  CRUDE_ASSERT(false && "!TODO");
+  assert(false && "!TODO");
   return Matrix();
 }
 
 Matrix SysMatrix::perspectiveFovLH(float32 fovAngleY, float32 aspectRatio, float32 nearZ, float32 farZ) noexcept
 {
-  CRUDE_ASSERT(false && "!TODO");
+  assert(false && "!TODO");
   return Matrix();
 }
 
 Matrix SysMatrix::perspectiveFovRH(float32 fovAngleY, float32 aspectRatio, float32 nearZ, float32 farZ) noexcept
 {
-  CRUDE_ASSERT(false && "!TODO");
+  assert(false && "!TODO");
   return Matrix();
 }
 
 Matrix SysMatrix::perspectiveOffCenterLH(float32 viewLeft, float32 viewRight, float32 viewBottom, float32 viewTop, float32 nearZ, float32 farZ) noexcept
 {
-  CRUDE_ASSERT(false && "!TODO");
+  assert(false && "!TODO");
   return Matrix();
 }
 
 Matrix SysMatrix::perspectiveOffCenterRH(float32 viewLeft, float32 viewRight, float32 viewBottom, float32 viewTop, float32 nearZ, float32 farZ) noexcept
 {
-  CRUDE_ASSERT(false && "!TODO");
+  assert(false && "!TODO");
   return Matrix();
 }
 
 Matrix SysMatrix::orthographicLH(float32 viewWidth, float32 viewHeight, float32 nearZ, float32 farZ) noexcept
 {
-  CRUDE_ASSERT(false && "!TODO");
+  assert(false && "!TODO");
   return Matrix();
 }
 
 Matrix SysMatrix::orthographicRH(float32 viewWidth, float32 viewHeight, float32 nearZ, float32 farZ) noexcept
 {
-  CRUDE_ASSERT(false && "!TODO");
+  assert(false && "!TODO");
   return Matrix();
 }
 
 Matrix SysMatrix::orthographicOffCenterLH(float32 viewLeft, float32 viewRight, float32 viewBottom, float32 viewTop, float32 nearZ, float32 farZ) noexcept
 {
-  CRUDE_ASSERT(false && "!TODO");
+  assert(false && "!TODO");
   return Matrix();
 }
 

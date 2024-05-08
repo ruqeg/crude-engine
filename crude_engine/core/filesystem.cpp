@@ -1,12 +1,15 @@
+#include <vector>
+
 #ifdef _WIN32
-#include <io.h>
+#include <io.h.>
+#include <stdio.h.>
 #define F_OK 0
 #define access _access
 #else
 #include <unistd.h>
 #endif
 
-module crude_engine.filesystem;
+module crude_engine.core.filesystem;
 
 namespace crude_engine
 {
@@ -21,7 +24,7 @@ Filesystem::Result Filesystem::read(const char* filename, span<char>& buffer)
 {
   FILE *file = fopen(filename, "rb");
   fseek(file, 0, SEEK_END);
-  std::size_t fileSize = ftell(file);
+  size_t fileSize = ftell(file);
   fseek(file, 0, SEEK_SET);
 
   if (buffer.size() < fileSize + 1)
@@ -41,7 +44,7 @@ Filesystem::Result Filesystem::read(const char* filename, vector<char>& buffer)
 {
   FILE* file = fopen(filename, "rb");
   fseek(file, 0, SEEK_END);
-  std::size_t fileSize = ftell(file);
+  size_t fileSize = ftell(file);
   fseek(file, 0, SEEK_SET);
 
   if (buffer.size() < fileSize + 1)
@@ -58,7 +61,7 @@ Filesystem::Result Filesystem::read(const char* filename, vector<char>& buffer)
 
 bool Filesystem::fileAccess(const char* filename)
 {
-  return (access(filename, F_OK) == 0);
+  return (_access(filename, F_OK) == 0);
 }
 
 constexpr char Filesystem::separator() {

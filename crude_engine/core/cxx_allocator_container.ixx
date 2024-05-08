@@ -1,8 +1,8 @@
 module;
 
-export module crude_engine.cxx_allocator_container;
+export module crude_engine.core.cxx_allocator_container;
 
-import crude_engine.iallocator;
+import crude_engine.core.iallocator;
 
 export namespace crude_engine
 {

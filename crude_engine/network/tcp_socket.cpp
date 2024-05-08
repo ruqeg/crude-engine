@@ -1,4 +1,7 @@
-#include <network/tcp_socket.hpp>
+#include <winsock2.h>
+#include <ws2tcpip.h>
+
+module crude_engine.network.tcp_socket;
 
 namespace crude_engine
 {

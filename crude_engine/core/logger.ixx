@@ -1,17 +1,23 @@
 module;
 
-export module crude_engine.logger;
+export module crude_engine.core.logger;
 
-export import crude_engine.debug;
-import crude_engine.alias;
+export import crude_engine.core.debug;
+export import crude_engine.core.alias;
 
 export namespace crude_engine
 {
 
-inline void log();
-inline void logInfo();
-inline void logWarning();
-inline void logError();
+class Log_Object;
+
+template<typename... Args>
+inline void log(const Debug::Channel channel, const char* format, Args&&... args);
+template<typename... Args>
+inline void logInfo(const Debug::Channel channel, const char* format, Args&&... args);
+template<typename... Args>
+inline void logWarning(const Debug::Channel channel, const char* format, Args&&... args);
+template<typename... Args>
+inline void logError(const Debug::Channel channel, const char* format, Args&&... args);
 
 class Logger
 {

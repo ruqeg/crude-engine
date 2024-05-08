@@ -1,4 +1,10 @@
-#include <network/socket_util.hpp>
+#include <winsock2.h>
+#include <ws2tcpip.h>
+
+module crude_engine.network.socket_util;
+
+import crude_engine.core.assert;
+import crude_engine.core.shared_ptr;
 
 namespace crude_engine
 {
@@ -8,7 +14,7 @@ UDP_Socket_Ptr Socket_Util::createUDPSocket(Socket_Address_Family inFamily)
   SOCKET s = ::socket(inFamily, SOCK_DGRAM, IPPROTO_UDP);
   if (s == INVALID_SOCKET)
   {
-    CRUDE_ASSERT("TODO" && false);
+    assert("TODO" && false);
     return nullptr;
   }
   return makeShared<UDP_Socket>(s);
@@ -19,7 +25,7 @@ TCP_Socket_Ptr Socket_Util::createTCPSocket(Socket_Address_Family inFamily)
   SOCKET s = ::socket(inFamily, SOCK_STREAM, IPPROTO_TCP);
   if (s == INVALID_SOCKET)
   {
-    CRUDE_ASSERT("TODO" && false);
+    assert("TODO" && false);
     return nullptr;
   }
   return makeShared<TCP_Socket>(s);

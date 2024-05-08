@@ -1,6 +1,6 @@
 #include <stdexcept>
 
-module crude_engine.assert;
+module crude_engine.core.assert;
 
 namespace crude_engine
 {
@@ -10,7 +10,7 @@ void assert(T&& assertion) noexcept requires(gDebug)
 {
   if (!static_cast<bool>(assertion))
   {
-    staticAssert(false, "crudeAssert declaration failed!");
+    staticAssert(false);
     return;
   }
 
@@ -24,12 +24,6 @@ template<class T>
 void staticAssert(T&& assertion)
 {
   static_assert(assertion);
-}
-
-template<class T>
-void staticAssert(T&& assertion, const char* str)
-{
-  static_assert(assertion, str);
 }
 
 }

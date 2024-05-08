@@ -1,6 +1,8 @@
-#include <network/udp_socket.hpp>
+#include <winsock2.h>
+#include <ws2tcpip.h>
 
-// !TODO handle error
+module crude_engine.network.udp_socket;
+
 namespace crude_engine
 {
 

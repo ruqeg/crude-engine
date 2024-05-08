@@ -1,8 +1,8 @@
 module;
 
-export module crude_engine.stack_allocator;
+export module crude_engine.core.stack_allocator;
 
-import crude_engine.iallocator;
+import crude_engine.core.iallocator;
 
 export namespace crude_engine
 {

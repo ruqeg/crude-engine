@@ -1,6 +1,10 @@
-#include <core/alias.hpp>
+module;
 
-namespace crude_engine
+export module crude_engine.math.constants;
+
+import crude_engine.core.alias;
+
+export namespace crude_engine
 {
 
 class Constans

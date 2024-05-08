@@ -1,9 +1,10 @@
 module;
 
-export module crude_engine.string;
+export module crude_engine.core.string;
 
-import crude_engine.alias;
-import crude_engine.utility;
+export import crude_engine.core.alias;
+
+import crude_engine.core.utility;
 
 export namespace crude_engine
 {

@@ -1,9 +1,9 @@
 module;
 
-export module crude_engine.filesystem;
+export module crude_engine.core.filesystem;
 
-import crude_engine.std_containers_heap;
-import crude_engine.std_containers_stack;
+export import crude_engine.core.std_containers_heap;
+export import crude_engine.core.std_containers_stack;
 
 export namespace crude_engine
 {

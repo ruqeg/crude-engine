@@ -1,9 +1,9 @@
 module;
 
-export module crude_engine.system_allocator;
+export module crude_engine.core.system_allocator;
 
-import crude_engine.cxx_allocator_container;
-import crude_engine.memory_utils;
+import crude_engine.core.cxx_allocator_container;
+import crude_engine.core.memory_utils;
 
 export namespace crude_engine
 {

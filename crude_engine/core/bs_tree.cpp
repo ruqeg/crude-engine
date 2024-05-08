@@ -1,4 +1,4 @@
-module crude_engine.bs_tree;
+module crude_engine.core.bs_tree;
 
 namespace crude_engine
 {

@@ -3,7 +3,7 @@ module;
 #include <array>
 #include <span>
 
-export module crude_engine.std_containers_stack;
+export module crude_engine.core.std_containers_stack;
 
 export namespace crude_engine
 {

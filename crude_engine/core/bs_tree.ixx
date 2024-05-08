@@ -1,10 +1,10 @@
 module;
 
-export module crude_engine.bs_tree;
+export module crude_engine.core.bs_tree;
 
-import crude_engine.tree_iterator_base;
-import crude_engine.size_holder;
-import crude_engine.compare;
+import crude_engine.core.tree_iterator_base;
+import crude_engine.core.size_holder;
+import crude_engine.core.compare;
 
 export namespace crude_engine
 {

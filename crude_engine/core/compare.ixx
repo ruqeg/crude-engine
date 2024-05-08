@@ -1,8 +1,6 @@
 module;
 
-export module crude_engine.compare;
-
-import crude_engine.alias;
+export module crude_engine.core.compare;
 
 export namespace crude_engine
 {

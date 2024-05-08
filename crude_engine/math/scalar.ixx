@@ -1,8 +1,10 @@
-#pragma once
+module;
 
-#include <core/alias.hpp>
+export module crude_engine.math.scalar;
 
-namespace crude_engine
+import crude_engine.core.alias;
+
+export namespace crude_engine
 {
 
 class Scalar
@@ -32,6 +34,5 @@ public:
   static float32 arcCos(float32 s) noexcept;
   static float32 arcTan(float32 s) noexcept;
 };
-
 
 }

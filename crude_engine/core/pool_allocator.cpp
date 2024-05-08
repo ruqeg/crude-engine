@@ -1,7 +1,7 @@
-module crude_engine.pool_allocator;
+module crude_engine.core.pool_allocator;
 
- import crude_engine.memory_utils;
- import crude_engine.assert;
+ import crude_engine.core.memory_utils;
+ import crude_engine.core.assert;
 
 namespace crude_engine
 {

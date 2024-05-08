@@ -1,7 +1,7 @@
-module crude_engine.stack_allocator;
+module crude_engine.core.stack_allocator;
 
-import crude_engine.memory_utils;
-import crude_engine.assert;
+import crude_engine.core.memory_utils;
+import crude_engine.core.assert;
 
 namespace crude_engine
 {

@@ -1,4 +1,4 @@
-module crude_engine.memory_manager;
+module crude_engine.core.memory_manager;
 
 namespace crude_engine
 {

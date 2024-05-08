@@ -1,10 +1,16 @@
 #pragma once
 
-#include <core/std_containers_naloc.hpp>
-#include <core/shared_ptr.hpp>
-#include <network/socket_address.hpp>
+#include <winsock2.h>
+#include <ws2tcpip.h>
 
-namespace crude_engine
+export module crude_engine.network.tcp_socket;
+
+import crude_engine.core.shared_ptr;
+import crude_engine.core.alias;
+import crude_engine.core.std_containers_stack;
+import crude_engine.network.socket_address;
+
+export namespace crude_engine
 {
 
 class TCP_Socket;

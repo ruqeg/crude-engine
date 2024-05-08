@@ -1,9 +1,9 @@
 module;
 
-export module crude_engine.pool_allocator;
+export module crude_engine.core.pool_allocator;
 
-import crude_engine.iallocator;
-import crude_engine.stack_linked_list;
+import crude_engine.core.iallocator;
+import crude_engine.core.stack_linked_list;
 
 export namespace crude_engine
 {

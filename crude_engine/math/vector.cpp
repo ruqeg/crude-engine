@@ -1,5 +1,4 @@
-#include <math/vector.hpp>
-
+module crude_engine.math.vector;
 
 #if defined(_CRUDE_AVX_INTRINSICS) && defined(_CRUDE_FAVOR_INTEL)
 #define CRUDE_PERMUTE_PS( v, c ) _mm_permute_ps((v), c )
@@ -10,7 +9,7 @@
 namespace crude_engine
 {
 
-CRUDE_ALIGNED_STRUCT(16) VectorF32
+struct alignas(16) VectorF32
 {
   union
   {
@@ -21,7 +20,7 @@ CRUDE_ALIGNED_STRUCT(16) VectorF32
   operator Vector() const noexcept;
 };
 
-CRUDE_ALIGNED_STRUCT(16) VectorU32
+struct alignas(16) VectorU32
 {
   union
   {

@@ -1,8 +1,10 @@
-#pragma once
+module;
 
-#include <math/vector.hpp>
+export module crude_engine.math.matrix;
 
-namespace crude_engine
+import crude_engine.math.vector;
+
+export namespace crude_engine
 {
 
 #ifdef _CRUDE_NO_INTRINSICS

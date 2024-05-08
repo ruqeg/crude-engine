@@ -1,4 +1,7 @@
-#include <network/socket_address.hpp>
+#include <winsock2.h>
+#include <ws2tcpip.h>
+
+module crude_engine.network.socket_address;
 
 namespace crude_engine
 {
