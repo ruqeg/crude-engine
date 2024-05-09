@@ -169,6 +169,10 @@
                 "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\graphics\\vulkan\\vulkan_object.ixx.ifc.dt"
             },
             {
+                "Name": "crude_engine.graphics.vulkan.write_descriptor_set",
+                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\graphics\\vulkan\\write_descriptor_set.ixx.ifc.dt"
+            },
+            {
                 "Name": "crude_engine.graphics.vulkan.vulkan_allocator",
                 "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\graphics\\vulkan\\vulkan_allocator.ixx.ifc.dt"
             },

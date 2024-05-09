@@ -38,12 +38,7 @@
             "c:\\program files\\microsoft visual studio\\2022\\community\\vc\\tools\\msvc\\14.38.33130\\include\\eh.h",
             "c:\\program files (x86)\\windows kits\\10\\include\\10.0.22000.0\\ucrt\\corecrt_terminate.h"
         ],
-        "ImportedModules": [
-            {
-                "Name": "crude_engine.core.alias",
-                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\core\\alias.ixx.ifc.dt"
-            }
-        ],
+        "ImportedModules": [],
         "ImportedHeaderUnits": []
     }
 }

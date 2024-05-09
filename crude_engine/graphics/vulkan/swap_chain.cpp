@@ -2,6 +2,7 @@
 
 module crude_engine.graphics.vulkan.swap_chain;
 
+import crude_engine.graphics.vulkan.vulkan_utils;
 import crude_engine.graphics.vulkan.device;
 import crude_engine.graphics.vulkan.surface;
 import crude_engine.graphics.vulkan.swap_chain_image;
@@ -38,7 +39,7 @@ Swap_Chain::Swap_Chain(Shared_Ptr<const Device>       device,
   vkCreateInfo.pNext                  = nullptr;
 
   vkCreateInfo.flags                  = flags;
-  vkCreateInfo.surface                = CRUDE_OBJECT_HANDLE(m_surface);
+  vkCreateInfo.surface                = m_surface->getHandle();
   vkCreateInfo.minImageCount          = minImageCount;
   vkCreateInfo.imageFormat            = surfaceFormat.format;
   vkCreateInfo.imageColorSpace        = surfaceFormat.colorSpace;
@@ -52,15 +53,15 @@ Swap_Chain::Swap_Chain(Shared_Ptr<const Device>       device,
   vkCreateInfo.compositeAlpha         = compositeAlpha;
   vkCreateInfo.presentMode            = presentMode;
   vkCreateInfo.clipped                = clipped;
-  vkCreateInfo.oldSwapchain           = oldSwapchain ? CRUDE_OBJECT_HANDLE(oldSwapchain) : VK_NULL_HANDLE;
+  vkCreateInfo.oldSwapchain           = oldSwapchain ? oldSwapchain->getHandle() : VK_NULL_HANDLE;
 
-  VkResult result = vkCreateSwapchainKHR(CRUDE_OBJECT_HANDLE(m_device), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
-  CRUDE_VULKAN_HANDLE_RESULT(result, "failed to create swapchain");
+  VkResult result = vkCreateSwapchainKHR(m_device->getHandle(), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
+  vulkanHandleError(result, "failed to create swapchain");
 }
 
 Swap_Chain::~Swap_Chain()
 {
-  vkDestroySwapchainKHR(CRUDE_OBJECT_HANDLE(m_device), m_handle, getPVkAllocationCallbacks());
+  vkDestroySwapchainKHR(m_device->getHandle(), m_handle, getPVkAllocationCallbacks());
 }
   
 const vector<Shared_Ptr<Swap_Chain_Image>>& Swap_Chain::getSwapchainImages()
@@ -71,7 +72,7 @@ const vector<Shared_Ptr<Swap_Chain_Image>>& Swap_Chain::getSwapchainImages()
   }
 
   uint32 imageCount = 0u;
-  vkGetSwapchainImagesKHR(CRUDE_OBJECT_HANDLE(m_device), m_handle, &imageCount, nullptr);
+  vkGetSwapchainImagesKHR(m_device->getHandle(), m_handle, &imageCount, nullptr);
   
   if (imageCount == 0u)
   {
@@ -79,7 +80,7 @@ const vector<Shared_Ptr<Swap_Chain_Image>>& Swap_Chain::getSwapchainImages()
   }
 
   vector<VkImage> vkSwapchainImages(imageCount);
-  vkGetSwapchainImagesKHR(CRUDE_OBJECT_HANDLE(m_device), m_handle, &imageCount, vkSwapchainImages.data());
+  vkGetSwapchainImagesKHR(m_device->getHandle(), m_handle, &imageCount, vkSwapchainImages.data());
 
   m_swapChainImages.resize(imageCount);
   for (uint32 i = 0; i < imageCount; ++i)
@@ -102,11 +103,11 @@ Swap_Chain_Next_Image Swap_Chain::acquireNextImage(const Optional<Shared_Ptr<Sem
 {
   uint32 imageIndex;
   VkResult result = vkAcquireNextImageKHR(
-    CRUDE_OBJECT_HANDLE(m_device),
+    m_device->getHandle(),
     m_handle,
     timeout,
-    semaphore ? CRUDE_OBJECT_HANDLE(semaphore) : VK_NULL_HANDLE,
-    fence ? CRUDE_OBJECT_HANDLE(fence) : VK_NULL_HANDLE,
+    semaphore ? semaphore->getHandle() : VK_NULL_HANDLE,
+    fence ? fence->getHandle() : VK_NULL_HANDLE,
     &imageIndex);
 
   const Swap_Chain_Next_Image nextImage(imageIndex, result);

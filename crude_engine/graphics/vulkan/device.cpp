@@ -43,7 +43,7 @@ Device::Device(Shared_Ptr<const Physical_Device>      physicalDevice,
   vkDeviceCreateInfo.enabledLayerCount        = enabledLayers.size();
   vkDeviceCreateInfo.ppEnabledLayerNames      = enabledLayers.data();
 
-  const VkResult result = vkCreateDevice(m_physicalDevice->getHanle(), &vkDeviceCreateInfo, getPVkAllocationCallbacks(), &m_handle);
+  const VkResult result = vkCreateDevice(m_physicalDevice->getHandle(), &vkDeviceCreateInfo, getPVkAllocationCallbacks(), &m_handle);
   vulkanHandleResult(result, "failed to create logic device!");
 }
 
@@ -60,7 +60,7 @@ Shared_Ptr<const Physical_Device> Device::getPhysicalDevice() const
 Shared_Ptr<Queue> Device::getQueue(uint32 queueFamilyIndex, uint32 queueIndex) const
 {
   Shared_Ptr<Queue> queue = makeShared<Queue>(queueFamilyIndex, queueIndex);
-  vkGetDeviceQueue(m_handle, queueFamilyIndex, queueIndex, &CRUDE_OBJECT_HANDLE(queue));
+  vkGetDeviceQueue(m_handle, queueFamilyIndex, queueIndex, &queue->getHandle());
   return queue;
 }
 
@@ -99,7 +99,7 @@ bool Device::waitForFences(span<Fence> fences, bool waitAll, uint64 timeout) con
 {
   vector<VkFence> fencesHandles(fences.size());
   Algorithms::copyc(fences.begin(), fences.end(), fencesHandles.begin(), [](auto& s, auto& d) -> void {
-    *d = CRUDE_OBJECT_HANDLE(s);
+    *d = (s)->getHandle();
   });
 
   const VkResult result = vkWaitForFences(m_handle, fencesHandles.size(), fencesHandles.data(), waitAll, timeout);
@@ -111,7 +111,7 @@ bool Device::resetForFences(span<Fence> fences) const
 {
   vector<VkFence> fencesHandles(fences.size());
   Algorithms::copyc(fences.begin(), fences.end(), fencesHandles.begin(), [](auto& s, auto& d) -> void {
-    *d = CRUDE_OBJECT_HANDLE(s);
+    *d = (s)->getHandle();
   });
 
   const VkResult result = vkResetFences(m_handle, fencesHandles.size(), fencesHandles.data());

@@ -147,36 +147,7 @@
             "c:\\vulkansdk\\1.3.261.1\\include\\vulkan\\vulkan_structs.hpp",
             "c:\\vulkansdk\\1.3.261.1\\include\\vulkan\\vulkan_funcs.hpp"
         ],
-        "ImportedModules": [
-            {
-                "Name": "crude_engine.core.shared_ptr",
-                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\core\\shared_ptr.ixx.ifc.dt"
-            },
-            {
-                "Name": "crude_engine.core.alias",
-                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\core\\alias.ixx.ifc.dt"
-            },
-            {
-                "Name": "crude_engine.core.memory_system",
-                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\core\\memory_system.ixx.ifc.dt"
-            },
-            {
-                "Name": "crude_engine.graphics.vulkan.vulkan_object",
-                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\graphics\\vulkan\\vulkan_object.ixx.ifc.dt"
-            },
-            {
-                "Name": "crude_engine.graphics.vulkan.image_subresource_range",
-                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\graphics\\vulkan\\image_subresource_range.ixx.ifc.dt"
-            },
-            {
-                "Name": "crude_engine.graphics.vulkan.vulkan_allocator",
-                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\graphics\\vulkan\\vulkan_allocator.ixx.ifc.dt"
-            },
-            {
-                "Name": "crude_engine.core.utility",
-                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\core\\utility.ixx.ifc.dt"
-            }
-        ],
+        "ImportedModules": [],
         "ImportedHeaderUnits": []
     }
 }

@@ -4,60 +4,7 @@
         "Source": "c:\\users\\user\\projects\\crude_engine\\crude_engine\\ecs\\world.ixx",
         "ProvidedModule": "crude_engine.ecs.world",
         "Includes": [],
-        "ImportedModules": [
-            {
-                "Name": "crude_engine.core.std_containers_stack",
-                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\core\\std_containers_stack.ixx.ifc.dt"
-            },
-            {
-                "Name": "crude_engine.core.std_containers_heap",
-                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\core\\std_containers_heap.ixx.ifc.dt"
-            },
-            {
-                "Name": "crude_engine.core.std_allocator",
-                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\core\\std_allocator.ixx.ifc.dt"
-            },
-            {
-                "Name": "crude_engine.core.memory_system",
-                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\core\\memory_system.ixx.ifc.dt"
-            },
-            {
-                "Name": "crude_engine.core.shared_ptr",
-                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\core\\shared_ptr.ixx.ifc.dt"
-            },
-            {
-                "Name": "crude_engine.core.alias",
-                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\core\\alias.ixx.ifc.dt"
-            },
-            {
-                "Name": "crude_engine.core.optional",
-                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\core\\optional.ixx.ifc.dt"
-            },
-            {
-                "Name": "crude_engine.ecs.alias",
-                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\ecs\\alias.ixx.ifc.dt"
-            },
-            {
-                "Name": "crude_engine.ecs.id_manager",
-                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\ecs\\id_manager.ixx.ifc.dt"
-            },
-            {
-                "Name": "crude_engine.ecs.archetype",
-                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\ecs\\archetype.ixx.ifc.dt"
-            },
-            {
-                "Name": "crude_engine.ecs.component_register",
-                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\ecs\\component_register.ixx.ifc.dt"
-            },
-            {
-                "Name": "crude_engine.core.utility",
-                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\core\\utility.ixx.ifc.dt"
-            },
-            {
-                "Name": "crude_engine.core.assert",
-                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\core\\assert.ixx.ifc.dt"
-            }
-        ],
+        "ImportedModules": [],
         "ImportedHeaderUnits": []
     }
 }

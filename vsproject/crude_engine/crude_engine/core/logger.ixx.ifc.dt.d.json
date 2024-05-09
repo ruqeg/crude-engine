@@ -236,24 +236,7 @@
             "c:\\program files (x86)\\windows kits\\10\\include\\10.0.22000.0\\um\\imm.h",
             "c:\\program files (x86)\\windows kits\\10\\include\\10.0.22000.0\\um\\ime_cmodes.h"
         ],
-        "ImportedModules": [
-            {
-                "Name": "crude_engine.core.debug",
-                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\core\\debug.ixx.ifc.dt"
-            },
-            {
-                "Name": "crude_engine.core.alias",
-                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\core\\alias.ixx.ifc.dt"
-            },
-            {
-                "Name": "crude_engine.core.string",
-                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\core\\string.ixx.ifc.dt"
-            },
-            {
-                "Name": "crude_engine.core.utility",
-                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\core\\utility.ixx.ifc.dt"
-            }
-        ],
+        "ImportedModules": [],
         "ImportedHeaderUnits": []
     }
 }
