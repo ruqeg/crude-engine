@@ -1,9 +1,12 @@
-#include <graphics/vulkan/device.hpp>
-#include <graphics/vulkan/physical_device.hpp>
-#include <graphics/vulkan/queue.hpp>
-#include <graphics/vulkan/fence.hpp>
-#include <core/std_containers.hpp>
-#include <core/algorithms.hpp>
+#include <vulkan/vulkan.hpp>
+
+module crude_engine.graphics.vulkan.device;
+
+import crude_engine.graphics.vulkan.physical_device;
+import crude_engine.graphics.vulkan.queue;
+import crude_engine.graphics.vulkan.vulkan_utils;
+import crude_engine.core.std_containers_heap;
+import crude_engine.core.algorithms;
 
 namespace crude_engine
 {
@@ -40,8 +43,8 @@ Device::Device(Shared_Ptr<const Physical_Device>      physicalDevice,
   vkDeviceCreateInfo.enabledLayerCount        = enabledLayers.size();
   vkDeviceCreateInfo.ppEnabledLayerNames      = enabledLayers.data();
 
-  const VkResult result = vkCreateDevice(CRUDE_OBJECT_HANDLE(m_physicalDevice), &vkDeviceCreateInfo, getPVkAllocationCallbacks(), &m_handle);
-  CRUDE_VULKAN_HANDLE_RESULT(result, "failed to create logic device!");
+  const VkResult result = vkCreateDevice(m_physicalDevice->getHanle(), &vkDeviceCreateInfo, getPVkAllocationCallbacks(), &m_handle);
+  vulkanHandleResult(result, "failed to create logic device!");
 }
 
 Device::~Device()
@@ -100,7 +103,7 @@ bool Device::waitForFences(span<Fence> fences, bool waitAll, uint64 timeout) con
   });
 
   const VkResult result = vkWaitForFences(m_handle, fencesHandles.size(), fencesHandles.data(), waitAll, timeout);
-  CRUDE_VULKAN_HANDLE_RESULT(result, "failed to wait for fences");
+  vulkanHandleResult(result, "failed to wait for fences");
   return result != VK_TIMEOUT;
 }
 
@@ -112,7 +115,7 @@ bool Device::resetForFences(span<Fence> fences) const
   });
 
   const VkResult result = vkResetFences(m_handle, fencesHandles.size(), fencesHandles.data());
-  CRUDE_VULKAN_HANDLE_RESULT(result, "failed to reset fences");
+  vulkanHandleResult(result, "failed to reset fences");
   return result != VK_ERROR_OUT_OF_DEVICE_MEMORY;
 }
 

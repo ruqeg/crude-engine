@@ -1,9 +1,13 @@
-#include <graphics/vulkan/queue.hpp>
-#include <graphics/vulkan/command_buffer.hpp>
-#include <graphics/vulkan/fence.hpp>
-#include <graphics/vulkan/semaphore.hpp>
-#include <graphics/vulkan/swap_chain.hpp>
-#include <core/algorithms.hpp>
+#include <vulkan/vulkan.hpp>
+
+module crude_engine.graphics.vulkan.queue;
+
+import crude_engine.graphics.vulkan.command_buffer;
+import crude_engine.graphics.vulkan.fence;
+import crude_engine.graphics.vulkan.semaphore;
+import crude_engine.graphics.vulkan.swap_chain;
+import crude_engine.core.algorithms;
+import crude_engine.core.std_containers_heap;
 
 namespace crude_engine
 {
@@ -27,17 +31,17 @@ bool Queue::sumbit(const span<Shared_Ptr<Command_Buffer>>&  commandBuffers,
 
   vector<VkCommandBuffer> commandBuffersHandles(commandBuffers.size());
   Algorithms::copyc(commandBuffers.begin(), commandBuffers.end(), commandBuffersHandles.begin(), [](auto& src, auto& dst) -> void {
-    *dst = CRUDE_OBJECT_HANDLE(*src);
+    *dst = (*src)->getHandle();
   });
 
   vector<VkSemaphore> waitSemaphoreHandles(waitSemaphores.size());
   Algorithms::copyc(waitSemaphores.begin(), waitSemaphores.end(), waitSemaphoreHandles.begin(), [](auto& src, auto& dst) -> void {
-    *dst = CRUDE_OBJECT_HANDLE(*src);
+    *dst = (*src)->getHandle();
     });
 
   vector<VkSemaphore> signalSemaphoreHandles(signalSemaphores.size());
   Algorithms::copyc(signalSemaphores.begin(), signalSemaphores.end(), signalSemaphoreHandles.begin(), [](auto& src, auto& dst) -> void {
-    *dst = CRUDE_OBJECT_HANDLE(*src);
+    *dst = (*src)->getHandle();
     });
 
   VkSubmitInfo vkSumbitInfo;
@@ -51,7 +55,7 @@ bool Queue::sumbit(const span<Shared_Ptr<Command_Buffer>>&  commandBuffers,
   vkSumbitInfo.signalSemaphoreCount  = static_cast<uint32>(signalSemaphoreHandles.size());
   vkSumbitInfo.pSignalSemaphores     = signalSemaphoreHandles.data();
 
-  VkResult result = vkQueueSubmit(m_handle, 1u, &vkSumbitInfo, fence.hasValue() ? CRUDE_OBJECT_HANDLE(fence.value()) : VK_NULL_HANDLE);
+  VkResult result = vkQueueSubmit(m_handle, 1u, &vkSumbitInfo, fence.hasValue() ? fence.value()->getHandle() : VK_NULL_HANDLE);
   return result == VK_SUCCESS;
 }
 
@@ -61,12 +65,12 @@ Queue_Present_Result Queue::present(const span<Shared_Ptr<Swap_Chain>>&  swapcha
 {
   vector<VkSemaphore> waitSemaphoreHandles(waitSemaphores.size());
   Algorithms::copyc(waitSemaphores.begin(), waitSemaphores.end(), waitSemaphoreHandles.begin(), [](auto& src, auto& dst) -> void {
-    *dst = CRUDE_OBJECT_HANDLE(*src);
+    *dst = (*src)->getHandle();
     });
 
   vector<VkSwapchainKHR> swapchainHandles(swapchains.size());
   Algorithms::copyc(swapchains.begin(), swapchains.end(), swapchainHandles.begin(), [](auto& src, auto& dst) -> void {
-    *dst = CRUDE_OBJECT_HANDLE(*src);
+    *dst = (*src)->getHandle();
     });
 
   VkPresentInfoKHR vkPresentInfo{};

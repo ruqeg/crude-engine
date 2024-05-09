@@ -1,4 +1,4 @@
-#include <graphics/vulkan/color_blend_state_create_info.hpp>
+module crude_engine.graphics.vulkan.color_blend_state_create_info;
 
 namespace crude_engine
 {

@@ -1,4 +1,6 @@
-#include <graphics/vulkan/tessellation_state_create_info.hpp>
+#include <vulkan/vulkan.hpp>
+
+module crude_engine.graphics.vulkan.tessellation_state_create_info;
 
 namespace crude_engine
 {

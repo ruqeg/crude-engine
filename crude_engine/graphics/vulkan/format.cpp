@@ -1,4 +1,6 @@
-#include "format.hpp"
+#include <vulkan/vulkan.hpp>
+
+module crude_engine.graphics.vulkan.format;
 
 namespace crude_engine
 {

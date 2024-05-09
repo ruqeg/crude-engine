@@ -1,6 +1,9 @@
-#include <graphics/vulkan/vulkan_allocator.hpp>
-#include <core/memory_system.hpp>
-#include <core/assert.hpp>
+#include <vulkan/vulkan_core.h>
+
+module crude_engine.graphics.vulkan.vulkan_allocator;
+
+import crude_engine.core.memory_system;
+import crude_engine.core.assert;
 
 namespace crude_engine
 {
@@ -49,7 +52,7 @@ void* VKAPI_CALL Vulkan_Allocator::reallocation(
 void Vulkan_Allocator::free(
   void* pMemory)
 {
-  CRUDE_ASSERT(pMemory);
+  assert(pMemory);
 
   Memory_System::Default_Aligned_Allocator::deallocate(pMemory);
 }
@@ -58,7 +61,7 @@ void VKAPI_CALL Vulkan_Allocator::free(
   void* pUserData,
   void* pMemory)
 {
-  CRUDE_ASSERT(pMemory);
+  assert(pMemory);
 
   return static_cast<Vulkan_Allocator*>(pUserData)->free(pMemory);
 }

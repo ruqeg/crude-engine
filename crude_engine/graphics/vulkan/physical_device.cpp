@@ -1,5 +1,8 @@
-#include <graphics/vulkan/physical_device.hpp>
-#include <graphics/vulkan/surface.hpp>
+#include <vulkan/vulkan.hpp>
+
+module crude_engine.graphics.vulkan.physical_device;
+
+import crude_engine.graphics.vulkan.surface;
 
 namespace crude_engine
 {
@@ -15,7 +18,7 @@ bool Physical_Device::getSupportSurface(Shared_Ptr<const Surface> surface, uint3
   vkGetPhysicalDeviceSurfaceSupportKHR(
     m_handle,
     queueFamilyIndex,
-    CRUDE_OBJECT_HANDLE(surface),
+    surface->getHandle(),
     &presentSupport);
   return presentSupport;
 }
@@ -25,7 +28,7 @@ VkSurfaceCapabilitiesKHR Physical_Device::getSurfaceCapabilitis(Shared_Ptr<const
   VkSurfaceCapabilitiesKHR capabilities;
   vkGetPhysicalDeviceSurfaceCapabilitiesKHR(
     m_handle, 
-    CRUDE_OBJECT_HANDLE(surface),
+    surface->getHandle(),
     &capabilities);
   return capabilities;
 }
@@ -35,7 +38,7 @@ vector<VkSurfaceFormatKHR> Physical_Device::getSurfaceFormats(Shared_Ptr<const S
   uint32 formatCount;
   vkGetPhysicalDeviceSurfaceFormatsKHR(
     m_handle, 
-    CRUDE_OBJECT_HANDLE(surface),
+    surface->getHandle(),
     &formatCount, 
     nullptr);
 
@@ -47,7 +50,7 @@ vector<VkSurfaceFormatKHR> Physical_Device::getSurfaceFormats(Shared_Ptr<const S
   vector<VkSurfaceFormatKHR> formats(formatCount);
   vkGetPhysicalDeviceSurfaceFormatsKHR(
     m_handle, 
-    CRUDE_OBJECT_HANDLE(surface),
+    surface->getHandle(),
     &formatCount, 
     formats.data());
   return formats;
@@ -58,7 +61,7 @@ vector<VkPresentModeKHR> Physical_Device::getSurfacePresentModes(Shared_Ptr<cons
   uint32 presentModeCount;
   vkGetPhysicalDeviceSurfacePresentModesKHR(
     m_handle, 
-    CRUDE_OBJECT_HANDLE(surface),
+    surface->getHandle(),
     &presentModeCount, 
     nullptr);
 
@@ -70,7 +73,7 @@ vector<VkPresentModeKHR> Physical_Device::getSurfacePresentModes(Shared_Ptr<cons
   vector<VkPresentModeKHR> presentModes(presentModeCount);
   vkGetPhysicalDeviceSurfacePresentModesKHR(
     m_handle, 
-    CRUDE_OBJECT_HANDLE(surface),
+    surface->getHandle(),
     &presentModeCount, 
     presentModes.data());
 

@@ -1,6 +1,10 @@
-#include <graphics/vulkan/instance.hpp>
-#include <graphics/vulkan/application.hpp>
-#include <graphics/vulkan/physical_device.hpp>
+#include <vulkan/vulkan.hpp>
+
+module crude_engine.graphics.vulkan.instance;
+
+import crude_engine.graphics.vulkan.vulkan_utils;
+import crude_engine.graphics.vulkan.application;
+import crude_engine.graphics.vulkan.physical_device;
 
 namespace crude_engine
 {
@@ -65,7 +69,7 @@ Instance::Instance(
   }
   
   const VkResult result = vkCreateInstance(&vkInstanceCreateInfo, getPVkAllocationCallbacks(), &m_handle);
-  CRUDE_VULKAN_HANDLE_RESULT(result, "failed to create instance");
+  vulkanHandleResult(result, "failed to create instance");
 }
  
 Instance::~Instance()

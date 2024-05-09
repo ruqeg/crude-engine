@@ -1,5 +1,9 @@
-#include <graphics/vulkan/command_pool.hpp>
-#include <graphics/vulkan/device.hpp>
+#include <vulkan/vulkan.hpp>
+
+module crude_engine.graphics.vulkan.command_pool;
+
+import crude_engine.graphics.vulkan.vulkan_utils;
+import crude_engine.graphics.vulkan.device;
 
 namespace crude_engine
 {
@@ -17,13 +21,13 @@ Command_Pool::Command_Pool(Shared_Ptr<const Device>  device,
   vkCreateInfo.flags             = flags;
   vkCreateInfo.queueFamilyIndex  = queueFamilyIndex;
 
-  VkResult result = vkCreateCommandPool(CRUDE_OBJECT_HANDLE(m_device), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
-  CRUDE_VULKAN_HANDLE_RESULT(result, "failed to create command pool");
+  VkResult result = vkCreateCommandPool(m_device->getHandle(), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
+  vulkanHandleError(result, "failed to create command pool");
 }
 
 Command_Pool::~Command_Pool()
 {
-  vkDestroyCommandPool(CRUDE_OBJECT_HANDLE(m_device), m_handle, getPVkAllocationCallbacks());
+  vkDestroyCommandPool(m_device->getHandle(), m_handle, getPVkAllocationCallbacks());
 }
 
 }

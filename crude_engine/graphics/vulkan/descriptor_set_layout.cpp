@@ -1,5 +1,9 @@
-#include <graphics/vulkan/descriptor_set_layout.hpp>
-#include <graphics/vulkan/device.hpp>
+#include <vulkan/vulkan.hpp>
+
+module crude_engine.graphics.vulkan.descriptor_set_layout;
+
+import crude_engine.graphics.vulkan.device;
+import crude_engine.graphics.vulkan.vulkan_utils;
 
 namespace crude_engine
 {
@@ -17,13 +21,13 @@ Descriptor_Set_Layout::Descriptor_Set_Layout(Shared_Ptr<const Device>           
   vkCreateInfo.pBindings     = bindings.data();
   vkCreateInfo.bindingCount  = bindings.size();
 
-  VkResult result = vkCreateDescriptorSetLayout(CRUDE_OBJECT_HANDLE(m_device), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
-  CRUDE_VULKAN_HANDLE_RESULT(result, "failed to create descriptor set layout");
+  VkResult result = vkCreateDescriptorSetLayout(m_device->getHandle(), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
+  vulkanHandleResult(result, "failed to create descriptor set layout");
 }
   
 Descriptor_Set_Layout::~Descriptor_Set_Layout()
 {
-  vkDestroyDescriptorSetLayout(CRUDE_OBJECT_HANDLE(m_device), m_handle, getPVkAllocationCallbacks());
+  vkDestroyDescriptorSetLayout(m_device->getHandle(), m_handle, getPVkAllocationCallbacks());
 }
 
 }

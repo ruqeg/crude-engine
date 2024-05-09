@@ -1,4 +1,6 @@
-#include <graphics/vulkan/subpass_dependency.hpp>
+#include <vulkan/vulkan.hpp>
+
+module crude_engine.graphics.vulkan.subpass_dependency;
 
 namespace crude_engine 
 {

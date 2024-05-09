@@ -1,16 +1,12 @@
-#include "swap_chain.hpp"
-#include "device.hpp"
-#include "surface.hpp"
-#include "swap_chain_image.hpp"
-#include "fence.hpp"
-#include "semaphore.hpp"
+#include <vulkan/vulkan.hpp>
 
-#include <graphics/vulkan/swap_chain.hpp>
-#include <graphics/vulkan/device.hpp>
-#include <graphics/vulkan/surface.hpp>
-#include <graphics/vulkan/swap_chain_image.hpp>
-#include <graphics/vulkan/fence.hpp>
-#include <graphics/vulkan/semaphore.hpp>
+module crude_engine.graphics.vulkan.swap_chain;
+
+import crude_engine.graphics.vulkan.device;
+import crude_engine.graphics.vulkan.surface;
+import crude_engine.graphics.vulkan.swap_chain_image;
+import crude_engine.graphics.vulkan.fence;
+import crude_engine.graphics.vulkan.semaphore;
 
 namespace crude_engine
 {

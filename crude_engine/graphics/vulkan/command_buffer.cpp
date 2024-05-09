@@ -1,18 +1,22 @@
-#include <graphics/vulkan/command_buffer.hpp>
-#include <graphics/vulkan/command_pool.hpp>
-#include <graphics/vulkan/device.hpp>
-#include <graphics/vulkan/image.hpp>
-#include <graphics/vulkan/buffer.hpp>
-#include <graphics/vulkan/render_pass.hpp>
-#include <graphics/vulkan/framebuffer.hpp>
-#include <graphics/vulkan/pipeline.hpp>
-#include <graphics/vulkan/pipeline_layout.hpp>
-#include <graphics/vulkan/descriptor_set.hpp>
-#include <core/algorithms.hpp>
+#include <vulkan/vulkan.hpp>
+
+module crude_engine.graphics.vulkan.command_buffer;
+
+import crude_engine.graphics.vulkan.command_pool;
+import crude_engine.graphics.vulkan.device;
+import crude_engine.graphics.vulkan.image;
+import crude_engine.graphics.vulkan.buffer;
+import crude_engine.graphics.vulkan.render_pass;
+import crude_engine.graphics.vulkan.framebuffer;
+import crude_engine.graphics.vulkan.pipeline;
+import crude_engine.graphics.vulkan.pipeline_layout;
+import crude_engine.graphics.vulkan.descriptor_set;
+import crude_engine.graphics.vulkan.vulkan_utils;
+import crude_engine.core.algorithms;
+import crude_engine.core.assert;
 
 namespace crude_engine
 {
-
 
 Command_Buffer::Command_Buffer(Shared_Ptr<const Device>  device,
                                Shared_Ptr<Command_Pool>  commandPool,
@@ -30,7 +34,7 @@ Command_Buffer::Command_Buffer(Shared_Ptr<const Device>  device,
 
 
   VkResult result = vkAllocateCommandBuffers(CRUDE_OBJECT_HANDLE(m_device), &vkAllocateInfo, &m_handle);
-  CRUDE_VULKAN_HANDLE_RESULT(result, "failed to allocate command buffer");
+  vulkanHandleResult(result, "failed to allocate command buffer");
 }
 
 bool Command_Buffer::begin(VkCommandBufferUsageFlags flags)
@@ -64,7 +68,7 @@ void Command_Buffer::barrier(VkPipelineStageFlags        srcStage,
                              VkPipelineStageFlags        dstStage, 
                              span<Image_Memory_Barrier>  imageMemoryBarriers)
 {
-  CRUDE_ASSERT(imageMemoryBarriers.data());
+  assert(imageMemoryBarriers.data());
 
   vector<VkImageMemoryBarrier> pVkImageMemoryBarriers(imageMemoryBarriers.size());
   Algorithms::copy(imageMemoryBarriers.begin(), imageMemoryBarriers.end(), pVkImageMemoryBarriers.begin());
@@ -91,9 +95,9 @@ void Command_Buffer::copyBufferToImage(Shared_Ptr<Buffer>       srcBuffer,
                                        Shared_Ptr<Image>        dstImage, 
                                        span<VkBufferImageCopy>  regions)
 {
-  CRUDE_ASSERT(srcBuffer);
-  CRUDE_ASSERT(dstImage);
-  CRUDE_ASSERT(regions.data());
+  assert(srcBuffer);
+  assert(dstImage);
+  assert(regions.data());
 
   vkCmdCopyBufferToImage(
     m_handle, 
@@ -116,9 +120,9 @@ void Command_Buffer::beginRenderPass(Shared_Ptr<Render_Pass>  renderPass,
                                      const VkRect2D&          renderArea, 
                                      VkSubpassContents        contents)
 {
-  CRUDE_ASSERT(renderPass);
-  CRUDE_ASSERT(framebuffer);
-  CRUDE_ASSERT(clearValues.data());
+  assert(renderPass);
+  assert(framebuffer);
+  assert(clearValues.data());
 
   VkRenderPassBeginInfo renderPassInfo{};
   renderPassInfo.sType            = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -139,7 +143,7 @@ void Command_Buffer::beginRenderPass(Shared_Ptr<Render_Pass>  renderPass,
 
 void Command_Buffer::bindPipeline(Shared_Ptr<Pipeline> pipeline)
 {
-  CRUDE_ASSERT(pipeline);
+  assert(pipeline);
 
   vkCmdBindPipeline(
     m_handle,
@@ -175,13 +179,13 @@ void Command_Buffer::bindDescriptorSets(Shared_Ptr<Pipeline>              pipeli
 
   vector<VkDescriptorSet> descriptorSetsHandles(descriptorSets.size());
   Algorithms::copyc(descriptorSets.begin(), descriptorSets.end(), descriptorSetsHandles.begin(), [](auto& src, auto& dst) -> void {
-    *dst = CRUDE_OBJECT_HANDLE(*src);
+    *dst = (*src)->getHandle();
   });
 
   vkCmdBindDescriptorSets(
     m_handle,
     pipeline->getBindPoint(),
-    CRUDE_OBJECT_HANDLE(pipeline->getPipelineLayout()),
+    pipeline->getPipelineLayout()->getHandle(),
     offset,
     descriptorSetsHandles.size(),
     descriptorSetsHandles.data(),
@@ -206,8 +210,8 @@ void Command_Buffer::endRenderPass()
 Command_Buffer::~Command_Buffer()
 {
   vkFreeCommandBuffers(
-    CRUDE_OBJECT_HANDLE(m_device), 
-    CRUDE_OBJECT_HANDLE(m_commandPool), 
+    m_device->getHandle(),
+    m_commandPool->getHandle(),
     1u, 
     &m_handle);
 }

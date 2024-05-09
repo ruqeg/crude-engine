@@ -1,0 +1,14 @@
+{
+    "Version": "1.1",
+    "Data": {
+        "Source": "c:\\users\\user\\projects\\crude_engine\\crude_engine\\graphics\\vulkan\\queue.ixx",
+        "ProvidedModule": "crude_engine.graphics.vulkan.queue",
+        "ImportedModules": [
+            "crude_engine.core.shared_ptr",
+            "crude_engine.core.optional",
+            "crude_engine.core.std_containers_stack",
+            "crude_engine.graphics.vulkan.vulkan_object"
+        ],
+        "ImportedHeaderUnits": []
+    }
+}

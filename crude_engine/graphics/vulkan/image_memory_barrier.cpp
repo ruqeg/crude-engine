@@ -1,5 +1,9 @@
-#include <graphics/vulkan/image_memory_barrier.hpp>
-#include <graphics/vulkan/image.hpp>
+#include <vulkan/vulkan.hpp>
+
+module crude_engine.graphics.vulkan.image_memory_barrier;
+
+import crude_engine.graphics.vulkan.image;
+import crude_engine.graphics.vulkan.vulkan_utils;
 
 namespace crude_engine
 {
@@ -32,7 +36,7 @@ Image_Memory_Barrier::Image_Memory_Barrier(Shared_Ptr<Image>        image,
   }
   else 
   {
-    CRUDE_VULKAN_ERROR("unsupported layout transition for image memory barrier!");
+    vulkanHandleError("unsupported layout transition for image memory barrier!");
   }
 
   this->sType                = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -43,7 +47,7 @@ Image_Memory_Barrier::Image_Memory_Barrier(Shared_Ptr<Image>        image,
   this->dstAccessMask        = newDstAccessMask;
   this->srcQueueFamilyIndex  = srcQueueFamilyIndex;
   this->dstQueueFamilyIndex  = dstQueueFamilyIndex;
-  this->image                = CRUDE_OBJECT_HANDLE(m_image);
+  this->image                = m_image->getHandle();
   this->subresourceRange     = subresourceRange;
 }
 

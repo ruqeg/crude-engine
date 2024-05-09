@@ -1,8 +1,12 @@
-#include <graphics/vulkan/descriptor_set.hpp>
-#include <graphics/vulkan/descriptor_pool.hpp>
-#include <graphics/vulkan/descriptor_set_layout.hpp>
-#include <graphics/vulkan/device.hpp>
-#include <core/algorithms.hpp>
+#include <vulkan/vulkan.hpp>
+
+module crude_engine.graphics.vulkan.descriptor_set;
+
+import crude_engine.graphics.vulkan.vulkan_utils;
+import crude_engine.graphics.vulkan.descriptor_pool;
+import crude_engine.graphics.vulkan.descriptor_set_layout;
+import crude_engine.graphics.vulkan.device;
+import crude_engine.core.algorithms;
 
 namespace crude_engine
 {
@@ -17,7 +21,7 @@ Descriptor_Set::Descriptor_Set(Shared_Ptr<const Device>                         
 {
   vector<VkDescriptorSetLayout> setLayoutsHandles(m_setLayouts.size());
   Algorithms::copyc(m_setLayouts.begin(), m_setLayouts.end(), setLayoutsHandles.begin(), [](auto& s, auto& d) -> void {
-    *d = CRUDE_OBJECT_HANDLE(*s);
+    *d = (*s)->getHandle();
   });
 
   VkDescriptorSetAllocateInfo vkAllocateInfo{};
@@ -25,16 +29,16 @@ Descriptor_Set::Descriptor_Set(Shared_Ptr<const Device>                         
   vkAllocateInfo.pNext               = nullptr;
   vkAllocateInfo.pSetLayouts         = setLayoutsHandles.data();
   vkAllocateInfo.descriptorSetCount  = static_cast<uint32>(setLayoutsHandles.size());
-  vkAllocateInfo.descriptorPool      = CRUDE_OBJECT_HANDLE(m_pool);
+  vkAllocateInfo.descriptorPool      = m_pool->getHandle();
 
-  VkResult result = vkAllocateDescriptorSets(CRUDE_OBJECT_HANDLE(m_device), &vkAllocateInfo, &m_handle);
-  CRUDE_VULKAN_HANDLE_RESULT(result, "failed to allocate descriptor set");
+  VkResult result = vkAllocateDescriptorSets(m_device->getHandle(), &vkAllocateInfo, &m_handle);
+  vulkanHandleResult(result, "failed to allocate descriptor set");
 }
 
 Descriptor_Set::~Descriptor_Set()
 {
   if (m_pool->canFreeDescriptorSet())
-    vkFreeDescriptorSets(CRUDE_OBJECT_HANDLE(m_device), CRUDE_OBJECT_HANDLE(m_pool), 1u, &m_handle);
+    vkFreeDescriptorSets(m_device->getHandle(), m_pool->getHandle(), 1u, &m_handle);
 }
 
 }

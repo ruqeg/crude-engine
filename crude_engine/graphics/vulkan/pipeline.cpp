@@ -1,8 +1,13 @@
-#include <graphics/vulkan/pipeline.hpp>
-#include <graphics/vulkan/device.hpp>
-#include <graphics/vulkan/pipeline_layout.hpp>
-#include <graphics/vulkan/render_pass.hpp>
-#include <core/algorithms.hpp>
+#include <vulkan/vulkan.hpp>
+
+module crude_engine.graphics.vulkan.pipeline;
+
+import crude_engine.graphics.vulkan.surface;
+import crude_engine.graphics.vulkan.device;
+import crude_engine.graphics.vulkan.pipeline_layout;
+import crude_engine.graphics.vulkan.render_pass;
+import crude_engine.graphics.vulkan.vulkan_utils;
+import crude_engine.core.algorithms;
 
 namespace crude_engine
 {
@@ -51,19 +56,19 @@ Pipeline::Pipeline(Shared_Ptr<const Device>                           device,
   vkCreateInfo.pColorBlendState     = colorBlendState.hasValue() ? &colorBlendState.value() : nullptr;
   vkCreateInfo.pDynamicState        = dynamicState.hasValue() ? &dynamicState.value() : nullptr;
   //==========
-  vkCreateInfo.layout               = m_pipelineLayout ? CRUDE_OBJECT_HANDLE(m_pipelineLayout) : VK_NULL_HANDLE;
-  vkCreateInfo.renderPass           = m_renderPass ? CRUDE_OBJECT_HANDLE(m_renderPass) : VK_NULL_HANDLE;
+  vkCreateInfo.layout               = m_pipelineLayout ? m_pipelineLayout->getHandle() : VK_NULL_HANDLE;
+  vkCreateInfo.renderPass           = m_renderPass ? m_renderPass->getHandle() : VK_NULL_HANDLE;
   vkCreateInfo.subpass              = subpass;
-  vkCreateInfo.basePipelineHandle   = m_basePipeline ? CRUDE_OBJECT_HANDLE(m_basePipeline) : VK_NULL_HANDLE;
+  vkCreateInfo.basePipelineHandle   = m_basePipeline ? m_basePipeline->getHandle() : VK_NULL_HANDLE;
   vkCreateInfo.basePipelineIndex    = -1;
 
-  VkResult result = vkCreateGraphicsPipelines(CRUDE_OBJECT_HANDLE(m_device), VK_NULL_HANDLE, 1u, &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
-  CRUDE_VULKAN_HANDLE_RESULT(result, "failed to create graphics pipeline");
+  VkResult result = vkCreateGraphicsPipelines(m_device->getHandle(), VK_NULL_HANDLE, 1u, &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
+  vulkanHandleResult(result, "failed to create graphics pipeline");
 }
 
 Pipeline::~Pipeline()
 {
-  vkDestroyPipeline(CRUDE_OBJECT_HANDLE(m_device), m_handle, getPVkAllocationCallbacks());
+  vkDestroyPipeline(m_device->getHandle(), m_handle, getPVkAllocationCallbacks());
 }
 
 const VkPipelineBindPoint Pipeline::getBindPoint() const

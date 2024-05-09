@@ -1,5 +1,9 @@
-#include <graphics/vulkan/semaphore.hpp>
-#include <graphics/vulkan/device.hpp>
+#include <vulkan/vulkan.hpp>
+
+module crude_engine.graphics.vulkan.semaphore;
+
+import crude_engine.graphics.vulkan.device;
+import crude_engine.graphics.vulkan.vulkan_utils;
 
 namespace crude_engine
 {
@@ -13,13 +17,13 @@ Semaphore::Semaphore(Shared_Ptr<const Device> device, VkSemaphoreCreateFlags fla
   vkCreateInfo.pNext  = nullptr;
   vkCreateInfo.flags  = flags;
 
-  VkResult result = vkCreateSemaphore(CRUDE_OBJECT_HANDLE(m_device), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
-  CRUDE_VULKAN_HANDLE_RESULT(result, "failed to create semaphore");
+  VkResult result = vkCreateSemaphore(m_device->getHandle(), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
+  vulkanHandleResult(result, "failed to create semaphore");
 }
  
 Semaphore::~Semaphore()
 {
-  vkDestroySemaphore(CRUDE_OBJECT_HANDLE(m_device), m_handle, getPVkAllocationCallbacks());
+  vkDestroySemaphore(m_device->getHandle(), m_handle, getPVkAllocationCallbacks());
 }
 
 }

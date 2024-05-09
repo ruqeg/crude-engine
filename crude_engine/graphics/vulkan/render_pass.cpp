@@ -1,5 +1,9 @@
-#include <graphics/vulkan/render_pass.hpp>
-#include <graphics/vulkan/device.hpp>
+#include <vulkan/vulkan.hpp>
+
+module crude_engine.graphics.vulkan.render_pass;
+
+import crude_engine.graphics.vulkan.device;
+import crude_engine.graphics.vulkan.vulkan_utils;
 
 namespace crude_engine 
 {
@@ -23,13 +27,13 @@ Render_Pass::Render_Pass(Shared_Ptr<const Device>             device,
   vkCreateInfo.dependencyCount  = static_cast<uint32>(subpassesDependencies.size());
   vkCreateInfo.pDependencies    = subpassesDependencies.data();
 
-  const VkResult result = vkCreateRenderPass(CRUDE_OBJECT_HANDLE(m_device), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
-  CRUDE_VULKAN_HANDLE_RESULT(result, "failed to create render pass");
+  const VkResult result = vkCreateRenderPass(m_device->getHandle(), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
+  vulkanHandleResult(result, "failed to create render pass");
 }
   
 Render_Pass::~Render_Pass()
 {
-  vkDestroyRenderPass(CRUDE_OBJECT_HANDLE(m_device), m_handle, getPVkAllocationCallbacks());
+  vkDestroyRenderPass(m_device->getHandle(), m_handle, getPVkAllocationCallbacks());
 }
 
 }

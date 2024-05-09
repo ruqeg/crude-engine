@@ -1,5 +1,8 @@
-#include <graphics/vulkan/write_descriptor_set.hpp>
-#include <graphics/vulkan/descriptor_set.hpp>
+#include <vulkan/vulkan.hpp>
+
+module crude_engine.graphics.vulkan.write_descriptor_set;
+
+import crude_engine.graphics.vulkan.descriptor_set;
 
 namespace crude_engine
 {
@@ -18,7 +21,7 @@ Write_Descriptor_Set::Write_Descriptor_Set(Shared_Ptr<Descriptor_Set>           
 {
   this->sType             = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
   this->pNext             = nullptr;
-  this->dstSet            = CRUDE_OBJECT_HANDLE(m_descriptorSet);
+  this->dstSet            = m_descriptorSet->getHandle();
   this->dstBinding        = binding;
   this->dstArrayElement   = arrayElement;
   this->descriptorCount   = descriptorCount;

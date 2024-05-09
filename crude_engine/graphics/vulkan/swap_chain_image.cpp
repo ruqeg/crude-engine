@@ -1,6 +1,6 @@
-#include <graphics/vulkan/swap_chain_image.hpp>
-#include <graphics/vulkan/swap_chain.hpp>
-#include <graphics/vulkan/device.hpp>
+#include <vulkan/vulkan.hpp>
+
+module crude_engine.graphics.vulkan.swap_chain_image;
 
 namespace crude_engine 
 {

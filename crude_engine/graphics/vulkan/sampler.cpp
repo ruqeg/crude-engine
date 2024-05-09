@@ -1,5 +1,9 @@
-#include <graphics/vulkan/sampler.hpp>
-#include <graphics/vulkan/device.hpp>
+#include <vulkan/vulkan.hpp>
+
+module crude_engine.graphics.vulkan.sampler;
+
+import crude_engine.graphics.vulkan.device;
+import crude_engine.graphics.vulkan.vulkan_utils;
 
 namespace crude_engine
 {
@@ -43,13 +47,13 @@ Sampler::Sampler(Shared_Ptr<const Device>  device,
   vkCreateInfo.borderColor              = borderColor;
   vkCreateInfo.unnormalizedCoordinates  = unnormalizedCoordinates;
 
-  VkResult result = vkCreateSampler(CRUDE_OBJECT_HANDLE(m_device), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
-  CRUDE_VULKAN_HANDLE_RESULT(result, "failed to create sampler");
+  VkResult result = vkCreateSampler(m_device->getHandle(), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
+  vulkanHandleResult(result, "failed to create sampler");
 }
 
 Sampler::~Sampler()
 {
-  vkDestroySampler(CRUDE_OBJECT_HANDLE(m_device), m_handle, getPVkAllocationCallbacks());
+  vkDestroySampler(m_device->getHandle(), m_handle, getPVkAllocationCallbacks());
 }
 
 }

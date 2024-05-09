@@ -1,5 +1,9 @@
-#include <graphics/vulkan/debug_utils_messenger.hpp>
-#include <graphics/vulkan/instance.hpp>
+#include <vulkan/vulkan.hpp>
+
+module crude_engine.graphics.vulkan.debug_utils_messenger;
+
+import crude_engine.graphics.vulkan.vulkan_utils;
+import crude_engine.graphics.vulkan.instance;
 
 namespace crude_engine
 {
@@ -47,13 +51,13 @@ Debug_Utils_Messenger::Debug_Utils_Messenger(Shared_Ptr<const Instance>         
   vkCreateInfo.pNext            = pNext;
   vkCreateInfo.flags            = flags;
 
-  const VkResult result = createDebugUtilsMessengerEXT(CRUDE_OBJECT_HANDLE(m_instance), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
-  CRUDE_VULKAN_HANDLE_RESULT(result, "failed to create debug utils messenger");
+  const VkResult result = createDebugUtilsMessengerEXT(m_instance->getHandle(), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
+  vulkanHandleError(result, "failed to create debug utils messenger");
 }
 
 Debug_Utils_Messenger::~Debug_Utils_Messenger()
 {
-  destroyDebugUtilsMessengerEXT(CRUDE_OBJECT_HANDLE(m_instance), m_handle, getPVkAllocationCallbacks());
+  destroyDebugUtilsMessengerEXT(m_instance->getHandle(), m_handle, getPVkAllocationCallbacks());
 }
 
 const span<const char*> Debug_Utils_Messenger::requiredExtensions()

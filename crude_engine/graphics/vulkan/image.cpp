@@ -1,5 +1,9 @@
-#include <graphics/vulkan/image.hpp>
-#include <graphics/vulkan/device.hpp>
+#include <vulkan/vulkan.hpp>
+
+module crude_engine.graphics.vulkan.image;
+
+import crude_engine.graphics.vulkan.device;
+import crude_engine.graphics.vulkan.vulkan_utils;
 
 namespace crude_engine 
 {
@@ -61,15 +65,15 @@ Image::Image(Shared_Ptr<const Device>  device,
   vkImageInfo.sharingMode            = sharingMode;
   vkImageInfo.initialLayout          = m_layout;
 
-  VkResult result = vkCreateImage(CRUDE_OBJECT_HANDLE(m_device), &vkImageInfo, getPVkAllocationCallbacks(), &m_handle);
-  CRUDE_VULKAN_HANDLE_RESULT(result, "failed to create 2d image");
+  VkResult result = vkCreateImage(m_device->getHandle(), &vkImageInfo, getPVkAllocationCallbacks(), &m_handle);
+  vulkanHandleResult(result, "failed to create 2d image");
 }
   
 Image::~Image()
 {
   if (m_handle != VK_NULL_HANDLE)
   {
-    vkDestroyImage(CRUDE_OBJECT_HANDLE(m_device), m_handle, getPVkAllocationCallbacks());
+    vkDestroyImage(m_device->getHandle(), m_handle, getPVkAllocationCallbacks());
   }
 }
 
@@ -96,7 +100,7 @@ VkImageLayout Image::getLayout() const
 VkMemoryRequirements Image::getMemoryRequirements() const
 {
   VkMemoryRequirements memRequirements;
-  vkGetImageMemoryRequirements(CRUDE_OBJECT_HANDLE(m_device), m_handle, &memRequirements);
+  vkGetImageMemoryRequirements(m_device->getHandle(), m_handle, &memRequirements);
   return memRequirements;
 }
 

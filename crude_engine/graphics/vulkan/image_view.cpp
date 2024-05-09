@@ -1,6 +1,10 @@
-#include <graphics/vulkan/image_view.hpp>
-#include <graphics/vulkan/image.hpp>
-#include <graphics/vulkan/device.hpp>
+#include <vulkan/vulkan.hpp>
+
+module crude_engine.graphics.vulkan.image_view;
+
+import crude_engine.graphics.vulkan.vulkan_utils;
+import crude_engine.graphics.vulkan.image;
+import crude_engine.graphics.vulkan.device;
 
 namespace crude_engine
 {
@@ -21,18 +25,18 @@ Image_View::Image_View(Shared_Ptr<const Device>        device,
   vkCreateInfo.flags                            = 0u;
 
   vkCreateInfo.viewType                         = imageToViewType(m_image->getType());
-  vkCreateInfo.image                            = CRUDE_OBJECT_HANDLE(m_image);
+  vkCreateInfo.image                            = m_image->getHandle();
   vkCreateInfo.components                       = components;
   vkCreateInfo.format                           = format;
   vkCreateInfo.subresourceRange                 = subresourceRange;
 
-  VkResult result = vkCreateImageView(CRUDE_OBJECT_HANDLE(m_device), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
-  CRUDE_VULKAN_HANDLE_RESULT(result, "failed to create image view");
+  VkResult result = vkCreateImageView(m_device->getHandle(), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
+  vulkanHandleResult(result, "failed to create image view");
 }
 
 Image_View::~Image_View()
 {
-  vkDestroyImageView(CRUDE_OBJECT_HANDLE(m_device), m_handle, getPVkAllocationCallbacks());
+  vkDestroyImageView(m_device->getHandle(), m_handle, getPVkAllocationCallbacks());
 }
   
 VkImageViewType Image_View::imageToViewType(VkImageType imageType)

@@ -1,8 +1,12 @@
-#include <graphics/vulkan/device_memory.hpp>
-#include <graphics/vulkan/device.hpp>
-#include <graphics/vulkan/buffer.hpp>
-#include <graphics/vulkan/image.hpp>
-#include <graphics/vulkan/physical_device.hpp>
+#include <vulkan/vulkan.hpp>
+
+module crude_engine.graphics.vulkan.device_memory;
+
+import crude_engine.graphics.vulkan.device;
+import crude_engine.graphics.vulkan.buffer;
+import crude_engine.graphics.vulkan.image;
+import crude_engine.graphics.vulkan.physical_device;
+import crude_engine.graphics.vulkan.vulkan_utils;
 
 namespace crude_engine
 {
@@ -29,7 +33,7 @@ Device_Memory::Device_Memory(Shared_Ptr<const Device>  device,
 
   if (memoryTypeIndex == -1)
   {
-    CRUDE_VULKAN_ERROR("failed to find depth memory type");
+    vulkanHandleError("failed to find depth memory type");
   }
 
   initalize(allocationSize, memoryTypeIndex);
@@ -53,36 +57,36 @@ void Device_Memory::initalize(VkDeviceSize allocationSize, uint32 memoryTypeInde
   vkAllocateInfo.allocationSize = allocationSize;
   vkAllocateInfo.memoryTypeIndex = memoryTypeIndex;
 
-  VkResult result = vkAllocateMemory(CRUDE_OBJECT_HANDLE(m_device), &vkAllocateInfo, getPVkAllocationCallbacks(), &m_handle);
-  CRUDE_VULKAN_HANDLE_RESULT(result, "failed to allocate memory");
+  VkResult result = vkAllocateMemory(m_device->getHandle(), &vkAllocateInfo, getPVkAllocationCallbacks(), &m_handle);
+  vulkanHandleResult(result, "failed to allocate memory");
 }
 
 void Device_Memory::bind(Image& image, VkDeviceSize offset)
 {
-  vkBindImageMemory(CRUDE_OBJECT_HANDLE(m_device), image.getHandle(), m_handle, offset);
+  vkBindImageMemory(m_device->getHandle(), image.getHandle(), m_handle, offset);
 }
 
 void Device_Memory::bind(Buffer& buffer, VkDeviceSize offset)
 {
-  vkBindBufferMemory(CRUDE_OBJECT_HANDLE(m_device), buffer.getHandle(), m_handle, offset);
+  vkBindBufferMemory(m_device->getHandle(), buffer.getHandle(), m_handle, offset);
 }
 
 Optional<void*> Device_Memory::map(VkDeviceSize offset, VkDeviceSize size, VkMemoryMapFlags flags)
 {
   void* dst;
-  VkResult result = vkMapMemory(CRUDE_OBJECT_HANDLE(m_device), m_handle, offset, size, flags, &dst);
+  VkResult result = vkMapMemory(m_device->getHandle(), m_handle, offset, size, flags, &dst);
   if (result != VK_SUCCESS) return nullopt;
   return dst;
 }
 
 void Device_Memory::unmap()
 {
-  vkUnmapMemory(CRUDE_OBJECT_HANDLE(m_device), m_handle);
+  vkUnmapMemory(m_device->getHandle(), m_handle);
 }
 
 Device_Memory::~Device_Memory()
 {
-  vkFreeMemory(CRUDE_OBJECT_HANDLE(m_device), m_handle, getPVkAllocationCallbacks());
+  vkFreeMemory(m_device->getHandle(), m_handle, getPVkAllocationCallbacks());
 }
 
 }

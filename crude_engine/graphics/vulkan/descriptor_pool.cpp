@@ -1,5 +1,9 @@
-#include <graphics/vulkan/descriptor_pool.hpp>
-#include <graphics/vulkan/device.hpp>
+#include <vulkan/vulkan.hpp>
+
+module crude_engine.graphics.vulkan.descriptor_pool;
+
+import crude_engine.graphics.vulkan.device;
+import crude_engine.graphics.vulkan.vulkan_utils;
 
 namespace crude_engine
 {
@@ -23,13 +27,13 @@ Descriptor_Pool::Descriptor_Pool(Shared_Ptr<const Device>                   devi
 
   if (m_freeDescriptorSet)  vkCreateInfo.flags |= VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
 
-  VkResult result = vkCreateDescriptorPool(CRUDE_OBJECT_HANDLE(m_device), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
-  CRUDE_VULKAN_HANDLE_RESULT(result, "failed to create descriptor pool");
+  VkResult result = vkCreateDescriptorPool(m_device->getHandle(), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
+  vulkanHandleResult(result, "failed to create descriptor pool");
 }
 
 Descriptor_Pool::~Descriptor_Pool()
 {
-  vkDestroyDescriptorPool(CRUDE_OBJECT_HANDLE(m_device), m_handle, getPVkAllocationCallbacks());
+  vkDestroyDescriptorPool(m_device->getHandle(), m_handle, getPVkAllocationCallbacks());
 }
 
 bool Descriptor_Pool::canFreeDescriptorSet() const

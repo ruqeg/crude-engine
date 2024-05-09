@@ -1,0 +1,31 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "c:\\users\\user\\projects\\crude_engine\\crude_engine\\graphics\\vulkan\\attachment_description.ixx",
+        "ProvidedModule": "crude_engine.graphics.vulkan.attachment_description",
+        "Includes": [
+            "c:\\vulkansdk\\1.3.261.1\\include\\vulkan\\vulkan.h",
+            "c:\\vulkansdk\\1.3.261.1\\include\\vulkan\\vk_platform.h",
+            "c:\\program files (x86)\\windows kits\\10\\include\\10.0.22000.0\\ucrt\\stddef.h",
+            "c:\\program files (x86)\\windows kits\\10\\include\\10.0.22000.0\\ucrt\\corecrt.h",
+            "c:\\program files\\microsoft visual studio\\2022\\community\\vc\\tools\\msvc\\14.38.33130\\include\\vcruntime.h",
+            "c:\\program files\\microsoft visual studio\\2022\\community\\vc\\tools\\msvc\\14.38.33130\\include\\sal.h",
+            "c:\\program files\\microsoft visual studio\\2022\\community\\vc\\tools\\msvc\\14.38.33130\\include\\concurrencysal.h",
+            "c:\\program files\\microsoft visual studio\\2022\\community\\vc\\tools\\msvc\\14.38.33130\\include\\vadefs.h",
+            "c:\\program files\\microsoft visual studio\\2022\\community\\vc\\tools\\msvc\\14.38.33130\\include\\stdint.h",
+            "c:\\vulkansdk\\1.3.261.1\\include\\vulkan\\vulkan_core.h",
+            "c:\\vulkansdk\\1.3.261.1\\include\\vk_video\\vulkan_video_codec_h264std.h",
+            "c:\\vulkansdk\\1.3.261.1\\include\\vk_video\\vulkan_video_codecs_common.h",
+            "c:\\vulkansdk\\1.3.261.1\\include\\vk_video\\vulkan_video_codec_h264std_decode.h",
+            "c:\\vulkansdk\\1.3.261.1\\include\\vk_video\\vulkan_video_codec_h265std.h",
+            "c:\\vulkansdk\\1.3.261.1\\include\\vk_video\\vulkan_video_codec_h265std_decode.h"
+        ],
+        "ImportedModules": [
+            {
+                "Name": "crude_engine.core.alias",
+                "BMI": "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\core\\alias.ixx.ifc.dt"
+            }
+        ],
+        "ImportedHeaderUnits": []
+    }
+}

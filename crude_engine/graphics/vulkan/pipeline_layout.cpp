@@ -1,12 +1,16 @@
-#include <graphics/vulkan/pipeline_layout.hpp>
-#include <graphics/vulkan/device.hpp>
-#include <graphics/vulkan/descriptor_set_layout.hpp>
-#include <core/algorithms.hpp>
+#include <vulkan/vulkan.hpp>
+
+module crude_engine.graphics.vulkan.pipeline_layout;
+
+import crude_engine.graphics.vulkan.device;
+import crude_engine.graphics.vulkan.descriptor_set_layout;
+import crude_engine.graphics.vulkan.vulkan_utils;
+import crude_engine.core.algorithms;
 
 namespace crude_engine
 {
 
-Pipeline_Layout::Pipeline_Layout(Shared_Ptr<const Device>                                device,
+Pipeline_Layout::Pipeline_Layout(Shared_Ptr<const Device>                        device,
                                  const span<Shared_Ptr<Descriptor_Set_Layout>>&  descriptorSetLayouts,
                                  const span<VkPushConstantRange>&                pushConstantRanges)
   :
@@ -14,7 +18,7 @@ Pipeline_Layout::Pipeline_Layout(Shared_Ptr<const Device>                       
 {
   vector<VkDescriptorSetLayout> vkDescriptorSetLayoutHandles(descriptorSetLayouts.size());
   Algorithms::copyc(descriptorSetLayouts.begin(), descriptorSetLayouts.end(), vkDescriptorSetLayoutHandles.begin(), [](auto& src, auto& dst) -> void {
-    *dst = CRUDE_OBJECT_HANDLE(*src);
+    *dst = (*src)->getHandle();
   });
 
   VkPipelineLayoutCreateInfo vkCreateInfo{};
@@ -27,13 +31,13 @@ Pipeline_Layout::Pipeline_Layout(Shared_Ptr<const Device>                       
   vkCreateInfo.pushConstantRangeCount  = static_cast<uint32>(pushConstantRanges.size());
   vkCreateInfo.pPushConstantRanges     = pushConstantRanges.data();
 
-  VkResult result = vkCreatePipelineLayout(CRUDE_OBJECT_HANDLE(m_device), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
-  CRUDE_VULKAN_HANDLE_RESULT(result, "failed to create pipeline layout");
+  VkResult result = vkCreatePipelineLayout(m_device->getHandle(), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
+  vulkanHandleResult(result, "failed to create pipeline layout");
 }
 
 Pipeline_Layout::~Pipeline_Layout()
 {
-  vkDestroyPipelineLayout(CRUDE_OBJECT_HANDLE(m_device), m_handle, getPVkAllocationCallbacks());
+  vkDestroyPipelineLayout(m_device->getHandle(), m_handle, getPVkAllocationCallbacks());
 }
 
 }

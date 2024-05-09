@@ -1,4 +1,4 @@
-#include <graphics/vulkan/attachment_description.hpp>
+module crude_engine.graphics.vulkan.attachment_description;
 
 namespace crude_engine
 {

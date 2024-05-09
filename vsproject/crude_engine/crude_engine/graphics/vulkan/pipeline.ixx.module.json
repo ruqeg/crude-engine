@@ -1,0 +1,65 @@
+{
+    "version": 1,
+    "revision": 0,
+    "rules": [
+        {
+            "primary-output": "x64\\Debug\\..\\..\\crude_engine\\graphics\\vulkan\\pipeline.ixx.obj",
+            "outputs": [
+                "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_example\\x64\\Debug\\crude_engine.pdb",
+                "x64\\Debug\\..\\..\\crude_engine\\graphics\\vulkan\\",
+                "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\graphics\\vulkan\\pipeline.ixx.ifc"
+            ],
+            "provides": [
+                {
+                    "logical-name": "crude_engine.graphics.vulkan.pipeline",
+                    "source-path": "c:\\users\\user\\projects\\crude_engine\\crude_engine\\graphics\\vulkan\\pipeline.ixx",
+                    "is-interface": true
+                }
+            ],
+            "requires": [
+                {
+                    "logical-name": "crude_engine.core.shared_ptr"
+                },
+                {
+                    "logical-name": "crude_engine.core.optional"
+                },
+                {
+                    "logical-name": "crude_engine.core.std_containers_stack"
+                },
+                {
+                    "logical-name": "crude_engine.graphics.vulkan.vulkan_object"
+                },
+                {
+                    "logical-name": "crude_engine.graphics.vulkan.shader_stage_create_info"
+                },
+                {
+                    "logical-name": "crude_engine.graphics.vulkan.vertex_input_state_create_info"
+                },
+                {
+                    "logical-name": "crude_engine.graphics.vulkan.input_assembly_state_create_info"
+                },
+                {
+                    "logical-name": "crude_engine.graphics.vulkan.viewport_state_create_info"
+                },
+                {
+                    "logical-name": "crude_engine.graphics.vulkan.rasterization_state_create_info"
+                },
+                {
+                    "logical-name": "crude_engine.graphics.vulkan.multisample_state_create_info"
+                },
+                {
+                    "logical-name": "crude_engine.graphics.vulkan.depth_stencil_state_create_info"
+                },
+                {
+                    "logical-name": "crude_engine.graphics.vulkan.color_blend_state_create_info"
+                },
+                {
+                    "logical-name": "crude_engine.graphics.vulkan.dynamic_state_create_info"
+                },
+                {
+                    "logical-name": "crude_engine.graphics.vulkan.tessellation_state_create_info"
+                }
+            ]
+        }
+    ]
+}

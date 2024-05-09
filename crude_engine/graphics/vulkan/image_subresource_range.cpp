@@ -1,7 +1,9 @@
-#include <graphics/vulkan/image_subresource_range.hpp>
-#include <graphics/vulkan/image.hpp>
-#include <graphics/vulkan/format.hpp>
-#include <core/assert.hpp>
+#include <vulkan/vulkan.hpp>
+
+module crude_engine.graphics.vulkan.image_subresource_range;
+
+import crude_engine.graphics.vulkan.image;
+import crude_engine.graphics.vulkan.format;
 
 namespace crude_engine
 {

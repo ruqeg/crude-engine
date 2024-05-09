@@ -1,5 +1,9 @@
-#include <graphics/vulkan/shader_module.hpp>
-#include <graphics/vulkan/device.hpp>
+#include <vulkan/vulkan.hpp>
+
+module crude_engine.graphics.vulkan.shader_module;
+
+import crude_engine.graphics.vulkan.device;
+import crude_engine.graphics.vulkan.vulkan_utils;
 
 namespace crude_engine 
 {
@@ -16,13 +20,13 @@ Shader_Module::Shader_Module(Shared_Ptr<const Device> device, span<const char> c
   vkCreateInfo.codeSize  = static_cast<uint32>(code.size());
   vkCreateInfo.pCode     = reinterpret_cast<const uint32*>(code.data());
 
-  const VkResult result = vkCreateShaderModule(CRUDE_OBJECT_HANDLE(m_device), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
-  CRUDE_VULKAN_HANDLE_RESULT(result, "failed to create shader module");
+  const VkResult result = vkCreateShaderModule(m_device->getHandle(), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
+  vulkanHandleResult(result, "failed to create shader module");
 }
 
 Shader_Module::~Shader_Module()
 {
-  vkDestroyShaderModule(CRUDE_OBJECT_HANDLE(m_device), m_handle, getPVkAllocationCallbacks());
+  vkDestroyShaderModule(m_device->getHandle(), m_handle, getPVkAllocationCallbacks());
 }
 
 }

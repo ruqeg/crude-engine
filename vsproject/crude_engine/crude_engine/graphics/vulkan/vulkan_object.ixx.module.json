@@ -1,0 +1,26 @@
+{
+    "version": 1,
+    "revision": 0,
+    "rules": [
+        {
+            "primary-output": "x64\\Debug\\..\\..\\crude_engine\\graphics\\vulkan\\vulkan_object.ixx.obj",
+            "outputs": [
+                "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_example\\x64\\Debug\\crude_engine.pdb",
+                "x64\\Debug\\..\\..\\crude_engine\\graphics\\vulkan\\",
+                "C:\\Users\\user\\Projects\\crude_engine\\vsproject\\crude_engine\\crude_engine\\graphics\\vulkan\\vulkan_object.ixx.ifc"
+            ],
+            "provides": [
+                {
+                    "logical-name": "crude_engine.graphics.vulkan.vulkan_object",
+                    "source-path": "c:\\users\\user\\projects\\crude_engine\\crude_engine\\graphics\\vulkan\\vulkan_object.ixx",
+                    "is-interface": true
+                }
+            ],
+            "requires": [
+                {
+                    "logical-name": "crude_engine.graphics.vulkan.vulkan_allocator"
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,11 @@
+{
+    "Version": "1.1",
+    "Data": {
+        "Source": "c:\\users\\user\\projects\\crude_engine\\crude_engine\\graphics\\vulkan\\descriptor_image_info.ixx",
+        "ProvidedModule": "crude_engine.graphics.vulkan.descriptor_image_info",
+        "ImportedModules": [
+            "crude_engine.core.shared_ptr"
+        ],
+        "ImportedHeaderUnits": []
+    }
+}
