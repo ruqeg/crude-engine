@@ -514,10 +514,8 @@
     <ClCompile Include="..\..\crude_engine\graphics\vulkan\write_descriptor_set.cpp">
       <Filter>source\graphics\vulkan</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\vulkan_utils.ixx">
+    <ClCompile Include="..\..\crude_engine\graphics\vulkan\vulkan_utils.ixx">
       <Filter>source\graphics\vulkan</Filter>
-    </ClInclude>
+    </ClCompile>
   </ItemGroup>
 </Project>

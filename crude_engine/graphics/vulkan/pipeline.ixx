@@ -5,9 +5,6 @@ module;
 
 export module crude_engine.graphics.vulkan.pipeline;
 
-import crude_engine.core.shared_ptr;
-import crude_engine.core.optional;
-import crude_engine.core.std_containers_stack;
 import crude_engine.graphics.vulkan.vulkan_object;
 import crude_engine.graphics.vulkan.shader_stage_create_info;
 import crude_engine.graphics.vulkan.vertex_input_state_create_info;
@@ -19,6 +16,9 @@ import crude_engine.graphics.vulkan.depth_stencil_state_create_info;
 import crude_engine.graphics.vulkan.color_blend_state_create_info;
 import crude_engine.graphics.vulkan.dynamic_state_create_info;
 import crude_engine.graphics.vulkan.tessellation_state_create_info;
+import crude_engine.core.shared_ptr;
+import crude_engine.core.optional;
+import crude_engine.core.std_containers_stack;
 
 export namespace crude_engine
 {

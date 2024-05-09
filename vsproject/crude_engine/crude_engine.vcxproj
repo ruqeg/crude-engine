@@ -404,7 +404,9 @@
     <ClCompile Include="..\..\crude_engine\graphics\vulkan\write_descriptor_set.ixx" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\crude_engine\graphics\vulkan\vulkan_utils.ixx" />
+    <ClCompile Include="..\..\crude_engine\graphics\vulkan\vulkan_utils.ixx">
+      <FileType>Document</FileType>
+    </ClCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

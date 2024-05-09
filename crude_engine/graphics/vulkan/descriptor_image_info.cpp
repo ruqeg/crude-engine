@@ -11,7 +11,7 @@ namespace crude_engine
 
 Descriptor_Image_Info::Descriptor_Image_Info(Shared_Ptr<Sampler>     sampler,
                                              Shared_Ptr<Image_View>  imageView,
-                                             VkImageLayout                imageLayout)
+                                             VkImageLayout           imageLayout)
   :
   m_sampler(sampler),
   m_imageView(imageView)

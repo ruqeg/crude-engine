@@ -22,7 +22,7 @@ Command_Pool::Command_Pool(Shared_Ptr<const Device>  device,
   vkCreateInfo.queueFamilyIndex  = queueFamilyIndex;
 
   VkResult result = vkCreateCommandPool(m_device->getHandle(), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
-  vulkanHandleError(result, "failed to create command pool");
+  vulkanHandleResult(result, "failed to create command pool");
 }
 
 Command_Pool::~Command_Pool()

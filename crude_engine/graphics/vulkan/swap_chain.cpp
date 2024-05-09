@@ -56,7 +56,7 @@ Swap_Chain::Swap_Chain(Shared_Ptr<const Device>       device,
   vkCreateInfo.oldSwapchain           = oldSwapchain ? oldSwapchain->getHandle() : VK_NULL_HANDLE;
 
   VkResult result = vkCreateSwapchainKHR(m_device->getHandle(), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
-  vulkanHandleError(result, "failed to create swapchain");
+  vulkanHandleResult(result, "failed to create swapchain");
 }
 
 Swap_Chain::~Swap_Chain()

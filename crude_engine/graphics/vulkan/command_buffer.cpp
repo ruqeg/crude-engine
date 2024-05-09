@@ -12,6 +12,7 @@ import crude_engine.graphics.vulkan.pipeline;
 import crude_engine.graphics.vulkan.pipeline_layout;
 import crude_engine.graphics.vulkan.descriptor_set;
 import crude_engine.graphics.vulkan.vulkan_utils;
+import crude_engine.core.std_containers_heap;
 import crude_engine.core.algorithms;
 import crude_engine.core.assert;
 
@@ -28,12 +29,12 @@ Command_Buffer::Command_Buffer(Shared_Ptr<const Device>  device,
   VkCommandBufferAllocateInfo vkAllocateInfo{};
   vkAllocateInfo.sType               = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
   vkAllocateInfo.pNext               = nullptr;
-  vkAllocateInfo.commandPool         = CRUDE_OBJECT_HANDLE(m_commandPool);
+  vkAllocateInfo.commandPool         = m_commandPool->getHandle();
   vkAllocateInfo.level               = level;
   vkAllocateInfo.commandBufferCount  = 1u;
 
 
-  VkResult result = vkAllocateCommandBuffers(CRUDE_OBJECT_HANDLE(m_device), &vkAllocateInfo, &m_handle);
+  VkResult result = vkAllocateCommandBuffers(m_device->getHandle(), &vkAllocateInfo, &m_handle);
   vulkanHandleResult(result, "failed to allocate command buffer");
 }
 
@@ -101,8 +102,8 @@ void Command_Buffer::copyBufferToImage(Shared_Ptr<Buffer>       srcBuffer,
 
   vkCmdCopyBufferToImage(
     m_handle, 
-    CRUDE_OBJECT_HANDLE(srcBuffer), 
-    CRUDE_OBJECT_HANDLE(dstImage), 
+    srcBuffer->getHandle(),
+    dstImage->getHandle(),
     dstImage->getLayout(), 
     regions.size(),
     regions.data());
@@ -127,8 +128,8 @@ void Command_Buffer::beginRenderPass(Shared_Ptr<Render_Pass>  renderPass,
   VkRenderPassBeginInfo renderPassInfo{};
   renderPassInfo.sType            = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
   renderPassInfo.pNext            = nullptr;
-  renderPassInfo.renderPass       = CRUDE_OBJECT_HANDLE(renderPass);
-  renderPassInfo.framebuffer      = CRUDE_OBJECT_HANDLE(framebuffer);
+  renderPassInfo.renderPass       = renderPass->getHandle();
+  renderPassInfo.framebuffer      = framebuffer->getHandle();
   renderPassInfo.renderArea       = renderArea;
   renderPassInfo.clearValueCount  = clearValues.size();
   renderPassInfo.pClearValues     = clearValues.data();
@@ -148,7 +149,7 @@ void Command_Buffer::bindPipeline(Shared_Ptr<Pipeline> pipeline)
   vkCmdBindPipeline(
     m_handle,
     pipeline->getBindPoint(),
-    CRUDE_OBJECT_HANDLE(pipeline));
+    pipeline->getHandle());
 }
 
 void Command_Buffer::setViewport(span<VkViewport> viewports)

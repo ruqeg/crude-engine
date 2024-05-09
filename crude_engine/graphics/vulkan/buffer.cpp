@@ -27,7 +27,7 @@ Buffer::Buffer(Shared_Ptr<const Device>  device,
   vkCreateInfo.pQueueFamilyIndices = queueFamilyIndices.data();
 
   VkResult result = vkCreateBuffer(m_device->getHandle(), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
-  vulkanHandleError(result, "failed to create buffer");
+  vulkanHandleResult(result, "failed to create buffer");
 }
 
 Buffer::~Buffer()

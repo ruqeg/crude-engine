@@ -4,7 +4,7 @@ module;
 
 export module crude_engine.graphics.vulkan.format;
 
-namespace crude_engine
+export namespace crude_engine
 {
 
 class Format

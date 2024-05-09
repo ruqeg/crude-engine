@@ -8,7 +8,7 @@ import crude_engine.core.shared_ptr;
 import crude_engine.core.std_containers_stack;
 import crude_engine.graphics.vulkan.vulkan_object;
 
-namespace crude_engine
+export namespace crude_engine
 {
 
 class Device;

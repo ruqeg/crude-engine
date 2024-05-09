@@ -52,7 +52,7 @@ Debug_Utils_Messenger::Debug_Utils_Messenger(Shared_Ptr<const Instance>         
   vkCreateInfo.flags            = flags;
 
   const VkResult result = createDebugUtilsMessengerEXT(m_instance->getHandle(), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
-  vulkanHandleError(result, "failed to create debug utils messenger");
+  vulkanHandleResult(result, "failed to create debug utils messenger");
 }
 
 Debug_Utils_Messenger::~Debug_Utils_Messenger()

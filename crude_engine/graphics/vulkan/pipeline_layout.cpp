@@ -5,6 +5,7 @@ module crude_engine.graphics.vulkan.pipeline_layout;
 import crude_engine.graphics.vulkan.device;
 import crude_engine.graphics.vulkan.descriptor_set_layout;
 import crude_engine.graphics.vulkan.vulkan_utils;
+import crude_engine.core.std_containers_heap;
 import crude_engine.core.algorithms;
 
 namespace crude_engine
