@@ -74,7 +74,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_DEPRECATE;_CRUDE_NO_INTRINSICS;;_CRUDE_NO_INTRINSICS;;_CRUDE_SSE_INTRINSICS;</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_DEPRECATE;_CRUDE_NO_INTRINSICS;;_CRUDE_NO_INTRINSICS;;_CRUDE_SSE_INTRINSICS;;CRUDE_ENGINE_VULKAN_WIN32</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(VULKAN_SDK)\Include;$(ProjectDir)..\..\crude_engine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -97,7 +97,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_DEPRECATE;_CRUDE_NO_INTRINSICS;;_CRUDE_NO_INTRINSICS;;_CRUDE_SSE_INTRINSICS;</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_DEPRECATE;_CRUDE_NO_INTRINSICS;;_CRUDE_NO_INTRINSICS;;_CRUDE_SSE_INTRINSICS;;CRUDE_ENGINE_VULKAN_WIN32</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(VULKAN_SDK)\Include;$(ProjectDir)..\..\crude_engine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -120,7 +120,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_DEPRECATE;_CRUDE_NO_INTRINSICS;_CRUDE_SSE_INTRINSICS;WIN32_LEAN_;_CRUDE_FREE_RBT_ALLOCATOR_MASSIVE_ASSERT;</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_DEPRECATE;_CRUDE_NO_INTRINSICS;_CRUDE_SSE_INTRINSICS;WIN32_LEAN_;_CRUDE_FREE_RBT_ALLOCATOR_MASSIVE_ASSERT;;CRUDE_ENGINE_VULKAN_WIN32</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(VULKAN_SDK)\Include;$(ProjectDir)..\..\crude_engine;_WINSOCKAPI_;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -143,7 +143,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_DEPRECATE;_CRUDE_NO_INTRINSICS;;_CRUDE_NO_INTRINSICS;;_CRUDE_SSE_INTRINSICS;;WIN32_LEAN_;</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_DEPRECATE;_CRUDE_NO_INTRINSICS;;_CRUDE_NO_INTRINSICS;;_CRUDE_SSE_INTRINSICS;;WIN32_LEAN_;;CRUDE_ENGINE_VULKAN_WIN32</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(VULKAN_SDK)\Include;$(ProjectDir)..\..\crude_engine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>

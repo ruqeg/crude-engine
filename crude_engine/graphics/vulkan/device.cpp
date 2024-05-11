@@ -65,31 +65,31 @@ Shared_Ptr<Queue> Device::getQueue(uint32 queueFamilyIndex, uint32 queueIndex) c
   return queue;
 }
 
-//void Device::updateDescriptorSets(const span<Write_Descriptor_Set>&  descriptorWrites,
-//                                  const span<VkCopyDescriptorSet>&   descriptorCopies)
-//{
-//  vector<VkWriteDescriptorSet> vkDescriptorWrites(descriptorWrites.size());
-//
-//
-//  //!TODO WTF???
-//  auto first = descriptorWrites.begin();
-//  auto last = descriptorWrites.end();
-//  vector<VkWriteDescriptorSet>::iterator dFirst = vkDescriptorWrites.begin();
-//  //Algorithms::copy(first, last, dFirst);
-//
-//  while (first != last)
-//  {
-//    *dFirst = *first;
-//    ++dFirst; ++first;
-//  }
-//
-//  vkUpdateDescriptorSets(
-//    m_handle, 
-//    static_cast<uint32>(vkDescriptorWrites.size()), 
-//    vkDescriptorWrites.data(), 
-//    descriptorCopies.size(),
-//    descriptorCopies.data());
-//}
+void Device::updateDescriptorSets(const span<Write_Descriptor_Set>&  descriptorWrites,
+                                  const span<VkCopyDescriptorSet>&   descriptorCopies)
+{
+  vector<VkWriteDescriptorSet> vkDescriptorWrites(descriptorWrites.size());
+
+
+  //!TODO WTF???
+  auto first = descriptorWrites.begin();
+  auto last = descriptorWrites.end();
+  vector<VkWriteDescriptorSet>::iterator dFirst = vkDescriptorWrites.begin();
+  //Algorithms::copy(first, last, dFirst);
+
+  while (first != last)
+  {
+    *dFirst = *first;
+    ++dFirst; ++first;
+  }
+
+  vkUpdateDescriptorSets(
+    m_handle, 
+    static_cast<uint32>(vkDescriptorWrites.size()), 
+    vkDescriptorWrites.data(), 
+    descriptorCopies.size(),
+    descriptorCopies.data());
+}
 
 void Device::waitIdle()
 {

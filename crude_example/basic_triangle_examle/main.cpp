@@ -1,6 +1,6 @@
 #ifdef _CRUDE_EXAMPLE_BASIC_TRIANGLE
 
-#include <vulkan/vulkan_core.h>
+#include <vulkan/vulkan.h>
 
 #ifdef __linux__ 
 //#define VK_USE_PLATFORM_XCB_KHR
@@ -13,35 +13,55 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-#include <core/filesystem.hpp>
+import crude_engine.core.filesystem;
+import crude_engine.core.optional;
+import crude_engine.core.shared_ptr;
+import crude_engine.core.std_containers_heap;
+import crude_engine.core.std_containers_stack;
 
-#include <graphics/vulkan/instance.hpp>
-#include <graphics/vulkan/debug_utils_messenger.hpp>
-#include <graphics/vulkan/surface.hpp>
-#include <graphics/vulkan/physical_device.hpp>
-#include <graphics/vulkan/device.hpp>
-#include <graphics/vulkan/queue.hpp>
-#include <graphics/vulkan/swap_chain.hpp>
-#include <graphics/vulkan/image_view.hpp>
-#include <graphics/vulkan/swap_chain_image.hpp>
-#include <graphics/vulkan/render_pass.hpp>
-#include <graphics/vulkan/descriptor_set_layout.hpp>
-#include <graphics/vulkan/shader_module.hpp>
-#include <graphics/vulkan/pipeline_layout.hpp>
-#include <graphics/vulkan/shader_stage_create_info.hpp>
-#include <graphics/vulkan/pipeline.hpp>
-#include <graphics/vulkan/command_pool.hpp>
-#include <graphics/vulkan/device_memory.hpp>
-#include <graphics/vulkan/command_buffer.hpp>
-#include <graphics/vulkan/image_memory_barrier.hpp>
-#include <graphics/vulkan/framebuffer.hpp>
-#include <graphics/vulkan/buffer.hpp>
-#include <graphics/vulkan/sampler.hpp>
-#include <graphics/vulkan/descriptor_pool.hpp>
-#include <graphics/vulkan/descriptor_set.hpp>
-#include <graphics/vulkan/write_descriptor_set.hpp>
-#include <graphics/vulkan/fence.hpp>
-#include <graphics/vulkan/semaphore.hpp>
+import crude_engine.graphics.vulkan.instance;
+import crude_engine.graphics.vulkan.debug_utils_messenger;
+import crude_engine.graphics.vulkan.surface;
+import crude_engine.graphics.vulkan.physical_device;
+import crude_engine.graphics.vulkan.device;
+import crude_engine.graphics.vulkan.queue;
+import crude_engine.graphics.vulkan.swap_chain;
+import crude_engine.graphics.vulkan.image_view;
+import crude_engine.graphics.vulkan.swap_chain_image;
+import crude_engine.graphics.vulkan.render_pass;
+import crude_engine.graphics.vulkan.descriptor_set_layout;
+import crude_engine.graphics.vulkan.shader_module;
+import crude_engine.graphics.vulkan.pipeline_layout;
+import crude_engine.graphics.vulkan.shader_stage_create_info;
+import crude_engine.graphics.vulkan.pipeline;
+import crude_engine.graphics.vulkan.command_pool;
+import crude_engine.graphics.vulkan.device_memory;
+import crude_engine.graphics.vulkan.command_buffer;
+import crude_engine.graphics.vulkan.image_memory_barrier;
+import crude_engine.graphics.vulkan.framebuffer;
+import crude_engine.graphics.vulkan.buffer;
+import crude_engine.graphics.vulkan.sampler;
+import crude_engine.graphics.vulkan.descriptor_pool;
+import crude_engine.graphics.vulkan.descriptor_set;
+import crude_engine.graphics.vulkan.write_descriptor_set;
+import crude_engine.graphics.vulkan.fence;
+import crude_engine.graphics.vulkan.semaphore;
+import crude_engine.graphics.vulkan.subpass_description;
+import crude_engine.graphics.vulkan.subpass_dependency;
+import crude_engine.graphics.vulkan.descriptor_image_info;
+import crude_engine.graphics.vulkan.attachment_description;
+import crude_engine.graphics.vulkan.viewport_state_create_info;
+import crude_engine.graphics.vulkan.vertex_input_state_create_info;
+import crude_engine.graphics.vulkan.tessellation_state_create_info;
+import crude_engine.graphics.vulkan.rasterization_state_create_info;
+import crude_engine.graphics.vulkan.multisample_state_create_info;
+import crude_engine.graphics.vulkan.depth_stencil_state_create_info;
+import crude_engine.graphics.vulkan.input_assembly_state_create_info;
+import crude_engine.graphics.vulkan.dynamic_state_create_info;
+import crude_engine.graphics.vulkan.descriptor_set_layout;
+import crude_engine.graphics.vulkan.image_subresource_range;
+import crude_engine.graphics.vulkan.application;
+import crude_engine.graphics.vulkan.color_blend_state_create_info;
 
 #include <algorithm>
 #include <iostream>
@@ -193,7 +213,7 @@ private:
     {
       enabledExtensions[i + surfaceExtensions.size()] = debugUtilsExtensions[i];
     }
-
+    
     // Initialize instance
     crude_engine::array<const char*, 1u> enabledLayers = { "VK_LAYER_KHRONOS_validation" };
     m_instance = crude_engine::makeShared<crude_engine::Instance>(
@@ -768,7 +788,7 @@ private:
     static const crude_engine::vector<const char*> deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
     
     const auto& availableExtensions = physicalDevice.getExtensionProperties();
-    std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
+    crude_engine::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
 
     for (const auto& extension : availableExtensions) {
       requiredExtensions.erase(extension.extensionName);
@@ -1054,7 +1074,7 @@ int APIENTRY wWinMain(
   AllocConsole();
   FILE* dummy;
   auto s = freopen_s(&dummy, "CONOUT$", "w", stdout);
-
+  
   Test_Application testApp;
   try
   {

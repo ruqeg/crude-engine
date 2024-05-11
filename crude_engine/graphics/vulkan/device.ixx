@@ -7,6 +7,7 @@ export module crude_engine.graphics.vulkan.device;
 import crude_engine.core.shared_ptr;
 import crude_engine.core.std_containers_stack;
 import crude_engine.graphics.vulkan.vulkan_object;
+import crude_engine.graphics.vulkan.write_descriptor_set;
 
 export namespace crude_engine
 {
@@ -34,9 +35,9 @@ public:
   ~Device();
   Shared_Ptr<const Physical_Device> getPhysicalDevice() const;
   Shared_Ptr<Queue> getQueue(uint32 queueFamilyIndex, uint32 queueIndex) const;
-  //// !TODO VkCopyDescriptorSet or replace Write_Descriptor_Set back to VkWriteDescriptorSet
-  //void updateDescriptorSets(const span<Write_Descriptor_Set>&  descriptorWrites,
-  //                          const span<VkCopyDescriptorSet>&   descriptorCopies);
+  // !TODO VkCopyDescriptorSet or replace Write_Descriptor_Set back to VkWriteDescriptorSet
+  void updateDescriptorSets(const span<Write_Descriptor_Set>&  descriptorWrites,
+                            const span<VkCopyDescriptorSet>&   descriptorCopies);
   void waitIdle();
   bool waitForFences(span<Fence> fences, bool waitAll, uint64 timeout = UINT64_MAX) const;
   bool resetForFences(span<Fence> fences) const;

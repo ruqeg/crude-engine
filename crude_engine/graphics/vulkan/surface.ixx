@@ -1,12 +1,21 @@
+//!TODO make this code more readable 
+
 module;
 
-#include <vulkan/vulkan.hpp>
+#ifdef CRUDE_ENGINE_VULKAN_WIN32
+#define VK_USE_PLATFORM_WIN32_KHR
 #include <windows.h>
+#endif
+
+#include <vulkan/vulkan.hpp>
 
 export module crude_engine.graphics.vulkan.surface;
 
+import crude_engine.core.std_containers_stack;
 import crude_engine.core.shared_ptr;
+import crude_engine.graphics.vulkan.instance;
 import crude_engine.graphics.vulkan.vulkan_object;
+import crude_engine.graphics.vulkan.vulkan_utils;
 
 export namespace crude_engine
 {
@@ -22,7 +31,7 @@ protected:
   Shared_Ptr<const Instance>  m_instance;
 };
 
-#ifdef VK_KHR_win32_surface
+#ifdef CRUDE_ENGINE_VULKAN_WIN32
 
 class Win32_Surface : public Surface
 {
@@ -44,8 +53,8 @@ public:
     vkCreateInfo.hwnd       = hwnd;
     vkCreateInfo.flags      = flags;
 
-    const VkResult result = vkCreateWin32SurfaceKHR(CRUDE_OBJECT_HANDLE(m_instance), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
-    CRUDE_VULKAN_HANDLE_RESULT(result, "failed to create win32 surface");
+    const VkResult result = vkCreateWin32SurfaceKHR(m_instance->getHandle(), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
+    vulkanHandleResult(result, "failed to create win32 surface");
   }
 
   HINSTANCE getHInstance() const
