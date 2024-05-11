@@ -2,9 +2,6 @@
 
 module crude_engine.graphics.vulkan.descriptor_image_info;
 
-import crude_engine.graphics.vulkan.sampler;
-import crude_engine.graphics.vulkan.image_view;
-
 
 namespace crude_engine
 {

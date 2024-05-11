@@ -8,13 +8,13 @@ import crude_engine.core.shared_ptr;
 import crude_engine.core.std_containers_stack;
 import crude_engine.graphics.vulkan.vulkan_object;
 import crude_engine.graphics.vulkan.image_memory_barrier;
+import crude_engine.graphics.vulkan.buffer;
 
 export namespace crude_engine
 {
 
 class Device;
 class Command_Pool;
-class Buffer;
 class Image;
 class Render_Pass;
 class Framebuffer;

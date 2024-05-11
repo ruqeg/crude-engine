@@ -5,13 +5,10 @@ module;
 export module crude_engine.graphics.vulkan.descriptor_buffer_info;
 
 import crude_engine.core.shared_ptr;
-
-class Buffer;
+import crude_engine.graphics.vulkan.buffer;
 
 export namespace crude_engine
 {
-
-class Buffer;
 
 struct Descriptor_Buffer_Info : private VkDescriptorBufferInfo
 {

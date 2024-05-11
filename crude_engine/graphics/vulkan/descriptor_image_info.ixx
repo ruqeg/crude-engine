@@ -4,13 +4,12 @@ module;
 
 export module crude_engine.graphics.vulkan.descriptor_image_info;
 
+import crude_engine.graphics.vulkan.sampler;
+import crude_engine.graphics.vulkan.image_view;
 import crude_engine.core.shared_ptr;
 
 export namespace crude_engine
 {
-
-class Sampler;
-class Image_View;
 
 class Descriptor_Image_Info : private VkDescriptorImageInfo
 {

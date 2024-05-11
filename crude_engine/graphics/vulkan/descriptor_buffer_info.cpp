@@ -2,8 +2,6 @@
 
 module crude_engine.graphics.vulkan.descriptor_buffer_info;
 
-import crude_engine.graphics.vulkan.buffer;
-
 namespace crude_engine
 {
 
