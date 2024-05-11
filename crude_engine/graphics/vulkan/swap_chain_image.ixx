@@ -16,6 +16,8 @@ export namespace crude_engine
 //
 //};
 
+class Device;
+
 class Swap_Chain_Image : public Image
 {
 public:

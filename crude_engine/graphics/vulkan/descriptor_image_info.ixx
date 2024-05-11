@@ -12,7 +12,7 @@ export namespace crude_engine
 class Sampler;
 class Image_View;
 
-struct Descriptor_Image_Info : private VkDescriptorImageInfo
+class Descriptor_Image_Info : private VkDescriptorImageInfo
 {
 public:
   explicit Descriptor_Image_Info(Shared_Ptr<Sampler>     sampler,

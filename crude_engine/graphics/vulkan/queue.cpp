@@ -2,6 +2,7 @@
 
 module crude_engine.graphics.vulkan.queue;
 
+import crude_engine.graphics.vulkan.device;
 import crude_engine.graphics.vulkan.command_buffer;
 import crude_engine.graphics.vulkan.fence;
 import crude_engine.graphics.vulkan.semaphore;

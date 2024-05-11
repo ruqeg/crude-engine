@@ -26,7 +26,6 @@ export namespace crude_engine
 class Device;
 class Render_Pass;
 class Pipeline_Layout;
-class Pipeline;
 
 class Pipeline : public Vulkan_Object<VkPipeline>
 {

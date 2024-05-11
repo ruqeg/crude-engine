@@ -2,6 +2,8 @@
 
 module crude_engine.graphics.vulkan.swap_chain_image;
 
+import crude_engine.graphics.vulkan.device;
+
 namespace crude_engine 
 {
 

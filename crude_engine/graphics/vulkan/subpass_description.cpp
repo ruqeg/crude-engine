@@ -2,6 +2,8 @@
 
 module crude_engine.graphics.vulkan.subpass_description;
 
+import crude_engine.graphics.vulkan.device;
+
 namespace crude_engine
 {
 

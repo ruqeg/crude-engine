@@ -15,7 +15,6 @@ export namespace crude_engine
 
 class Physical_Device;
 
-
 class Instance : public Vulkan_Object<VkInstance>
 {
 public:
