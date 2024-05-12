@@ -1,5 +1,6 @@
 module;
 
+#include <utility>
 #include <malloc.h>
 
 export module crude_engine.core.memory_system;
@@ -18,13 +19,13 @@ public:
     template<class T, typename... Args>
     static [[nodiscard]] T* cxxAllocate(Args&&... args) noexcept
     {
-      return Memory_Manager::getInstance().getDefaultFreeRBTAllocators().cxxAllocate<T>(forward<Args>(args)...);
+      return Memory_Manager::getInstance().getDefaultFreeRBTAllocators().cxxAllocate<T>(std::forward<Args>(args)...);
     }
 
     template<class T, typename... Args>
     static [[nodiscard]] T* cxxAllocate(size_t n, Args&&... args) noexcept
     {
-      return Memory_Manager::getInstance().getDefaultFreeRBTAllocators().cxxAllocate<T>(n, forward<Args>(args)...);
+      return Memory_Manager::getInstance().getDefaultFreeRBTAllocators().cxxAllocate<T>(n, std::forward<Args>(args)...);
     }
 
     template<class T>
@@ -61,13 +62,13 @@ public:
     template<class T, typename... Args>
     static [[nodiscard]] T* cxxAllocate(Args&&... args) noexcept
     {
-      return Memory_Manager::getInstance().getDefaultSystemAllocators().cxxAllocate<T>(forward<Args>(args)...);
+      return Memory_Manager::getInstance().getDefaultSystemAllocators().cxxAllocate<T>(std::forward<Args>(args)...);
     }
 
     template<class T, typename... Args>
     static [[nodiscard]] T* cxxAllocate(size_t n, Args&&... args) noexcept
     {
-      return Memory_Manager::getInstance().getDefaultSystemAllocators().cxxAllocate<T>(n, forward<Args>(args)...);
+      return Memory_Manager::getInstance().getDefaultSystemAllocators().cxxAllocate<T>(n, std::forward<Args>(args)...);
     }
 
     template<class T>

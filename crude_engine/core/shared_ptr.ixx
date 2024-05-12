@@ -1,5 +1,7 @@
 module;
 
+#include <utility>
+
 export module crude_engine.core.shared_ptr;
 
 export import crude_engine.core.memory_system;
@@ -274,7 +276,7 @@ Shared_Ptr<U, UAllocator> makeShared(Args&&... args) noexcept
   Shared_Ptr<U, UAllocator> impl;
 
   impl.m_memBlock = impl.allocateMemBlock();
-  constructAt(impl.getPtr(), forward<Args>(args)...);
+  constructAt(impl.getPtr(), std::forward<Args>(args)...);
   (*impl.getRefCount()) = 1;
 
   return impl;

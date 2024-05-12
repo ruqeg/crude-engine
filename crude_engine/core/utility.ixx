@@ -1,5 +1,6 @@
 module; 
 
+#include <utility>
 #include <new>
 
 export module crude_engine.core.utility;
@@ -39,24 +40,6 @@ constexpr bool Is_Same_V = Is_Same<T, U>::value;
 template<class T, class U>
 concept Same_As = Is_Same_V<T, U> && Is_Same_V<U, T>;
 
-template<class T>
-struct Remove_Reference
-{
-  using Type = T;
-};
-
-template<class T>
-struct Remove_Reference<T&>
-{
-  using Type = T;
-};
-
-template<class T>
-struct Remove_Reference<T&&>
-{
-  using Type = T;
-};
-
 template<size_t Len, size_t Align>
 struct Aligned_Storage
 {
@@ -79,36 +62,10 @@ struct CPP_Type
   }
 };
 
-template<class T>
-inline typename Remove_Reference<T>::Type&& move(T&& x) noexcept
-{
-  return static_cast<typename Remove_Reference<T>::Type&&>(x);
-}
-
-template<class T>
-inline void swap(T& x, T& y) noexcept
-{
-  T tmp = move(x);
-  x = move(y);
-  y = move(tmp);
-}
-
-template <class T>
-inline T&& forward(typename Remove_Reference<T>::Type& x) noexcept
-{
-  return static_cast<T&&>(x);
-}
-
-template <class T>
-inline T&& forward(typename Remove_Reference<T>::Type&& x) noexcept
-{
-  return static_cast<T&&>(x);
-}
-
 template<class T, class... Args >
 inline T* constructAt(T* ptr, Args&&... args) noexcept
 {
-  return ::new (ptr) T(forward<Args>(args)...);
+  return ::new (ptr) T(std::forward<Args>(args)...);
 }
 
 template<class T>

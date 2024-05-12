@@ -1,5 +1,6 @@
 module;
 
+#include <utility>
 #include <type_traits>
 
 export module crude_engine.core.optional;
@@ -101,7 +102,7 @@ Optional<T>::Optional(Const_Reference value) noexcept
 template<class T>
 Optional<T>::Optional(Value_Type&& value) noexcept
 {
-  construct(move(value));
+  construct(std::move(value));
 }
 
 template<class T>
@@ -118,7 +119,7 @@ Optional<T>::Optional(Optional&& other) noexcept
 {
   if (other.hasValue())
   {
-    construct(move(other.value()));
+    construct(std::move(other.value()));
   }
   other.m_engaged = false;
 }
@@ -150,11 +151,11 @@ Optional<T>& Optional<T>::operator=(Value_Type&& value) noexcept
 {
   if (hasValue())
   {
-    this->value() = move(value);
+    this->value() = std::move(value);
   }
   else
   {
-    construct(move(value));
+    construct(std::move(value));
   }
 
   return*this;
@@ -189,11 +190,11 @@ Optional<T>& Optional<T>::operator=(Optional<T>&& other) noexcept
   {
     if (hasValue())
     {
-      this->value() = move(other.value());
+      this->value() = std::move(other.value());
     }
     else
     {
-      construct(move(other.value()));
+      construct(std::move(other.value()));
     }
   }
   else
@@ -306,7 +307,7 @@ template<typename... Args>
 void Optional<T>::construct(Args&&... args) noexcept
 {
   assert(!hasValue());
-  constructAt<Value_Type>(getStorage(), forward<Args>(args)...);
+  constructAt<Value_Type>(getStorage(), std::forward<Args>(args)...);
   m_engaged = true;
 }
 

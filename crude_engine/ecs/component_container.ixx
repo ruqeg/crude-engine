@@ -1,5 +1,7 @@
 module;
 
+#include <utility>
+
 export module crude_engine.ecs.component_container;
 
 import crude_engine.ecs.alias;
@@ -42,7 +44,7 @@ void Default_Component_Container<Component>::destroy(void* self)
 template<class Component>
 void Default_Component_Container<Component>::move(void* self, void* other)
 {
-  *reinterpret_cast<Component*>(self) = ::crude_engine::move(*reinterpret_cast<Component*>(other));
+  *reinterpret_cast<Component*>(self) = std::move(*reinterpret_cast<Component*>(other));
 }
 
 template<class Component>

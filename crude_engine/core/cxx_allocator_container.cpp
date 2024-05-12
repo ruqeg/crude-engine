@@ -1,3 +1,5 @@
+#include <utility>
+
 module crude_engine.core.cxx_allocator_container;
 
 import crude_engine.core.utility;
@@ -8,7 +10,7 @@ namespace crude_engine
 template<class T, typename ...Args>
 [[nodiscard]] T* CXX_Allocator_Container::cxxAllocate(Args&& ...args) noexcept
 {
-  return constructAt(allocate(sizeof(T)), forward<Args>(args)...);
+  return constructAt(allocate(sizeof(T)), std::forward<Args>(args)...);
 }
 
 template<class T, typename ...Args>
@@ -18,7 +20,7 @@ template<class T, typename ...Args>
 
   for (size_t i = 0; i < n; ++i)
   {
-    constructAt(ptr + i, forward<Args>(args)...);
+    constructAt(ptr + i, std::forward<Args>(args)...);
   }
   return ptr;
 }

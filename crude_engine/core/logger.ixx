@@ -1,5 +1,6 @@
 module;
 
+#include <utility>
 #include <Windows.h>
 
 export module crude_engine.core.logger;
@@ -63,25 +64,25 @@ private:
 template<typename... Args>
 inline void log(const Debug::Channel channel, const char* format, Args&&... args)
 {
-  Log_Object(__FILE__, __LINE__)(channel, format, forward<Args>(args)...);
+  Log_Object(__FILE__, __LINE__)(channel, format, std::forward<Args>(args)...);
 }
 
 template<typename... Args>
 inline void logInfo(const Debug::Channel channel, const char* format, Args&&... args)
 {
-  Log_Object(__FILE__, __LINE__, Debug::Verbosity::Info)(channel, format, forward<Args>(args)...);
+  Log_Object(__FILE__, __LINE__, Debug::Verbosity::Info)(channel, format, std::forward<Args>(args)...);
 }
 
 template<typename... Args>
 inline void logWarning(const Debug::Channel channel, const char* format, Args&&... args)
 {
-  Log_Object(__FILE__, __LINE__, Debug::Verbosity::Warning)(channel, format, forward<Args>(args)...);
+  Log_Object(__FILE__, __LINE__, Debug::Verbosity::Warning)(channel, format, std::forward<Args>(args)...);
 }
 
 template<typename... Args>
 inline void logError(const Debug::Channel channel, const char* format, Args&&... args)
 {
-  Log_Object(__FILE__, __LINE__, Debug::Verbosity::Error)(channel, format, forward<Args>(args)...);
+  Log_Object(__FILE__, __LINE__, Debug::Verbosity::Error)(channel, format, std::forward<Args>(args)...);
 }
 
 Log_Object::Log_Object(const char* filename, const int32 line)
@@ -117,7 +118,7 @@ void Logger::debugPrintF(const char* filename,
   strncat(formatBuffer, sizeof(formatBuffer), "[channel: %s][verbosity: %s][filename: %s][line: %i] =>\n\t");
   strncat(formatBuffer, sizeof(formatBuffer), format);
   strncat(formatBuffer, sizeof(formatBuffer), "\n");
-  snprintf(messageBuffer, sizeof(messageBuffer), formatBuffer, Debug::toString(channel), Debug::toString(verbosity), filename, line, forward<Args>(args)...);
+  snprintf(messageBuffer, sizeof(messageBuffer), formatBuffer, Debug::toString(channel), Debug::toString(verbosity), filename, line, std::forward<Args>(args)...);
   outputStr(messageBuffer);
 }
 
@@ -126,7 +127,7 @@ void Log_Object::operator()(const Debug::Channel  channel,
   const char* format,
   Args&&...             args) const noexcept
 {
-  Logger::debugPrintF(m_filename, m_line, channel, m_verbosity, format, forward<Args>(args)...);
+  Logger::debugPrintF(m_filename, m_line, channel, m_verbosity, format, std::forward<Args>(args)...);
 }
 
 }

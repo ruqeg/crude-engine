@@ -1,5 +1,7 @@
 module;
 
+#include <utility>
+
 export module crude_engine.core.rb_tree;
 
 import crude_engine.core.bs_tree;
@@ -112,13 +114,13 @@ bool RBT_Node_Base<Node>::isRed() const
 template <class Node>
 void RBT_Node_Base<Node>::swapParentWith(Node* other) noexcept
 {
-  swap(this->m_parent, other->m_parent);
+  std::swap(this->m_parent, other->m_parent);
 }
 
 template <class Node>
 void RBT_Node_Base<Node>::swapColorWith(Node* other) noexcept
 {
-  swap(m_color, other->m_color);
+  std::swap(m_color, other->m_color);
 }
 
 template<class Node, class Compare>
@@ -525,7 +527,7 @@ void Red_Black_Tree<Node, Compare>::swapNodes(Node* n1, Node* n2, bool swapColor
 template<class Node, class Compare>
 void Red_Black_Tree<Node, Compare>::swapUnrelatedNodes(Node* n1, Node* n2) noexcept
 {
-  swap(n1->getLeft(), n2->getLeft());
+  std::swap(n1->getLeft(), n2->getLeft());
   if (n1->getLeft() != nullptr)
   {
     n1->getLeft()->setParent(n1);
@@ -535,7 +537,7 @@ void Red_Black_Tree<Node, Compare>::swapUnrelatedNodes(Node* n1, Node* n2) noexc
     n2->getLeft()->setParent(n2);
   }
 
-  swap(n1->getRight(), n2->getRight());
+  std::swap(n1->getRight(), n2->getRight());
   if (n1->getRight() != nullptr)
   {
     n1->getRight()->setParent(n1);
@@ -610,7 +612,7 @@ void Red_Black_Tree<Node, Compare>::swapNeighbors(Node* parent, Node* child) noe
     }
     child->setLeft(parent);
 
-    swap(parent->getRight(), child->getRight());
+    std::swap(parent->getRight(), child->getRight());
     if (child->getRight() != nullptr)
     {
       child->getRight()->setParent(child);
@@ -629,7 +631,7 @@ void Red_Black_Tree<Node, Compare>::swapNeighbors(Node* parent, Node* child) noe
     }
     child->setRight(parent);
 
-    swap(parent->getLeft(), child->getLeft());
+    std::swap(parent->getLeft(), child->getLeft());
     if (child->getLeft() != nullptr)
     {
       child->getLeft()->setParent(child);
