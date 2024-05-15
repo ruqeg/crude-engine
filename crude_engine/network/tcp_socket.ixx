@@ -31,7 +31,7 @@ public:
   int64 send(const span<const char>& inData);
   int64 receive(const span<char>& outBuffer);
 
-public:
+private:
   SOCKET m_socket;
 
   friend class Socket_Util;
