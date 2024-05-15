@@ -30,6 +30,7 @@ public:
   TCP_Socket_Ptr accept(Socket_Address& inFromAddress);
   int64 send(const span<const char>& inData);
   int64 receive(const span<char>& outBuffer);
+  int64 setNonBlockingMode(bool inShouldBeNonBlocking);
 
 private:
   SOCKET m_socket;

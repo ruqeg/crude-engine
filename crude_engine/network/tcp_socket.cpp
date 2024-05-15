@@ -59,4 +59,11 @@ int64 TCP_Socket::receive(const span<char>& outBuffer)
   return bytesReceivedCount;
 }
 
+int64 TCP_Socket::setNonBlockingMode(bool inShouldBeNonBlocking)
+{
+  u_long arg = inShouldBeNonBlocking ? 1 : 0;
+  int result = ioctlsocket(m_socket, FIONBIO, &arg);
+  return result;
+}
+
 }
