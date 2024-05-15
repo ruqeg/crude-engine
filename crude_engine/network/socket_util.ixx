@@ -4,18 +4,14 @@ module;
 #include <ws2tcpip.h>
 
 export module crude_engine.network.socket_util;
+
 import crude_engine.core.std_containers_heap;
 import crude_engine.network.udp_socket;
 import crude_engine.network.tcp_socket;
+import crude_engine.network.socket_address;
 
 export namespace crude_engine
 {
-
-enum Socket_Address_Family
-{
-  SOCKET_ADDRESS_FAMILT_INET  = AF_INET,
-  //SOCKET_ADDRESS_FAMILT_INET6 = AF_INET6
-};
 
 class Socket_Util
 {

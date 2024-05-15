@@ -1,13 +1,12 @@
 #ifdef _CRUDE_EXAMPLE_BASIC_ECS
 
 #include <Windows.h>
+#include <iostream>
 
 import crude_engine.ecs.world;
 import crude_engine.ecs.entity;
 import crude_engine.ecs.component_container;
 import crude_engine.ecs.query;
-
-#include <iostream>
 
 struct Force : public crude_engine::Default_Component_Container<Force>
 {

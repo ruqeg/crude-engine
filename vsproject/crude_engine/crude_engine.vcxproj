@@ -286,6 +286,8 @@
     <ClCompile Include="..\..\crude_engine\math\vector.cpp" />
     <ClCompile Include="..\..\crude_engine\network\socket_address.cpp" />
     <ClCompile Include="..\..\crude_engine\network\socket_address.ixx" />
+    <ClCompile Include="..\..\crude_engine\network\socket_address_factory.cpp" />
+    <ClCompile Include="..\..\crude_engine\network\socket_address_factory.ixx" />
     <ClCompile Include="..\..\crude_engine\network\socket_util.cpp" />
     <ClCompile Include="..\..\crude_engine\network\socket_util.ixx" />
     <ClCompile Include="..\..\crude_engine\network\tcp_socket.cpp" />

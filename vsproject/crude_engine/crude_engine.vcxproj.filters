@@ -517,5 +517,11 @@
     <ClCompile Include="..\..\crude_engine\graphics\vulkan\write_descriptor_set.ixx">
       <Filter>source\graphics\vulkan</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\crude_engine\network\socket_address_factory.cpp">
+      <Filter>source\network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\crude_engine\network\socket_address_factory.ixx">
+      <Filter>source\network</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

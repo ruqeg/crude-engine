@@ -7,25 +7,66 @@ module;
 
 export module crude_engine.network.socket_address;
 
-export import crude_engine.core.alias;
+import crude_engine.core.alias;
+import crude_engine.core.std_containers_stack;
+import crude_engine.core.shared_ptr;
 
 export namespace crude_engine
 {
 
+class Socket_Address_Init_IPv4
+{
+public:
+  Socket_Address_Init_IPv4(const char* inAddress, uint16 inPort);
+  Socket_Address_Init_IPv4(uint64 inAddress, uint16 inPort);
+
+private:
+  IN_ADDR  inAddress;
+  USHORT   inPort;
+
+  friend class Socket_Address;
+};
+
+class Socket_Address_Init_IPv6
+{
+public:
+  Socket_Address_Init_IPv6(const char* inAddress, uint16 inPort);
+
+private:
+  IN6_ADDR  inAddress;
+  USHORT    inPort;
+
+  friend class Socket_Address;
+};
+
+enum Socket_Address_Family
+{
+  SOCKET_ADDRESS_FAMILT_UNSPEC = AF_UNSPEC,
+  SOCKET_ADDRESS_FAMILT_INET   = AF_INET,
+  SOCKET_ADDRESS_FAMILT_INET6  = AF_INET6
+};
+
+class Socket_Address;
+using Socket_Address_Ptr = Shared_Ptr<Socket_Address>;
+
 class Socket_Address
 {
 public:
-  Socket_Address() = default;
-  Socket_Address(uint32 inAddress, uint16 inPort);
+  Socket_Address();
+  explicit Socket_Address(const Socket_Address_Init_IPv4& inData);
+  explicit Socket_Address(const Socket_Address_Init_IPv6& inData);
   Socket_Address(const sockaddr& otherSockaddr);
 
   uint64 getSize() const;
+  Socket_Address_Family getType() const;
 
 private:
   sockaddr_in* getAsSockAddrIn();
+  sockaddr_in6* getAsSockAddrIn6();
 
 private:
-  sockaddr m_sockddr;
+  sockaddr                     m_sockddr;
+  const Socket_Address_Family  m_family;
 
   friend class UDP_Socket;
   friend class TCP_Socket;
