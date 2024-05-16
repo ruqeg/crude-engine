@@ -164,6 +164,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\crude_engine\core\assert.cpp" />
+    <ClCompile Include="..\..\crude_engine\core\byte_utils.ixx" />
     <ClCompile Include="..\..\crude_engine\core\filesystem.cpp" />
     <ClCompile Include="..\..\crude_engine\core\free_rbt_allocator.cpp" />
     <ClCompile Include="..\..\crude_engine\core\input_memory_stream.ixx" />

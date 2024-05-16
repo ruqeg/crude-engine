@@ -529,5 +529,8 @@
     <ClCompile Include="..\..\crude_engine\core\input_memory_stream.ixx">
       <Filter>source\core</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\crude_engine\core\byte_utils.ixx">
+      <Filter>source\core</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
