@@ -10,6 +10,8 @@ export namespace crude_engine
 class Scalar
 {
 public:
+  static float32 max(float32 s1, float32 s2) noexcept;
+  static float32 min(float32 s1, float32 s2) noexcept;
   static float32 round(float32 s) noexcept;
   static float32 floor(float32 s) noexcept;
   static float32 ceil(float32 s) noexcept;

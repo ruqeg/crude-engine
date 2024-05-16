@@ -166,9 +166,13 @@
     <ClCompile Include="..\..\crude_engine\core\assert.cpp" />
     <ClCompile Include="..\..\crude_engine\core\filesystem.cpp" />
     <ClCompile Include="..\..\crude_engine\core\free_rbt_allocator.cpp" />
+    <ClCompile Include="..\..\crude_engine\core\input_memory_stream.cpp" />
+    <ClCompile Include="..\..\crude_engine\core\input_memory_stream.ixx" />
     <ClCompile Include="..\..\crude_engine\core\linear_allocator.cpp" />
     <ClCompile Include="..\..\crude_engine\core\memory_manager.cpp" />
     <ClCompile Include="..\..\crude_engine\core\memory_utils.cpp" />
+    <ClCompile Include="..\..\crude_engine\core\output_memory_steam.cpp" />
+    <ClCompile Include="..\..\crude_engine\core\output_memory_steam.ixx" />
     <ClCompile Include="..\..\crude_engine\core\pool_allocator.cpp" />
     <ClCompile Include="..\..\crude_engine\core\stack_allocator.cpp" />
     <ClCompile Include="..\..\crude_engine\core\string.cpp" />

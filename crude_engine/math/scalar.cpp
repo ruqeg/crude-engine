@@ -5,6 +5,34 @@ module crude_engine.math.scalar;
 namespace crude_engine
 {
 
+float32 Scalar::max(float32 s1, float32 s2) noexcept
+{
+  float32 z;
+  if (s1 > s2)
+  {
+    z = s1;
+  }
+  else
+  {
+    z = s2;
+  }
+  return z;
+}
+
+float32 Scalar::min(float32 s1, float32 s2) noexcept
+{
+  float32 z;
+  if (s1 < s2)
+  {
+    z = s1;
+  }
+  else
+  {
+    z = s2;
+  }
+  return z;
+}
+
 float32 Scalar::round(float32 s) noexcept
 {
   float32 x = Scalar::floor(s);
