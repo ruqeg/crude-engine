@@ -25,8 +25,8 @@ public:
 
 public:
   int64 bind(const Socket_Address& inBindAddress);
-  int64 send(const span<const char>& inData, const Socket_Address& inToAddress);
-  int64 receive(const span<char>& outBuffer, Socket_Address& outFromAddress);
+  int64 send(const span<const byte>& inData, const Socket_Address& inToAddress);
+  int64 receive(const span<byte>& outBuffer, Socket_Address& outFromAddress);
   int64 setNonBlockingMode(bool inShouldBeNonBlocking);
 
 private:

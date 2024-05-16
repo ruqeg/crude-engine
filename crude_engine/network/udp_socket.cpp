@@ -22,16 +22,18 @@ int64 UDP_Socket::bind(const Socket_Address& inBindAddress)
   return result;
 }
 
-int64 UDP_Socket::send(const span<const char>& inData, const Socket_Address& inToAddress)
+int64 UDP_Socket::send(const span<const byte>& inData, const Socket_Address& inToAddress)
 {
-  int byteSendCount = ::sendto(m_socket, inData.data(), inData.size_bytes(), 0, &inToAddress.m_sockddr, inToAddress.getSize());
+  static_assert(sizeof(byte) == sizeof(char));
+  int byteSendCount = ::sendto(m_socket, reinterpret_cast<const char*>(inData.data()), inData.size_bytes(), 0, &inToAddress.m_sockddr, inToAddress.getSize());
   return byteSendCount;
 }
 
-int64 UDP_Socket::receive(const span<char>& outBuffer, Socket_Address& outFromAddress)
+int64 UDP_Socket::receive(const span<byte>& outBuffer, Socket_Address& outFromAddress)
 {
+  static_assert(sizeof(byte) == sizeof(char));
   int fromLength = outFromAddress.getSize();
-  int readByteCount = ::recvfrom(m_socket, outBuffer.data(), outBuffer.size_bytes(), 0, &outFromAddress.m_sockddr, &fromLength);
+  int readByteCount = ::recvfrom(m_socket, reinterpret_cast<char*>(outBuffer.data()), outBuffer.size_bytes(), 0, &outFromAddress.m_sockddr, &fromLength);
   return readByteCount;
 }
 

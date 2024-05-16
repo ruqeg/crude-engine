@@ -47,15 +47,17 @@ TCP_Socket_Ptr TCP_Socket::accept(Socket_Address& inFromAddress)
   return makeShared<TCP_Socket>(s);
 }
 
-int64 TCP_Socket::send(const span<const char>& inData)
+int64 TCP_Socket::send(const span<const byte>& inData)
 {
-  int bytesSendCount = ::send(m_socket, inData.data(), inData.size_bytes(), 0);
+  static_assert(sizeof(byte) == sizeof(char));
+  int bytesSendCount = ::send(m_socket, reinterpret_cast<const char*>(inData.data()), inData.size_bytes(), 0);
   return bytesSendCount;
 }
 
-int64 TCP_Socket::receive(const span<char>& outBuffer)
+int64 TCP_Socket::receive(const span<byte>& outBuffer)
 {
-  int bytesReceivedCount = ::recv(m_socket, outBuffer.data(), outBuffer.size_bytes(), 0);
+  static_assert(sizeof(byte) == sizeof(char));
+  int bytesReceivedCount = ::recv(m_socket, reinterpret_cast<char*>(outBuffer.data()), outBuffer.size_bytes(), 0);
   return bytesReceivedCount;
 }
 

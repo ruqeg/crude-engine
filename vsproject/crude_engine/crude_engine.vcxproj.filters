@@ -526,13 +526,7 @@
     <ClCompile Include="..\..\crude_engine\core\output_memory_steam.ixx">
       <Filter>source\core</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\crude_engine\core\input_memory_stream.cpp">
-      <Filter>source\core</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\crude_engine\core\input_memory_stream.ixx">
-      <Filter>source\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\crude_engine\core\output_memory_steam.cpp">
       <Filter>source\core</Filter>
     </ClCompile>
   </ItemGroup>

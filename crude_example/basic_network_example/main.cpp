@@ -4,11 +4,28 @@
 #include <iostream>
 #include <thread>
 
+import crude_engine.core.input_memory_stream;
+import crude_engine.core.output_memory_steam;
 import crude_engine.core.std_containers_heap;
 import crude_engine.network.socket_util;
 import crude_engine.network.tcp_socket;
 import crude_engine.network.socket_address;
 import crude_engine.network.socket_address_factory;
+
+class Game_Object {};
+
+class Robo_Cat : public Game_Object
+{
+public:
+  void write(crude_engine::Output_Memory_System& inStream) const;
+  void read(crude_engine::Input_Memory_System& inStream);
+public:
+  int m_health;
+  int m_meowCount;
+  Game_Object* m_homeBase;
+  char m_name[20];
+  crude_engine::vector<int> m_miceIndices;
+};
 
 void tcpServerLoop()
 {
@@ -47,7 +64,7 @@ void tcpServerLoop()
         }
         else
         {
-          char segment[256]{};
+          byte segment[256]{};
           int dataReceived = socket->receive(segment);
           if (dataReceived > 0)
           {
@@ -85,11 +102,20 @@ void tcpClientLoop()
     std::thread readerThread([&sendSocket]() -> void {
       while (true)
       {
-        std::cout << "Enter message: ";
-        char sendMsg[256]{};
-        fgets(sendMsg, sizeof(sendMsg), stdin);
-        std::cout << "\n";
-        if (sendSocket->send(sendMsg) == SOCKET_ERROR)
+        Robo_Cat r;
+        std::cout << "Enter robot health: ";
+        std::cin >> r.m_health;
+        std::cout << std::endl;
+        std::cout << "Enter robot meow: ";
+        std::cin >> r.m_meowCount;
+        std::cout << std::endl;
+        std::cout << "Enter robot name: ";
+        std::cin >> r.m_name;
+        std::cout << std::endl;
+
+        crude_engine::Output_Memory_System stream;
+        r.write(stream);
+        if (sendSocket->send(*stream.getBufferPtr()) == SOCKET_ERROR)
         {
           return;
         }
@@ -99,10 +125,17 @@ void tcpClientLoop()
     std::thread writerThread([&sendSocket]() -> void {
       while (true)
       {
-        char recvMsg[256]{};
-        if (sendSocket->receive(recvMsg) > 0)
+        auto buffer = crude_engine::makeShared<crude_engine::vector<byte>>(256);
+        if (sendSocket->receive(*buffer) > 0)
         {
-          std::cout << "Recieve message: " << recvMsg << "\n" << std::endl;
+          Robo_Cat r;
+          crude_engine::Input_Memory_System stream(buffer);
+          r.read(stream);
+          std::cout
+            << std::endl
+            << "Recieve robot health: " << r.m_health << std::endl
+            << "Recieve robot meow: " << r.m_health << std::endl
+            << "Recieve robot name: " << r.m_name << std::endl;
         }
       }
     });
@@ -133,4 +166,19 @@ int APIENTRY wWinMain(
   
   return EXIT_SUCCESS;
 }
+
+void Robo_Cat::write(crude_engine::Output_Memory_System& inStream) const
+{
+  inStream.write(m_health);
+  inStream.write(m_meowCount);
+  inStream.write((crude_engine::byte*)m_name, sizeof(m_name));
+}
+
+void Robo_Cat::read(crude_engine::Input_Memory_System& inStream) 
+{
+  inStream.read(m_health);
+  inStream.read(m_meowCount);
+  inStream.read((crude_engine::byte*)m_name, sizeof(m_name));
+}
+
 #endif

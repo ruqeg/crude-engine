@@ -28,8 +28,8 @@ public:
   int64 bind(const Socket_Address& inToAddress);
   int64 listen(int64 inBackLog = SOMAXCONN);
   TCP_Socket_Ptr accept(Socket_Address& inFromAddress);
-  int64 send(const span<const char>& inData);
-  int64 receive(const span<char>& outBuffer);
+  int64 send(const span<const byte>& inData);
+  int64 receive(const span<byte>& outBuffer);
   int64 setNonBlockingMode(bool inShouldBeNonBlocking);
 
 private:
