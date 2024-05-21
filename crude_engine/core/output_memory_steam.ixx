@@ -9,22 +9,22 @@ import crude_engine.core.shared_ptr;
 import crude_engine.core.std_containers_stack;
 import crude_engine.core.std_containers_heap;
 
-export module crude_engine.core.output_memory_steam;
+export module crude_engine.core.output_memory_stream;
 
 export namespace crude_engine
 {
 
-class Output_Memory_System
+class Output_Memory_Stream
 {
 public:
-  Output_Memory_System();
-  ~Output_Memory_System() = default;
+  Output_Memory_Stream();
+  ~Output_Memory_Stream() = default;
 
 public:
   Shared_Ptr<vector<byte>> getBufferPtr() const;
   uint32 getLength() const;
 
-  void write(const byte* inData, uint32 inByteCount);
+  void write(const void* inData, uint32 inByteCount);
 
   template<class T>
   void write(const T& inData);
@@ -34,23 +34,23 @@ private:
   uint32                    m_head;
 };
 
-Output_Memory_System::Output_Memory_System()
+Output_Memory_Stream::Output_Memory_Stream()
   :
   m_buffer(makeShared<vector<byte>>()),
   m_head(0u)
 {}
 
-Shared_Ptr<vector<byte>> Output_Memory_System::getBufferPtr() const
+Shared_Ptr<vector<byte>> Output_Memory_Stream::getBufferPtr() const
 {
   return m_buffer;
 }
 
-uint32 Output_Memory_System::getLength() const
+uint32 Output_Memory_Stream::getLength() const
 {
   return m_head;
 }
 
-void Output_Memory_System::write(const byte* inData, uint32 inByteCount)
+void Output_Memory_Stream::write(const void* inData, uint32 inByteCount)
 {
   const uint32 capacity = m_buffer->size();
   const uint32 resultHead = m_head + static_cast<uint32>(inByteCount);
@@ -65,10 +65,10 @@ void Output_Memory_System::write(const byte* inData, uint32 inByteCount)
 }
 
 template<class T>
-void Output_Memory_System::write(const T& inData)
+void Output_Memory_Stream::write(const T& inData)
 {
   static_assert(std::is_arithmetic<T>::value || std::is_enum<T>::value, "Generic write only supports primitive data types");
-  write(reinterpret_cast<const byte*>(&inData), sizeof(inData));
+  write(&inData, sizeof(inData));
 }
 
 }

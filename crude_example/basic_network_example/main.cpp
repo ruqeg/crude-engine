@@ -4,8 +4,9 @@
 #include <iostream>
 #include <thread>
 
-import crude_engine.core.input_memory_stream;
-import crude_engine.core.output_memory_steam;
+import crude_engine.core.input_memory_bit_stream;
+import crude_engine.core.output_memory_bit_stream;
+import crude_engine.core.output_memory_stream;
 import crude_engine.core.std_containers_heap;
 import crude_engine.network.socket_util;
 import crude_engine.network.tcp_socket;
@@ -17,8 +18,8 @@ class Game_Object {};
 class Robo_Cat : public Game_Object
 {
 public:
-  void write(crude_engine::Output_Memory_System& inStream) const;
-  void read(crude_engine::Input_Memory_System& inStream);
+  void write(crude_engine::Output_Memory_Bit_Stream& inStream) const;
+  void read(crude_engine::Input_Memory_Bit_Stream& inStream);
 public:
   int m_health;
   int m_meowCount;
@@ -113,7 +114,7 @@ void tcpClientLoop()
         std::cin >> r.m_name;
         std::cout << std::endl;
 
-        crude_engine::Output_Memory_System stream;
+        crude_engine::Output_Memory_Bit_Stream stream;
         r.write(stream);
         if (sendSocket->send(*stream.getBufferPtr()) == SOCKET_ERROR)
         {
@@ -129,7 +130,7 @@ void tcpClientLoop()
         if (sendSocket->receive(*buffer) > 0)
         {
           Robo_Cat r;
-          crude_engine::Input_Memory_System stream(buffer);
+          crude_engine::Input_Memory_Bit_Stream stream(buffer);
           r.read(stream);
           std::cout
             << std::endl
@@ -167,18 +168,18 @@ int APIENTRY wWinMain(
   return EXIT_SUCCESS;
 }
 
-void Robo_Cat::write(crude_engine::Output_Memory_System& inStream) const
+void Robo_Cat::write(crude_engine::Output_Memory_Bit_Stream& inStream) const
 {
   inStream.write(m_health);
   inStream.write(m_meowCount);
-  inStream.write((crude_engine::byte*)m_name, sizeof(m_name));
+  inStream.writeBytes(m_name, sizeof(m_name));
 }
 
-void Robo_Cat::read(crude_engine::Input_Memory_System& inStream) 
+void Robo_Cat::read(crude_engine::Input_Memory_Bit_Stream& inStream)
 {
   inStream.read(m_health);
   inStream.read(m_meowCount);
-  inStream.read((crude_engine::byte*)m_name, sizeof(m_name));
+  inStream.readBytes(m_name, sizeof(m_name));
 }
 
 #endif
