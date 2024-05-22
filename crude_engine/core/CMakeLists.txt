@@ -1,5 +1,5 @@
 target_sources(crude_engine
-    PUBLIC
+    PRIVATE
     assert.cpp
     cxx_allocator_container.cpp
     filesystem.cpp

@@ -1,5 +1,5 @@
 target_sources(crude_engine
-    PUBLIC
+    PRIVATE
     socket_address_factory.cpp
     socket_address.cpp
     socket_util.cpp

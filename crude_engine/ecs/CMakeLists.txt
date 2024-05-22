@@ -1,5 +1,5 @@
 target_sources(crude_engine
-    PUBLIC
+    PRIVATE
     archetype.cpp
     component_register.cpp
     entity.cpp

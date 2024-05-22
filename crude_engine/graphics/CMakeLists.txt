@@ -4,7 +4,7 @@ target_include_directories(crude_engine PUBLIC ${Vulkan_INCLUDE_DIR})
 target_link_libraries(crude_engine ${Vulkan_LIBRARY})
 
 target_sources(crude_engine
-    PUBLIC
+    PRIVATE
     application.cpp
     attachment_description.cpp
     color_blend_state_create_info.cpp

@@ -1,5 +1,5 @@
 target_sources(crude_engine
-    PUBLIC
+    PRIVATE
     matrix.cpp
     scalar.cpp
     vector.cpp)

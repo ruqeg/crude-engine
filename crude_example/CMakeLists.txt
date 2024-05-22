@@ -4,7 +4,7 @@ project(crude_example CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(crude_example)
+add_executable(crude_example WIN32)
 
 target_link_libraries(crude_example PRIVATE crude_engine)
 
