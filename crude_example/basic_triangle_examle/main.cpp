@@ -1,16 +1,10 @@
-#ifdef _CRUDE_EXAMPLE_BASIC_TRIANGLE
-
 #include <vulkan/vulkan.h>
-#include <SDL2/SDL.h>
+#include <SDL3/SDL.h>
 
-#ifdef __linux__ 
-//#define VK_USE_PLATFORM_XCB_KHR
-//#include <xcb/xcb.h>
-#elif _WIN32
 #define VK_USE_PLATFORM_WIN32_KHR
 #include <Windows.h>
 #undef max
-#endif
+
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
@@ -980,12 +974,8 @@ private:
 
   void cleanup() 
   {
-#ifdef __linux__ 
-    xcb_disconnect(m_pConnection);
-#elif _WIN32
     UnregisterClass(m_windowClassWide, m_hinstance);
     DestroyWindow(m_hwnd);
-#endif
   }
 
   static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT       messageSeverity,
@@ -1047,24 +1037,6 @@ private:
   const crude::char16*  m_windowClassWide = L"test_class";
 };
 
-#ifdef __linux__
-int main()
-{
-  Test_Application testApp;
-
-  try 
-  {
-    testApp.run();
-  }
-  catch (const std::exception& e)
-  {
-    std::cerr << e.what() << std::endl;
-    return EXIT_FAILURE;
-  }
-
-  return 0;
-}
-#elif _WIN32
 int APIENTRY wWinMain(
   _In_ HINSTANCE hInstance,
   _In_opt_ HINSTANCE hPrevInstance,
@@ -1132,5 +1104,3 @@ int APIENTRY wWinMain(
 
   return EXIT_SUCCESS;
 }
-#endif
-#endif

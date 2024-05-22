@@ -96,8 +96,8 @@ void Command_Buffer::copyBufferToImage(core::Shared_Ptr<Buffer>       srcBuffer,
                                        core::Shared_Ptr<Image>        dstImage, 
                                        core::span<VkBufferImageCopy>  regions)
 {
-  core::assert(srcBuffer);
-  core::assert(dstImage);
+  core::assert(srcBuffer.valid());
+  core::assert(dstImage.valid());
   core::assert(regions.data());
 
   vkCmdCopyBufferToImage(
@@ -121,8 +121,8 @@ void Command_Buffer::beginRenderPass(core::Shared_Ptr<Render_Pass>  renderPass,
                                      const VkRect2D&                renderArea, 
                                      VkSubpassContents              contents)
 {
-  core::assert(renderPass);
-  core::assert(framebuffer);
+  core::assert(renderPass.valid());
+  core::assert(framebuffer.valid());
   core::assert(clearValues.data());
 
   VkRenderPassBeginInfo renderPassInfo{};
@@ -144,7 +144,7 @@ void Command_Buffer::beginRenderPass(core::Shared_Ptr<Render_Pass>  renderPass,
 
 void Command_Buffer::bindPipeline(core::Shared_Ptr<Pipeline> pipeline)
 {
-  core::assert(pipeline);
+  core::assert(pipeline.valid());
 
   vkCmdBindPipeline(
     m_handle,
