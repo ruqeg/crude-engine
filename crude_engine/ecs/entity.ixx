@@ -1,11 +1,11 @@
 module;
 
-export module crude_engine.ecs.entity;
+export module crude.ecs.entity;
 
-import crude_engine.ecs.alias;
-import crude_engine.ecs.world;
+import crude.ecs.alias;
+import crude.ecs.world;
 
-export namespace crude_engine
+export namespace crude::ecs
 {
 
 class Entity
@@ -88,4 +88,4 @@ const Entity& Entity::remove() const
 }
 
 
-} //namespace crude_engine
+} //namespace crude

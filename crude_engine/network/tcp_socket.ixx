@@ -3,18 +3,18 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
-export module crude_engine.network.tcp_socket;
+export module crude.network.tcp_socket;
 
-import crude_engine.core.shared_ptr;
-import crude_engine.core.alias;
-import crude_engine.core.std_containers_stack;
-import crude_engine.network.socket_address;
+import crude.core.shared_ptr;
+import crude.core.alias;
+import crude.core.std_containers_stack;
+import crude.network.socket_address;
 
-export namespace crude_engine
+export namespace crude::network
 {
 
 class TCP_Socket;
-using TCP_Socket_Ptr = Shared_Ptr<TCP_Socket>;
+using TCP_Socket_Ptr = core::Shared_Ptr<TCP_Socket>;
 
 class TCP_Socket
 {
@@ -24,13 +24,13 @@ public:
   ~TCP_Socket();
 
 public:
-  int64 connect(const Socket_Address& inAddress);
-  int64 bind(const Socket_Address& inToAddress);
-  int64 listen(int64 inBackLog = SOMAXCONN);
+  core::int64 connect(const Socket_Address& inAddress);
+  core::int64 bind(const Socket_Address& inToAddress);
+  core::int64 listen(core::int64 inBackLog = SOMAXCONN);
   TCP_Socket_Ptr accept(Socket_Address& inFromAddress);
-  int64 send(const span<const byte>& inData);
-  int64 receive(const span<byte>& outBuffer);
-  int64 setNonBlockingMode(bool inShouldBeNonBlocking);
+  core::int64 send(const core::span<const byte>& inData);
+  core::int64 receive(const core::span<byte>& outBuffer);
+  core::int64 setNonBlockingMode(bool inShouldBeNonBlocking);
 
 private:
   SOCKET m_socket;

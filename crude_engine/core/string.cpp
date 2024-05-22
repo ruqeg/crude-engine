@@ -1,7 +1,7 @@
 
-module crude_engine.core.string;
+module crude.core.string;
 
-namespace crude_engine
+namespace crude::core
 {
 
 size_t strlen(char* const buffer) noexcept

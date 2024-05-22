@@ -2,12 +2,12 @@ module;
 
 #include <utility>
 
-export module crude_engine.ecs.component_container;
+export module crude.ecs.component_container;
 
-import crude_engine.ecs.alias;
-import crude_engine.core.utility;
+import crude.ecs.alias;
+import crude.core.utility;
 
-export namespace crude_engine
+export namespace crude::ecs
 {
 
 class Component_Container

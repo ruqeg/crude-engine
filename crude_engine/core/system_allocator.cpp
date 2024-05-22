@@ -1,8 +1,8 @@
-module crude_engine.core.system_allocator;
+module crude.core.system_allocator;
 
-import crude_engine.core.assert;
+import crude.core.assert;
 
-namespace crude_engine
+namespace crude::core
 {
 
 void* System_Allocator::allocate(size_t size) noexcept

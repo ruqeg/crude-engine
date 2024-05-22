@@ -1,11 +1,11 @@
 module;
 
-export module crude_engine.core.system_allocator;
+export module crude.core.system_allocator;
 
-import crude_engine.core.cxx_allocator_container;
-import crude_engine.core.memory_utils;
+import crude.core.cxx_allocator_container;
+import crude.core.memory_utils;
 
-export namespace crude_engine
+export namespace crude::core
 {
 
 class System_Allocator : public CXX_Allocator_Container

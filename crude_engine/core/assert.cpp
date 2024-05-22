@@ -1,10 +1,10 @@
-module crude_engine.core.assert;
+module crude.core.assert;
 
 #include <stdexcept>
 
-import crude_engine.core.debug;
+import crude.core.debug;
 
-namespace crude_engine
+namespace crude::core
 {
 
 void assert(bool assertion) noexcept

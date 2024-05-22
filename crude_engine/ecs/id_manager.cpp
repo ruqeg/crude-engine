@@ -1,6 +1,6 @@
-module crude_engine.ecs.id_manager;
+module crude.ecs.id_manager;
 
-namespace crude_engine
+namespace crude::ecs
 {
 
 ID_Manager::ID_Manager()

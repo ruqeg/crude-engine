@@ -2,15 +2,15 @@ module;
 
 #include <utility>
 
-export module crude_engine.core.shared_ptr;
+export module crude.core.shared_ptr;
 
-export import crude_engine.core.memory_system;
-export import crude_engine.core.alias;
+export import crude.core.memory_system;
+export import crude.core.alias;
 
-import crude_engine.core.assert;
-import crude_engine.core.utility;
+import crude.core.assert;
+import crude.core.utility;
 
-export namespace crude_engine
+export namespace crude::core
 {
 
 // !TODO make something with allocator (as member, not template0
@@ -51,6 +51,8 @@ public:
   inline T* operator->() const noexcept;
 
   explicit operator bool() const noexcept;
+
+  bool valid() const noexcept;
 
 protected:
   inline T* getPtr() noexcept;
@@ -228,6 +230,12 @@ Shared_Ptr<T, Allocator>::operator bool() const noexcept
 }
 
 template<class T, class Allocator>
+bool Shared_Ptr<T, Allocator>::valid() const noexcept
+{
+  return (m_memBlock != nullptr);
+}
+
+template<class T, class Allocator>
 T* Shared_Ptr<T, Allocator>::getPtr() noexcept
 {
   return reinterpret_cast<T*>(m_memBlock + sizeof(Ref_Count));
@@ -282,4 +290,4 @@ Shared_Ptr<U, UAllocator> makeShared(Args&&... args) noexcept
   return impl;
 }
 
-} // namespace crude_engine
+} // namespace crude

@@ -1,13 +1,13 @@
 #include <math.h>
 
-module crude_engine.math.scalar;
+module crude.math.scalar;
 
-namespace crude_engine
+namespace crude::math
 {
 
-float32 Scalar::max(float32 s1, float32 s2) noexcept
+core::float32 Scalar::max(core::float32 s1, core::float32 s2) noexcept
 {
-  float32 z;
+  core::float32 z;
   if (s1 > s2)
   {
     z = s1;
@@ -19,9 +19,9 @@ float32 Scalar::max(float32 s1, float32 s2) noexcept
   return z;
 }
 
-float32 Scalar::min(float32 s1, float32 s2) noexcept
+core::float32 Scalar::min(core::float32 s1, core::float32 s2) noexcept
 {
-  float32 z;
+  core::float32 z;
   if (s1 < s2)
   {
     z = s1;
@@ -33,11 +33,11 @@ float32 Scalar::min(float32 s1, float32 s2) noexcept
   return z;
 }
 
-float32 Scalar::round(float32 s) noexcept
+core::float32 Scalar::round(core::float32 s) noexcept
 {
-  float32 x = Scalar::floor(s);
-  float32 y = s - x;
-  float32 z;
+  core::float32 x = Scalar::floor(s);
+  core::float32 y = s - x;
+  core::float32 z;
   if (y < 0.5f)
   {
     z = x;
@@ -53,10 +53,10 @@ float32 Scalar::round(float32 s) noexcept
   return z;
 }
 
-float32 Scalar::floor(float32 s) noexcept
+core::float32 Scalar::floor(core::float32 s) noexcept
 {
-  float32 y = static_cast<int64>(s);
-  float32 x;
+  core::float32 y = static_cast<core::int64>(s);
+  core::float32 x;
   
   if (s > 0.0f)
   {
@@ -70,10 +70,10 @@ float32 Scalar::floor(float32 s) noexcept
   return x;
 }
 
-float32 Scalar::ceil(float32 s) noexcept
+core::float32 Scalar::ceil(core::float32 s) noexcept
 {
-  float32 y = static_cast<int64>(s);
-  float32 x;
+  core::float32 y = static_cast<core::int64>(s);
+  core::float32 x;
 
   if (s > 0.0f)
   {
@@ -87,15 +87,15 @@ float32 Scalar::ceil(float32 s) noexcept
   return x;
 }
 
-float32 Scalar::trunc(float32 s) noexcept
+core::float32 Scalar::trunc(core::float32 s) noexcept
 {
-  float32 x = static_cast<int64>(s);
+  core::float32 x = static_cast<core::int64>(s);
   return x;
 }
 
-float32 Scalar::clamp(float32 s, float32 min, float32 max) noexcept
+core::float32 Scalar::clamp(core::float32 s, core::float32 min, core::float32 max) noexcept
 {
-  float32 x;
+  core::float32 x;
   if (s < min)
   {
     x = min;
@@ -112,9 +112,9 @@ float32 Scalar::clamp(float32 s, float32 min, float32 max) noexcept
   return x;
 }
 
-float32 Scalar::abs(float32 s) noexcept
+core::float32 Scalar::abs(core::float32 s) noexcept
 {
-  float32 x;
+  core::float32 x;
   if (s < 0)
   {
     x = -s;
@@ -126,81 +126,81 @@ float32 Scalar::abs(float32 s) noexcept
   return x;
 }
 
-float32 Scalar::pow(float32 s1, float32 s2) noexcept
+core::float32 Scalar::pow(core::float32 s1, core::float32 s2) noexcept
 {
-  float32 x = powf(s1, s2);
+  core::float32 x = powf(s1, s2);
   return x;
 }
 
-float32 Scalar::sqrt(float32 s) noexcept
+core::float32 Scalar::sqrt(core::float32 s) noexcept
 {
-  float32 x = sqrtf(s);
+  core::float32 x = sqrtf(s);
   return x;
 }
 
-float32 Scalar::exp2(float32 s) noexcept
+core::float32 Scalar::exp2(core::float32 s) noexcept
 {
-  float32 x = exp2f(s);
+  core::float32 x = exp2f(s);
   return x;
 }
 
-float32 Scalar::exp(float32 s) noexcept
+core::float32 Scalar::exp(core::float32 s) noexcept
 {
-  float32 x = expf(s);
+  core::float32 x = expf(s);
   return x;
 }
 
-float32 Scalar::log2(float32 s) noexcept
+core::float32 Scalar::log2(core::float32 s) noexcept
 {
-  float32 x = log2f(s);
+  core::float32 x = log2f(s);
   return x;
 }
 
-float32 Scalar::log10(float32 s) noexcept
+core::float32 Scalar::log10(core::float32 s) noexcept
 {
-  float32 x = log10f(s);
+  core::float32 x = log10f(s);
   return x;
 }
 
-float32 Scalar::log(float32 s) noexcept
+core::float32 Scalar::log(core::float32 s) noexcept
 {
-  float32 x = logf(s);
+  core::float32 x = logf(s);
   return x;
 }
 
-float32 Scalar::sin(float32 s) noexcept
+core::float32 Scalar::sin(core::float32 s) noexcept
 {
-  float32 x = sinf(s);
+  core::float32 x = sinf(s);
   return x;
 }
 
-float32 Scalar::cos(float32 s) noexcept
+core::float32 Scalar::cos(core::float32 s) noexcept
 {
-  float32 x = cosf(s);
+  core::float32 x = cosf(s);
   return x;
 }
 
-float32 Scalar::tan(float32 s) noexcept
+core::float32 Scalar::tan(core::float32 s) noexcept
 {
-  float32 x = tanf(s);
+  core::float32 x = tanf(s);
   return x;
 }
 
-float32 Scalar::arcSin(float32 s) noexcept
+core::float32 Scalar::arcSin(core::float32 s) noexcept
 {
-  float32 x = asinf(s);
+  core::float32 x = asinf(s);
   return x;
 }
 
-float32 Scalar::arcCos(float32 s) noexcept
+core::float32 Scalar::arcCos(core::float32 s) noexcept
 {
-  float32 x = acosf(s);
+  core::float32 x = acosf(s);
   return x;
 }
 
-float32 Scalar::arcTan(float32 s) noexcept
+core::float32 Scalar::arcTan(core::float32 s) noexcept
 {
-  float32 x = atanf(s);
+  core::float32 x = atanf(s);
   return x;
 }
 

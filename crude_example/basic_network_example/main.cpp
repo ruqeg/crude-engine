@@ -4,34 +4,34 @@
 #include <iostream>
 #include <thread>
 
-import crude_engine.core.input_memory_bit_stream;
-import crude_engine.core.output_memory_bit_stream;
-import crude_engine.core.output_memory_stream;
-import crude_engine.core.std_containers_heap;
-import crude_engine.network.socket_util;
-import crude_engine.network.tcp_socket;
-import crude_engine.network.socket_address;
-import crude_engine.network.socket_address_factory;
+import crude.core.input_memory_bit_stream;
+import crude.core.output_memory_bit_stream;
+import crude.core.output_memory_stream;
+import crude.core.std_containers_heap;
+import crude.network.socket_util;
+import crude.network.tcp_socket;
+import crude.network.socket_address;
+import crude.network.socket_address_factory;
 
 class Game_Object {};
 
 class Robo_Cat : public Game_Object
 {
 public:
-  void write(crude_engine::Output_Memory_Bit_Stream& inStream) const;
-  void read(crude_engine::Input_Memory_Bit_Stream& inStream);
+  void write(crude::Output_Memory_Bit_Stream& inStream) const;
+  void read(crude::Input_Memory_Bit_Stream& inStream);
 public:
   int m_health;
   int m_meowCount;
   Game_Object* m_homeBase;
   char m_name[20];
-  crude_engine::vector<int> m_miceIndices;
+  crude::vector<int> m_miceIndices;
 };
 
 void tcpServerLoop()
 {
-  crude_engine::TCP_Socket_Ptr listenSocket = crude_engine::Socket_Util::createTCPSocket(crude_engine::SOCKET_ADDRESS_FAMILT_INET);
-  crude_engine::Socket_Address receivingAddres(crude_engine::Socket_Address_Init_IPv4(INADDR_ANY, 54000));
+  crude::TCP_Socket_Ptr listenSocket = crude::Socket_Util::createTCPSocket(crude::SOCKET_ADDRESS_FAMILT_INET);
+  crude::Socket_Address receivingAddres(crude::Socket_Address_Init_IPv4(INADDR_ANY, 54000));
 
   if (listenSocket->bind(receivingAddres) == SOCKET_ERROR)
   {
@@ -43,23 +43,23 @@ void tcpServerLoop()
     return;
   }
 
-  crude_engine::vector<crude_engine::TCP_Socket_Ptr> readBlockSockets;
+  crude::vector<crude::TCP_Socket_Ptr> readBlockSockets;
   readBlockSockets.push_back(listenSocket);
 
-  crude_engine::vector<crude_engine::TCP_Socket_Ptr> readableSockets;
-  crude_engine::vector<crude_engine::TCP_Socket_Ptr> writeSockets;
+  crude::vector<crude::TCP_Socket_Ptr> readableSockets;
+  crude::vector<crude::TCP_Socket_Ptr> writeSockets;
   
   constexpr bool isGameRunning = true;
   while (isGameRunning)
   {
-    if (crude_engine::Socket_Util::select(&readBlockSockets, &readableSockets))
+    if (crude::Socket_Util::select(&readBlockSockets, &readableSockets))
     {
-      for (const crude_engine::TCP_Socket_Ptr& socket : readableSockets)
+      for (const crude::TCP_Socket_Ptr& socket : readableSockets)
       {
         if (socket == listenSocket)
         {
-          crude_engine::Socket_Address newClientAddress;
-          crude_engine::TCP_Socket_Ptr newSocket = listenSocket->accept(newClientAddress);
+          crude::Socket_Address newClientAddress;
+          crude::TCP_Socket_Ptr newSocket = listenSocket->accept(newClientAddress);
           readBlockSockets.push_back(newSocket);
           writeSockets.push_back(newSocket);
         }
@@ -72,7 +72,7 @@ void tcpServerLoop()
             std::cout << "Message from client: " << segment << std::endl;
           }
 
-          for (const crude_engine::TCP_Socket_Ptr& sendSocket : writeSockets)
+          for (const crude::TCP_Socket_Ptr& sendSocket : writeSockets)
           {
             if (sendSocket != socket)
             {
@@ -90,8 +90,8 @@ void tcpServerLoop()
 
 void tcpClientLoop()
 {
-  crude_engine::TCP_Socket_Ptr sendSocket = crude_engine::Socket_Util::createTCPSocket(crude_engine::SOCKET_ADDRESS_FAMILT_INET);
-  crude_engine::Socket_Address sendingAddres(crude_engine::Socket_Address_Init_IPv4("127.0.0.1", 54000));
+  crude::TCP_Socket_Ptr sendSocket = crude::Socket_Util::createTCPSocket(crude::SOCKET_ADDRESS_FAMILT_INET);
+  crude::Socket_Address sendingAddres(crude::Socket_Address_Init_IPv4("127.0.0.1", 54000));
   
   if (sendSocket->connect(sendingAddres) == SOCKET_ERROR)
   {
@@ -114,7 +114,7 @@ void tcpClientLoop()
         std::cin >> r.m_name;
         std::cout << std::endl;
 
-        crude_engine::Output_Memory_Bit_Stream stream;
+        crude::Output_Memory_Bit_Stream stream;
         r.write(stream);
         if (sendSocket->send(*stream.getBufferPtr()) == SOCKET_ERROR)
         {
@@ -126,11 +126,11 @@ void tcpClientLoop()
     std::thread writerThread([&sendSocket]() -> void {
       while (true)
       {
-        auto buffer = crude_engine::makeShared<crude_engine::vector<byte>>(256);
+        auto buffer = crude::makeShared<crude::vector<byte>>(256);
         if (sendSocket->receive(*buffer) > 0)
         {
           Robo_Cat r;
-          crude_engine::Input_Memory_Bit_Stream stream(buffer);
+          crude::Input_Memory_Bit_Stream stream(buffer);
           r.read(stream);
           std::cout
             << std::endl
@@ -168,14 +168,14 @@ int APIENTRY wWinMain(
   return EXIT_SUCCESS;
 }
 
-void Robo_Cat::write(crude_engine::Output_Memory_Bit_Stream& inStream) const
+void Robo_Cat::write(crude::Output_Memory_Bit_Stream& inStream) const
 {
   inStream.write(m_health);
   inStream.write(m_meowCount);
   inStream.writeBytes(m_name, sizeof(m_name));
 }
 
-void Robo_Cat::read(crude_engine::Input_Memory_Bit_Stream& inStream)
+void Robo_Cat::read(crude::Input_Memory_Bit_Stream& inStream)
 {
   inStream.read(m_health);
   inStream.read(m_meowCount);

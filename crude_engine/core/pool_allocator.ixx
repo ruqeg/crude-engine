@@ -1,11 +1,11 @@
 module;
 
-export module crude_engine.core.pool_allocator;
+export module crude.core.pool_allocator;
 
-import crude_engine.core.iallocator;
-import crude_engine.core.stack_linked_list;
+import crude.core.iallocator;
+import crude.core.stack_linked_list;
 
-export namespace crude_engine
+export namespace crude::core
 {
 
 class Pool_Allocator : public IAllocator

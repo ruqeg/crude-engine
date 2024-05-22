@@ -1,12 +1,12 @@
 module;
 
-export module crude_engine.core.bs_tree;
+export module crude.core.bs_tree;
 
-import crude_engine.core.tree_iterator_base;
-import crude_engine.core.size_holder;
-import crude_engine.core.compare;
+import crude.core.tree_iterator_base;
+import crude.core.size_holder;
+import crude.core.compare;
 
-export namespace crude_engine
+export namespace crude::core
 {
 
 template <class Node>
@@ -290,7 +290,7 @@ Binary_Search_Tree<Node, Compare>::Const_Iterator Binary_Search_Tree<Node, Compa
 }
 
 template<class Node, class Compare>
-Node* crude_engine::Binary_Search_Tree<Node, Compare>::getFirstEqual(Node* node) noexcept
+Node* Binary_Search_Tree<Node, Compare>::getFirstEqual(Node* node) noexcept
 {
   auto it = iteratorTo(*node);
   if (it == begin())
@@ -340,7 +340,7 @@ Binary_Search_Tree<Node, Compare>::Iterator Binary_Search_Tree<Node, Compare>::u
 
 template<class Node, class Compare>
 template<class Comparable>
-Binary_Search_Tree<Node, Compare>::Iterator crude_engine::Binary_Search_Tree<Node, Compare>::lowerBound(const Comparable& query) noexcept
+Binary_Search_Tree<Node, Compare>::Iterator Binary_Search_Tree<Node, Compare>::lowerBound(const Comparable& query) noexcept
 {
   Node* cur = m_root;
   Node* lastLeft = nullptr;
@@ -548,4 +548,4 @@ Node* Binary_Search_Tree<Node, Compare>::getUncle(Node* node) const noexcept
   return grandparent->NB::getLeft();
 }
 
-} // namespace crude_engine
+} // namespace crude

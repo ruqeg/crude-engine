@@ -1,13 +1,13 @@
 module;
 
-export module crude_engine.core.free_rbt_allocator;
+export module crude.core.free_rbt_allocator;
 
-export import crude_engine.core.alias;
+export import crude.core.alias;
 
-import crude_engine.core.cxx_allocator_container;
-import crude_engine.core.rb_tree;
+import crude.core.cxx_allocator_container;
+import crude.core.rb_tree;
 
-export namespace crude_engine
+export namespace crude::core
 {
 
 class Free_RBT_Allocator : public CXX_Allocator_Container

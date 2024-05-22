@@ -1,6 +1,7 @@
 #ifdef _CRUDE_EXAMPLE_BASIC_TRIANGLE
 
 #include <vulkan/vulkan.h>
+#include <SDL2/SDL.h>
 
 #ifdef __linux__ 
 //#define VK_USE_PLATFORM_XCB_KHR
@@ -13,55 +14,55 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-import crude_engine.core.filesystem;
-import crude_engine.core.optional;
-import crude_engine.core.shared_ptr;
-import crude_engine.core.std_containers_heap;
-import crude_engine.core.std_containers_stack;
+import crude.core.filesystem;
+import crude.core.optional;
+import crude.core.shared_ptr;
+import crude.core.std_containers_heap;
+import crude.core.std_containers_stack;
 
-import crude_engine.graphics.vulkan.instance;
-import crude_engine.graphics.vulkan.debug_utils_messenger;
-import crude_engine.graphics.vulkan.surface;
-import crude_engine.graphics.vulkan.physical_device;
-import crude_engine.graphics.vulkan.device;
-import crude_engine.graphics.vulkan.queue;
-import crude_engine.graphics.vulkan.swap_chain;
-import crude_engine.graphics.vulkan.image_view;
-import crude_engine.graphics.vulkan.swap_chain_image;
-import crude_engine.graphics.vulkan.render_pass;
-import crude_engine.graphics.vulkan.descriptor_set_layout;
-import crude_engine.graphics.vulkan.shader_module;
-import crude_engine.graphics.vulkan.pipeline_layout;
-import crude_engine.graphics.vulkan.shader_stage_create_info;
-import crude_engine.graphics.vulkan.pipeline;
-import crude_engine.graphics.vulkan.command_pool;
-import crude_engine.graphics.vulkan.device_memory;
-import crude_engine.graphics.vulkan.command_buffer;
-import crude_engine.graphics.vulkan.image_memory_barrier;
-import crude_engine.graphics.vulkan.framebuffer;
-import crude_engine.graphics.vulkan.buffer;
-import crude_engine.graphics.vulkan.sampler;
-import crude_engine.graphics.vulkan.descriptor_pool;
-import crude_engine.graphics.vulkan.descriptor_set;
-import crude_engine.graphics.vulkan.write_descriptor_set;
-import crude_engine.graphics.vulkan.fence;
-import crude_engine.graphics.vulkan.semaphore;
-import crude_engine.graphics.vulkan.subpass_description;
-import crude_engine.graphics.vulkan.subpass_dependency;
-import crude_engine.graphics.vulkan.descriptor_image_info;
-import crude_engine.graphics.vulkan.attachment_description;
-import crude_engine.graphics.vulkan.viewport_state_create_info;
-import crude_engine.graphics.vulkan.vertex_input_state_create_info;
-import crude_engine.graphics.vulkan.tessellation_state_create_info;
-import crude_engine.graphics.vulkan.rasterization_state_create_info;
-import crude_engine.graphics.vulkan.multisample_state_create_info;
-import crude_engine.graphics.vulkan.depth_stencil_state_create_info;
-import crude_engine.graphics.vulkan.input_assembly_state_create_info;
-import crude_engine.graphics.vulkan.dynamic_state_create_info;
-import crude_engine.graphics.vulkan.descriptor_set_layout;
-import crude_engine.graphics.vulkan.image_subresource_range;
-import crude_engine.graphics.vulkan.application;
-import crude_engine.graphics.vulkan.color_blend_state_create_info;
+import crude.graphics.vulkan.instance;
+import crude.graphics.vulkan.debug_utils_messenger;
+import crude.graphics.vulkan.surface;
+import crude.graphics.vulkan.physical_device;
+import crude.graphics.vulkan.device;
+import crude.graphics.vulkan.queue;
+import crude.graphics.vulkan.swap_chain;
+import crude.graphics.vulkan.image_view;
+import crude.graphics.vulkan.swap_chain_image;
+import crude.graphics.vulkan.render_pass;
+import crude.graphics.vulkan.descriptor_set_layout;
+import crude.graphics.vulkan.shader_module;
+import crude.graphics.vulkan.pipeline_layout;
+import crude.graphics.vulkan.shader_stage_create_info;
+import crude.graphics.vulkan.pipeline;
+import crude.graphics.vulkan.command_pool;
+import crude.graphics.vulkan.device_memory;
+import crude.graphics.vulkan.command_buffer;
+import crude.graphics.vulkan.image_memory_barrier;
+import crude.graphics.vulkan.framebuffer;
+import crude.graphics.vulkan.buffer;
+import crude.graphics.vulkan.sampler;
+import crude.graphics.vulkan.descriptor_pool;
+import crude.graphics.vulkan.descriptor_set;
+import crude.graphics.vulkan.write_descriptor_set;
+import crude.graphics.vulkan.fence;
+import crude.graphics.vulkan.semaphore;
+import crude.graphics.vulkan.subpass_description;
+import crude.graphics.vulkan.subpass_dependency;
+import crude.graphics.vulkan.descriptor_image_info;
+import crude.graphics.vulkan.attachment_description;
+import crude.graphics.vulkan.viewport_state_create_info;
+import crude.graphics.vulkan.vertex_input_state_create_info;
+import crude.graphics.vulkan.tessellation_state_create_info;
+import crude.graphics.vulkan.rasterization_state_create_info;
+import crude.graphics.vulkan.multisample_state_create_info;
+import crude.graphics.vulkan.depth_stencil_state_create_info;
+import crude.graphics.vulkan.input_assembly_state_create_info;
+import crude.graphics.vulkan.dynamic_state_create_info;
+import crude.graphics.vulkan.descriptor_set_layout;
+import crude.graphics.vulkan.image_subresource_range;
+import crude.graphics.vulkan.application;
+import crude.graphics.vulkan.color_blend_state_create_info;
 
 #include <algorithm>
 #include <iostream>
@@ -73,8 +74,8 @@ class Test_Application
 public:
   struct Queue_Family_Indices
   {
-    crude_engine::Optional<uint32_t> graphicsFamily;
-    crude_engine::Optional<uint32_t> presentFamily;
+    crude::Optional<uint32_t> graphicsFamily;
+    crude::Optional<uint32_t> presentFamily;
 
     bool isComplete() const
     {
@@ -198,13 +199,13 @@ private:
   void initVulkan()
   {
 #ifdef __linux__ 
-    const auto surfaceExtensions = crude_engine::XCB_Surface::requiredExtensions();
+    const auto surfaceExtensions = crude::XCB_Surface::requiredExtensions();
 #elif _WIN32
-    const auto surfaceExtensions = crude_engine::Win32_Surface::requiredExtensions();
+    const auto surfaceExtensions = crude::Win32_Surface::requiredExtensions();
 #endif
-    const auto debugUtilsExtensions = crude_engine::Debug_Utils_Messenger::requiredExtensions();
+    const auto debugUtilsExtensions = crude::Debug_Utils_Messenger::requiredExtensions();
 
-    crude_engine::vector<const char*> enabledExtensions(surfaceExtensions.size() + debugUtilsExtensions.size());
+    crude::vector<const char*> enabledExtensions(surfaceExtensions.size() + debugUtilsExtensions.size());
     for (std::size_t i = 0u; i < surfaceExtensions.size(); ++i)
     {
       enabledExtensions[i] = surfaceExtensions[i];
@@ -215,24 +216,24 @@ private:
     }
     
     // Initialize instance
-    crude_engine::array<const char*, 1u> enabledLayers = { "VK_LAYER_KHRONOS_validation" };
-    m_instance = crude_engine::makeShared<crude_engine::Instance>(
+    crude::array<const char*, 1u> enabledLayers = { "VK_LAYER_KHRONOS_validation" };
+    m_instance = crude::makeShared<crude::Instance>(
       debugCallback,
-      crude_engine::Application(),
-      crude_engine::span(enabledExtensions.data(), enabledExtensions.size()),
-      crude_engine::span(enabledLayers.data(), enabledLayers.size()));
+      crude::Application(),
+      crude::span(enabledExtensions.data(), enabledExtensions.size()),
+      crude::span(enabledLayers.data(), enabledLayers.size()));
 
     // Initialize debugCallback
-    m_debugUtilsMessenger = crude_engine::makeShared<crude_engine::Debug_Utils_Messenger>(m_instance, debugCallback);
+    m_debugUtilsMessenger = crude::makeShared<crude::Debug_Utils_Messenger>(m_instance, debugCallback);
 
     // Initialize surface
 #ifdef __linux__ 
-    m_surface = std::make_shared<crude_engine::XCB_Surface>(crude_engine::XCBSurfaceCreateInfo(
+    m_surface = std::make_shared<crude::XCB_Surface>(crude::XCBSurfaceCreateInfo(
       m_instance,
       m_pConnection,
       m_window));
 #elif _WIN32
-    m_surface = crude_engine::makeShared<crude_engine::Win32_Surface>(m_instance, m_hinstance, m_hwnd);
+    m_surface = crude::makeShared<crude::Win32_Surface>(m_instance, m_hinstance, m_hwnd);
 #endif
 
     // Pick physical device
@@ -265,20 +266,20 @@ private:
 
     float queuePriorities[] = { 1.f };
 
-    crude_engine::vector<crude_engine::Device_Queue_Create_Info> deviceQueueCreateInfos = 
+    crude::vector<crude::Device_Queue_Create_Info> deviceQueueCreateInfos = 
     {
-      crude_engine::Device_Queue_Create_Info(queueIndices.graphicsFamily.value(), crude_engine::span<float>(queuePriorities, 1u)),
-      crude_engine::Device_Queue_Create_Info(queueIndices.presentFamily.value(), crude_engine::span<float>(queuePriorities, 1u))
+      crude::Device_Queue_Create_Info(queueIndices.graphicsFamily.value(), crude::span<float>(queuePriorities, 1u)),
+      crude::Device_Queue_Create_Info(queueIndices.presentFamily.value(), crude::span<float>(queuePriorities, 1u))
     };
     
-    crude_engine::vector<const char*> deviceEnabledExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
+    crude::vector<const char*> deviceEnabledExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
 
-    m_device = crude_engine::makeShared<crude_engine::Device>(
+    m_device = crude::makeShared<crude::Device>(
       m_physicalDevice,
-      crude_engine::span<crude_engine::Device_Queue_Create_Info>(deviceQueueCreateInfos.data(), deviceQueueCreateInfos.size()),
+      crude::span<crude::Device_Queue_Create_Info>(deviceQueueCreateInfos.data(), deviceQueueCreateInfos.size()),
       deviceFeatures,
-      crude_engine::span<const char*>(deviceEnabledExtensions.data(), deviceEnabledExtensions.size()),
-      crude_engine::span<const char*>(enabledLayers.data(), enabledLayers.size()));
+      crude::span<const char*>(deviceEnabledExtensions.data(), deviceEnabledExtensions.size()),
+      crude::span<const char*>(enabledLayers.data(), enabledLayers.size()));
 
     m_graphicsQueue = m_device->getQueue(queueIndices.graphicsFamily.value(), 0u);
     m_presentQueue = m_device->getQueue(queueIndices.presentFamily.value(), 0u);
@@ -294,9 +295,9 @@ private:
       imageCount = surfaceCapabilites.maxImageCount;
     }
 
-    crude_engine::vector<uint32_t> queueFamilyIndices = { queueIndices.graphicsFamily.value(), queueIndices.presentFamily.value() };
+    crude::vector<uint32_t> queueFamilyIndices = { queueIndices.graphicsFamily.value(), queueIndices.presentFamily.value() };
 
-    m_swapchain = crude_engine::makeShared<crude_engine::Swap_Chain>(
+    m_swapchain = crude::makeShared<crude::Swap_Chain>(
       m_device,
       m_surface,
       surfaceFormat,
@@ -305,7 +306,7 @@ private:
       imageCount,
       1u,
       VK_SHARING_MODE_CONCURRENT,
-      crude_engine::span(queueFamilyIndices.data(), queueFamilyIndices.size()),
+      crude::span(queueFamilyIndices.data(), queueFamilyIndices.size()),
       surfaceCapabilites.currentTransform,
       VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
       presentMode,
@@ -317,14 +318,14 @@ private:
     m_swapchainImagesViews.resize(m_swapchainImages.size());
     for (uint32_t i = 0; i < m_swapchainImages.size(); ++i)
     {
-      m_swapchainImagesViews[i] = crude_engine::makeShared<crude_engine::Image_View>(
+      m_swapchainImagesViews[i] = crude::makeShared<crude::Image_View>(
         m_device,
         m_swapchainImages[i],
         surfaceFormat.format,
-        crude_engine::Image_Subresource_Range(m_swapchainImages[i]));
+        crude::Image_Subresource_Range(m_swapchainImages[i]));
     }
 
-    crude_engine::Attachment_Description colorAttachment(
+    crude::Attachment_Description colorAttachment(
       surfaceFormat.format,
       VK_SAMPLE_COUNT_1_BIT,
       VK_ATTACHMENT_LOAD_OP_CLEAR,
@@ -334,11 +335,11 @@ private:
       VK_IMAGE_LAYOUT_UNDEFINED,
       VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
 
-    crude_engine::array<VkAttachmentReference, 1u> colorAttachmentRef;
+    crude::array<VkAttachmentReference, 1u> colorAttachmentRef;
     colorAttachmentRef[0].attachment = 0u;
     colorAttachmentRef[0].layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
-    crude_engine::Attachment_Description depthAttachment(
+    crude::Attachment_Description depthAttachment(
       findDepthFormat(),
       VK_SAMPLE_COUNT_1_BIT,
       VK_ATTACHMENT_LOAD_OP_CLEAR,
@@ -352,14 +353,14 @@ private:
     depthAttachmentRef.attachment = 1u;
     depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
-    crude_engine::Subpass_Description subpass(
+    crude::Subpass_Description subpass(
       VK_PIPELINE_BIND_POINT_GRAPHICS,
       {},
-      crude_engine::span(colorAttachmentRef.data(), colorAttachmentRef.size()),
+      crude::span(colorAttachmentRef.data(), colorAttachmentRef.size()),
       &depthAttachmentRef,
       {});
 
-    crude_engine::Subpass_Dependency subpassDependency(
+    crude::Subpass_Dependency subpassDependency(
       VK_SUBPASS_EXTERNAL,
       0u,
       VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
@@ -368,18 +369,18 @@ private:
       VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
       0u);
 
-    crude_engine::Attachment_Description attachments[] =
+    crude::Attachment_Description attachments[] =
     {
       colorAttachment,
       depthAttachment
     };
     attachments[0];
 
-    m_renderPass = crude_engine::makeShared<crude_engine::Render_Pass>(
+    m_renderPass = crude::makeShared<crude::Render_Pass>(
       m_device,
-      crude_engine::span(&subpass, 1u),
-      crude_engine::span(&subpassDependency, 1u),
-      crude_engine::span(attachments, 2u));
+      crude::span(&subpass, 1u),
+      crude::span(&subpassDependency, 1u),
+      crude::span(attachments, 2u));
 
     VkDescriptorSetLayoutBinding uboLayoutBinding{};
     uboLayoutBinding.descriptorType   = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -393,9 +394,9 @@ private:
     samplerLayoutBinding.descriptorCount  = 1;
     samplerLayoutBinding.stageFlags       = VK_SHADER_STAGE_FRAGMENT_BIT;
 
-    m_descriptorSetLayout = crude_engine::makeShared<crude_engine::Descriptor_Set_Layout>(
+    m_descriptorSetLayout = crude::makeShared<crude::Descriptor_Set_Layout>(
       m_device,
-      crude_engine::span(&samplerLayoutBinding, 1u));
+      crude::span(&samplerLayoutBinding, 1u));
 
 #ifdef __linux__ 
     const char* vertShaderPathA = "test/shader.vert.spv";
@@ -407,23 +408,23 @@ private:
 
     const auto vertShaderCode = readFile(vertShaderPathA);
     const auto fragShaderCode = readFile(fragShaderPathA);
-    auto vertShaderModule = crude_engine::makeShared<crude_engine::Shader_Module>(
+    auto vertShaderModule = crude::makeShared<crude::Shader_Module>(
       m_device,
-      crude_engine::span(vertShaderCode.data(), vertShaderCode.size()));
-    auto fragShaderModule = crude_engine::makeShared<crude_engine::Shader_Module>(
+      crude::span(vertShaderCode.data(), vertShaderCode.size()));
+    auto fragShaderModule = crude::makeShared<crude::Shader_Module>(
       m_device,
-      crude_engine::span(fragShaderCode.data(), fragShaderCode.size()));
+      crude::span(fragShaderCode.data(), fragShaderCode.size()));
 
-    crude_engine::array<crude_engine::Shader_Stage_Create_Info, 2u> shaderStagesInfo =
+    crude::array<crude::Shader_Stage_Create_Info, 2u> shaderStagesInfo =
     {
-      crude_engine::Shader_Stage_Create_Info(VK_SHADER_STAGE_VERTEX_BIT, vertShaderModule, "main"),
-      crude_engine::Shader_Stage_Create_Info(VK_SHADER_STAGE_FRAGMENT_BIT, fragShaderModule, "main"),
+      crude::Shader_Stage_Create_Info(VK_SHADER_STAGE_VERTEX_BIT, vertShaderModule, "main"),
+      crude::Shader_Stage_Create_Info(VK_SHADER_STAGE_FRAGMENT_BIT, fragShaderModule, "main"),
     };
 
-    auto vertexInputStateInfo = crude_engine::Vertex_Input_State_Create_Info({}, {});
-    auto inputAssembly = crude_engine::Input_Assembly_State_Create_Info(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FALSE);
-    auto viewportState = crude_engine::Viewport_State_Create_Info(1u, 1u);
-    auto rasterizer = crude_engine::Rasterization_State_Create_Info(
+    auto vertexInputStateInfo = crude::Vertex_Input_State_Create_Info({}, {});
+    auto inputAssembly = crude::Input_Assembly_State_Create_Info(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FALSE);
+    auto viewportState = crude::Viewport_State_Create_Info(1u, 1u);
+    auto rasterizer = crude::Rasterization_State_Create_Info(
       VK_FALSE,
       VK_FALSE,
       VK_POLYGON_MODE_FILL,
@@ -434,13 +435,13 @@ private:
       0.0f,
       0.0f,
       1.f);
-    auto multisampling = crude_engine::Multisample_State_Create_Info(
+    auto multisampling = crude::Multisample_State_Create_Info(
       VK_SAMPLE_COUNT_1_BIT,
       VK_FALSE,
       1.0f,
       VK_FALSE,
       VK_FALSE);
-    auto depthStencil = crude_engine::Depth_Stencil_State_Create_Info(
+    auto depthStencil = crude::Depth_Stencil_State_Create_Info(
       VK_TRUE,
       VK_TRUE,
       VK_COMPARE_OP_LESS,
@@ -461,28 +462,28 @@ private:
     colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
     colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
 
-    auto colorBlending = crude_engine::Color_Blend_State_Create_Info(
-      crude_engine::span(&colorBlendAttachment, 1u),
+    auto colorBlending = crude::Color_Blend_State_Create_Info(
+      crude::span(&colorBlendAttachment, 1u),
       { 0.f, 0.f, 0.f, 0.f },
       VK_FALSE,
       VK_LOGIC_OP_COPY);
 
-    crude_engine::array<VkDynamicState, 2u> dynamicStates = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
-    auto dynamicState = crude_engine::Dynamic_State_Create_Info(crude_engine::span(dynamicStates.data(), dynamicStates.size()));
+    crude::array<VkDynamicState, 2u> dynamicStates = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
+    auto dynamicState = crude::Dynamic_State_Create_Info(crude::span(dynamicStates.data(), dynamicStates.size()));
 
-    crude_engine::vector<crude_engine::Shared_Ptr<crude_engine::Descriptor_Set_Layout>> descriptorSetLayouts = { m_descriptorSetLayout };
-    m_pipelineLayout = crude_engine::makeShared<crude_engine::Pipeline_Layout>(
+    crude::vector<crude::Shared_Ptr<crude::Descriptor_Set_Layout>> descriptorSetLayouts = { m_descriptorSetLayout };
+    m_pipelineLayout = crude::makeShared<crude::Pipeline_Layout>(
       m_device, 
-      crude_engine::span(descriptorSetLayouts.data(), descriptorSetLayouts.size()));
+      crude::span(descriptorSetLayouts.data(), descriptorSetLayouts.size()));
 
-    m_graphicsPipeline = crude_engine::makeShared<crude_engine::Pipeline>(
+    m_graphicsPipeline = crude::makeShared<crude::Pipeline>(
       m_device,
       m_renderPass,
       m_pipelineLayout,
       nullptr,
-      crude_engine::span(shaderStagesInfo.data(), shaderStagesInfo.size()),
+      crude::span(shaderStagesInfo.data(), shaderStagesInfo.size()),
       vertexInputStateInfo,
-      crude_engine::Tessellation_State_Create_Info(3u),
+      crude::Tessellation_State_Create_Info(3u),
       inputAssembly,
       viewportState,
       rasterizer,
@@ -492,7 +493,7 @@ private:
       dynamicState,
       0u);
 
-    m_commandPool = crude_engine::makeShared<crude_engine::Command_Pool>(
+    m_commandPool = crude::makeShared<crude::Command_Pool>(
       m_device, 
       VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
       queueIndices.graphicsFamily.value());
@@ -502,9 +503,9 @@ private:
     m_swapchainFramebuffers.resize(m_swapchainImagesViews.size());
     for (uint32_t i = 0; i < m_swapchainFramebuffers.size(); ++i)
     {
-      crude_engine::vector<crude_engine::Shared_Ptr<crude_engine::Image_View>> attachments = { m_swapchainImagesViews[i], m_depthImageView };
+      crude::vector<crude::Shared_Ptr<crude::Image_View>> attachments = { m_swapchainImagesViews[i], m_depthImageView };
 
-      m_swapchainFramebuffers[i] = crude_engine::makeShared<crude_engine::Framebuffer>(
+      m_swapchainFramebuffers[i] = crude::makeShared<crude::Framebuffer>(
         m_device,
         m_renderPass,
         attachments,
@@ -515,13 +516,13 @@ private:
 
     createTextureImageFromFile("../../crude_example/test.png", m_textureImage, m_textureImageMemory);
 
-    m_textureImageView = crude_engine::makeShared<crude_engine::Image_View>(
+    m_textureImageView = crude::makeShared<crude::Image_View>(
       m_device,
       m_textureImage,
       m_textureImage->getFormat(),
-      crude_engine::Image_Subresource_Range(m_textureImage));
+      crude::Image_Subresource_Range(m_textureImage));
 
-    m_sampler = crude_engine::makeShared<crude_engine::Sampler>(
+    m_sampler = crude::makeShared<crude::Sampler>(
       m_device,
       VK_FILTER_LINEAR,
       VK_FILTER_LINEAR,
@@ -539,43 +540,43 @@ private:
       VK_BORDER_COLOR_INT_OPAQUE_BLACK,
       VK_FALSE);
 
-    crude_engine::vector<VkDescriptorPoolSize> poolSizes = { VkDescriptorPoolSize{VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 2u} };
-    m_descriptorPool = crude_engine::makeShared<crude_engine::Descriptor_Pool>(
+    crude::vector<VkDescriptorPoolSize> poolSizes = { VkDescriptorPoolSize{VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 2u} };
+    m_descriptorPool = crude::makeShared<crude::Descriptor_Pool>(
       m_device,
-      crude_engine::span(poolSizes.data(), poolSizes.size()),
+      crude::span(poolSizes.data(), poolSizes.size()),
       2u);
 
     m_descriptorSets.resize(2u);
     for (auto& descriptorSet : m_descriptorSets)
     {
-      descriptorSet = crude_engine::makeShared<crude_engine::Descriptor_Set>(
+      descriptorSet = crude::makeShared<crude::Descriptor_Set>(
         m_device,
         descriptorSetLayouts,
         m_descriptorPool);
     }
 
     for (uint32_t i = 0; i < 2u; i++) {
-      crude_engine::Descriptor_Image_Info imageInfo(
+      crude::Descriptor_Image_Info imageInfo(
         m_sampler,
         m_textureImageView,
         VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-      auto descriptorWrites = crude_engine::Write_Descriptor_Set(
+      auto descriptorWrites = crude::Write_Descriptor_Set(
         m_descriptorSets[i],
         0u,
         0u,
         1u,
         VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
         imageInfo,
-        crude_engine::nullopt);
+        crude::nullopt);
 
-      m_device->updateDescriptorSets(crude_engine::span(&descriptorWrites, 1u), {});
+      m_device->updateDescriptorSets(crude::span(&descriptorWrites, 1u), {});
     }
 
     m_commandBuffers.resize(2u);
     for (auto& commandBuffer : m_commandBuffers)
     {
-      commandBuffer = crude_engine::makeShared<crude_engine::Command_Buffer>(
+      commandBuffer = crude::makeShared<crude::Command_Buffer>(
         m_device,
         m_commandPool,
         VK_COMMAND_BUFFER_LEVEL_PRIMARY);
@@ -586,9 +587,9 @@ private:
     m_inFlightFences.resize(2u);
 
     for (size_t i = 0; i < 2u; i++) {
-      m_imageAvailableSemaphores[i] = crude_engine::makeShared<crude_engine::Semaphore>(m_device);
-      m_renderFinishedSemaphores[i] = crude_engine::makeShared<crude_engine::Semaphore>(m_device);
-      m_inFlightFences[i] = crude_engine::makeShared<crude_engine::Fence>(m_device, VK_FENCE_CREATE_SIGNALED_BIT);
+      m_imageAvailableSemaphores[i] = crude::makeShared<crude::Semaphore>(m_device);
+      m_renderFinishedSemaphores[i] = crude::makeShared<crude::Semaphore>(m_device);
+      m_inFlightFences[i] = crude::makeShared<crude::Fence>(m_device, VK_FENCE_CREATE_SIGNALED_BIT);
     }
   }
 
@@ -598,7 +599,7 @@ private:
     const VkExtent2D extent = chooseSwapExtent(surfaceCapabilites);
 
     const VkFormat depthFormat = findDepthFormat();
-    m_depthImage = crude_engine::makeShared<crude_engine::Image>(
+    m_depthImage = crude::makeShared<crude::Image>(
       m_device,
       0u,
       depthFormat,
@@ -614,7 +615,7 @@ private:
 
     VkMemoryRequirements memRequirements = m_depthImage->getMemoryRequirements();
 
-    m_depthImageDeviceMemory = crude_engine::makeShared<crude_engine::Device_Memory>(
+    m_depthImageDeviceMemory = crude::makeShared<crude::Device_Memory>(
       m_device,
       memRequirements.size,
       memRequirements.memoryTypeBits,
@@ -622,31 +623,31 @@ private:
 
     m_depthImageDeviceMemory->bind(*m_depthImage);
 
-    auto commandBuffer = crude_engine::makeShared<crude_engine::Command_Buffer>(
+    auto commandBuffer = crude::makeShared<crude::Command_Buffer>(
       m_device,
       m_commandPool,
       VK_COMMAND_BUFFER_LEVEL_PRIMARY);
     commandBuffer->begin();
 
-    crude_engine::Image_Memory_Barrier barrier(
+    crude::Image_Memory_Barrier barrier(
       m_depthImage,
       VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
-      crude_engine::Image_Subresource_Range(m_depthImage, 0u, 1u, 0u, 1u));
-    crude_engine::span barriers(&barrier, 1);
+      crude::Image_Subresource_Range(m_depthImage, 0u, 1u, 0u, 1u));
+    crude::span barriers(&barrier, 1);
     commandBuffer->barrier(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT, barriers);
     commandBuffer->end();
 
-    m_graphicsQueue->sumbit(crude_engine::span(&commandBuffer, 1u));
+    m_graphicsQueue->sumbit(crude::span(&commandBuffer, 1u));
     m_graphicsQueue->waitIdle();
 
-    m_depthImageView = crude_engine::makeShared<crude_engine::Image_View>(
+    m_depthImageView = crude::makeShared<crude::Image_View>(
       m_device,
       m_depthImage,
       depthFormat,
-      crude_engine::Image_Subresource_Range(m_depthImage));
+      crude::Image_Subresource_Range(m_depthImage));
   }
 
-  void createTextureImageFromFile(const char* path, crude_engine::Shared_Ptr<crude_engine::Image>& textureImage, crude_engine::Shared_Ptr<crude_engine::Device_Memory>& textureImageMemory)
+  void createTextureImageFromFile(const char* path, crude::Shared_Ptr<crude::Image>& textureImage, crude::Shared_Ptr<crude::Device_Memory>& textureImageMemory)
   {
     int texWidth, texHeight, texChannels;
     stbi_uc* pixels = stbi_load(path, &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
@@ -657,16 +658,16 @@ private:
       throw std::runtime_error("failed to load texture image!");
     }
 
-    auto stagingBuffer = crude_engine::makeShared<crude_engine::Buffer>(
+    auto stagingBuffer = crude::makeShared<crude::Buffer>(
       m_device,
       4 * texWidth * texHeight,
       VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
       VK_SHARING_MODE_EXCLUSIVE,
-      crude_engine::span<crude_engine::uint32>());
+      crude::span<crude::uint32>());
     
     VkMemoryRequirements memRequirements = m_depthImage->getMemoryRequirements();
 
-    auto stagingBufferMemory = crude_engine::makeShared<crude_engine::Device_Memory>(
+    auto stagingBufferMemory = crude::makeShared<crude::Device_Memory>(
       m_device,
       memRequirements.size,
       memRequirements.memoryTypeBits,
@@ -678,7 +679,7 @@ private:
     memcpy(data, pixels, static_cast<size_t>(pixelsbsize));
     stagingBufferMemory->unmap();
 
-    textureImage = crude_engine::makeShared<crude_engine::Image>(
+    textureImage = crude::makeShared<crude::Image>(
       m_device,
       0u,
       VK_FORMAT_R8G8B8A8_SRGB,
@@ -693,7 +694,7 @@ private:
 
     memRequirements = textureImage->getMemoryRequirements();
 
-    textureImageMemory = crude_engine::makeShared<crude_engine::Device_Memory>(
+    textureImageMemory = crude::makeShared<crude::Device_Memory>(
       m_device,
       memRequirements.size,
       memRequirements.memoryTypeBits,
@@ -701,18 +702,18 @@ private:
 
     textureImageMemory->bind(*textureImage);
 
-    auto commandBuffer = crude_engine::makeShared<crude_engine::Command_Buffer>(
+    auto commandBuffer = crude::makeShared<crude::Command_Buffer>(
       m_device,
       m_commandPool,
       VK_COMMAND_BUFFER_LEVEL_PRIMARY);
     commandBuffer->begin();
 
-    crude_engine::Image_Memory_Barrier barrier(
+    crude::Image_Memory_Barrier barrier(
       textureImage,
       VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-      crude_engine::Image_Subresource_Range(textureImage, 0u, 1u, 0u, 1u));
+      crude::Image_Subresource_Range(textureImage, 0u, 1u, 0u, 1u));
 
-    commandBuffer->barrier(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, crude_engine::span(&barrier, 1u));
+    commandBuffer->barrier(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, crude::span(&barrier, 1u));
 
     VkBufferImageCopy region{};
     region.bufferOffset = 0;
@@ -728,18 +729,18 @@ private:
       static_cast<uint32_t>(texHeight),
       1
     };
-    commandBuffer->copyBufferToImage(stagingBuffer, textureImage, crude_engine::span(&region, 1u));
+    commandBuffer->copyBufferToImage(stagingBuffer, textureImage, crude::span(&region, 1u));
 
-    barrier = crude_engine::Image_Memory_Barrier(
+    barrier = crude::Image_Memory_Barrier(
       textureImage,
       VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-      crude_engine::Image_Subresource_Range(textureImage, 0u, 1u, 0u, 1u));
+      crude::Image_Subresource_Range(textureImage, 0u, 1u, 0u, 1u));
 
-    commandBuffer->barrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, crude_engine::span(&barrier, 1u));
+    commandBuffer->barrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, crude::span(&barrier, 1u));
 
     commandBuffer->end();
 
-    m_graphicsQueue->sumbit(crude_engine::span(&commandBuffer, 1u));
+    m_graphicsQueue->sumbit(crude::span(&commandBuffer, 1u));
     m_graphicsQueue->waitIdle();
   }
 
@@ -748,14 +749,14 @@ private:
 
   }
 
-  static crude_engine::vector<char> readFile(const char* filename) {
-    if (!crude_engine::Filesystem::getInstance().fileAccess(filename))
+  static crude::vector<char> readFile(const char* filename) {
+    if (!crude::Filesystem::getInstance().fileAccess(filename))
     {
       throw std::runtime_error("failed to access file!");
     }
 
-    crude_engine::vector<char> buffer;
-    if (crude_engine::Filesystem::getInstance().read(filename, buffer) != crude_engine::Filesystem::RESULT_SUCCESS)
+    crude::vector<char> buffer;
+    if (crude::Filesystem::getInstance().read(filename, buffer) != crude::Filesystem::RESULT_SUCCESS)
     {
       throw std::runtime_error("failed to read file!");
     }
@@ -763,7 +764,7 @@ private:
     return buffer;
   }
 
-  Queue_Family_Indices findQueueFamilies(crude_engine::Physical_Device& physicalDevice) {
+  Queue_Family_Indices findQueueFamilies(crude::Physical_Device& physicalDevice) {
     Queue_Family_Indices indices;
       
     const auto& queueProperties = physicalDevice.getQueueFamilyProperties();
@@ -783,12 +784,12 @@ private:
     return indices;
   }
 
-  bool checkDeviceExtensionSupport(crude_engine::Physical_Device& physicalDevice) 
+  bool checkDeviceExtensionSupport(crude::Physical_Device& physicalDevice) 
   {
-    static const crude_engine::vector<const char*> deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
+    static const crude::vector<const char*> deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
     
     const auto& availableExtensions = physicalDevice.getExtensionProperties();
-    crude_engine::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
+    crude::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
 
     for (const auto& extension : availableExtensions) {
       requiredExtensions.erase(extension.extensionName);
@@ -797,12 +798,12 @@ private:
     return requiredExtensions.empty();
   }
 
-  bool checkSurfaceSupport(crude_engine::Physical_Device& physicalDevice, crude_engine::Shared_Ptr<const crude_engine::Surface> surface)
+  bool checkSurfaceSupport(crude::Physical_Device& physicalDevice, crude::Shared_Ptr<const crude::Surface> surface)
   {
     return !physicalDevice.getSurfaceFormats(surface).empty() && !physicalDevice.getSurfacePresentModes(surface).empty();
   }
 
-  VkSurfaceFormatKHR chooseSwapSurfaceFormat(const crude_engine::vector<VkSurfaceFormatKHR>& availableFormats) {
+  VkSurfaceFormatKHR chooseSwapSurfaceFormat(const crude::vector<VkSurfaceFormatKHR>& availableFormats) {
     for (const auto& availableFormat : availableFormats) {
       if (availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
         return availableFormat;
@@ -812,7 +813,7 @@ private:
     return availableFormats[0];
   }
 
-  VkPresentModeKHR chooseSwapPresentMode(const crude_engine::vector<VkPresentModeKHR>& availablePresentModes) {
+  VkPresentModeKHR chooseSwapPresentMode(const crude::vector<VkPresentModeKHR>& availablePresentModes) {
     for (const auto& availablePresentMode : availablePresentModes) {
       if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
         return availablePresentMode;
@@ -845,7 +846,7 @@ private:
       VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
   }
 
-  VkFormat findSupportedFormat(const crude_engine::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) {
+  VkFormat findSupportedFormat(const crude::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) {
     for (VkFormat format : candidates) {
       VkFormatProperties props = m_physicalDevice->getFormatProperties(format);
       
@@ -879,7 +880,7 @@ private:
   void drawFrame()
   {
     m_inFlightFences[m_currentFrame]->wait();
-    const crude_engine::Swap_Chain_Next_Image acquireNextImageResult = m_swapchain->acquireNextImage(m_imageAvailableSemaphores[m_currentFrame]);
+    const crude::Swap_Chain_Next_Image acquireNextImageResult = m_swapchain->acquireNextImage(m_imageAvailableSemaphores[m_currentFrame]);
 
     if (acquireNextImageResult.outOfDate())
     {
@@ -897,12 +898,12 @@ private:
 
     recordCommandBuffer(m_commandBuffers[m_currentFrame], imageIndex);
 
-    crude_engine::uint32 waitStageMasks[1] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+    crude::uint32 waitStageMasks[1] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
     const bool graphicsQueueSubmited = m_graphicsQueue->sumbit(
-      crude_engine::span(&m_commandBuffers[m_currentFrame], 1u),
-      crude_engine::span(waitStageMasks, 1u),
-      crude_engine::span(&m_imageAvailableSemaphores[m_currentFrame], 1u),
-      crude_engine::span(&m_renderFinishedSemaphores[m_currentFrame], 1u),
+      crude::span(&m_commandBuffers[m_currentFrame], 1u),
+      crude::span(waitStageMasks, 1u),
+      crude::span(&m_imageAvailableSemaphores[m_currentFrame], 1u),
+      crude::span(&m_renderFinishedSemaphores[m_currentFrame], 1u),
       m_inFlightFences[m_currentFrame]);
 
     if (!graphicsQueueSubmited)
@@ -910,10 +911,10 @@ private:
       throw std::runtime_error("failed to submit draw command buffer!");
     }
 
-    const crude_engine::Queue_Present_Result presentResult = m_presentQueue->present(
-      crude_engine::span(&m_swapchain, 1u), 
-      crude_engine::span(&imageIndex, 1u), 
-      crude_engine::span(&m_renderFinishedSemaphores[m_currentFrame], 1u));
+    const crude::Queue_Present_Result presentResult = m_presentQueue->present(
+      crude::span(&m_swapchain, 1u), 
+      crude::span(&imageIndex, 1u), 
+      crude::span(&m_renderFinishedSemaphores[m_currentFrame], 1u));
 
     if (presentResult.outOfDate() || presentResult.suboptimal() || m_framebufferResized)
     {
@@ -928,13 +929,13 @@ private:
     m_currentFrame = (m_currentFrame + 1u) % 2u;
   }
 
-  void recordCommandBuffer(crude_engine::Shared_Ptr<crude_engine::Command_Buffer> commandBuffer, uint32_t imageIndex) {
+  void recordCommandBuffer(crude::Shared_Ptr<crude::Command_Buffer> commandBuffer, uint32_t imageIndex) {
     if (!commandBuffer->begin())
     {
       throw std::runtime_error("failed to begin recording command buffer!");
     }
 
-    crude_engine::array<VkClearValue, 2u> clearValues;
+    crude::array<VkClearValue, 2u> clearValues;
     clearValues[0].color = { {0.0f, 0.0f, 0.0f, 1.0f} };
     clearValues[1].depthStencil = { 1.0f, 0 };
 
@@ -946,7 +947,7 @@ private:
     commandBuffer->beginRenderPass(
       m_renderPass,
       m_swapchainFramebuffers[imageIndex],
-      crude_engine::span(clearValues.data(), clearValues.size()),
+      crude::span(clearValues.data(), clearValues.size()),
       renderArea);
 
     commandBuffer->bindPipeline(m_graphicsPipeline);
@@ -958,14 +959,14 @@ private:
     viewport.height    = static_cast<float>(m_swapchain->getExtent().height);
     viewport.minDepth  = 0.0f;
     viewport.maxDepth  = 1.0f;
-    commandBuffer->setViewport(crude_engine::span(&viewport, 1u));
+    commandBuffer->setViewport(crude::span(&viewport, 1u));
 
     VkRect2D scissor{};
     scissor.offset = { 0, 0 };
     scissor.extent = m_swapchain->getExtent();
-    commandBuffer->setScissor(crude_engine::span(&scissor, 1u));
+    commandBuffer->setScissor(crude::span(&scissor, 1u));
 
-    commandBuffer->bindDescriptorSets(m_graphicsPipeline, crude_engine::span(&m_descriptorSets[m_currentFrame], 1u));
+    commandBuffer->bindDescriptorSets(m_graphicsPipeline, crude::span(&m_descriptorSets[m_currentFrame], 1u));
 
     commandBuffer->draw(3u, 1u);
     
@@ -1007,43 +1008,43 @@ private:
   HWND       m_hwnd;
   HINSTANCE  m_hinstance;
 #endif
-  crude_engine::Shared_Ptr<crude_engine::Instance>                                m_instance;
-  crude_engine::Shared_Ptr<crude_engine::Debug_Utils_Messenger>                   m_debugUtilsMessenger;
-  crude_engine::Shared_Ptr<crude_engine::Surface>                                 m_surface;
-  crude_engine::Shared_Ptr<crude_engine::Physical_Device>                         m_physicalDevice;
-  crude_engine::Shared_Ptr<crude_engine::Device>                                  m_device;
-  crude_engine::Shared_Ptr<crude_engine::Queue>                                   m_graphicsQueue;
-  crude_engine::Shared_Ptr<crude_engine::Queue>                                   m_presentQueue;
-  crude_engine::Shared_Ptr<crude_engine::Swap_Chain>                              m_swapchain;
-  crude_engine::vector<crude_engine::Shared_Ptr<crude_engine::Swap_Chain_Image>>  m_swapchainImages;
-  crude_engine::vector<crude_engine::Shared_Ptr<crude_engine::Image_View>>        m_swapchainImagesViews;
-  crude_engine::Shared_Ptr<crude_engine::Render_Pass>                             m_renderPass;
-  crude_engine::Shared_Ptr<crude_engine::Descriptor_Set_Layout>                   m_descriptorSetLayout;
-  crude_engine::Shared_Ptr<crude_engine::Pipeline_Layout>                         m_pipelineLayout;
-  crude_engine::Shared_Ptr<crude_engine::Pipeline>                                m_graphicsPipeline;
-  crude_engine::Shared_Ptr<crude_engine::Command_Pool>                            m_commandPool;
-  crude_engine::Shared_Ptr<crude_engine::Device_Memory>                           m_depthImageDeviceMemory;
-  crude_engine::Shared_Ptr<crude_engine::Image>                                   m_depthImage;
-  crude_engine::Shared_Ptr<crude_engine::Image_View>                              m_depthImageView;
-  crude_engine::vector<crude_engine::Shared_Ptr<crude_engine::Framebuffer>>       m_swapchainFramebuffers;
-  crude_engine::Shared_Ptr<crude_engine::Image>                                   m_textureImage;
-  crude_engine::Shared_Ptr<crude_engine::Device_Memory>                           m_textureImageMemory;
-  crude_engine::Shared_Ptr<crude_engine::Image_View>                              m_textureImageView;
-  crude_engine::Shared_Ptr<crude_engine::Sampler>                                 m_sampler;
-  crude_engine::Shared_Ptr<crude_engine::Descriptor_Pool>                         m_descriptorPool;
-  crude_engine::vector<crude_engine::Shared_Ptr<crude_engine::Descriptor_Set>>    m_descriptorSets;
-  crude_engine::vector<crude_engine::Shared_Ptr<crude_engine::Command_Buffer>>    m_commandBuffers;
-  crude_engine::vector<crude_engine::Shared_Ptr<crude_engine::Semaphore>>         m_imageAvailableSemaphores;
-  crude_engine::vector<crude_engine::Shared_Ptr<crude_engine::Semaphore>>         m_renderFinishedSemaphores;
-  crude_engine::vector<crude_engine::Shared_Ptr<crude_engine::Fence>>             m_inFlightFences;
+  crude::Shared_Ptr<crude::Instance>                                m_instance;
+  crude::Shared_Ptr<crude::Debug_Utils_Messenger>                   m_debugUtilsMessenger;
+  crude::Shared_Ptr<crude::Surface>                                 m_surface;
+  crude::Shared_Ptr<crude::Physical_Device>                         m_physicalDevice;
+  crude::Shared_Ptr<crude::Device>                                  m_device;
+  crude::Shared_Ptr<crude::Queue>                                   m_graphicsQueue;
+  crude::Shared_Ptr<crude::Queue>                                   m_presentQueue;
+  crude::Shared_Ptr<crude::Swap_Chain>                              m_swapchain;
+  crude::vector<crude::Shared_Ptr<crude::Swap_Chain_Image>>  m_swapchainImages;
+  crude::vector<crude::Shared_Ptr<crude::Image_View>>        m_swapchainImagesViews;
+  crude::Shared_Ptr<crude::Render_Pass>                             m_renderPass;
+  crude::Shared_Ptr<crude::Descriptor_Set_Layout>                   m_descriptorSetLayout;
+  crude::Shared_Ptr<crude::Pipeline_Layout>                         m_pipelineLayout;
+  crude::Shared_Ptr<crude::Pipeline>                                m_graphicsPipeline;
+  crude::Shared_Ptr<crude::Command_Pool>                            m_commandPool;
+  crude::Shared_Ptr<crude::Device_Memory>                           m_depthImageDeviceMemory;
+  crude::Shared_Ptr<crude::Image>                                   m_depthImage;
+  crude::Shared_Ptr<crude::Image_View>                              m_depthImageView;
+  crude::vector<crude::Shared_Ptr<crude::Framebuffer>>       m_swapchainFramebuffers;
+  crude::Shared_Ptr<crude::Image>                                   m_textureImage;
+  crude::Shared_Ptr<crude::Device_Memory>                           m_textureImageMemory;
+  crude::Shared_Ptr<crude::Image_View>                              m_textureImageView;
+  crude::Shared_Ptr<crude::Sampler>                                 m_sampler;
+  crude::Shared_Ptr<crude::Descriptor_Pool>                         m_descriptorPool;
+  crude::vector<crude::Shared_Ptr<crude::Descriptor_Set>>    m_descriptorSets;
+  crude::vector<crude::Shared_Ptr<crude::Command_Buffer>>    m_commandBuffers;
+  crude::vector<crude::Shared_Ptr<crude::Semaphore>>         m_imageAvailableSemaphores;
+  crude::vector<crude::Shared_Ptr<crude::Semaphore>>         m_renderFinishedSemaphores;
+  crude::vector<crude::Shared_Ptr<crude::Fence>>             m_inFlightFences;
   uint32_t m_currentFrame = 0u;
   uint32_t m_width = 800u;
   uint32_t m_height = 600u;
   bool m_framebufferResized = false;
 
-  const crude_engine::char8*   m_titile = "test";
-  const crude_engine::char16*  m_titileWide = L"test";
-  const crude_engine::char16*  m_windowClassWide = L"test_class";
+  const crude::char8*   m_titile = "test";
+  const crude::char16*  m_titileWide = L"test";
+  const crude::char16*  m_windowClassWide = L"test_class";
 };
 
 #ifdef __linux__
@@ -1074,7 +1075,49 @@ int APIENTRY wWinMain(
   AllocConsole();
   FILE* dummy;
   auto s = freopen_s(&dummy, "CONOUT$", "w", stdout);
-  
+ 
+
+  //The window we'll be rendering to
+  SDL_Window* window = NULL;
+
+  //The surface contained by the window
+  SDL_Surface* screenSurface = NULL;
+
+  //Initialize SDL
+  if (SDL_Init(SDL_INIT_VIDEO) < 0)
+  {
+    printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
+  }
+  else
+  {
+    //Create window
+    window = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 600, SDL_WINDOW_SHOWN);
+    if (window == NULL)
+    {
+      printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
+    }
+    else
+    {
+      //Get window surface
+      screenSurface = SDL_GetWindowSurface(window);
+
+      //Fill the surface white
+      SDL_FillRect(screenSurface, NULL, SDL_MapRGB(screenSurface->format, 0xFF, 0xFF, 0xFF));
+
+      //Update the surface
+      SDL_UpdateWindowSurface(window);
+
+      //Hack to get window to stay up
+      SDL_Event e; bool quit = false; while (quit == false) { while (SDL_PollEvent(&e)) { if (e.type == SDL_QUIT) quit = true; } }
+    }
+  }
+
+  //Destroy window
+  SDL_DestroyWindow(window);
+
+  //Quit SDL subsystems
+  SDL_Quit();
+
   Test_Application testApp;
   try
   {

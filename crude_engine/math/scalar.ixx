@@ -1,40 +1,40 @@
 module;
 
-export module crude_engine.math.scalar;
+export module crude.math.scalar;
 
-import crude_engine.core.alias;
+import crude.core.alias;
 
-export namespace crude_engine
+export namespace crude::math
 {
 
 class Scalar
 {
 public:
-  static float32 max(float32 s1, float32 s2) noexcept;
-  static float32 min(float32 s1, float32 s2) noexcept;
-  static float32 round(float32 s) noexcept;
-  static float32 floor(float32 s) noexcept;
-  static float32 ceil(float32 s) noexcept;
-  static float32 trunc(float32 s) noexcept;
-  static float32 clamp(float32 s, float32 min, float32 max) noexcept;
-  static float32 abs(float32 s) noexcept;
+  static core::float32 max(core::float32 s1, core::float32 s2) noexcept;
+  static core::float32 min(core::float32 s1, core::float32 s2) noexcept;
+  static core::float32 round(core::float32 s) noexcept;
+  static core::float32 floor(core::float32 s) noexcept;
+  static core::float32 ceil(core::float32 s) noexcept;
+  static core::float32 trunc(core::float32 s) noexcept;
+  static core::float32 clamp(core::float32 s, core::float32 min, core::float32 max) noexcept;
+  static core::float32 abs(core::float32 s) noexcept;
 
-  static float32 pow(float32 s1, float32 s2) noexcept;
-  static float32 sqrt(float32 s) noexcept;
+  static core::float32 pow(core::float32 s1, core::float32 s2) noexcept;
+  static core::float32 sqrt(core::float32 s) noexcept;
 
-  static float32 exp2(float32 s) noexcept;
-  static float32 exp(float32 s) noexcept;
+  static core::float32 exp2(core::float32 s) noexcept;
+  static core::float32 exp(core::float32 s) noexcept;
 
-  static float32 log2(float32 s) noexcept;
-  static float32 log10(float32 s) noexcept;
-  static float32 log(float32 s) noexcept;
+  static core::float32 log2(core::float32 s) noexcept;
+  static core::float32 log10(core::float32 s) noexcept;
+  static core::float32 log(core::float32 s) noexcept;
 
-  static float32 sin(float32 s) noexcept;
-  static float32 cos(float32 s) noexcept;
-  static float32 tan(float32 s) noexcept;
-  static float32 arcSin(float32 s) noexcept;
-  static float32 arcCos(float32 s) noexcept;
-  static float32 arcTan(float32 s) noexcept;
+  static core::float32 sin(core::float32 s) noexcept;
+  static core::float32 cos(core::float32 s) noexcept;
+  static core::float32 tan(core::float32 s) noexcept;
+  static core::float32 arcSin(core::float32 s) noexcept;
+  static core::float32 arcCos(core::float32 s) noexcept;
+  static core::float32 arcTan(core::float32 s) noexcept;
 };
 
 }

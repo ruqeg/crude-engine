@@ -1,10 +1,10 @@
 module;
 
-export module crude_engine.core.debug;
+export module crude.core.debug;
 
-import crude_engine.core.alias;
+import crude.core.alias;
 
-export namespace crude_engine
+export namespace crude::core
 {
 
 constexpr bool gDebug = _DEBUG;

@@ -1,0 +1,51 @@
+target_sources(${PROJECT_NAME}
+    PUBLIC
+    assert.cpp
+    cxx_allocator_container.cpp
+    filesystem.cpp
+    free_rbt_allocator.cpp
+    linear_allocator.cpp
+    memory_manager.cpp
+    memory_utils.cpp
+    pool_allocator.cpp
+    stack_allocator.cpp
+    string.cpp
+    system_allocator.cpp)
+
+target_sources(${PROJECT_NAME}
+    PUBLIC
+    FILE_SET cxx_modules_core TYPE CXX_MODULES FILES
+    algorithms.ixx
+    alias.ixx
+    assert.ixx
+    bs_tree.ixx
+    byte_utils.ixx
+    compare.ixx
+    cxx_allocator_container.ixx
+    debug.ixx
+    filesystem.ixx
+    free_rbt_allocator.ixx
+    iallocator.ixx
+    input_memory_bit_stream.ixx
+    input_memory_stream.ixx
+    linear_allocator.ixx
+    logger.ixx
+    memory_manager.ixx
+    memory_system.ixx
+    memory_utils.ixx
+    optional.ixx
+    output_memory_bit_stream.ixx
+    output_memory_steam.ixx
+    pool_allocator.ixx
+    rb_tree.ixx
+    shared_ptr.ixx
+    size_holder.ixx
+    stack_allocator.ixx
+    stack_linked_list.ixx
+    std_allocator.ixx
+    std_containers_heap.ixx
+    std_containers_stack.ixx
+    string.ixx
+    system_allocator.ixx
+    tree_iterator_base.ixx
+    utility.ixx)

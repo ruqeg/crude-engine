@@ -3,11 +3,11 @@ module;
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
-export module crude_engine.network.socket_address_factory;
+export module crude.network.socket_address_factory;
 
-import crude_engine.network.socket_address;
+import crude.network.socket_address;
 
-export namespace crude_engine
+export namespace crude::network
 {
 
 class Socket_Address_Factory

@@ -3,11 +3,11 @@ module;
 #include <utility>
 #include <malloc.h>
 
-export module crude_engine.core.memory_system;
+export module crude.core.memory_system;
 
-import crude_engine.core.memory_manager;
+import crude.core.memory_manager;
 
-export namespace crude_engine
+export namespace crude::core
 {
 
 class Memory_System
@@ -118,4 +118,4 @@ public:
   using Default_Allocator = Default_Free_RBT_Allocator;
 };
 
-}  // namespace crude_engine
+}  // namespace crude

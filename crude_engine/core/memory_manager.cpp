@@ -1,6 +1,6 @@
-module crude_engine.core.memory_manager;
+module crude.core.memory_manager;
 
-namespace crude_engine
+namespace crude::core
 {
 
 Memory_Manager::Memory_Manager()
@@ -24,4 +24,4 @@ Memory_Manager& Memory_Manager::getInstance() noexcept
   return instance;
 }
 
-} // namespace crude_engine
+} // namespace crude

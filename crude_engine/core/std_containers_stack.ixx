@@ -3,9 +3,9 @@ module;
 #include <array>
 #include <span>
 
-export module crude_engine.core.std_containers_stack;
+export module crude.core.std_containers_stack;
 
-export namespace crude_engine
+export namespace crude::core
 {
 
 template<class T, size_t N>

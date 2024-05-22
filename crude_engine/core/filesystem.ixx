@@ -1,11 +1,11 @@
 module;
 
-export module crude_engine.core.filesystem;
+export module crude.core.filesystem;
 
-export import crude_engine.core.std_containers_heap;
-export import crude_engine.core.std_containers_stack;
+export import crude.core.std_containers_heap;
+export import crude.core.std_containers_stack;
 
-export namespace crude_engine
+export namespace crude::core
 {
 
 class Filesystem 

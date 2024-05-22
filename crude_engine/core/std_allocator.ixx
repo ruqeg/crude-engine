@@ -1,10 +1,10 @@
 module;
 
-export module crude_engine.core.std_allocator;
+export module crude.core.std_allocator;
 
-export import crude_engine.core.memory_system;
+export import crude.core.memory_system;
 
-export namespace crude_engine
+export namespace crude::core
 {
 
 template<class T, class Allocator = Memory_System::Default_Allocator>

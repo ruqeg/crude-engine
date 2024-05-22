@@ -2,11 +2,11 @@ module;
 
 #include <iterator>
 
-export module crude_engine.core.tree_iterator_base;
+export module crude.core.tree_iterator_base;
 
-import crude_engine.core.alias;
+import crude.core.alias;
 
-export namespace crude_engine
+export namespace crude::core
 {
 
 template <class Concrete_Iterator, class Node, class Node_Interface>
@@ -241,4 +241,4 @@ Tree_Iterator_Base<Concrete_Iterator, Node, Node_Interface>::Const_Pointer Tree_
   return m_node;
 }
 
-} // namespace crude_engine
+} // namespace crude

@@ -1,11 +1,11 @@
 module;
 
-export module crude_engine.core.memory_manager;
+export module crude.core.memory_manager;
 
-import crude_engine.core.free_rbt_allocator;
-import crude_engine.core.system_allocator;
+import crude.core.free_rbt_allocator;
+import crude.core.system_allocator;
 
-export namespace crude_engine
+export namespace crude::core
 {
 
 class Memory_Manager
@@ -29,4 +29,4 @@ private:
   System_Allocator    m_defaultSystemAllocators;
 };
 
-}  // namespace crude_engine
+}  // namespace crude

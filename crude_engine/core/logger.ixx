@@ -3,15 +3,15 @@ module;
 #include <utility>
 #include <Windows.h>
 
-export module crude_engine.core.logger;
+export module crude.core.logger;
 
-export import crude_engine.core.debug;
-export import crude_engine.core.alias;
+export import crude.core.debug;
+export import crude.core.alias;
 
-import crude_engine.core.string;
-import crude_engine.core.utility;
+import crude.core.string;
+import crude.core.utility;
 
-export namespace crude_engine
+export namespace crude::core
 {
 
 class Log_Object;

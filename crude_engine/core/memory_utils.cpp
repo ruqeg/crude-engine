@@ -1,8 +1,8 @@
 #include <cstdlib>
 
-module crude_engine.core.memory_utils;
+module crude.core.memory_utils;
 
-namespace crude_engine
+namespace crude::core
 {
 
 void* Memory_Utils::allocate(size_t size) noexcept

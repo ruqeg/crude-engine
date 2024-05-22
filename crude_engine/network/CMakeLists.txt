@@ -1,0 +1,16 @@
+target_sources(${PROJECT_NAME}
+    PUBLIC
+    socket_address_factory.cpp
+    socket_address.cpp
+    socket_util.cpp
+    tcp_socket.cpp
+    udp_socket.cpp)
+
+target_sources(${PROJECT_NAME}
+    PUBLIC
+    FILE_SET cxx_modules_network TYPE CXX_MODULES FILES
+    socket_address_factory.ixx
+    socket_address.ixx
+    socket_util.ixx
+    tcp_socket.ixx
+    udp_socket.ixx)

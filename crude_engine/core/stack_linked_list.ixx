@@ -1,10 +1,10 @@
 module;
 
-export module crude_engine.core.stack_linked_list;
+export module crude.core.stack_linked_list;
 
-import crude_engine.core.alias;
+import crude.core.alias;
 
-export namespace crude_engine
+export namespace crude::core
 {
 
 template <class T>

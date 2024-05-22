@@ -1,18 +1,18 @@
 #include <vector>
 #include <set>
 
-module crude_engine.ecs.world;
+module crude.ecs.world;
 
-import crude_engine.core.algorithms;
-import crude_engine.core.assert;
-import crude_engine.ecs.entity;
+import crude.core.algorithms;
+import crude.core.assert;
+import crude.ecs.entity;
 
-namespace crude_engine
+namespace crude::ecs
 {
 
 World::World()
 {
-  m_componentRegister = makeShared<Component_Register>();
+  m_componentRegister = core::makeShared<Component_Register>();
 }
 
 Entity World::entity()
@@ -62,7 +62,7 @@ void World::setComponent(Entity_ID entity, Component_ID component, const void* v
   const Archetype_ID archetypeID = entityRecord.archetypeID;
   Archetype& archetype = getArchetype(archetypeID);
   const Archetype_Map& componentRecord = m_componentToArchetypeMap.at(component);
-  const uint64 column = componentRecord.at(archetypeID).column;
+  const core::uint64 column = componentRecord.at(archetypeID).column;
 
   const bool noComponentData = !entityRecord.row.hasValue();
   if (noComponentData)
@@ -70,7 +70,7 @@ void World::setComponent(Entity_ID entity, Component_ID component, const void* v
     entityRecord.row = archetype.newRow();
   }
 
-  const uint64 row = entityRecord.row.value();
+  const core::uint64 row = entityRecord.row.value();
   archetype.copyComponentData(column, row, value);
 }
 
@@ -78,21 +78,21 @@ void* World::getComponent(Entity_ID entity, Component_ID component)
 {
   if (!hasComponent(entity, component))
   {
-    assert(false && "TODO");
+    core::assert(false && "TODO");
   }
 
   Entity_Record& entityRecord = m_entityToRecord.at(entity);
   const bool noComponentData = !entityRecord.row.hasValue();
   if (noComponentData)
   {
-    assert(false && "TODO");
+    core::assert(false && "TODO");
   }
 
   const Archetype_ID archetypeID = entityRecord.archetypeID;
   const Archetype_Map& componentRecord = m_componentToArchetypeMap.at(component);
   Archetype& archetype = getArchetype(archetypeID);
-  const uint64 column = componentRecord.at(archetypeID).column;
-  const uint64 row = entityRecord.row.value();
+  const core::uint64 column = componentRecord.at(archetypeID).column;
+  const core::uint64 row = entityRecord.row.value();
   void* componentData = archetype.getComponentData(column, row);
   return componentData;
 }
@@ -110,11 +110,11 @@ void World::removeComponent(Entity_ID entity, Component_ID component)
   }
 
   const Entity_Record oldEntityRecord = m_entityToRecord.at(entity);
-  const uint64 oldArchetypeID = oldEntityRecord.archetypeID;
+  const core::uint64 oldArchetypeID = oldEntityRecord.archetypeID;
   Archetype_Map& componentRecord = m_componentToArchetypeMap.at(component);
   Archetype_Record& oldArchetypeRecord = componentRecord.at(oldEntityRecord.archetypeID);
 
-  set<Component_ID> newEntityArchetypeType = getArchetype(oldArchetypeID).type();
+  core::set<Component_ID> newEntityArchetypeType = getArchetype(oldArchetypeID).type();
   newEntityArchetypeType.erase(component);
 
   Entity_Record newEntityRecord;
@@ -133,10 +133,10 @@ void World::removeComponent(Entity_ID entity, Component_ID component)
     Archetype& newArchetype = getArchetype(newEntityRecord.archetypeID);
     newEntityRecord.row = newArchetype.newRow();
 
-    const uint64 oldRow = oldEntityRecord.row.value();
-    const uint64 newRow = newEntityRecord.row.value();
+    const core::uint64 oldRow = oldEntityRecord.row.value();
+    const core::uint64 newRow = newEntityRecord.row.value();
 
-    const uint64 skippedColumn = oldArchetypeRecord.column;
+    const core::uint64 skippedColumn = oldArchetypeRecord.column;
     moveEntityComponentDataExceptRemoved(skippedColumn, Unsafe_Entity_Record(&getArchetype(oldArchetypeID), oldRow), Unsafe_Entity_Record(&newArchetype, newRow));
 
     getArchetype(oldArchetypeID).removeComponentData(oldRow);
@@ -179,12 +179,12 @@ void World::remove(Entity_ID entity)
   m_entityIDsManager.destroy(entity);
 }
 
-void World::createArchetypeForEntity(Entity_ID entity, const set<Component_ID>& type)
+void World::createArchetypeForEntity(Entity_ID entity, const core::set<Component_ID>& type)
 {
   Archetype archertype(m_componentRegister, m_archetypeIDsManager.generate(), type);
   const Archetype_ID archertypeID = archertype.id();
 
-  uint64 column = 0u;
+  core::uint64 column = 0u;
   for (auto& component : type)
   {
     Archetype_Record archetypeRecord;
@@ -197,7 +197,7 @@ void World::createArchetypeForEntity(Entity_ID entity, const set<Component_ID>& 
 
   Entity_Record entityRecord;
   entityRecord.archetypeID = archertypeID;
-  entityRecord.row = nullopt;
+  entityRecord.row = core::nullopt;
   m_entityToRecord[entity] = entityRecord;
 }
 
@@ -215,7 +215,7 @@ void World::assigneOrCreateArchetypeForEntity(Entity_ID entity, Component_ID com
 
   Entity_Record entityRecord;
   entityRecord.archetypeID = archetypeID;
-  entityRecord.row = nullopt;
+  entityRecord.row = core::nullopt;
   m_entityToRecord[entity] = entityRecord;
 }
 
@@ -224,7 +224,7 @@ void World::reassigneArchetypeForEntity(Entity_ID entity, Component_ID component
   const Entity_Record oldEntityRecord = m_entityToRecord[entity];
   const Archetype_ID oldArchetypeID = oldEntityRecord.archetypeID;
 
-  set<Component_ID> newArchetypeType = getArchetype(oldArchetypeID).type();
+  core::set<Component_ID> newArchetypeType = getArchetype(oldArchetypeID).type();
   newArchetypeType.insert(component);
   
   Entity_Record newEntityRecord;
@@ -244,10 +244,10 @@ void World::reassigneArchetypeForEntity(Entity_ID entity, Component_ID component
     newEntityRecord.row = newArchetype.newRow();
     return;
 
-    const uint64 oldRow = oldEntityRecord.row.value();
-    const uint64 newRow = newEntityRecord.row.value();
+    const core::uint64 oldRow = oldEntityRecord.row.value();
+    const core::uint64 newRow = newEntityRecord.row.value();
 
-    const uint64 skippedColumn = m_componentToArchetypeMap.at(component).at(newEntityRecord.archetypeID).column;
+    const core::uint64 skippedColumn = m_componentToArchetypeMap.at(component).at(newEntityRecord.archetypeID).column;
     moveEntityComponentDataExceptAdded(
       skippedColumn, 
       Unsafe_Entity_Record(&getArchetype(oldArchetypeID), oldRow), 
@@ -268,7 +268,7 @@ void World::reassigneArchetypeForEntity(Entity_ID entity, Component_ID component
   }
 }
 
-bool World::findArchetypeWithComponent(Component_ID component, const set<Component_ID>& type, Archetype_ID& dstArchetypeID)
+bool World::findArchetypeWithComponent(Component_ID component, const core::set<Component_ID>& type, Archetype_ID& dstArchetypeID)
 {
   if (!m_componentToArchetypeMap.contains(component))
   {
@@ -278,7 +278,7 @@ bool World::findArchetypeWithComponent(Component_ID component, const set<Compone
   const Archetype_Map& componentRecord = m_componentToArchetypeMap.at(component);
   for (const auto& archetypeRecord : componentRecord)
   {
-    const uint64 archetypeID = archetypeRecord.first;
+    const core::uint64 archetypeID = archetypeRecord.first;
     const Archetype& archetype = getArchetype(archetypeID);
     if (archetype.type() == type)
     {
@@ -299,7 +299,7 @@ bool World::findArchetypeWithComponent(Component_ID component, Archetype_ID& dst
   const Archetype_Map& componentRecord = m_componentToArchetypeMap.at(component);
   for (const auto& archetypeRecord : componentRecord)
   {
-    const uint64 archetypeID = archetypeRecord.first;
+    const core::uint64 archetypeID = archetypeRecord.first;
     Archetype& archetype = getArchetype(archetypeRecord.first);
     if (archetype.type().size() == 1u)
     {
@@ -310,7 +310,7 @@ bool World::findArchetypeWithComponent(Component_ID component, Archetype_ID& dst
   return false;
 }
 
-bool World::findArchetype(const set<Component_ID>& type, Archetype_ID& dstArchetypeID)
+bool World::findArchetype(const core::set<Component_ID>& type, Archetype_ID& dstArchetypeID)
 {
   for (const auto& archetype : m_archetypes)
   {
@@ -327,7 +327,7 @@ void World::addArchetype(Archetype& archetype)
 {
   // !TODO UNSAFE
   const ID_Index archetypeIndex = ID_Manager::getIndex(archetype.id());
-  assert(archetypeIndex <= m_archetypes.size() && "!TODO");
+  core::assert(archetypeIndex <= m_archetypes.size() && "!TODO");
 
   if (archetypeIndex < m_archetypes.size())
   {
@@ -361,11 +361,11 @@ const Archetype& World::getArchetype(const Archetype_ID archetypeID) const
   return m_archetypes[ID_Manager::getIndex(archetypeID)];
 }
 
-void World::moveEntityComponentDataExceptAdded(uint32 skippedColumn, const Unsafe_Entity_Record& srcRecord, const Unsafe_Entity_Record& dstRecord)
+void World::moveEntityComponentDataExceptAdded(core::uint32 skippedColumn, const Unsafe_Entity_Record& srcRecord, const Unsafe_Entity_Record& dstRecord)
 {
-  const uint64 dstColumnsNum = dstRecord.pArchetype->getColumnsNum();
+  const core::uint64 dstColumnsNum = dstRecord.pArchetype->getColumnsNum();
 
-  for (uint64 newColumn = 0u, oldColumn = 0u; newColumn < dstColumnsNum; ++newColumn)
+  for (core::uint64 newColumn = 0u, oldColumn = 0u; newColumn < dstColumnsNum; ++newColumn)
   {
     if (newColumn == skippedColumn)
       continue;
@@ -375,11 +375,11 @@ void World::moveEntityComponentDataExceptAdded(uint32 skippedColumn, const Unsaf
   }
 }
 
-void World::moveEntityComponentDataExceptRemoved(uint32 skippedColumn, const Unsafe_Entity_Record& srcRecord, const Unsafe_Entity_Record& dstRecord)
+void World::moveEntityComponentDataExceptRemoved(core::uint32 skippedColumn, const Unsafe_Entity_Record& srcRecord, const Unsafe_Entity_Record& dstRecord)
 {
-  const uint64 srcColumnsNum = srcRecord.pArchetype->getColumnsNum();
+  const core::uint64 srcColumnsNum = srcRecord.pArchetype->getColumnsNum();
 
-  for (uint64 oldColumn = 0u, newColumn = 0u; oldColumn < srcColumnsNum; ++oldColumn)
+  for (core::uint64 oldColumn = 0u, newColumn = 0u; oldColumn < srcColumnsNum; ++oldColumn)
   {
     if (oldColumn == skippedColumn)
       continue;

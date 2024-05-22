@@ -9,9 +9,9 @@
 #include <unistd.h>
 #endif
 
-module crude_engine.core.filesystem;
+module crude.core.filesystem;
 
-namespace crude_engine
+namespace crude::core
 {
 
 Filesystem& Filesystem::getInstance()

@@ -1,9 +1,9 @@
-module crude_engine.core.pool_allocator;
+module crude.core.pool_allocator;
 
- import crude_engine.core.memory_utils;
- import crude_engine.core.assert;
+ import crude.core.memory_utils;
+ import crude.core.assert;
 
-namespace crude_engine
+namespace crude::core
 {
 
 Pool_Allocator::Pool_Allocator(const size_t capacity, const size_t chunkSize) noexcept

@@ -3,11 +3,11 @@ module;
 #include <utility>
 #include <new>
 
-export module crude_engine.core.utility;
+export module crude.core.utility;
 
-export import crude_engine.core.alias;
+export import crude.core.alias;
 
-export namespace crude_engine
+export namespace crude::core
 {
 
 template<class T, T v>
@@ -74,4 +74,4 @@ inline void destructorAt(T* ptr) noexcept
   ptr->~T();
 }
 
-} // namespace crude_engine
+} // namespace crude

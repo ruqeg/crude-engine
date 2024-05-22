@@ -2,14 +2,14 @@ module;
 
 #include <utility>
 
-export module crude_engine.core.rb_tree;
+export module crude.core.rb_tree;
 
-import crude_engine.core.bs_tree;
-import crude_engine.core.alias;
-import crude_engine.core.compare;
-import crude_engine.core.utility;
+import crude.core.bs_tree;
+import crude.core.alias;
+import crude.core.compare;
+import crude.core.utility;
 
-export namespace crude_engine
+export namespace crude::core
 {
 
 enum class RB_Color : uint8
@@ -659,4 +659,4 @@ Red_Black_Tree<Node, Compare>& Red_Black_Tree<Node, Compare>::operator=(RBT&& ot
   BST::operator=(other);
 }
 
-} // namespace crude_engine
+} // namespace crude

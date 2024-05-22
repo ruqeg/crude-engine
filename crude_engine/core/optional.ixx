@@ -3,12 +3,12 @@ module;
 #include <utility>
 #include <type_traits>
 
-export module crude_engine.core.optional;
+export module crude.core.optional;
 
-import crude_engine.core.assert;
-import crude_engine.core.utility;
+import crude.core.assert;
+import crude.core.utility;
 
-export namespace crude_engine
+export namespace crude::core
 {
 
 struct Nullopt
@@ -321,4 +321,4 @@ void Optional<T>::destruct() noexcept
   }
 }
 
-} // namespace crude_engine
+} // namespace crude

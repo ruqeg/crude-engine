@@ -1,6 +1,6 @@
-module crude_engine.ecs.entity;
+module crude.ecs.entity;
 
-namespace crude_engine
+namespace crude::ecs
 {
 
 Entity::Entity()
@@ -30,4 +30,4 @@ void Entity::destruct()
   m_world->remove(m_id);
 }
 
-} //namespace crude_engine
+} //namespace crude

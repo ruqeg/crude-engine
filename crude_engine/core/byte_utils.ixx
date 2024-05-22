@@ -1,9 +1,9 @@
 module;
 
-export module crude_engine.core.byte_utils;
-import crude_engine.core.alias;
+export module crude.core.byte_utils;
+import crude.core.alias;
 
-export namespace crude_engine
+export namespace crude::core
 {
 
 template<class T, size_t TSize>

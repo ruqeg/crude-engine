@@ -1,20 +1,20 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
-module crude_engine.network.socket_address_factory;
+module crude.network.socket_address_factory;
 
-import crude_engine.core.assert;
-import crude_engine.core.std_containers_stack;
+import crude.core.assert;
+import crude.core.std_containers_stack;
 
-namespace crude_engine
+namespace crude::network
 {
 
 Socket_Address_Ptr Socket_Address_Factory::createIPv4FromString(const char* inString)
 {
   auto pos = strchr(inString, ':');
 
-  array<char, 256> host{};
-  array<char, 256> service{};
+  core::array<char, 256> host{};
+  core::array<char, 256> service{};
   if (pos != nullptr)
   {
     memcpy(host.data(), inString, pos - inString);
@@ -48,7 +48,7 @@ Socket_Address_Ptr Socket_Address_Factory::createIPv4FromString(const char* inSt
     return nullptr;
   }
 
-  auto toRet = makeShared<Socket_Address>(*result->ai_addr);
+  auto toRet = core::makeShared<Socket_Address>(*result->ai_addr);
   freeaddrinfo(result);
   return toRet;
 }

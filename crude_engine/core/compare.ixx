@@ -1,8 +1,8 @@
 module;
 
-export module crude_engine.core.compare;
+export module crude.core.compare;
 
-export namespace crude_engine
+export namespace crude::core
 {
 
 class Flexible_Less
@@ -15,4 +15,4 @@ public:
   }
 };
 
-} // namespace crude_engine
+} // namespace crude

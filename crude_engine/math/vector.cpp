@@ -1,4 +1,4 @@
-module crude_engine.math.vector;
+module crude.math.vector;
 
 #if defined(_CRUDE_AVX_INTRINSICS) && defined(_CRUDE_FAVOR_INTEL)
 #define CRUDE_PERMUTE_PS( v, c ) _mm_permute_ps((v), c )
@@ -6,15 +6,15 @@ module crude_engine.math.vector;
 #define CRUDE_PERMUTE_PS( v, c ) _mm_shuffle_ps((v), (v), c )
 #endif
 
-namespace crude_engine
+namespace crude::math
 {
 
 struct alignas(16) VectorF32
 {
   union
   {
-    float32  f[4];
-    Vector   v;
+    core::float32  f[4];
+    Vector         v;
   };
 
   operator Vector() const noexcept;
@@ -24,7 +24,7 @@ struct alignas(16) VectorU32
 {
   union
   {
-    uint32  u[4];
+    core::uint32  u[4];
     Vector  v;
   };
 
@@ -47,7 +47,7 @@ Vector SysVector::zero() noexcept
   return vResult;
 }
 
-Vector SysVector::set(float32 x, float32 y, float32 z, float32 w) noexcept
+Vector SysVector::set(core::float32 x, core::float32 y, core::float32 z, core::float32 w) noexcept
 {
 #if defined(_CRUDE_NO_INTRINSICS)
   VectorF32 vResult = { { { x, y, z, w } } };
@@ -57,7 +57,7 @@ Vector SysVector::set(float32 x, float32 y, float32 z, float32 w) noexcept
 #endif
 }
 
-Vector SysVector::setInt(uint32 x, uint32 y, uint32 z, uint32 w) noexcept
+Vector SysVector::setInt(core::uint32 x, core::uint32 y, core::uint32 z, core::uint32 w) noexcept
 {
 #if defined(_CRUDE_NO_INTRINSICS)
   VectorU32 vResult = { { { x, y, z, w } } };
@@ -68,7 +68,7 @@ Vector SysVector::setInt(uint32 x, uint32 y, uint32 z, uint32 w) noexcept
 #endif
 }
 
-Vector SysVector::fill(float32 value) noexcept
+Vector SysVector::fill(core::float32 value) noexcept
 {
 #if defined(_CRUDE_NO_INTRINSICS)
   VectorF32 vResult = { { { value, value, value, value } } };
@@ -79,7 +79,7 @@ Vector SysVector::fill(float32 value) noexcept
 
 }
 
-Vector SysVector::fillInt(uint32 value) noexcept
+Vector SysVector::fillInt(core::uint32 value) noexcept
 {
 #if defined(_CRUDE_NO_INTRINSICS)
   VectorU32 vResult = { { { value, value, value, value } } };
@@ -203,47 +203,47 @@ Vector SysVector::splatEpsilon() noexcept
 
 }
 
-float32 SysVector::getX(CVector v) noexcept
+core::float32 SysVector::getX(CVector v) noexcept
 {
   return v.vector4_f32[0];
 }
 
-float32 SysVector::getY(CVector v) noexcept
+core::float32 SysVector::getY(CVector v) noexcept
 {
   return v.vector4_f32[1];
 }
 
-float32 SysVector::getZ(CVector v) noexcept
+core::float32 SysVector::getZ(CVector v) noexcept
 {
   return v.vector4_f32[2];
 }
 
-float32 SysVector::getW(CVector v) noexcept
+core::float32 SysVector::getW(CVector v) noexcept
 {
   return v.vector4_f32[3];
 }
 
-uint32 SysVector::getIntX(CVector v) noexcept
+core::uint32 SysVector::getIntX(CVector v) noexcept
 {
   return v.vector4_u32[0];
 }
 
-uint32 SysVector::getIntY(CVector v) noexcept
+core::uint32 SysVector::getIntY(CVector v) noexcept
 {
   return v.vector4_u32[1];
 }
 
-uint32 SysVector::getIntZ(CVector v) noexcept
+core::uint32 SysVector::getIntZ(CVector v) noexcept
 {
   return v.vector4_u32[2];
 }
 
-uint32 SysVector::getIntW(CVector v) noexcept
+core::uint32 SysVector::getIntW(CVector v) noexcept
 {
   return v.vector4_u32[3];
 }
 
-Vector SysVector::setX(CVector v, float32 x) noexcept
+Vector SysVector::setX(CVector v, core::float32 x) noexcept
 {
   VectorF32 vResult = { { {
     x,
@@ -254,7 +254,7 @@ Vector SysVector::setX(CVector v, float32 x) noexcept
   return vResult.v;
 }
 
-Vector SysVector::setY(CVector v, float32 y) noexcept
+Vector SysVector::setY(CVector v, core::float32 y) noexcept
 {
   VectorF32 vResult = { { {
     v.vector4_f32[0],
@@ -265,7 +265,7 @@ Vector SysVector::setY(CVector v, float32 y) noexcept
   return vResult.v;
 }
 
-Vector SysVector::setZ(CVector v, float32 z) noexcept
+Vector SysVector::setZ(CVector v, core::float32 z) noexcept
 {
   VectorF32 vResult = { { {
     v.vector4_f32[0],
@@ -276,7 +276,7 @@ Vector SysVector::setZ(CVector v, float32 z) noexcept
   return vResult.v;
 }
 
-Vector SysVector::setW(CVector v, float32 w) noexcept
+Vector SysVector::setW(CVector v, core::float32 w) noexcept
 {
   VectorF32 vResult = { { {
     v.vector4_f32[0],
@@ -287,7 +287,7 @@ Vector SysVector::setW(CVector v, float32 w) noexcept
   return vResult.v;
 }
 
-Vector SysVector::setIntX(CVector v, uint32 x) noexcept
+Vector SysVector::setIntX(CVector v, core::uint32 x) noexcept
 {
   VectorU32 vResult = { { {
     x,
@@ -298,7 +298,7 @@ Vector SysVector::setIntX(CVector v, uint32 x) noexcept
   return vResult.v;
 }
 
-Vector SysVector::setIntY(CVector v, uint32 y) noexcept
+Vector SysVector::setIntY(CVector v, core::uint32 y) noexcept
 {
   VectorU32 vResult = { { {
     v.vector4_u32[0],
@@ -309,7 +309,7 @@ Vector SysVector::setIntY(CVector v, uint32 y) noexcept
   return vResult.v;
 }
 
-Vector SysVector::setIntZ(CVector v, uint32 z) noexcept
+Vector SysVector::setIntZ(CVector v, core::uint32 z) noexcept
 {
   VectorU32 vResult = { { {
     v.vector4_u32[0],
@@ -320,7 +320,7 @@ Vector SysVector::setIntZ(CVector v, uint32 z) noexcept
   return vResult.v;
 }
 
-Vector SysVector::setIntW(CVector v, uint32 w) noexcept
+Vector SysVector::setIntW(CVector v, core::uint32 w) noexcept
 {
   VectorU32 vResult = { { {
     v.vector4_u32[0],
@@ -355,10 +355,10 @@ Vector SysVector::equalInt(CVector v1, CVector v2) noexcept
 
 Vector SysVector::nearEqual(CVector v1, CVector v2, CVector epsilon) noexcept
 {
-  float32 fDeltaX = v1.vector4_f32[0] - v2.vector4_f32[0];
-  float32 fDeltaY = v1.vector4_f32[1] - v2.vector4_f32[1];
-  float32 fDeltaZ = v1.vector4_f32[2] - v2.vector4_f32[2];
-  float32 fDeltaW = v1.vector4_f32[3] - v2.vector4_f32[3];
+  core::float32 fDeltaX = v1.vector4_f32[0] - v2.vector4_f32[0];
+  core::float32 fDeltaY = v1.vector4_f32[1] - v2.vector4_f32[1];
+  core::float32 fDeltaZ = v1.vector4_f32[2] - v2.vector4_f32[2];
+  core::float32 fDeltaW = v1.vector4_f32[3] - v2.vector4_f32[3];
 
   if (fDeltaX < 0) fDeltaX = -fDeltaX;
   if (fDeltaY < 0) fDeltaY = -fDeltaY;
@@ -442,10 +442,10 @@ Vector SysVector::lessOrEqual(CVector v1, CVector v2) noexcept
 
 Vector SysVector::inBounds(CVector v, CVector bounds) noexcept
 {
-  float32 absBoundsX = bounds.vector4_f32[0] > 0.0f ? bounds.vector4_f32[0] : -bounds.vector4_f32[0];
-  float32 absBoundsY = bounds.vector4_f32[1] > 0.0f ? bounds.vector4_f32[1] : -bounds.vector4_f32[1];
-  float32 absBoundsZ = bounds.vector4_f32[2] > 0.0f ? bounds.vector4_f32[2] : -bounds.vector4_f32[2];
-  float32 absBoundsW = bounds.vector4_f32[3] > 0.0f ? bounds.vector4_f32[3] : -bounds.vector4_f32[3];
+  core::float32 absBoundsX = bounds.vector4_f32[0] > 0.0f ? bounds.vector4_f32[0] : -bounds.vector4_f32[0];
+  core::float32 absBoundsY = bounds.vector4_f32[1] > 0.0f ? bounds.vector4_f32[1] : -bounds.vector4_f32[1];
+  core::float32 absBoundsZ = bounds.vector4_f32[2] > 0.0f ? bounds.vector4_f32[2] : -bounds.vector4_f32[2];
+  core::float32 absBoundsW = bounds.vector4_f32[3] > 0.0f ? bounds.vector4_f32[3] : -bounds.vector4_f32[3];
 
   VectorU32 vResult = { { {
     (v.vector4_f32[0] <= absBoundsX && v.vector4_f32[0] >= -absBoundsX) ? 0xFFFFFFFF : 0,
@@ -688,7 +688,7 @@ Vector SysVector::divideAdd(CVector v1, CVector v2, CVector v3) noexcept
   return vResult.v;
 }
 
-Vector SysVector::scale(CVector v, float32 s) noexcept
+Vector SysVector::scale(CVector v, core::float32 s) noexcept
 {
   VectorF32 vResult = { { {
     v.vector4_f32[0] * s,
@@ -878,7 +878,7 @@ Vector SysVector::dot1(CVector v1, CVector v2, CVector e1, Vector* cov) noexcept
 
 Vector SysVector::dot1(CVector v1, CVector v2) noexcept
 {
-  float32 fDot = v1.vector4_f32[0] * v2.vector4_f32[0];
+  core::float32 fDot = v1.vector4_f32[0] * v2.vector4_f32[0];
 
   Vector vResult = SysVector::fill(fDot);
   return vResult;
@@ -887,8 +887,8 @@ Vector SysVector::dot1(CVector v1, CVector v2) noexcept
 Vector SysVector::length1(CVector v) noexcept
 {
   Vector vOrthoDotResult = SysVector::dot1(v, v);
-  float32 fOrthoDotResult = vOrthoDotResult.vector4_f32[0];
-  float32 fOrthoNormLength = Scalar::sqrt(fOrthoDotResult);
+  core::float32 fOrthoDotResult = vOrthoDotResult.vector4_f32[0];
+  core::float32 fOrthoNormLength = Scalar::sqrt(fOrthoDotResult);
   Vector vResult = SysVector::fill(fOrthoNormLength);
   return vResult;
 }
@@ -902,8 +902,8 @@ Vector SysVector::lengthSq1(CVector v) noexcept
 Vector SysVector::normalize1(CVector v) noexcept
 {
   Vector vLength = SysVector::lengthSq1(v);
-  float32 fLength = vLength.vector4_f32[0];
-  float32 fInvLength;
+  core::float32 fLength = vLength.vector4_f32[0];
+  core::float32 fInvLength;
 
   if (fLength > 0)
   {
@@ -928,12 +928,12 @@ Vector SysVector::cos1(CVector v1, CVector v2) noexcept
   Vector vDot = SysVector::dot1(v1, v2);
   Vector vLength1 = SysVector::lengthSq1(v1);
   Vector vLength2 = SysVector::lengthSq1(v2);
-  float32 fDot = vDot.vector4_f32[0];
-  float32 fLength1 = vLength1.vector4_f32[0];
-  float32 fLength2 = vLength2.vector4_f32[0];
-  float32 fMul = fLength1 * fLength2;
-  float32 fSqrtMul = Scalar::sqrt(fMul);
-  float32 fCos = fDot / fSqrtMul;
+  core::float32 fDot = vDot.vector4_f32[0];
+  core::float32 fLength1 = vLength1.vector4_f32[0];
+  core::float32 fLength2 = vLength2.vector4_f32[0];
+  core::float32 fMul = fLength1 * fLength2;
+  core::float32 fSqrtMul = Scalar::sqrt(fMul);
+  core::float32 fCos = fDot / fSqrtMul;
   Vector vResult = SysVector::fill(fCos);
   return vResult;
 }
@@ -964,7 +964,7 @@ Vector SysVector::dot2(CVector v1, CVector v2, CVector e1, CVector e2, Vector* c
 
 Vector SysVector::dot2(CVector v1, CVector v2) noexcept
 {
-  float32 fDot = v1.vector4_f32[0] * v2.vector4_f32[0] +
+  core::float32 fDot = v1.vector4_f32[0] * v2.vector4_f32[0] +
     v1.vector4_f32[1] * v2.vector4_f32[1];
 
   Vector vResult = SysVector::fill(fDot);
@@ -974,8 +974,8 @@ Vector SysVector::dot2(CVector v1, CVector v2) noexcept
 Vector SysVector::length2(CVector v) noexcept
 {
   Vector vOrthoDotResult = SysVector::dot2(v, v);
-  float32 fOrthoDotResult = vOrthoDotResult.vector4_f32[0];
-  float32 fOrthoNormLength = Scalar::sqrt(fOrthoDotResult);
+  core::float32 fOrthoDotResult = vOrthoDotResult.vector4_f32[0];
+  core::float32 fOrthoNormLength = Scalar::sqrt(fOrthoDotResult);
   Vector vResult = SysVector::fill(fOrthoNormLength);
   return vResult;
 }
@@ -989,8 +989,8 @@ Vector SysVector::lengthSq2(CVector v) noexcept
 Vector SysVector::normalize2(CVector v) noexcept
 {
   Vector vLength = SysVector::lengthSq2(v);
-  float32 fLength = vLength.vector4_f32[0];
-  float32 fInvLength;
+  core::float32 fLength = vLength.vector4_f32[0];
+  core::float32 fInvLength;
 
   if (fLength > 0.0f)
   {
@@ -1016,12 +1016,12 @@ SysVector::cos2(CVector v1, CVector v2) noexcept
   Vector vDot = SysVector::dot2(v1, v2);
   Vector vLength1 = SysVector::lengthSq2(v1);
   Vector vLength2 = SysVector::lengthSq2(v2);
-  float32 fDot = vDot.vector4_f32[0];
-  float32 fLength1 = vLength1.vector4_f32[0];
-  float32 fLength2 = vLength2.vector4_f32[0];
-  float32 fMul = fLength1 * fLength2;
-  float32 fSqrtMul = Scalar::sqrt(fMul);
-  float32 fCos = fDot / fSqrtMul;
+  core::float32 fDot = vDot.vector4_f32[0];
+  core::float32 fLength1 = vLength1.vector4_f32[0];
+  core::float32 fLength2 = vLength2.vector4_f32[0];
+  core::float32 fMul = fLength1 * fLength2;
+  core::float32 fSqrtMul = Scalar::sqrt(fMul);
+  core::float32 fCos = fDot / fSqrtMul;
   Vector vResult = SysVector::fill(fCos);
   return vResult;
 }
@@ -1052,7 +1052,7 @@ Vector SysVector::dot3(CVector v1, CVector v2, CVector e1, CVector e2, CVector e
 
 Vector SysVector::dot3(CVector v1, CVector v2) noexcept
 {
-  float32 fDot = v1.vector4_f32[0] * v2.vector4_f32[0] +
+  core::float32 fDot = v1.vector4_f32[0] * v2.vector4_f32[0] +
     v1.vector4_f32[1] * v2.vector4_f32[1] +
     v1.vector4_f32[2] * v2.vector4_f32[2];
 
@@ -1063,8 +1063,8 @@ Vector SysVector::dot3(CVector v1, CVector v2) noexcept
 Vector SysVector::length3(CVector v) noexcept
 {
   Vector vOrthoDotResult = SysVector::dot3(v, v);
-  float32 fOrthoDotResult = vOrthoDotResult.vector4_f32[0];
-  float32 fOrthoNormLength = Scalar::sqrt(fOrthoDotResult);
+  core::float32 fOrthoDotResult = vOrthoDotResult.vector4_f32[0];
+  core::float32 fOrthoNormLength = Scalar::sqrt(fOrthoDotResult);
   Vector vResult = SysVector::fill(fOrthoNormLength);
   return vResult;
 }
@@ -1078,8 +1078,8 @@ Vector SysVector::lengthSq3(CVector v) noexcept
 Vector SysVector::normalize3(CVector v) noexcept
 {
   Vector vLength = SysVector::lengthSq3(v);
-  float32 fLength = vLength.vector4_f32[0];
-  float32 fInvLength;
+  core::float32 fLength = vLength.vector4_f32[0];
+  core::float32 fInvLength;
 
   if (fLength > 0.0f)
   {
@@ -1104,12 +1104,12 @@ Vector SysVector::cos3(CVector v1, CVector v2) noexcept
   Vector vDot = SysVector::dot3(v1, v2);
   Vector vLength1 = SysVector::lengthSq3(v1);
   Vector vLength2 = SysVector::lengthSq3(v2);
-  float32 fDot = vDot.vector4_f32[0];
-  float32 fLength1 = vLength1.vector4_f32[0];
-  float32 fLength2 = vLength2.vector4_f32[0];
-  float32 fMul = fLength1 * fLength2;
-  float32 fSqrtMul = Scalar::sqrt(fMul);
-  float32 fCos = fDot / fSqrtMul;
+  core::float32 fDot = vDot.vector4_f32[0];
+  core::float32 fLength1 = vLength1.vector4_f32[0];
+  core::float32 fLength2 = vLength2.vector4_f32[0];
+  core::float32 fMul = fLength1 * fLength2;
+  core::float32 fSqrtMul = Scalar::sqrt(fMul);
+  core::float32 fCos = fDot / fSqrtMul;
   Vector vResult = SysVector::fill(fCos);
   return vResult;
 }
@@ -1140,7 +1140,7 @@ Vector SysVector::dot4(CVector v1, CVector v2, CVector e1, CVector e2, CVector e
 
 Vector SysVector::dot4(CVector v1, CVector v2) noexcept
 {
-  float32 fDot = v1.vector4_f32[0] * v2.vector4_f32[0] +
+  core::float32 fDot = v1.vector4_f32[0] * v2.vector4_f32[0] +
     v1.vector4_f32[1] * v2.vector4_f32[1] +
     v1.vector4_f32[2] * v2.vector4_f32[2] +
     v1.vector4_f32[3] * v2.vector4_f32[3];
@@ -1152,8 +1152,8 @@ Vector SysVector::dot4(CVector v1, CVector v2) noexcept
 Vector SysVector::length4(CVector v) noexcept
 {
   Vector vOrthoDotResult = SysVector::dot4(v, v);
-  float32 fOrthoDotResult = vOrthoDotResult.vector4_f32[0];
-  float32 fOrthoNormLength = Scalar::sqrt(fOrthoDotResult);
+  core::float32 fOrthoDotResult = vOrthoDotResult.vector4_f32[0];
+  core::float32 fOrthoNormLength = Scalar::sqrt(fOrthoDotResult);
   Vector vResult = SysVector::fill(fOrthoNormLength);
   return vResult;
 }
@@ -1167,8 +1167,8 @@ Vector SysVector::lengthSq4(CVector v) noexcept
 Vector SysVector::normalize4(CVector v) noexcept
 {
   Vector vLength = SysVector::lengthSq4(v);
-  float32 fLength = vLength.vector4_f32[0];
-  float32 fInvLength;
+  core::float32 fLength = vLength.vector4_f32[0];
+  core::float32 fInvLength;
 
   if (fLength > 0)
   {
@@ -1193,20 +1193,20 @@ Vector SysVector::cos4(CVector v1, CVector v2) noexcept
   Vector vDot = SysVector::dot4(v1, v2);
   Vector vLength1 = SysVector::lengthSq4(v1);
   Vector vLength2 = SysVector::lengthSq4(v2);
-  float32 fDot = vDot.vector4_f32[0];
-  float32 fLength1 = vLength1.vector4_f32[0];
-  float32 fLength2 = vLength2.vector4_f32[0];
-  float32 fMul = fLength1 * fLength2;
-  float32 fSqrtMul = Scalar::sqrt(fMul);
-  float32 fCos = fDot / fSqrtMul;
+  core::float32 fDot = vDot.vector4_f32[0];
+  core::float32 fLength1 = vLength1.vector4_f32[0];
+  core::float32 fLength2 = vLength2.vector4_f32[0];
+  core::float32 fMul = fLength1 * fLength2;
+  core::float32 fSqrtMul = Scalar::sqrt(fMul);
+  core::float32 fCos = fDot / fSqrtMul;
   Vector vResult = SysVector::fill(fCos);
   return vResult;
 }
 
 Vector SysVector::project1(CVector v1, CVector v2) noexcept
 {
-  float32 x = SysVector::getX(SysVector::dot1(v1, v2));
-  float32 y = SysVector::getX(SysVector::lengthSq1(v2));
+  core::float32 x = SysVector::getX(SysVector::dot1(v1, v2));
+  core::float32 y = SysVector::getX(SysVector::lengthSq1(v2));
   Vector vResult = SysVector::scale(v2, x / y);
   return vResult;
 }
@@ -1220,8 +1220,8 @@ Vector SysVector::reject1(CVector v1, CVector v2) noexcept
 
 Vector SysVector::project2(CVector v1, CVector v2) noexcept
 {
-  float32 x = SysVector::getX(SysVector::dot2(v1, v2));
-  float32 y = SysVector::getX(SysVector::lengthSq2(v2));
+  core::float32 x = SysVector::getX(SysVector::dot2(v1, v2));
+  core::float32 y = SysVector::getX(SysVector::lengthSq2(v2));
   Vector vResult = SysVector::scale(v2, x / y);
   return vResult;
 }
@@ -1235,8 +1235,8 @@ Vector SysVector::reject2(CVector v1, CVector v2) noexcept
 
 Vector SysVector::project3(CVector v1, CVector v2) noexcept
 {
-  float32 x = SysVector::getX(SysVector::dot3(v1, v2));
-  float32 y = SysVector::getX(SysVector::lengthSq3(v2));
+  core::float32 x = SysVector::getX(SysVector::dot3(v1, v2));
+  core::float32 y = SysVector::getX(SysVector::lengthSq3(v2));
   Vector vResult = SysVector::scale(v2, x / y);
   return vResult;
 }
@@ -1250,8 +1250,8 @@ Vector SysVector::reject3(CVector v1, CVector v2) noexcept
 
 Vector SysVector::project4(CVector v1, CVector v2) noexcept
 {
-  float32 x = SysVector::getX(SysVector::dot4(v1, v2));
-  float32 y = SysVector::getX(SysVector::lengthSq4(v2));
+  core::float32 x = SysVector::getX(SysVector::dot4(v1, v2));
+  core::float32 y = SysVector::getX(SysVector::lengthSq4(v2));
   Vector vResult = SysVector::scale(v2, x / y);
   return vResult;
 }
@@ -1265,8 +1265,8 @@ Vector SysVector::reject4(CVector v1, CVector v2) noexcept
 
 Vector SysVector::tripleProduct3(CVector v1, CVector v2, CVector v3, CVector e1, CVector e2, CVector e3) noexcept
 {
-  float32 x = SysVector::getX(SysVector::tripleProduct3(v1, v2, v3));
-  float32 y = SysVector::getX(SysVector::tripleProduct3(e1, e2, e3));
+  core::float32 x = SysVector::getX(SysVector::tripleProduct3(v1, v2, v3));
+  core::float32 y = SysVector::getX(SysVector::tripleProduct3(e1, e2, e3));
   Vector vResult = SysVector::fill(x * y);
   return vResult;
 }
@@ -1275,9 +1275,9 @@ Vector SysVector::cross3(CVector v1, CVector v2, CVector e1, CVector e2, CVector
 {
   Vector vResult;
   {
-    float32 s1 = v1.vector4_f32[1] * v2.vector4_f32[2] - v1.vector4_f32[2] * v2.vector4_f32[1];
-    float32 s2 = v1.vector4_f32[2] * v2.vector4_f32[0] - v1.vector4_f32[0] * v2.vector4_f32[2];
-    float32 s3 = v1.vector4_f32[0] * v2.vector4_f32[1] - v1.vector4_f32[1] * v2.vector4_f32[0];
+    core::float32 s1 = v1.vector4_f32[1] * v2.vector4_f32[2] - v1.vector4_f32[2] * v2.vector4_f32[1];
+    core::float32 s2 = v1.vector4_f32[2] * v2.vector4_f32[0] - v1.vector4_f32[0] * v2.vector4_f32[2];
+    core::float32 s3 = v1.vector4_f32[0] * v2.vector4_f32[1] - v1.vector4_f32[1] * v2.vector4_f32[0];
     vResult = SysVector::scale(e1, s1);
     vResult = SysVector::add(vResult, SysVector::scale(e2, s2));
     vResult = SysVector::add(vResult, SysVector::scale(e3, s3));
@@ -1287,7 +1287,7 @@ Vector SysVector::cross3(CVector v1, CVector v2, CVector e1, CVector e2, CVector
 
 Vector SysVector::tripleProduct3(CVector v1, CVector v2, CVector v3) noexcept
 {
-  float32 x;
+  core::float32 x;
   {
     x = v1.vector4_f32[0] * (v2.vector4_f32[1] * v3.vector4_f32[2] - v2.vector4_f32[2] * v3.vector4_f32[1]);
     x += v1.vector4_f32[1] * (v2.vector4_f32[2] * v3.vector4_f32[0] - v2.vector4_f32[0] * v3.vector4_f32[2]);

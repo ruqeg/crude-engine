@@ -4,9 +4,9 @@ module;
 #include <cstddef>
 #include <uchar.h>
 
-export module crude_engine.core.alias;
+export module crude.core.alias;
 
-export namespace crude_engine
+export namespace crude::core
 {
 
 using byte = uint8_t;

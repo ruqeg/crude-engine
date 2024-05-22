@@ -1,10 +1,10 @@
 module;
 
-export module crude_engine.core.size_holder;
+export module crude.core.size_holder;
 
-import crude_engine.core.alias;
+import crude.core.alias;
 
-export namespace crude_engine
+export namespace crude::core
 {
 
 template<bool enable>

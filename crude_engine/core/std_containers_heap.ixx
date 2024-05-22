@@ -6,11 +6,11 @@ module;
 #include <deque>
 #include <queue>
 
-export module crude_engine.core.std_containers_heap;
+export module crude.core.std_containers_heap;
 
-export import crude_engine.core.std_allocator;
+export import crude.core.std_allocator;
 
-export namespace crude_engine
+export namespace crude::core
 {
 
 template<class T, class Allocator = STD_Allocator<T>>

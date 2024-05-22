@@ -1,9 +1,9 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
-module crude_engine.network.udp_socket;
+module crude.network.udp_socket;
 
-namespace crude_engine
+namespace crude::network
 {
 
 UDP_Socket::UDP_Socket(SOCKET inSocket)
@@ -16,20 +16,20 @@ UDP_Socket::~UDP_Socket()
   closesocket(m_socket);
 }
 
-int64 UDP_Socket::bind(const Socket_Address& inBindAddress)
+core::int64 UDP_Socket::bind(const Socket_Address& inBindAddress)
 {
   int result = ::bind(m_socket, &inBindAddress.m_sockddr, inBindAddress.getSize());
   return result;
 }
 
-int64 UDP_Socket::send(const span<const byte>& inData, const Socket_Address& inToAddress)
+core::int64 UDP_Socket::send(const core::span<const byte>& inData, const Socket_Address& inToAddress)
 {
   static_assert(sizeof(byte) == sizeof(char));
   int byteSendCount = ::sendto(m_socket, reinterpret_cast<const char*>(inData.data()), inData.size_bytes(), 0, &inToAddress.m_sockddr, inToAddress.getSize());
   return byteSendCount;
 }
 
-int64 UDP_Socket::receive(const span<byte>& outBuffer, Socket_Address& outFromAddress)
+core::int64 UDP_Socket::receive(const core::span<byte>& outBuffer, Socket_Address& outFromAddress)
 {
   static_assert(sizeof(byte) == sizeof(char));
   int fromLength = outFromAddress.getSize();
@@ -37,7 +37,7 @@ int64 UDP_Socket::receive(const span<byte>& outBuffer, Socket_Address& outFromAd
   return readByteCount;
 }
 
-int64 UDP_Socket::setNonBlockingMode(bool inShouldBeNonBlocking)
+core::int64 UDP_Socket::setNonBlockingMode(bool inShouldBeNonBlocking)
 {
   u_long arg = inShouldBeNonBlocking ? 1 : 0;
   int result = ioctlsocket(m_socket, FIONBIO, &arg);

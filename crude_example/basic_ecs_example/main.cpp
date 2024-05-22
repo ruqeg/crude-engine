@@ -3,33 +3,33 @@
 #include <Windows.h>
 #include <iostream>
 
-import crude_engine.ecs.world;
-import crude_engine.ecs.entity;
-import crude_engine.ecs.component_container;
-import crude_engine.ecs.query;
+import crude.ecs.world;
+import crude.ecs.entity;
+import crude.ecs.component_container;
+import crude.ecs.query;
 
-struct Force : public crude_engine::Default_Component_Container<Force>
+struct Force : public crude::Default_Component_Container<Force>
 {
   Force() = default;
   Force(int x) : x(x) {}
   int x;
 };
 
-struct Speed : public crude_engine::Default_Component_Container<Speed>
+struct Speed : public crude::Default_Component_Container<Speed>
 {
   Speed() = default;
   Speed(int x) : x(x) {}
   int x;
 };
 
-struct Power : public crude_engine::Default_Component_Container<Power>
+struct Power : public crude::Default_Component_Container<Power>
 {
   Power() = default;
   Power(int x) : x(x) {}
   int x;
 };
 
-struct Length : public crude_engine::Default_Component_Container<Length>
+struct Length : public crude::Default_Component_Container<Length>
 {
   Length() = default;
   Length(int x) : x(x) {}
@@ -47,31 +47,31 @@ int APIENTRY wWinMain(
   FILE* dummy;
   auto s = freopen_s(&dummy, "CONOUT$", "w", stdout);
   {
-    crude_engine::World ecs;
+    crude::World ecs;
     
-    crude_engine::Entity entity = ecs.entity()
+    crude::Entity entity = ecs.entity()
       .add<Force>()
       .add<Speed>()
       .add<Power>();
     
-    crude_engine::Entity entity2 = ecs.entity()
+    crude::Entity entity2 = ecs.entity()
       .add<Force>();
     
-    crude_engine::Entity entity3 = ecs.entity()
+    crude::Entity entity3 = ecs.entity()
       .add<Force>()
       .add<Speed>();
     
-    crude_engine::Entity entity4 = ecs.entity()
+    crude::Entity entity4 = ecs.entity()
       .add<Force>()
       .add<Power>();
     
-    crude_engine::Entity entity5 = ecs.entity()
+    crude::Entity entity5 = ecs.entity()
       .add<Force>()
       .add<Speed>()
       .add<Power>()
       .add<Length>();
     
-    crude_engine::Entity entityCopy = ecs.entity()
+    crude::Entity entityCopy = ecs.entity()
       .add<Force>()
       .add<Speed>()
       .add<Power>();

@@ -1,11 +1,11 @@
 module;
 
-export module crude_engine.ecs.id_manager;
+export module crude.ecs.id_manager;
 
-import crude_engine.ecs.alias;
-import crude_engine.core.std_containers_heap;
+import crude.ecs.alias;
+import crude.core.std_containers_heap;
 
-export namespace crude_engine
+export namespace crude::ecs
 {
 
 class ID_Manager
@@ -23,8 +23,8 @@ public:
   static ID_Index getIndex(ID id);
 
 private:
-  queue<ID> m_freeIDs;
-  uint64 m_newFreeIndex;
+  core::queue<ID>  m_freeIDs;
+  core::uint64     m_newFreeIndex;
 };
 
 }

@@ -1,9 +1,9 @@
-module crude_engine.core.linear_allocator;
+module crude.core.linear_allocator;
 
-import crude_engine.core.memory_utils;
-import crude_engine.core.assert;
+import crude.core.memory_utils;
+import crude.core.assert;
 
-namespace crude_engine
+namespace crude::core
 {
 
 Linear_Allocator::Linear_Allocator(const size_t capacity) noexcept

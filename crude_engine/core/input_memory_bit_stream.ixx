@@ -5,14 +5,14 @@ module;
 #include <type_traits>
 #include <algorithm>
 
-export module crude_engine.core.input_memory_bit_stream;
+export module crude.core.input_memory_bit_stream;
 
-import crude_engine.core.alias;
-import crude_engine.core.shared_ptr;
-import crude_engine.core.std_containers_stack;
-import crude_engine.core.std_containers_heap;
+import crude.core.alias;
+import crude.core.shared_ptr;
+import crude.core.std_containers_stack;
+import crude.core.std_containers_heap;
 
-export namespace crude_engine
+export namespace crude::core
 {
 
 class Input_Memory_Bit_Stream

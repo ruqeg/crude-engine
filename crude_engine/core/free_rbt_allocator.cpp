@@ -1,10 +1,10 @@
-module crude_engine.core.free_rbt_allocator;
+module crude.core.free_rbt_allocator;
 
-import crude_engine.core.logger;
-import crude_engine.core.assert;
-import crude_engine.core.memory_utils;
+import crude.core.logger;
+import crude.core.assert;
+import crude.core.memory_utils;
 
-namespace crude_engine
+namespace crude::core
 {
 
 bool operator<(const Free_RBT_Allocator::Node& lhs, int rhs)

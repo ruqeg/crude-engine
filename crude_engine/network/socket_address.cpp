@@ -1,11 +1,11 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
-module crude_engine.network.socket_address;
+module crude.network.socket_address;
 
-import crude_engine.core.string;
+import crude.core.string;
 
-namespace crude_engine
+namespace crude::network
 {
 
 Socket_Address::Socket_Address()
@@ -39,7 +39,7 @@ Socket_Address::Socket_Address(const sockaddr& otherSockaddr)
   memcpy(&m_sockddr, &otherSockaddr, sizeof(sockaddr));
 }
 
-uint64 Socket_Address::getSize() const
+core::uint64 Socket_Address::getSize() const
 {
   return sizeof(sockaddr);
 }
@@ -59,19 +59,19 @@ sockaddr_in6* Socket_Address::getAsSockAddrIn6()
   return reinterpret_cast<sockaddr_in6*>(&m_sockddr);
 }
 
-Socket_Address_Init_IPv4::Socket_Address_Init_IPv4(const char* inAddress, uint16 inPort)
+Socket_Address_Init_IPv4::Socket_Address_Init_IPv4(const char* inAddress, core::uint16 inPort)
 {
   inet_pton(AF_INET, inAddress, &this->inAddress);
   this->inPort = htons(inPort);
 }
 
-Socket_Address_Init_IPv4::Socket_Address_Init_IPv4(uint64 inAddress, uint16 inPort)
+Socket_Address_Init_IPv4::Socket_Address_Init_IPv4(core::uint64 inAddress, core::uint16 inPort)
 {
   this->inAddress.S_un.S_addr = htonl(inAddress);
   this->inPort                = htons(inPort);
 }
 
-Socket_Address_Init_IPv6::Socket_Address_Init_IPv6(const char* inAddress, uint16 inPort)
+Socket_Address_Init_IPv6::Socket_Address_Init_IPv6(const char* inAddress, core::uint16 inPort)
 {
   inet_pton(AF_INET6, inAddress, &this->inAddress);
   this->inPort = htons(inPort);

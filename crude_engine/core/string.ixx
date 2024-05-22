@@ -3,13 +3,13 @@ module;
 #include <utility>
 #include <stdio.h>
 
-export module crude_engine.core.string;
+export module crude.core.string;
 
-export import crude_engine.core.alias;
+export import crude.core.alias;
 
-import crude_engine.core.utility;
+import crude.core.utility;
 
-export namespace crude_engine
+export namespace crude::core
 {
 
 size_t strlen(char* const buffer) noexcept;

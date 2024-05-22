@@ -3,14 +3,14 @@ module;
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
-export module crude_engine.network.socket_util;
+export module crude.network.socket_util;
 
-import crude_engine.core.std_containers_heap;
-import crude_engine.network.udp_socket;
-import crude_engine.network.tcp_socket;
-import crude_engine.network.socket_address;
+import crude.core.std_containers_heap;
+import crude.network.udp_socket;
+import crude.network.tcp_socket;
+import crude.network.socket_address;
 
-export namespace crude_engine
+export namespace crude::network
 {
 
 class Socket_Util
@@ -18,16 +18,16 @@ class Socket_Util
 public:
   static UDP_Socket_Ptr createUDPSocket(Socket_Address_Family inFamily);
   static TCP_Socket_Ptr createTCPSocket(Socket_Address_Family inFamily);
-  static fd_set* fillSetFromArray(fd_set& outSet, const vector<TCP_Socket_Ptr>* inSockets);
-  static void fillArrayFromSet(vector<TCP_Socket_Ptr>*        outSockets,
-                               const vector<TCP_Socket_Ptr>*  inSockets,
-                               const fd_set&                  inSet);
-  static int select(const vector<TCP_Socket_Ptr>*  inReadSet = nullptr,
-                    vector<TCP_Socket_Ptr>*        outReadSet = nullptr,
-                    const vector<TCP_Socket_Ptr>*  inWriteSet = nullptr,
-                    vector<TCP_Socket_Ptr>*        outWriteSet = nullptr,
-                    const vector<TCP_Socket_Ptr>*  inExceptSet = nullptr,
-                    vector<TCP_Socket_Ptr>*        outExceptSet = nullptr);
+  static fd_set* fillSetFromArray(fd_set& outSet, const core::vector<TCP_Socket_Ptr>* inSockets);
+  static void fillArrayFromSet(core::vector<TCP_Socket_Ptr>*        outSockets,
+                               const core::vector<TCP_Socket_Ptr>*  inSockets,
+                               const fd_set&                        inSet);
+  static int select(const core::vector<TCP_Socket_Ptr>*  inReadSet = nullptr,
+                    core::vector<TCP_Socket_Ptr>*        outReadSet = nullptr,
+                    const core::vector<TCP_Socket_Ptr>*  inWriteSet = nullptr,
+                    core::vector<TCP_Socket_Ptr>*        outWriteSet = nullptr,
+                    const core::vector<TCP_Socket_Ptr>*  inExceptSet = nullptr,
+                    core::vector<TCP_Socket_Ptr>*        outExceptSet = nullptr);
 };
 
 }

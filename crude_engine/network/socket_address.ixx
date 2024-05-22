@@ -5,20 +5,20 @@ module;
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
-export module crude_engine.network.socket_address;
+export module crude.network.socket_address;
 
-import crude_engine.core.alias;
-import crude_engine.core.std_containers_stack;
-import crude_engine.core.shared_ptr;
+import crude.core.alias;
+import crude.core.std_containers_stack;
+import crude.core.shared_ptr;
 
-export namespace crude_engine
+export namespace crude::network
 {
 
 class Socket_Address_Init_IPv4
 {
 public:
-  Socket_Address_Init_IPv4(const char* inAddress, uint16 inPort);
-  Socket_Address_Init_IPv4(uint64 inAddress, uint16 inPort);
+  Socket_Address_Init_IPv4(const char* inAddress, core::uint16 inPort);
+  Socket_Address_Init_IPv4(core::uint64 inAddress, core::uint16 inPort);
 
 private:
   IN_ADDR  inAddress;
@@ -30,7 +30,7 @@ private:
 class Socket_Address_Init_IPv6
 {
 public:
-  Socket_Address_Init_IPv6(const char* inAddress, uint16 inPort);
+  Socket_Address_Init_IPv6(const char* inAddress, core::uint16 inPort);
 
 private:
   IN6_ADDR  inAddress;
@@ -47,7 +47,7 @@ enum Socket_Address_Family
 };
 
 class Socket_Address;
-using Socket_Address_Ptr = Shared_Ptr<Socket_Address>;
+using Socket_Address_Ptr = core::Shared_Ptr<Socket_Address>;
 
 class Socket_Address
 {
@@ -57,7 +57,7 @@ public:
   explicit Socket_Address(const Socket_Address_Init_IPv6& inData);
   Socket_Address(const sockaddr& otherSockaddr);
 
-  uint64 getSize() const;
+  core::uint64 getSize() const;
   Socket_Address_Family getType() const;
 
 private:

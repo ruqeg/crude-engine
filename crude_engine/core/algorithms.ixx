@@ -1,8 +1,8 @@
 module;
 
-export module crude_engine.core.algorithms;
+export module crude.core.algorithms;
 
-export namespace crude_engine
+export namespace crude::core
 {
 
 class Algorithms

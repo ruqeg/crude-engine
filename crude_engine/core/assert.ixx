@@ -1,8 +1,8 @@
 module;
 
-export module crude_engine.core.assert;
+export module crude.core.assert;
 
-export namespace crude_engine
+export namespace crude::core
 {
 
 void assert(bool assertion) noexcept;

@@ -1,10 +1,10 @@
 module;
 
-export module crude_engine.core.iallocator;
+export module crude.core.iallocator;
 
-export import crude_engine.core.alias;
+export import crude.core.alias;
 
-export namespace crude_engine
+export namespace crude::core
 {
 
 class IAllocator_Allocate

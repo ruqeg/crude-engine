@@ -3,27 +3,27 @@ module;
 #include <xmmintrin.h>
 #include <emmintrin.h>
 
-export module crude_engine.math.vector;
+export module crude.math.vector;
 
-import crude_engine.core.alias;
-import crude_engine.math.scalar;
-import crude_engine.math.constants;
+import crude.core.alias;
+import crude.math.scalar;
+import crude.math.constants;
 
-namespace crude_engine
+namespace crude::math
 {
 
 struct __vector4
 {
   union
   {
-    float32   vector4_f32[4];
-    uint32    vector4_u32[4];
+    core::float32   vector4_f32[4];
+    core::uint32    vector4_u32[4];
   };
 };
 
 }
 
-export namespace crude_engine
+export namespace crude::math
 {
 // !TODO complete SIMD (in the next life) or just switch to DirectXMath
 #if defined(_CRUDE_SSE_INTRINSICS) && !defined(_CRUDE_NO_INTRINSICS)
@@ -45,20 +45,20 @@ public:
   SysVector() = delete;
 
 public:
-  static Vector setInt(uint32 x, uint32 y, uint32 z, uint32 w) noexcept;
-  static Vector fillInt(uint32 value) noexcept;
+  static Vector setInt(core::uint32 x, core::uint32 y, core::uint32 z, core::uint32 w) noexcept;
+  static Vector fillInt(core::uint32 value) noexcept;
   static Vector trueInt() noexcept;
   static Vector falseInt() noexcept;
 
-  static uint32 getIntX(CVector v) noexcept;
-  static uint32 getIntY(CVector v) noexcept;
-  static uint32 getIntZ(CVector v) noexcept;
-  static uint32 getIntW(CVector v) noexcept;
+  static core::uint32 getIntX(CVector v) noexcept;
+  static core::uint32 getIntY(CVector v) noexcept;
+  static core::uint32 getIntZ(CVector v) noexcept;
+  static core::uint32 getIntW(CVector v) noexcept;
 
-  static Vector setIntX(CVector v, uint32 x) noexcept;
-  static Vector setIntY(CVector v, uint32 y) noexcept;
-  static Vector setIntZ(CVector v, uint32 z) noexcept;
-  static Vector setIntW(CVector v, uint32 w) noexcept;
+  static Vector setIntX(CVector v, core::uint32 x) noexcept;
+  static Vector setIntY(CVector v, core::uint32 y) noexcept;
+  static Vector setIntZ(CVector v, core::uint32 z) noexcept;
+  static Vector setIntW(CVector v, core::uint32 w) noexcept;
 
   static Vector equalInt(CVector v1, CVector v2) noexcept;
   static Vector notEqualInt(CVector v1, CVector v2) noexcept;
@@ -71,8 +71,8 @@ public:
   static Vector select(CVector v1, CVector v2, CVector control) noexcept;
 
   static Vector zero() noexcept;
-  static Vector set(float32 x, float32 y, float32 z, float32 w) noexcept;
-  static Vector fill(float32 value) noexcept;
+  static Vector set(core::float32 x, core::float32 y, core::float32 z, core::float32 w) noexcept;
+  static Vector fill(core::float32 value) noexcept;
   static Vector splatX(CVector v) noexcept;
   static Vector splatY(CVector v) noexcept;
   static Vector splatZ(CVector v) noexcept;
@@ -82,15 +82,15 @@ public:
   static Vector splatQNaN() noexcept;
   static Vector splatEpsilon() noexcept;
 
-  static float32 getX(CVector v) noexcept;
-  static float32 getY(CVector v) noexcept;
-  static float32 getZ(CVector v) noexcept;
-  static float32 getW(CVector v) noexcept;
+  static core::float32 getX(CVector v) noexcept;
+  static core::float32 getY(CVector v) noexcept;
+  static core::float32 getZ(CVector v) noexcept;
+  static core::float32 getW(CVector v) noexcept;
 
-  static Vector setX(CVector v, float32 x) noexcept;
-  static Vector setY(CVector v, float32 y) noexcept;
-  static Vector setZ(CVector v, float32 z) noexcept;
-  static Vector setW(CVector v, float32 w) noexcept;
+  static Vector setX(CVector v, core::float32 x) noexcept;
+  static Vector setY(CVector v, core::float32 y) noexcept;
+  static Vector setZ(CVector v, core::float32 z) noexcept;
+  static Vector setW(CVector v, core::float32 w) noexcept;
 
   static Vector equal(CVector v1, CVector v2) noexcept;
   static Vector nearEqual(CVector v1, CVector v2, CVector vepsilon) noexcept;
@@ -119,7 +119,7 @@ public:
   static Vector multiplyAdd(CVector v1, CVector v2, CVector v3) noexcept;
   static Vector divide(CVector v1, CVector v2) noexcept;
   static Vector divideAdd(CVector v1, CVector v2, CVector v3) noexcept;
-  static Vector scale(CVector v, float32 s) noexcept;
+  static Vector scale(CVector v, core::float32 s) noexcept;
   static Vector sqrt(CVector v) noexcept;
   static Vector exp2(CVector v) noexcept;
   static Vector exp(CVector v) noexcept;

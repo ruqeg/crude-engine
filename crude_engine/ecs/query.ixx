@@ -4,21 +4,21 @@ module;
 #include <tuple>
 #include <iterator>
 
-export module crude_engine.ecs.query;
+export module crude.ecs.query;
 
-import crude_engine.core.std_containers_stack;
-import crude_engine.core.std_containers_heap;
-import crude_engine.ecs.alias;
-import crude_engine.ecs.world;
+import crude.core.std_containers_stack;
+import crude.core.std_containers_heap;
+import crude.ecs.alias;
+import crude.ecs.world;
 
-export namespace crude_engine
+export namespace crude::ecs
 {
 
 template<class ...Components>
 class Query
 {
 private:
-  static constexpr uint64 cFunctionComponentsNum = sizeof...(Components);
+  static constexpr core::uint64 cFunctionComponentsNum = sizeof...(Components);
 
 private:
   template<int ...>
@@ -36,7 +36,7 @@ private:
 public:
   Query();
   explicit Query(World* world);
-  explicit Query(World* world, const array<Component_ID, cFunctionComponentsNum>& components);
+  explicit Query(World* world, const core::array<Component_ID, cFunctionComponentsNum>& components);
 
   template <class Func>
   void each(const Func& func);
@@ -49,8 +49,8 @@ private:
   void callFunction(Func&& func, Tuple&& params);
 
 private:
-  World*                                       m_world;
-  array<Component_ID, cFunctionComponentsNum>  m_components;
+  World*                                             m_world;
+  core::array<Component_ID, cFunctionComponentsNum>  m_components;
 };
 
 template<class ...Components>
@@ -66,7 +66,7 @@ Query<Components...>::Query(World* world)
 }
 
 template<class ...Components>
-Query<Components...>::Query(World* world, const array<Component_ID, cFunctionComponentsNum>& components)
+Query<Components...>::Query(World* world, const core::array<Component_ID, cFunctionComponentsNum>& components)
 {
   m_world = world;
   m_components = components;
@@ -80,10 +80,10 @@ void Query<Components...>::each(const Func& func)
 
   for (Archetype& archetype : m_world->m_archetypes)
   {
-    array<uint64, cFunctionComponentsNum> funcIdxToArchetypeIdx;
+    core::array<core::uint64, cFunctionComponentsNum> funcIdxToArchetypeIdx;
 
-    uint64 matchComponentsNum = 0;
-    for (uint64 funcComponentIndex = 0u; funcComponentIndex < cFunctionComponentsNum; ++funcComponentIndex)
+    core::uint64 matchComponentsNum = 0;
+    for (core::uint64 funcComponentIndex = 0u; funcComponentIndex < cFunctionComponentsNum; ++funcComponentIndex)
     {
       const auto& archetypeType = archetype.type();
 
@@ -91,14 +91,14 @@ void Query<Components...>::each(const Func& func)
       if (archetypeComponentIt == archetypeType.end())
         continue;
 
-      const uint64 archetypeComponentIndex = std::distance(archetypeType.begin(), archetypeComponentIt);
+      const core::uint64 archetypeComponentIndex = std::distance(archetypeType.begin(), archetypeComponentIt);
       funcIdxToArchetypeIdx[funcComponentIndex] = archetypeComponentIndex;
       matchComponentsNum++;
     }
 
     if (matchComponentsNum == cFunctionComponentsNum)
     {
-      for (uint64 row = 0u; row < archetype.getRowsNum(); ++row)
+      for (core::uint64 row = 0u; row < archetype.getRowsNum(); ++row)
       {
         std::tuple<Components*...> funcArgumnetsPtr;
 

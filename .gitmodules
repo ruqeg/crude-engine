@@ -1,0 +1,6 @@
+[submodule "extlibs/doctest"]
+	path = extlibs/doctest
+	url = https://github.com/doctest/doctest.git
+[submodule "extlibs/SDL"]
+	path = extlibs/SDL
+	url = https://github.com/libsdl-org/SDL.git

@@ -1,10 +1,10 @@
 #include <utility>
 
-module crude_engine.core.cxx_allocator_container;
+module crude.core.cxx_allocator_container;
 
-import crude_engine.core.utility;
+import crude.core.utility;
 
-namespace crude_engine
+namespace crude::core
 {
 
 template<class T, typename ...Args>

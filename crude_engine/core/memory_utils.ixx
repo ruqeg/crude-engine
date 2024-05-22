@@ -1,11 +1,11 @@
 module;
 
-export module crude_engine.core.memory_utils;
+export module crude.core.memory_utils;
 
-import crude_engine.core.alias;
-import crude_engine.core.utility;
+import crude.core.alias;
+import crude.core.utility;
 
-export namespace crude_engine
+export namespace crude::core
 {
 
 class Memory_Utils

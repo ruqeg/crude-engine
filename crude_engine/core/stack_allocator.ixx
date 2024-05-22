@@ -1,10 +1,10 @@
 module;
 
-export module crude_engine.core.stack_allocator;
+export module crude.core.stack_allocator;
 
-import crude_engine.core.iallocator;
+import crude.core.iallocator;
 
-export namespace crude_engine
+export namespace crude::core
 {
 
 class Stack_Allocator : public IAllocator_Allocate
