@@ -1,4 +1,4 @@
-target_sources(${PROJECT_NAME}
+target_sources(crude_engine
     PUBLIC
     assert.cpp
     cxx_allocator_container.cpp
@@ -12,7 +12,7 @@ target_sources(${PROJECT_NAME}
     string.cpp
     system_allocator.cpp)
 
-target_sources(${PROJECT_NAME}
+target_sources(crude_engine
     PUBLIC
     FILE_SET cxx_modules_core TYPE CXX_MODULES FILES
     algorithms.ixx

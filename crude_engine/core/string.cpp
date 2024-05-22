@@ -1,4 +1,3 @@
-
 module crude.core.string;
 
 namespace crude::core

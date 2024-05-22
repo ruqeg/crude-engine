@@ -4,7 +4,7 @@ project(crude_engine CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_library(${PROJECT_NAME})
+add_library(crude_engine)
 
 add_compile_definitions(_CRT_SECURE_NO_DEPRECATE  _CRUDE_SSE_INTRINSICS _CRUDE_NO_INTRINSICS WIN32_LEAN_ CRUDE_ENGINE_VULKAN_WIN32)
 
@@ -22,6 +22,6 @@ source_group(network REGULAR_EXPRESSION "network/*")
 source_group(system REGULAR_EXPRESSION "system/*")
 source_group(graphics REGULAR_EXPRESSION "graphics/*")
 
-install(TARGETS ${PROJECT_NAME}
+install(TARGETS crude_engine
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})

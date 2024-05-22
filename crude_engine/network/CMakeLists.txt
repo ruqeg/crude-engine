@@ -1,4 +1,4 @@
-target_sources(${PROJECT_NAME}
+target_sources(crude_engine
     PUBLIC
     socket_address_factory.cpp
     socket_address.cpp
@@ -6,7 +6,7 @@ target_sources(${PROJECT_NAME}
     tcp_socket.cpp
     udp_socket.cpp)
 
-target_sources(${PROJECT_NAME}
+target_sources(crude_engine
     PUBLIC
     FILE_SET cxx_modules_network TYPE CXX_MODULES FILES
     socket_address_factory.ixx

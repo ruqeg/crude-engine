@@ -9,14 +9,14 @@ else ()
   set(SDL2_LIBRARIES "${EXTLIBS_DIR}/SDL/lib/x86/SDL2.lib;${EXTLIBS_DIR}/SDL/lib/x86/SDL2main.lib")
 endif ()
 
-target_include_directories(${PROJECT_NAME} PUBLIC ${SDL2_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES})
+target_include_directories(crude_engine PUBLIC ${SDL2_INCLUDE_DIRS})
+target_link_libraries(crude_engine ${SDL2_LIBRARIES})
 
-target_sources(${PROJECT_NAME}
+target_sources(crude_engine
     PUBLIC
     window.cpp)
 
-target_sources(${PROJECT_NAME}
+target_sources(crude_engine
     PUBLIC
     FILE_SET cxx_modules_system TYPE CXX_MODULES FILES
     window.ixx)

@@ -1,9 +1,9 @@
 find_package(Vulkan REQUIRED)
 
-target_include_directories(${PROJECT_NAME} PUBLIC ${Vulkan_INCLUDE_DIR})
-target_link_libraries(${PROJECT_NAME} ${Vulkan_LIBRARY})
+target_include_directories(crude_engine PUBLIC ${Vulkan_INCLUDE_DIR})
+target_link_libraries(crude_engine ${Vulkan_LIBRARY})
 
-target_sources(${PROJECT_NAME}
+target_sources(crude_engine
     PUBLIC
     application.cpp
     attachment_description.cpp
@@ -52,7 +52,7 @@ target_sources(${PROJECT_NAME}
     device_memory.cpp
     image_view.cpp)
 
-target_sources(${PROJECT_NAME}
+target_sources(crude_engine
     PUBLIC
     FILE_SET cxx_modules_graphics TYPE CXX_MODULES FILES
     application.ixx

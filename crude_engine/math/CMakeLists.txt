@@ -1,10 +1,10 @@
-target_sources(${PROJECT_NAME}
+target_sources(crude_engine
     PUBLIC
     matrix.cpp
     scalar.cpp
     vector.cpp)
 
-target_sources(${PROJECT_NAME}
+target_sources(crude_engine
     PUBLIC
     FILE_SET cxx_modules_math TYPE CXX_MODULES FILES
     constants.ixx
