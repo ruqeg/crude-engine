@@ -6,6 +6,11 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_library(crude_engine)
 
+find_package(Vulkan REQUIRED)
+
+target_include_directories(crude_engine PUBLIC ${Vulkan_INCLUDE_DIR})
+target_link_libraries(crude_engine PUBLIC SDL3::SDL3 ${Vulkan_LIBRARY})
+
 add_compile_definitions(_CRT_SECURE_NO_DEPRECATE  _CRUDE_SSE_INTRINSICS _CRUDE_NO_INTRINSICS WIN32_LEAN_ CRUDE_ENGINE_VULKAN_WIN32)
 
 add_subdirectory(core)

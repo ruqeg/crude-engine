@@ -1,6 +1,6 @@
 #include <vulkan/vulkan.h>
 #include <SDL3/SDL.h>
-
+ 
 #define VK_USE_PLATFORM_WIN32_KHR
 #include <Windows.h>
 #undef max

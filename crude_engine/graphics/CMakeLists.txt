@@ -1,8 +1,3 @@
-find_package(Vulkan REQUIRED)
-
-target_include_directories(crude_engine PUBLIC ${Vulkan_INCLUDE_DIR})
-target_link_libraries(crude_engine ${Vulkan_LIBRARY})
-
 target_sources(crude_engine
     PRIVATE
     application.cpp
