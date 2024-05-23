@@ -1,13 +1,13 @@
 #include <vulkan/vulkan.hpp>
 
-module crude.graphics.vulkan.swap_chain;
+module crude.graphics.swap_chain;
 
-import crude.graphics.vulkan.vulkan_utils;
-import crude.graphics.vulkan.device;
-import crude.graphics.vulkan.surface;
-import crude.graphics.vulkan.swap_chain_image;
-import crude.graphics.vulkan.fence;
-import crude.graphics.vulkan.semaphore;
+import crude.graphics.vulkan_utils;
+import crude.graphics.device;
+import crude.graphics.surface;
+import crude.graphics.swap_chain_image;
+import crude.graphics.fence;
+import crude.graphics.semaphore;
 
 namespace crude::graphics
 {

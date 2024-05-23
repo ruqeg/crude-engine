@@ -1,8 +1,8 @@
 #include <vulkan/vulkan.hpp>
 
-module crude.graphics.vulkan.physical_device;
+module crude.graphics.physical_device;
 
-import crude.graphics.vulkan.surface;
+import crude.graphics.surface;
 
 namespace crude::graphics
 {

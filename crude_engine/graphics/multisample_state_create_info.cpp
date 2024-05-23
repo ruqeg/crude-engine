@@ -1,6 +1,6 @@
 #include <vulkan/vulkan.hpp>
 
-module crude.graphics.vulkan.multisample_state_create_info;
+module crude.graphics.multisample_state_create_info;
 
 namespace crude::graphics
 {

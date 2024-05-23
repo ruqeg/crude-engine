@@ -2,7 +2,7 @@ module;
 
 #include <vulkan/vulkan.hpp>
 
-export module crude.graphics.vulkan.subpass_dependency;
+export module crude.graphics.subpass_dependency;
 
 import crude.core.alias;
 

@@ -1,4 +1,4 @@
-module crude.graphics.vulkan.color_blend_state_create_info;
+module crude.graphics.color_blend_state_create_info;
 
 namespace crude::graphics
 {

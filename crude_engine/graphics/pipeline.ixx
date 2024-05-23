@@ -3,19 +3,19 @@ module;
 
 #include <vulkan/vulkan.hpp>
 
-export module crude.graphics.vulkan.pipeline;
+export module crude.graphics.pipeline;
 
-import crude.graphics.vulkan.vulkan_object;
-import crude.graphics.vulkan.shader_stage_create_info;
-import crude.graphics.vulkan.vertex_input_state_create_info;
-import crude.graphics.vulkan.input_assembly_state_create_info;
-import crude.graphics.vulkan.viewport_state_create_info;
-import crude.graphics.vulkan.rasterization_state_create_info;
-import crude.graphics.vulkan.multisample_state_create_info;
-import crude.graphics.vulkan.depth_stencil_state_create_info;
-import crude.graphics.vulkan.color_blend_state_create_info;
-import crude.graphics.vulkan.dynamic_state_create_info;
-import crude.graphics.vulkan.tessellation_state_create_info;
+import crude.graphics.vulkan_object;
+import crude.graphics.shader_stage_create_info;
+import crude.graphics.vertex_input_state_create_info;
+import crude.graphics.input_assembly_state_create_info;
+import crude.graphics.viewport_state_create_info;
+import crude.graphics.rasterization_state_create_info;
+import crude.graphics.multisample_state_create_info;
+import crude.graphics.depth_stencil_state_create_info;
+import crude.graphics.color_blend_state_create_info;
+import crude.graphics.dynamic_state_create_info;
+import crude.graphics.tessellation_state_create_info;
 import crude.core.shared_ptr;
 import crude.core.optional;
 import crude.core.std_containers_stack;

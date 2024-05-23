@@ -2,7 +2,7 @@ module;
 
 #include <vulkan/vulkan.hpp>
 
-export module crude.graphics.vulkan.input_assembly_state_create_info;
+export module crude.graphics.input_assembly_state_create_info;
 
 export namespace crude::graphics
 {

@@ -2,13 +2,13 @@ module;
 
 #include <vulkan/vulkan.hpp>
 
-export module crude.graphics.vulkan.command_buffer;
+export module crude.graphics.command_buffer;
 
 import crude.core.shared_ptr;
 import crude.core.std_containers_stack;
-import crude.graphics.vulkan.vulkan_object;
-import crude.graphics.vulkan.image_memory_barrier;
-import crude.graphics.vulkan.buffer;
+import crude.graphics.vulkan_object;
+import crude.graphics.image_memory_barrier;
+import crude.graphics.buffer;
 
 export namespace crude::graphics
 {

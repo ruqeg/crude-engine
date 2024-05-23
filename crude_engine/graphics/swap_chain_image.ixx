@@ -2,11 +2,11 @@ module;
 
 #include <vulkan/vulkan.hpp>
 
-export module crude.graphics.vulkan.swap_chain_image;
+export module crude.graphics.swap_chain_image;
 
 import crude.core.shared_ptr;
-import crude.graphics.vulkan.vulkan_object;
-import crude.graphics.vulkan.image;
+import crude.graphics.vulkan_object;
+import crude.graphics.image;
 
 export namespace crude::graphics
 {

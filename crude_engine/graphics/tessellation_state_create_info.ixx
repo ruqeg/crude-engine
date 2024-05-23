@@ -2,7 +2,7 @@ module;
 
 #include <vulkan/vulkan.hpp>
 
-export module crude.graphics.vulkan.tessellation_state_create_info;
+export module crude.graphics.tessellation_state_create_info;
 
 import crude.core.alias;
 

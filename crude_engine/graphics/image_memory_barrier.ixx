@@ -2,10 +2,10 @@ module;
 
 #include <vulkan/vulkan.hpp>
 
-export module crude.graphics.vulkan.image_memory_barrier;
+export module crude.graphics.image_memory_barrier;
 
 import crude.core.shared_ptr;
-import crude.graphics.vulkan.image_subresource_range;
+import crude.graphics.image_subresource_range;
 
 export namespace crude::graphics
 {

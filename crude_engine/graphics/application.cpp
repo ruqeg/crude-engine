@@ -1,4 +1,4 @@
-module crude.graphics.vulkan.application;
+module crude.graphics.application;
 
 namespace crude::graphics
 {

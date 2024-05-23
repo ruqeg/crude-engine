@@ -1,6 +1,6 @@
 #include <vulkan/vulkan.hpp>
 
-module crude.graphics.vulkan.vertex_input_state_create_info;
+module crude.graphics.vertex_input_state_create_info;
 
 namespace crude::graphics
 {

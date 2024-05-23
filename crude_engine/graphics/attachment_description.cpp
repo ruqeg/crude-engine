@@ -1,4 +1,4 @@
-module crude.graphics.vulkan.attachment_description;
+module crude.graphics.attachment_description;
 
 namespace crude::graphics
 {

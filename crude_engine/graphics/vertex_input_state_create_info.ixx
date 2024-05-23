@@ -2,7 +2,7 @@ module;
 
 #include <vulkan/vulkan.hpp>
 
-export module crude.graphics.vulkan.vertex_input_state_create_info;
+export module crude.graphics.vertex_input_state_create_info;
 
 import crude.core.std_containers_stack;
 

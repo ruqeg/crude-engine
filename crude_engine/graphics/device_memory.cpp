@@ -1,12 +1,12 @@
 #include <vulkan/vulkan.hpp>
 
-module crude.graphics.vulkan.device_memory;
+module crude.graphics.device_memory;
 
-import crude.graphics.vulkan.device;
-import crude.graphics.vulkan.buffer;
-import crude.graphics.vulkan.image;
-import crude.graphics.vulkan.physical_device;
-import crude.graphics.vulkan.vulkan_utils;
+import crude.graphics.device;
+import crude.graphics.buffer;
+import crude.graphics.image;
+import crude.graphics.physical_device;
+import crude.graphics.vulkan_utils;
 
 namespace crude::graphics
 {

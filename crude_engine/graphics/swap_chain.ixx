@@ -2,13 +2,13 @@ module;
 
 #include <vulkan/vulkan.hpp>
 
-export module crude.graphics.vulkan.swap_chain;
+export module crude.graphics.swap_chain;
 
 import crude.core.shared_ptr;
 import crude.core.optional;
 import crude.core.std_containers_stack;
 import crude.core.std_containers_heap;
-import crude.graphics.vulkan.vulkan_object;
+import crude.graphics.vulkan_object;
 
 export namespace crude::graphics
 {

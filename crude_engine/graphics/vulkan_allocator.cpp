@@ -1,6 +1,6 @@
 #include <vulkan/vulkan_core.h>
 
-module crude.graphics.vulkan.vulkan_allocator;
+module crude.graphics.vulkan_allocator;
 
 import crude.core.memory_system;
 import crude.core.assert;

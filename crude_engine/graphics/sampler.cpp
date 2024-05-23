@@ -1,9 +1,9 @@
 #include <vulkan/vulkan.hpp>
 
-module crude.graphics.vulkan.sampler;
+module crude.graphics.sampler;
 
-import crude.graphics.vulkan.device;
-import crude.graphics.vulkan.vulkan_utils;
+import crude.graphics.device;
+import crude.graphics.vulkan_utils;
 
 namespace crude::graphics
 {

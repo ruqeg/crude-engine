@@ -1,9 +1,9 @@
 #include <vulkan/vulkan.hpp>
 
-module crude.graphics.vulkan.debug_utils_messenger;
+module crude.graphics.debug_utils_messenger;
 
-import crude.graphics.vulkan.vulkan_utils;
-import crude.graphics.vulkan.instance;
+import crude.graphics.vulkan_utils;
+import crude.graphics.instance;
 
 namespace crude::graphics
 {

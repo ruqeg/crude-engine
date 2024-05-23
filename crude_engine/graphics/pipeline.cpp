@@ -1,12 +1,12 @@
 #include <vulkan/vulkan.hpp>
 
-module crude.graphics.vulkan.pipeline;
+module crude.graphics.pipeline;
 
-import crude.graphics.vulkan.surface;
-import crude.graphics.vulkan.device;
-import crude.graphics.vulkan.pipeline_layout;
-import crude.graphics.vulkan.render_pass;
-import crude.graphics.vulkan.vulkan_utils;
+import crude.graphics.surface;
+import crude.graphics.device;
+import crude.graphics.pipeline_layout;
+import crude.graphics.render_pass;
+import crude.graphics.vulkan_utils;
 import crude.core.std_containers_heap;
 import crude.core.algorithms;
 

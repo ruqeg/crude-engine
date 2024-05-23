@@ -2,10 +2,10 @@ module;
 
 #include <vulkan/vulkan.hpp>
 
-export module crude.graphics.vulkan.descriptor_buffer_info;
+export module crude.graphics.descriptor_buffer_info;
 
 import crude.core.shared_ptr;
-import crude.graphics.vulkan.buffer;
+import crude.graphics.buffer;
 
 export namespace crude::graphics
 {

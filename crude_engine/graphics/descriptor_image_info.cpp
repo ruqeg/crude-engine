@@ -1,6 +1,6 @@
 #include <vulkan/vulkan.hpp>
 
-module crude.graphics.vulkan.descriptor_image_info;
+module crude.graphics.descriptor_image_info;
 
 
 namespace crude::graphics

@@ -14,7 +14,6 @@ target_sources(crude_engine
     shader_stage_create_info.cpp
     subpass_dependency.cpp
     subpass_description.cpp
-    surface.cpp
     swap_chain.cpp
     swap_chain_image.cpp
     tessellation_state_create_info.cpp

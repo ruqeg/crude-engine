@@ -2,7 +2,7 @@ module;
 
 #include <vulkan/vulkan.hpp>
 
-export module crude.graphics.vulkan.subpass_description;
+export module crude.graphics.subpass_description;
 
 import crude.core.shared_ptr;
 import crude.core.optional;

@@ -1,6 +1,6 @@
 #include <vulkan/vulkan.hpp>
 
-module crude.graphics.vulkan.descriptor_buffer_info;
+module crude.graphics.descriptor_buffer_info;
 
 namespace crude::graphics
 {

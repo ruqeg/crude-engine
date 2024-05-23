@@ -2,7 +2,7 @@ module;
 
 #include <vulkan/vulkan_core.h>
 
-export module crude.graphics.vulkan.vulkan_allocator;
+export module crude.graphics.vulkan_allocator;
 
 export namespace crude::graphics
 {

@@ -1,6 +1,6 @@
 #include <vulkan/vulkan.hpp>
 
-module crude.graphics.vulkan.depth_stencil_state_create_info;
+module crude.graphics.depth_stencil_state_create_info;
 
 namespace crude::graphics
 {

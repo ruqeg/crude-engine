@@ -1,8 +1,8 @@
 #include <vulkan/vulkan.hpp>
 
-module crude.graphics.vulkan.write_descriptor_set;
+module crude.graphics.write_descriptor_set;
 
-import crude.graphics.vulkan.descriptor_set;
+import crude.graphics.descriptor_set;
 
 namespace crude::graphics
 {

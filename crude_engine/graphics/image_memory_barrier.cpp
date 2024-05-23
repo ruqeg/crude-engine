@@ -1,9 +1,9 @@
 #include <vulkan/vulkan.hpp>
 
-module crude.graphics.vulkan.image_memory_barrier;
+module crude.graphics.image_memory_barrier;
 
-import crude.graphics.vulkan.image;
-import crude.graphics.vulkan.vulkan_utils;
+import crude.graphics.image;
+import crude.graphics.vulkan_utils;
 
 namespace crude::graphics
 {

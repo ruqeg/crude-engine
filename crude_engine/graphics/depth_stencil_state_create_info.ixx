@@ -2,7 +2,7 @@ module;
 
 #include <vulkan/vulkan.hpp>
 
-export module crude.graphics.vulkan.depth_stencil_state_create_info;
+export module crude.graphics.depth_stencil_state_create_info;
 
 import crude.core.alias;
 

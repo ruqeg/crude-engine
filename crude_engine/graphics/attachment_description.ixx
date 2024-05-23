@@ -2,7 +2,7 @@ module;
 
 #include <vulkan/vulkan.h>
 
-export module crude.graphics.vulkan.attachment_description;
+export module crude.graphics.attachment_description;
 
 import crude.core.alias;
 

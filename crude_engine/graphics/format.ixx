@@ -2,7 +2,7 @@ module;
 
 #include <vulkan/vulkan.hpp>
 
-export module crude.graphics.vulkan.format;
+export module crude.graphics.format;
 
 export namespace crude::graphics
 {

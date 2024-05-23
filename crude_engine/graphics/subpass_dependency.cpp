@@ -1,6 +1,6 @@
 #include <vulkan/vulkan.hpp>
 
-module crude.graphics.vulkan.subpass_dependency;
+module crude.graphics.subpass_dependency;
 
 namespace crude::graphics
 {

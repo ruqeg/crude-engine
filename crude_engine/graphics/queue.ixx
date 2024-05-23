@@ -2,12 +2,12 @@ module;
 
 #include <vulkan/vulkan.hpp>
 
-export module crude.graphics.vulkan.queue;
+export module crude.graphics.queue;
 
 import crude.core.shared_ptr;
 import crude.core.optional;
 import crude.core.std_containers_stack;
-import crude.graphics.vulkan.vulkan_object;
+import crude.graphics.vulkan_object;
 
 export namespace crude::graphics
 {

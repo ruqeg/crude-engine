@@ -2,7 +2,7 @@ module;
 
 #include <vulkan/vulkan.hpp>
 
-export module crude.graphics.vulkan.image_subresource_range;
+export module crude.graphics.image_subresource_range;
 
 import crude.core.shared_ptr;
 

@@ -1,8 +1,8 @@
 #include <vulkan/vulkan.hpp>
 
-module crude.graphics.vulkan.swap_chain_image;
+module crude.graphics.swap_chain_image;
 
-import crude.graphics.vulkan.device;
+import crude.graphics.device;
 
 namespace crude::graphics
 {

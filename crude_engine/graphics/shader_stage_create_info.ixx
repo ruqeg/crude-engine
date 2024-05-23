@@ -2,7 +2,7 @@ module;
 
 #include <vulkan/vulkan.hpp>
 
-export module crude.graphics.vulkan.shader_stage_create_info;
+export module crude.graphics.shader_stage_create_info;
 
 import crude.core.shared_ptr;
 

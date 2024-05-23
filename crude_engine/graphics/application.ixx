@@ -2,7 +2,7 @@ module;
 
 #include <vulkan/vulkan.h>
 
-export module crude.graphics.vulkan.application;
+export module crude.graphics.application;
 
 import crude.core.alias;
 

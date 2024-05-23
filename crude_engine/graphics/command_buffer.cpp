@@ -1,17 +1,17 @@
 #include <vulkan/vulkan.hpp>
 #undef assert
 
-module crude.graphics.vulkan.command_buffer;
+module crude.graphics.command_buffer;
 
-import crude.graphics.vulkan.command_pool;
-import crude.graphics.vulkan.device;
-import crude.graphics.vulkan.image;
-import crude.graphics.vulkan.render_pass;
-import crude.graphics.vulkan.framebuffer;
-import crude.graphics.vulkan.pipeline;
-import crude.graphics.vulkan.pipeline_layout;
-import crude.graphics.vulkan.descriptor_set;
-import crude.graphics.vulkan.vulkan_utils;
+import crude.graphics.command_pool;
+import crude.graphics.device;
+import crude.graphics.image;
+import crude.graphics.render_pass;
+import crude.graphics.framebuffer;
+import crude.graphics.pipeline;
+import crude.graphics.pipeline_layout;
+import crude.graphics.descriptor_set;
+import crude.graphics.vulkan_utils;
 import crude.core.std_containers_heap;
 import crude.core.algorithms;
 import crude.core.assert;

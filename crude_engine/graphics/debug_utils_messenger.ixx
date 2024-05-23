@@ -2,11 +2,11 @@ module;
 
 #include <vulkan/vulkan.hpp>
 
-export module crude.graphics.vulkan.debug_utils_messenger;
+export module crude.graphics.debug_utils_messenger;
 
 import crude.core.std_containers_stack;
 import crude.core.shared_ptr;
-import crude.graphics.vulkan.vulkan_object;
+import crude.graphics.vulkan_object;
 
 export namespace crude::graphics
 {

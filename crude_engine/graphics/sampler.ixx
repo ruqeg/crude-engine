@@ -2,10 +2,10 @@ module;
 
 #include <vulkan/vulkan.hpp>
 
-export module crude.graphics.vulkan.sampler;
+export module crude.graphics.sampler;
 
 import crude.core.shared_ptr;
-import crude.graphics.vulkan.vulkan_object;
+import crude.graphics.vulkan_object;
 
 export namespace crude::graphics
 {

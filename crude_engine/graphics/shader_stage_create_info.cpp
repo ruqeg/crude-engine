@@ -1,8 +1,8 @@
 #include <vulkan/vulkan.hpp>
 
-module crude.graphics.vulkan.shader_stage_create_info;
+module crude.graphics.shader_stage_create_info;
 
-import crude.graphics.vulkan.shader_module;
+import crude.graphics.shader_module;
 
 namespace crude::graphics
 {

@@ -1,10 +1,10 @@
 #include <vulkan/vulkan.hpp>
 
-module crude.graphics.vulkan.instance;
+module crude.graphics.instance;
 
-import crude.graphics.vulkan.vulkan_utils;
-import crude.graphics.vulkan.application;
-import crude.graphics.vulkan.physical_device;
+import crude.graphics.vulkan_utils;
+import crude.graphics.application;
+import crude.graphics.physical_device;
 
 namespace crude::graphics
 {

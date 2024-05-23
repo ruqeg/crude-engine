@@ -2,10 +2,10 @@ module;
 
 #include <vulkan/vulkan.hpp>
 
-export module crude.graphics.vulkan.descriptor_image_info;
+export module crude.graphics.descriptor_image_info;
 
-import crude.graphics.vulkan.sampler;
-import crude.graphics.vulkan.image_view;
+import crude.graphics.sampler;
+import crude.graphics.image_view;
 import crude.core.shared_ptr;
 
 export namespace crude::graphics

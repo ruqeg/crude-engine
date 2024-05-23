@@ -1,11 +1,11 @@
 #include <vulkan/vulkan.hpp>
 
-module crude.graphics.vulkan.framebuffer;
+module crude.graphics.framebuffer;
 
-import crude.graphics.vulkan.device;
-import crude.graphics.vulkan.render_pass;
-import crude.graphics.vulkan.image_view;
-import crude.graphics.vulkan.vulkan_utils;
+import crude.graphics.device;
+import crude.graphics.render_pass;
+import crude.graphics.image_view;
+import crude.graphics.vulkan_utils;
 import crude.core.algorithms;
 
 namespace crude::graphics

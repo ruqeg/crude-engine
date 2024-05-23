@@ -1,9 +1,9 @@
 #include <vulkan/vulkan.hpp>
 
-module crude.graphics.vulkan.descriptor_set_layout;
+module crude.graphics.descriptor_set_layout;
 
-import crude.graphics.vulkan.device;
-import crude.graphics.vulkan.vulkan_utils;
+import crude.graphics.device;
+import crude.graphics.vulkan_utils;
 
 namespace crude::graphics
 {

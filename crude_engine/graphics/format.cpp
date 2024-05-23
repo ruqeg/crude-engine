@@ -1,6 +1,6 @@
 #include <vulkan/vulkan.hpp>
 
-module crude.graphics.vulkan.format;
+module crude.graphics.format;
 
 namespace crude::graphics
 {

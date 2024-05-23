@@ -2,11 +2,11 @@ module;
 
 #include <vulkan/vulkan.hpp>
 
-export module crude.graphics.vulkan.image_view;
+export module crude.graphics.image_view;
 
 import crude.core.shared_ptr;
-import crude.graphics.vulkan.vulkan_object;
-import crude.graphics.vulkan.image_subresource_range;
+import crude.graphics.vulkan_object;
+import crude.graphics.image_subresource_range;
 
 export namespace crude::graphics
 {

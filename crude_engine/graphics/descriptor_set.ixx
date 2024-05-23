@@ -2,11 +2,11 @@ module;
 
 #include <vulkan/vulkan.hpp>
 
-export module crude.graphics.vulkan.descriptor_set;
+export module crude.graphics.descriptor_set;
 
 import crude.core.shared_ptr;
 import crude.core.std_containers_heap;
-import crude.graphics.vulkan.vulkan_object;
+import crude.graphics.vulkan_object;
 
 export namespace crude::graphics
 {

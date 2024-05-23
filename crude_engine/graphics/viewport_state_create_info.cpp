@@ -1,6 +1,6 @@
 #include <vulkan/vulkan.hpp>
 
-module crude.graphics.vulkan.viewport_state_create_info;
+module crude.graphics.viewport_state_create_info;
 
 namespace crude::graphics
 {

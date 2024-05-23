@@ -1,12 +1,12 @@
 #include <vulkan/vulkan.hpp>
 
-module crude.graphics.vulkan.queue;
+module crude.graphics.queue;
 
-import crude.graphics.vulkan.device;
-import crude.graphics.vulkan.command_buffer;
-import crude.graphics.vulkan.fence;
-import crude.graphics.vulkan.semaphore;
-import crude.graphics.vulkan.swap_chain;
+import crude.graphics.device;
+import crude.graphics.command_buffer;
+import crude.graphics.fence;
+import crude.graphics.semaphore;
+import crude.graphics.swap_chain;
 import crude.core.algorithms;
 import crude.core.std_containers_heap;
 

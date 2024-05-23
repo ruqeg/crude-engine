@@ -2,7 +2,7 @@ module;
 
 #include <vulkan/vulkan.hpp>
 
-export module crude.graphics.vulkan.rasterization_state_create_info;
+export module crude.graphics.rasterization_state_create_info;
 
 export namespace crude::graphics
 {

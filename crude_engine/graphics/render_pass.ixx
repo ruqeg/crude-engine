@@ -2,14 +2,14 @@ module;
 
 #include <vulkan/vulkan.hpp>
 
-export module crude.graphics.vulkan.render_pass;
+export module crude.graphics.render_pass;
 
 import crude.core.shared_ptr;
 import crude.core.std_containers_stack;
-import crude.graphics.vulkan.vulkan_object;
-import crude.graphics.vulkan.subpass_dependency;
-import crude.graphics.vulkan.subpass_description;
-import crude.graphics.vulkan.attachment_description;
+import crude.graphics.vulkan_object;
+import crude.graphics.subpass_dependency;
+import crude.graphics.subpass_description;
+import crude.graphics.attachment_description;
 
 export namespace crude::graphics
 {

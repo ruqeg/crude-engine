@@ -1,8 +1,8 @@
 #include <vulkan/vulkan.hpp>
 
-module crude.graphics.vulkan.subpass_description;
+module crude.graphics.subpass_description;
 
-import crude.graphics.vulkan.device;
+import crude.graphics.device;
 
 namespace crude::graphics
 {

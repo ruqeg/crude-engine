@@ -1,9 +1,9 @@
 #include <vulkan/vulkan.hpp>
 
-module crude.graphics.vulkan.image_subresource_range;
+module crude.graphics.image_subresource_range;
 
-import crude.graphics.vulkan.image;
-import crude.graphics.vulkan.format;
+import crude.graphics.image;
+import crude.graphics.format;
 
 namespace crude::graphics
 {

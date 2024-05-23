@@ -1,6 +1,6 @@
 #include <vulkan/vulkan.hpp>
 
-module crude.graphics.vulkan.input_assembly_state_create_info;
+module crude.graphics.input_assembly_state_create_info;
 
 namespace crude::graphics
 {
