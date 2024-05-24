@@ -58,6 +58,8 @@ import crude.graphics.image_subresource_range;
 import crude.graphics.application;
 import crude.graphics.color_blend_state_create_info;
 
+import crude.system.sdl_window_container;
+
 #include <algorithm>
 #include <iostream>
 #include <stdexcept>
@@ -86,14 +88,13 @@ public:
     );
     initVulkan();
     mainLoop();
-    cleanup();
   }
 private:
   void initWindow(
     HINSTANCE  hinstance
   )
   {
-    m_window = SDL_CreateWindow("SDL Tutorial", 800, 600, SDL_WINDOW_VULKAN);
+    m_window = crude::core::makeShared<crude::system::SDL_Window_Container>("SDL Tutorial", 800, 600, SDL_WINDOW_VULKAN);
   }
 
   void initVulkan()
@@ -858,11 +859,6 @@ private:
     }
   }
 
-  void cleanup() 
-  {
-    SDL_DestroyWindow(m_window);
-  }
-
   static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT       messageSeverity,
                                                       VkDebugUtilsMessageTypeFlagsEXT              messageType,
                                                       const VkDebugUtilsMessengerCallbackDataEXT*  pCallbackData,
@@ -876,7 +872,7 @@ private:
   }
 
 private:
-  SDL_Window* m_window;
+  crude::core::Shared_Ptr<crude::system::SDL_Window_Container>                      m_window;
 
   crude::core::Shared_Ptr<crude::graphics::Instance>                                m_instance;
   crude::core::Shared_Ptr<crude::graphics::Debug_Utils_Messenger>                   m_debugUtilsMessenger;
@@ -936,10 +932,10 @@ int APIENTRY wWinMain(
   //SDL_Surface* screenSurface = NULL;
 
   //Initialize SDL
-  if (SDL_Init(SDL_INIT_VIDEO) < 0)
-  {
-    printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
-  }
+  //if (SDL_Init(SDL_INIT_VIDEO) < 0)
+  //{
+  //  printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
+  //}
   //else
   //{
   //  //Create window

@@ -10,6 +10,7 @@ import crude.core.shared_ptr;
 import crude.graphics.instance;
 import crude.graphics.vulkan_object;
 import crude.graphics.vulkan_utils;
+import crude.system.sdl_window_container;
 
 export namespace crude::graphics
 {
@@ -19,13 +20,17 @@ class Instance;
 class Surface : public Vulkan_Object<VkSurfaceKHR>
 {
 public:
-  explicit Surface(core::Shared_Ptr<const Instance> instance, SDL_Window* window)
+  explicit Surface(core::Shared_Ptr<const Instance> instance, core::Shared_Ptr<system::SDL_Window_Container> window)
     :
-    m_instance(instance)
+    m_instance(instance),
+    m_window(window)
   {
-    const VkResult result = SDL_Vulkan_CreateSurface(window, instance->getHandle(), getPVkAllocationCallbacks(), &m_handle)
-      ? VK_SUCCESS : VK_ERROR_UNKNOWN;
-    vulkanHandleResult(result, "failed to create win32 surface");
+    const SDL_bool result = SDL_Vulkan_CreateSurface(
+      m_window->getWindow().get(), 
+      instance->getHandle(), 
+      getPVkAllocationCallbacks(), 
+      &m_handle);
+    vulkanHandleResult(result ? VK_SUCCESS : VK_ERROR_UNKNOWN, "failed to create win32 surface");
     
   }
   ~Surface()
@@ -42,8 +47,8 @@ public:
   }
 
 protected:
-  core::Shared_Ptr<const Instance>  m_instance;
-  const SDL_Window* m_window;
+  core::Shared_Ptr<const Instance>                m_instance;
+  core::Shared_Ptr<system::SDL_Window_Container>  m_window;
 };
 
 }

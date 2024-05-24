@@ -1,8 +1,8 @@
 target_sources(crude_engine
     PRIVATE
-    window.cpp)
+    sdl_window_container.cpp)
 
 target_sources(crude_engine
     PUBLIC
     FILE_SET cxx_modules_system TYPE CXX_MODULES FILES
-    window.ixx)
+    sdl_window_container.ixx)
