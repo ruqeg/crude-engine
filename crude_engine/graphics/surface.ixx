@@ -30,7 +30,7 @@ public:
       instance->getHandle(), 
       getPVkAllocationCallbacks(), 
       &m_handle);
-    vulkanHandleResult(result ? VK_SUCCESS : VK_ERROR_UNKNOWN, "failed to create win32 surface");
+    vulkanHandleResult(result ? VK_SUCCESS : VK_ERROR_UNKNOWN, "failed to create surface");
     
   }
   ~Surface()
@@ -38,12 +38,12 @@ public:
     vkDestroySurfaceKHR(m_instance->getHandle(), m_handle, getPVkAllocationCallbacks());
   }
 
-  static const core::span<const char*> requiredExtensions()
+  static const core::span<const char* const> requiredExtensions()
   {
-#ifdef _WIN32
-    static const char* extensions[] = { "VK_KHR_win32_surface", "VK_KHR_surface" };
-    return core::span<const char*>(extensions, 2u);
-#endif
+    Uint32 extensionsCount;
+    const char* const* extensionsArray = SDL_Vulkan_GetInstanceExtensions(&extensionsCount);
+    
+    return core::span<const char* const>(extensionsArray, extensionsCount);
   }
 
 protected:

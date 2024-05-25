@@ -1,5 +1,6 @@
 #include <vulkan/vulkan.h>
 #include <SDL3/SDL.h>
+#include <SDL3/SDL_vulkan.h>
  
 #define VK_USE_PLATFORM_WIN32_KHR
 #include <Windows.h>
@@ -923,8 +924,9 @@ int APIENTRY wWinMain(
   AllocConsole();
   FILE* dummy;
   auto s = freopen_s(&dummy, "CONOUT$", "w", stdout);
- 
-
+  
+  SDL_Init(SDL_INIT_VIDEO);
+  SDL_Vulkan_LoadLibrary(nullptr);
   ////The window we'll be rendering to
   //SDL_Window* window = NULL;
 
@@ -960,12 +962,6 @@ int APIENTRY wWinMain(
   //  }
   //}
 
-  ////Destroy window
-  //SDL_DestroyWindow(window);
-
-  ////Quit SDL subsystems
-  SDL_Quit();/*
-
   Test_Application testApp;
   try
   {
@@ -976,7 +972,10 @@ int APIENTRY wWinMain(
     std::cerr << "exception: " << e.what() << std::endl;
     system("pause");
     return EXIT_FAILURE;
-  }*/
+  }
+  SDL_Vulkan_UnloadLibrary();
+  SDL_Quit();
+
 
   return EXIT_SUCCESS;
 }
