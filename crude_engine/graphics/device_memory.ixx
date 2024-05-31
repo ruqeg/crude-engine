@@ -19,13 +19,13 @@ class Device_Memory : public Vulkan_Object<VkDeviceMemory>
 {
 public:
   explicit Device_Memory(core::Shared_Ptr<const Device>  device,
-                         VkDeviceSize              allocationSize,
+                         VkDeviceSize                    allocationSize,
                          core::uint32                    memoryTypeIndex);
 
   explicit Device_Memory(core::Shared_Ptr<const Device>  device,
-                         VkDeviceSize              allocationSize,
+                         VkDeviceSize                    allocationSize,
                          core::uint32                    memoryTypeFilter,
-                         VkMemoryPropertyFlags     memoryProperties);
+                         VkMemoryPropertyFlags           memoryProperties);
   ~Device_Memory();
   void bind(Image& image, VkDeviceSize offset = 0u);
   void bind(Buffer& buffer, VkDeviceSize offset = 0u);
