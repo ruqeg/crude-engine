@@ -14,7 +14,7 @@ SDL_Window_Container::SDL_Window_Container(const char* title, core::int32 width,
 
 bool SDL_Window_Container::isValid() const
 {
-    return (m_window.get() != nullptr);
+  return (m_window.get() != nullptr);
 }
 
 std::shared_ptr<const SDL_Window> SDL_Window_Container::getWindow() const
