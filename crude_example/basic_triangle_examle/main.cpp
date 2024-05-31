@@ -60,6 +60,7 @@ import crude.graphics.application;
 import crude.graphics.color_blend_state_create_info;
 
 import crude.system.sdl_window_container;
+import crude.system.sdl_system;
 
 #include <algorithm>
 #include <iostream>
@@ -925,8 +926,8 @@ int APIENTRY wWinMain(
   FILE* dummy;
   auto s = freopen_s(&dummy, "CONOUT$", "w", stdout);
   
-  SDL_Init(SDL_INIT_VIDEO);
-  SDL_Vulkan_LoadLibrary(nullptr);
+  crude::system::SDL_System::getInstance().initialize();
+  crude::system::SDL_System::getInstance().initializeVulkan();
   ////The window we'll be rendering to
   //SDL_Window* window = NULL;
 
@@ -973,9 +974,9 @@ int APIENTRY wWinMain(
     system("pause");
     return EXIT_FAILURE;
   }
-  SDL_Vulkan_UnloadLibrary();
-  SDL_Quit();
-
+  
+  crude::system::SDL_System::getInstance().deinitializeVulkan();
+  crude::system::SDL_System::getInstance().deinitialize();
 
   return EXIT_SUCCESS;
 }

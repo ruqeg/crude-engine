@@ -29,6 +29,7 @@ public:
     Graphics,
     Collisions,
     Gameplay,
+    System,
     Sound,
     FileIO,
     GUI,
