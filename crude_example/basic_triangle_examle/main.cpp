@@ -290,8 +290,8 @@ private:
       m_device,
       crude::core::span(&samplerLayoutBinding, 1u));
 
-    const char* vertShaderPathA = "../../crude_example/shader.vert.spv";
-    const char* fragShaderPathA = "../../crude_example/shader.frag.spv";
+    const char* vertShaderPathA = "../../crude_example/basic_triangle_examle/shader.vert.spv";
+    const char* fragShaderPathA = "../../crude_example/basic_triangle_examle/shader.frag.spv";
 
     const auto vertShaderCode = readFile(vertShaderPathA);
     const auto fragShaderCode = readFile(fragShaderPathA);
@@ -401,7 +401,7 @@ private:
         1u);
     }
 
-    createTextureImageFromFile("../../crude_example/test.png", m_textureImage, m_textureImageMemory);
+    createTextureImageFromFile("../../crude_example/basic_triangle_examle/test.png", m_textureImage, m_textureImageMemory);
 
     m_textureImageView = crude::core::makeShared<crude::graphics::Image_View>(
       m_device,
@@ -749,11 +749,16 @@ private:
 
   void mainLoop()
   {
-    MSG message;
-
-    while (GetMessage(&message, NULL, 0, 0)) {
-      TranslateMessage(&message);
-      DispatchMessage(&message);
+    SDL_Event e; 
+    bool quit = false; 
+    while (quit == false) 
+    { 
+      while (SDL_PollEvent(&e)) 
+      { 
+        if (e.type == SDL_EVENT_QUIT)
+          quit = true; 
+      } 
+      
       drawFrame();
     }
 
@@ -928,40 +933,6 @@ int APIENTRY wWinMain(
   
   crude::system::SDL_System::getInstance().initialize();
   crude::system::SDL_System::getInstance().initializeVulkan();
-  ////The window we'll be rendering to
-  //SDL_Window* window = NULL;
-
-  ////The surface contained by the window
-  //SDL_Surface* screenSurface = NULL;
-
-  //Initialize SDL
-  //if (SDL_Init(SDL_INIT_VIDEO) < 0)
-  //{
-  //  printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
-  //}
-  //else
-  //{
-  //  //Create window
-  //  window = SDL_CreateWindow("SDL Tutorial", 800, 600, SDL_WINDOW_SHOWN);
-  //  if (window == NULL)
-  //  {
-  //    printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
-  //  }
-  //  else
-  //  {
-  //    //Get window surface
-  //    screenSurface = SDL_GetWindowSurface(window);
-
-  //    //Fill the surface white
-  //    //SDL_FillRect(screenSurface, NULL, SDL_MapRGB(screenSurface->format, 0xFF, 0xFF, 0xFF));
-
-  //    //Update the surface
-  //    SDL_UpdateWindowSurface(window);
-
-  //    //Hack to get window to stay up
-  //    SDL_Event e; bool quit = false; while (quit == false) { while (SDL_PollEvent(&e)) { if (e.type == SDL_QUIT) quit = true; } }
-  //  }
-  //}
 
   Test_Application testApp;
   try
