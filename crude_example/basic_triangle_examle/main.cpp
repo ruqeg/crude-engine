@@ -1,7 +1,6 @@
 #include <vulkan/vulkan.h>
 #include <SDL3/SDL.h>
-#include <SDL3/SDL_vulkan.h>
- 
+
 #define VK_USE_PLATFORM_WIN32_KHR
 #include <Windows.h>
 #undef max
@@ -59,6 +58,7 @@ import crude.graphics.image_subresource_range;
 import crude.graphics.application;
 import crude.graphics.color_blend_state_create_info;
 
+import crude.system.sdl_io_manager;
 import crude.system.sdl_window_container;
 import crude.system.sdl_system;
 
@@ -749,16 +749,12 @@ private:
 
   void mainLoop()
   {
-    SDL_Event e; 
-    bool quit = false; 
+    bool quit = false;
     while (quit == false) 
     { 
-      while (SDL_PollEvent(&e)) 
-      { 
-        if (e.type == SDL_EVENT_QUIT)
-          quit = true; 
-      } 
-      
+      m_ioManager.update();
+      if (m_ioManager.getWindowEH().readEvent().shouldClose())
+        quit = true;
       drawFrame();
     }
 
@@ -910,6 +906,7 @@ private:
   crude::core::vector<crude::core::Shared_Ptr<crude::graphics::Semaphore>>          m_imageAvailableSemaphores;
   crude::core::vector<crude::core::Shared_Ptr<crude::graphics::Semaphore>>          m_renderFinishedSemaphores;
   crude::core::vector<crude::core::Shared_Ptr<crude::graphics::Fence>>              m_inFlightFences;
+  crude::system::SDL_IO_Manager                                                     m_ioManager;
   uint32_t m_currentFrame = 0u;
   uint32_t m_width = 800u;
   uint32_t m_height = 600u;

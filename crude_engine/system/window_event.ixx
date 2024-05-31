@@ -7,7 +7,7 @@ export namespace crude::system
 
 enum Window_Event_Type
 {
-  WINDOW_EVENT_TYPE_RESIZED,
+  WINDOW_EVENT_TYPE_SHOULD_CLOSE,
   WINDOW_EVENT_TYPE_INVALID,
 };
 
@@ -21,6 +21,7 @@ public:
 public:
   bool isValid() const { return m_type != WINDOW_EVENT_TYPE_INVALID; };
   Window_Event_Type getType() { return m_type; };
+  bool shouldClose() { return m_type == WINDOW_EVENT_TYPE_SHOULD_CLOSE; }
 private:
   Window_Event_Type m_type;
 };

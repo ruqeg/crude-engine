@@ -18,6 +18,8 @@ public:
   bool eventBufferIsEmpty() const;
 private:
   core::queue<Window_Event> m_eventBuffer;
+
+  friend class SDL_IO_Manager;
 };
 
 }
