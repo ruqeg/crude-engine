@@ -7,9 +7,9 @@ Mouse_Event_Handler::Mouse_Event_Handler()
   :
   m_leftIsDown(false),
   m_rightIsDown(false),
-	m_middleDowm(false),
-	m_x(0),
-	m_y(0)
+  m_middleDowm(false),
+  m_x(0),
+  m_y(0)
 {}
   
 Mouse_Event Mouse_Event_Handler::readEvent()
