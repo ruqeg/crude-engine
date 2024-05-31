@@ -1,4 +1,4 @@
-module crude.system.keyboard;
+module crude.system.keyboard_event_handler;
 
 namespace crude::system
 {
@@ -66,7 +66,7 @@ void Keyboard_Event_Handler::onKeyReleased(const core::uint8 key)
   m_keyBuffer.push(Keyboard_Event(KEYBOARD_EVENT_TYPE_RELEASE, key));
 }
 
-void Keyboard_Event_Handler::onChar(const uint8 key)
+void Keyboard_Event_Handler::onChar(const core::uint8 key)
 {
   m_charBuffer.push(key);
 }
@@ -81,17 +81,17 @@ void Keyboard_Event_Handler::disableAutoRepeatKeys()
   m_autoRepeatKeys = false;
 }
 
-void Keyboard_Event_Handler::enbaleAutoRepeatChars()
+void Keyboard_Event_Handler::enableAutoRepeatChars()
 {
-  autoRepeatChars = true;
+  m_autoRepeatChars = true;
 }
 
-void Keyboard_Event_Handler::desableAutoRepeatChars()
+void Keyboard_Event_Handler::disableAutoRepeatChars()
 {
   m_autoRepeatChars = false;
 }
 
-bool Keyboard_Event_Handler::isKeyAutoRepeat() const
+bool Keyboard_Event_Handler::isKeysAutoRepeat() const
 {
   return m_autoRepeatKeys;
 }

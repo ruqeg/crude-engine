@@ -3,6 +3,7 @@ module;
 export module crude.system.window_event_handler;
 
 export import crude.system.window_event;
+import crude.core.std_containers_heap;
 
 export namespace crude::system
 {

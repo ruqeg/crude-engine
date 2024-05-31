@@ -4,6 +4,9 @@ export module crude.system.mouse_event_handler;
 
 export import crude.system.mouse_event;
 
+import crude.core.std_containers_heap;
+import crude.core.alias;
+
 export namespace crude::system 
 {
 

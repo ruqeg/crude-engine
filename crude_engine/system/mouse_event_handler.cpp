@@ -7,7 +7,7 @@ Mouse_Event_Handler::Mouse_Event_Handler()
   :
   m_leftIsDown(false),
   m_rightIsDown(false),
-  m_middleDowm(false),
+  m_middleDown(false),
   m_x(0),
   m_y(0)
 {}
@@ -117,7 +117,7 @@ void Mouse_Event_Handler::onMouseMove(core::int32 x, core::int32 y)
 
 void Mouse_Event_Handler::onMouseMoveRaw(core::int32 x, core::int32 y)
 {
-  m_eventBuffer.push(Mouse_Event(MOUSE_EVENT_TYPE_RAWMOVE, x, y));
+  m_eventBuffer.push(Mouse_Event(MOUSE_EVENT_TYPE_RAW_MOVE, x, y));
 }
 
 }

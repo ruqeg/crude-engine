@@ -1,6 +1,6 @@
 module;
 
-export module crude.system.windows_event;
+export module crude.system.window_event;
 
 export namespace crude::system
 {
@@ -15,7 +15,7 @@ class Window_Event
 {
 public:
   Window_Event()
-    : m_type(0) {}
+    : m_type(WINDOW_EVENT_TYPE_INVALID) {}
   Window_Event(const Window_Event_Type type)
     : m_type(type) {}
 public:

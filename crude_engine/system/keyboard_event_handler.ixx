@@ -5,8 +5,8 @@ export module crude.system.keyboard_event_handler;
 export import crude.system.keyboard_event;
 
 import crude.core.alias;
-import crude.core.std_container_heap;
-import crude.core.std_container_stack;
+import crude.core.std_containers_heap;
+import crude.core.std_containers_stack;
 
 export namespace crude::system
 {
@@ -28,7 +28,7 @@ public:
   bool isCharsAutoRepeat() const;
 private:
   void onKeyPressed(const core::uint8 key);
-  void onKeyRelease(const core::uint8 key);
+  void onKeyReleased(const core::uint8 key);
   void onChar(const core::uint8 key);
 private:
   bool                         m_autoRepeatKeys;
