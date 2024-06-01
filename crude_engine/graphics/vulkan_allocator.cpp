@@ -2,7 +2,7 @@
 
 module crude.graphics.vulkan_allocator;
 
-import crude.core.memory_system;
+import crude.core.memory_manager;
 import crude.core.assert;
 
 namespace crude::graphics
@@ -13,7 +13,7 @@ void* Vulkan_Allocator::allocation(
   size_t                                      alignment,
   VkSystemAllocationScope                     allocationScope)
 {
-  return core::Memory_System::Default_Aligned_Allocator::allocate(size, alignment);
+  return core::Memory_Manager::getDefaultAlignedAllocator()->allocate(size, alignment);
 }
 
 void* VKAPI_CALL Vulkan_Allocator::allocation(
@@ -33,7 +33,7 @@ void* Vulkan_Allocator::reallocation(
   size_t                                      alignment,
   VkSystemAllocationScope                     allocationScope)
 {
-  return core::Memory_System::Default_Aligned_Allocator::reallocate(pOriginal, size, alignment);
+  return core::Memory_Manager::getDefaultAlignedAllocator()->reallocate(pOriginal, size, alignment);
 }
 
 void* VKAPI_CALL Vulkan_Allocator::reallocation(
@@ -54,7 +54,7 @@ void Vulkan_Allocator::free(
 {
   core::assert(pMemory);
 
-  core::Memory_System::Default_Aligned_Allocator::deallocate(pMemory);
+  core::Memory_Manager::getDefaultAlignedAllocator()->deallocate(pMemory);
 }
 
 void VKAPI_CALL Vulkan_Allocator::free(

@@ -13,6 +13,9 @@ target_link_libraries(crude_engine PUBLIC SDL3::SDL3 ${Vulkan_LIBRARY})
 
 add_compile_definitions(_CRUDE_SSE_INTRINSICS _CRUDE_NO_INTRINSICS)
 
+target_sources(crude_engine PRIVATE engine.cpp)
+target_sources(crude_engine PUBLIC FILE_SET cxx_modules_engine TYPE CXX_MODULES FILES engine.ixx)
+
 add_subdirectory(core)
 add_subdirectory(ecs)
 add_subdirectory(math)

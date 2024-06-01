@@ -61,6 +61,7 @@ import crude.graphics.color_blend_state_create_info;
 import crude.system.sdl_io_manager;
 import crude.system.sdl_window_container;
 import crude.system.sdl_system;
+import crude.engine;
 
 #include <algorithm>
 #include <iostream>
@@ -88,9 +89,13 @@ public:
 public:
   void run()
   {
+    crude::system::SDL_System::getInstance().initialize();
+    crude::system::SDL_System::getInstance().initializeVulkan();
     initWindow();
     initVulkan();
     mainLoop();
+    crude::system::SDL_System::getInstance().deinitializeVulkan();
+    crude::system::SDL_System::getInstance().deinitialize();
   }
 private:
   void initWindow()
@@ -466,13 +471,16 @@ private:
       m_inFlightFences[i] = crude::core::makeShared<crude::graphics::Fence>(m_device, VK_FENCE_CREATE_SIGNALED_BIT);
     }
 
-    m_uniformBuffer = crude::core::makeShared<crude::graphics::Buffer>(m_device, sizeof(UnBufferStruct), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
-    m_uniformBufferMemory = crude::core::makeShared<crude::graphics::Device_Memory>(
-      m_device, 
-      sizeof(UnBufferStruct), 
-      m_uniformBuffer->getMemoryRequirements().memoryTypeBits, 
-      VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-    //m_uniformBufferMemory->bind(m_uniformBuffer);
+    for (size_t i = 0; i < 2u; i++)
+    {
+      m_uniformBuffer[i] = crude::core::makeShared<crude::graphics::Buffer>(m_device, sizeof(UnBufferStruct), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
+      m_uniformBufferMemory[i] = crude::core::makeShared<crude::graphics::Device_Memory>(
+        m_device,
+        sizeof(UnBufferStruct),
+        m_uniformBuffer[i]->getMemoryRequirements().memoryTypeBits,
+        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+      m_uniformBufferMemory[i]->bind(*m_uniformBuffer[i]);
+    }
     //!TODO
   }
 
@@ -895,8 +903,8 @@ private:
   crude::core::Shared_Ptr<crude::graphics::Image_View>                              m_textureImageView;
   crude::core::Shared_Ptr<crude::graphics::Sampler>                                 m_sampler;
   crude::core::Shared_Ptr<crude::graphics::Descriptor_Pool>                         m_descriptorPool;
-  crude::core::Shared_Ptr<crude::graphics::Buffer>                                  m_uniformBuffer;
-  crude::core::Shared_Ptr<crude::graphics::Device_Memory>                           m_uniformBufferMemory;
+  crude::core::array<crude::core::Shared_Ptr<crude::graphics::Buffer>, 2>           m_uniformBuffer;
+  crude::core::array<crude::core::Shared_Ptr<crude::graphics::Device_Memory>, 2>    m_uniformBufferMemory;
   crude::core::vector<crude::core::Shared_Ptr<crude::graphics::Descriptor_Set>>     m_descriptorSets;
   crude::core::vector<crude::core::Shared_Ptr<crude::graphics::Command_Buffer>>     m_commandBuffers;
   crude::core::vector<crude::core::Shared_Ptr<crude::graphics::Semaphore>>          m_imageAvailableSemaphores;
@@ -919,28 +927,8 @@ int APIENTRY wWinMain(
   _In_ LPWSTR lpCmdLine,
   _In_ int nCmdShow)
 {
-  // init console
-  AllocConsole();
-  FILE* dummy;
-  auto s = freopen_s(&dummy, "CONOUT$", "w", stdout);
-  
-  crude::system::SDL_System::getInstance().initialize();
-  crude::system::SDL_System::getInstance().initializeVulkan();
-
+  crude::Engine enigne({ 1000000 });
   Test_Application testApp;
-  try
-  {
-    testApp.run();
-  }
-  catch (const std::exception& e)
-  {
-    std::cerr << "exception: " << e.what() << std::endl;
-    system("pause");
-    return EXIT_FAILURE;
-  }
-  
-  crude::system::SDL_System::getInstance().deinitializeVulkan();
-  crude::system::SDL_System::getInstance().deinitialize();
-
+  testApp.run();
   return EXIT_SUCCESS;
 }

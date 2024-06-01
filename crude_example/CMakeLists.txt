@@ -6,8 +6,4 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_executable(crude_example WIN32)
 
-target_link_libraries(crude_example PRIVATE crude_engine)
-
-target_sources(crude_example 
-  PUBLIC
-  basic_triangle_examle/main.cpp)
+add_subdirectory(basic_triangle_examle)

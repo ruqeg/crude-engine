@@ -5,11 +5,11 @@ target_sources(crude_engine
     filesystem.cpp
     free_rbt_allocator.cpp
     linear_allocator.cpp
-    memory_manager.cpp
     memory_utils.cpp
     pool_allocator.cpp
     stack_allocator.cpp
     string.cpp
+    memory_manager.cpp
     system_allocator.cpp)
 
 target_sources(crude_engine
@@ -31,8 +31,8 @@ target_sources(crude_engine
     linear_allocator.ixx
     logger.ixx
     memory_manager.ixx
-    memory_system.ixx
     memory_utils.ixx
+    aligned_allocator.ixx
     optional.ixx
     output_memory_bit_stream.ixx
     output_memory_steam.ixx
