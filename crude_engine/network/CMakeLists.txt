@@ -4,7 +4,8 @@ target_sources(crude_engine
     socket_address.cpp
     socket_util.cpp
     tcp_socket.cpp
-    udp_socket.cpp)
+    udp_socket.cpp
+    network_system.cpp)
 
 target_sources(crude_engine
     PUBLIC
@@ -13,4 +14,5 @@ target_sources(crude_engine
     socket_address.ixx
     socket_util.ixx
     tcp_socket.ixx
-    udp_socket.ixx)
+    udp_socket.ixx
+    network_system.ixx)

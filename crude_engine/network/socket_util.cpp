@@ -1,8 +1,6 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
-#pragma comment(lib, "Ws2_32.lib")
-
 module crude.network.socket_util;
 
 import crude.core.assert;
@@ -91,21 +89,5 @@ int Socket_Util::select(const core::vector<TCP_Socket_Ptr>*  inReadSet,
 
   return toRet;
 }
-
-struct Socket_Initializer
-{
-  Socket_Initializer()
-  {
-    WSADATA init;
-    WSAStartup(MAKEWORD(2, 2), &init);
-  }
-
-  ~Socket_Initializer()
-  {
-    WSACleanup();
-  }
-};
-
-Socket_Initializer gSocketInitializer;
 
 }

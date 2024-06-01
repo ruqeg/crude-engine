@@ -89,13 +89,9 @@ public:
 public:
   void run()
   {
-    crude::system::SDL_System::getInstance().initialize();
-    crude::system::SDL_System::getInstance().initializeVulkan();
     initWindow();
     initVulkan();
     mainLoop();
-    crude::system::SDL_System::getInstance().deinitializeVulkan();
-    crude::system::SDL_System::getInstance().deinitialize();
   }
 private:
   void initWindow()
@@ -927,7 +923,7 @@ int APIENTRY wWinMain(
   _In_ LPWSTR lpCmdLine,
   _In_ int nCmdShow)
 {
-  crude::Engine enigne({ 1000000 });
+  crude::Engine engine({ 1000000 });
   Test_Application testApp;
   testApp.run();
   return EXIT_SUCCESS;
