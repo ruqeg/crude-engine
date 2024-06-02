@@ -4,10 +4,10 @@ module;
 
 export module crude.graphics.write_descriptor_set;
 
-import crude.graphics.descriptor_buffer_info;
-import crude.graphics.descriptor_image_info;
-import crude.core.optional;
-import crude.core.shared_ptr;
+export import crude.graphics.descriptor_buffer_info;
+export import crude.graphics.descriptor_image_info;
+export import crude.core.optional;
+export import crude.core.shared_ptr;
 
 export namespace crude::graphics
 {

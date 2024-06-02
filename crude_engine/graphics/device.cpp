@@ -26,8 +26,8 @@ Device_Queue_Create_Info::Device_Queue_Create_Info(core::uint32                 
 Device::Device(core::Shared_Ptr<const Physical_Device>      physicalDevice,
                const core::span<Device_Queue_Create_Info>&  queueDescriptors,
                const VkPhysicalDeviceFeatures&              enabledFeatures,
-               core::span<const char*>                      enabledExtensions,
-               core::span<const char*>                      enabledLayers)
+               core::span<const char* const>                enabledExtensions,
+               core::span<const char* const>                enabledLayers)
   :
   m_physicalDevice(physicalDevice)
 {

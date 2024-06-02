@@ -28,7 +28,8 @@ private:
   static void initalizeSystem();
   static void initalizeNetwork();
 private:
-  graphics::Renderer m_renderer;
+  core::Shared_Ptr<system::SDL_Window_Container>  m_windowContainer;
+  core::Shared_Ptr<graphics::Renderer>            m_renderer;
   
 };
 

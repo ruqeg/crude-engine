@@ -10,6 +10,11 @@ import crude.core.alias;
 export namespace crude::system
 {
 
+enum SDL_Window_Container_Flag
+{
+  SDL_WINDOW_CONTAINER_FLAG_VULKAN = SDL_WINDOW_VULKAN
+};
+
 class SDL_Window_Container
 {
 public:

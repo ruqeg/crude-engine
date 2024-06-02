@@ -5,7 +5,8 @@ namespace crude
 
 Engine::Engine()
 {
-  // !TODO
+  m_windowContainer = core::makeShared<system::SDL_Window_Container>("TEST", 600, 600, system::SDL_WINDOW_CONTAINER_FLAG_VULKAN);
+  m_renderer = core::makeShared<graphics::Renderer>(m_windowContainer);
 }
 void Engine::initialize(const Engine_Config& config)
 {

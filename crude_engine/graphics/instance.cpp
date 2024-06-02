@@ -14,8 +14,8 @@ Instance::Instance(
                    PFN_vkDebugUtilsMessengerCallbackEXT  debugUtilsCallback,
 #endif // VK_EXT_debug_utils
                    const Application&                    application,
-                   const core::span<const char*>&        enabledExtensions,
-                   const core::span<const char*>&        enabledLayers,
+                   const core::span<const char* const>&  enabledExtensions,
+                   const core::span<const char* const>&  enabledLayers,
                    VkInstanceCreateFlags                 flags)
 {
   VkInstanceCreateInfo vkInstanceCreateInfo{};

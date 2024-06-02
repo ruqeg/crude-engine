@@ -4,10 +4,10 @@ module;
 
 export module crude.graphics.device;
 
-import crude.core.shared_ptr;
-import crude.core.std_containers_stack;
-import crude.graphics.vulkan_object;
-import crude.graphics.write_descriptor_set;
+export import crude.core.shared_ptr;
+export import crude.core.std_containers_stack;
+export import crude.graphics.vulkan_object;
+export import crude.graphics.write_descriptor_set;
 
 export namespace crude::graphics
 {
@@ -29,8 +29,8 @@ public:
   explicit Device(core::Shared_Ptr<const Physical_Device>      physicalDevice,
                   const core::span<Device_Queue_Create_Info>&  queueDescriptors,
                   const VkPhysicalDeviceFeatures&              enabledFeatures,
-                  core::span<const char*>                      enabledExtensions,
-                  core::span<const char*>                      enabledLayers);
+                  core::span<const char* const>                enabledExtensions,
+                  core::span<const char* const>                enabledLayers);
 
   ~Device();
   core::Shared_Ptr<const Physical_Device> getPhysicalDevice() const;
