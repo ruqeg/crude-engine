@@ -3,7 +3,11 @@ module crude.engine;
 namespace crude
 {
 
-Engine::Engine(const Engine_Config& config)
+Engine::Engine()
+{
+  // !TODO
+}
+void Engine::initialize(const Engine_Config& config)
 {
   initializeMemory(config.defaultFreeRBTCapacity);
   initalizeSystem();

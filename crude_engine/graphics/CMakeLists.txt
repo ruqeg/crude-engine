@@ -1,5 +1,6 @@
 target_sources(crude_engine
     PRIVATE
+    renderer.cpp
     application.cpp
     attachment_description.cpp
     color_blend_state_create_info.cpp
@@ -49,6 +50,7 @@ target_sources(crude_engine
 target_sources(crude_engine
     PUBLIC
     FILE_SET cxx_modules_graphics TYPE CXX_MODULES FILES
+    renderer.ixx
     application.ixx
     attachment_description.ixx
     buffer.ixx

@@ -4,10 +4,10 @@ module;
 
 export module crude.core.memory_manager;
 
-import crude.core.free_rbt_allocator;
-import crude.core.system_allocator;
-import crude.core.aligned_allocator;
-import crude.core.cxx_allocator_container;
+export import crude.core.free_rbt_allocator;
+export import crude.core.system_allocator;
+export import crude.core.aligned_allocator;
+export import crude.core.cxx_allocator_container;
 
 export namespace crude::core
 {

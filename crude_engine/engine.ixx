@@ -4,6 +4,7 @@ export module crude.engine;
 
 import crude.system.sdl_system;
 import crude.core.memory_manager;
+import crude.graphics.renderer;
 import crude.network.network_system;
 import crude.core.alias;
 
@@ -15,15 +16,20 @@ struct Engine_Config
   core::uint32 defaultFreeRBTCapacity;
 };
 
+// !TODO
 class Engine
 {
 public:
-  Engine(const Engine_Config& config);
-  ~Engine() = default;
+  Engine();
+public:
+  static void initialize(const Engine_Config& config);
 private:
-  void initializeMemory(core::uint32 defaultFreeRBTCapacity);
-  void initalizeSystem();
-  void initalizeNetwork();
+  static void initializeMemory(core::uint32 defaultFreeRBTCapacity);
+  static void initalizeSystem();
+  static void initalizeNetwork();
+private:
+  graphics::Renderer m_renderer;
+  
 };
 
 }

@@ -28,7 +28,7 @@ Instance::Instance(
   const core::uint32 ebabledLayersCount = enabledLayers.size();
 
 #ifdef VK_EXT_debug_utils
-    VkDebugUtilsMessengerCreateInfoEXT vkDebugCreateInfo{};
+  VkDebugUtilsMessengerCreateInfoEXT vkDebugCreateInfo{};
 #endif // VK_EXT_debug_utils
 
   if (ebabledLayersCount > 0u)

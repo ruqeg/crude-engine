@@ -4,11 +4,11 @@ module;
 
 export module crude.graphics.instance;
 
-import crude.core.shared_ptr;
-import crude.core.std_containers_stack;
-import crude.core.std_containers_heap;
-import crude.graphics.vulkan_object;
-import crude.graphics.application;
+export import crude.core.shared_ptr;
+export import crude.core.std_containers_stack;
+export import crude.core.std_containers_heap;
+export import crude.graphics.vulkan_object;
+export import crude.graphics.application;
 
 export namespace crude::graphics
 {
