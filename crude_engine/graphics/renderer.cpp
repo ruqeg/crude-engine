@@ -90,11 +90,11 @@ void Renderer::drawFrame()
 
   m_inFlightFences[m_currentFrame]->reset();
 
-  recordCommandBuffer(m_commandBuffers[m_currentFrame], imageIndex);
+  recordCommandBuffer(m_graphicsCommandBuffers[m_currentFrame], imageIndex);
 
   core::uint32 waitStageMasks[1] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
   const bool graphicsQueueSubmited = m_graphicsQueue->sumbit(
-    core::span(&m_commandBuffers[m_currentFrame], 1u),
+    core::span(&m_graphicsCommandBuffers[m_currentFrame], 1u),
     waitStageMasks,
     core::span(&m_imageAvailableSemaphores[m_currentFrame], 1u),
     core::span(&m_renderFinishedSemaphores[m_currentFrame], 1u),
@@ -187,7 +187,7 @@ void Renderer::initializeSwapchain()
   }
 
   const Queue_Family_Indices queueIndices = findDeviceQueueFamilies(m_device->getPhysicalDevice());
-  core::vector<uint32_t> queueFamilyIndices = { queueIndices.graphicsFamily.value(), queueIndices.presentFamily.value() };
+  core::vector<core::uint32> queueFamilyIndices = { queueIndices.graphicsFamily.value(), queueIndices.presentFamily.value() };
 
   m_swapchain = core::makeShared<Swap_Chain>(
     m_device,
@@ -385,7 +385,8 @@ void Renderer::initalizeGraphicsPipeline()
 void Renderer::initalizeCommandPool()
 {
   const Queue_Family_Indices queueIndices = findDeviceQueueFamilies(m_device->getPhysicalDevice());
-  m_commandPool = core::makeShared<Command_Pool>(m_device, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, queueIndices.graphicsFamily.value());
+  m_graphicsCommandPool = core::makeShared<Command_Pool>(m_device, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, queueIndices.graphicsFamily.value());
+  m_transferCommandPool = core::makeShared<Command_Pool>(m_device, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, queueIndices.transferFamily.value());
 }
 
 void Renderer::initializeDepthImage()
@@ -412,7 +413,7 @@ void Renderer::initializeDepthImage()
   m_depthImageDeviceMemory = core::makeShared<Device_Memory>(m_device, memRequirements.size, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
   m_depthImageDeviceMemory->bind(*m_depthImage);
 
-  auto commandBuffer = core::makeShared<Command_Buffer>(m_device, m_commandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+  auto commandBuffer = core::makeShared<Command_Buffer>(m_device, m_transferCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
   commandBuffer->begin();
 
   core::array<Image_Memory_Barrier, 1u> barriers = 
@@ -443,7 +444,10 @@ void Renderer::initializeVertexBuffer()
 {
   VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
 
-  auto stagingBuffer = core::makeShared<Buffer>(m_device, bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+  const Queue_Family_Indices queueIndices = findDeviceQueueFamilies(m_device->getPhysicalDevice());
+  core::array<core::uint32, 2u> queueFamilyIndices = { queueIndices.graphicsFamily.value(), queueIndices.transferFamily.value() };
+
+  auto stagingBuffer = core::makeShared<Buffer>(m_device, bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, queueFamilyIndices);
   auto memRequirements = stagingBuffer->getMemoryRequirements();
   auto staggingBufferMemory = core::makeShared<Device_Memory>(m_device, memRequirements.size, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
   staggingBufferMemory->bind(*stagingBuffer);
@@ -454,12 +458,12 @@ void Renderer::initializeVertexBuffer()
     staggingBufferMemory->unmap();
   }
 
-  m_vertexBuffer = core::makeShared<Buffer>(m_device, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
+  m_vertexBuffer = core::makeShared<Buffer>(m_device, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, queueFamilyIndices);
   memRequirements = m_vertexBuffer->getMemoryRequirements();
   m_vertexBufferMemory = core::makeShared<Device_Memory>(m_device, memRequirements.size, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
   m_vertexBufferMemory->bind(*m_vertexBuffer);
 
-  auto commandBuffer = core::makeShared<Command_Buffer>(m_device, m_commandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+  auto commandBuffer = core::makeShared<Command_Buffer>(m_device, m_transferCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
   commandBuffer->begin();
   commandBuffer->copyBuffer(stagingBuffer, m_vertexBuffer, bufferSize);
   commandBuffer->end();
@@ -469,9 +473,9 @@ void Renderer::initializeVertexBuffer()
 
 void Renderer::initializeCommandBuffers()
 {
-  for (auto& commandBuffer : m_commandBuffers)
+  for (core::uint32 i = 0; i < cFramesCount; ++i)
   {
-    commandBuffer = core::makeShared<Command_Buffer>(m_device, m_commandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+    m_graphicsCommandBuffers[i] = core::makeShared<Command_Buffer>(m_device, m_graphicsCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
   }
 }
 
@@ -513,6 +517,8 @@ Renderer::Queue_Family_Indices Renderer::findDeviceQueueFamilies(core::Shared_Pt
   {
     if (queueProperties[i].queueFlags & VK_QUEUE_GRAPHICS_BIT)
       indices.graphicsFamily = i;
+    else if (queueProperties[i].queueFlags & VK_QUEUE_TRANSFER_BIT)
+      indices.transferFamily = i;
   
     if (physicalDevice->getSupportSurface(m_surface, i))
       indices.presentFamily = i;
@@ -550,16 +556,18 @@ void Renderer::initializeLogicDevice(core::Shared_Ptr<Physical_Device> physicalD
 
   float queuePriorities[] = { 1.f };
 
-  core::array<Device_Queue_Create_Info, 2> deviceQueueCreateInfos =
+  core::array<Device_Queue_Create_Info, 3> deviceQueueCreateInfos =
   {
     Device_Queue_Create_Info(queueIndices.graphicsFamily.value(), queuePriorities),
-    Device_Queue_Create_Info(queueIndices.presentFamily.value(), queuePriorities)
+    Device_Queue_Create_Info(queueIndices.presentFamily.value(), queuePriorities),
+    Device_Queue_Create_Info(queueIndices.transferFamily.value(), queuePriorities)
   };
 
   m_device = core::makeShared<Device>(physicalDevice, deviceQueueCreateInfos, deviceFeatures, deviceEnabledExtensions, instanceEnabledLayers);
 
   m_graphicsQueue = m_device->getQueue(queueIndices.graphicsFamily.value(), 0u);
   m_presentQueue = m_device->getQueue(queueIndices.presentFamily.value(), 0u);
+  m_transferQueue = m_device->getQueue(queueIndices.transferFamily.value(), 0u);
 }
 
 VkSurfaceFormatKHR Renderer::chooseSwapSurfaceFormat(const crude::core::vector<VkSurfaceFormatKHR>& availableFormats)

@@ -44,10 +44,11 @@ private:
   {
     core::Optional<core::uint32> graphicsFamily;
     core::Optional<core::uint32> presentFamily;
+    core::Optional<core::uint32> transferFamily;
 
     bool isComplete() const
     {
-      return graphicsFamily.hasValue() && presentFamily.hasValue();
+      return graphicsFamily.hasValue() && presentFamily.hasValue() && transferFamily.hasValue();
     }
   };
 public:
@@ -89,22 +90,24 @@ private:
   core::Shared_Ptr<Device>                         m_device;
   core::Shared_Ptr<Queue>                          m_graphicsQueue;
   core::Shared_Ptr<Queue>                          m_presentQueue;
+  core::Shared_Ptr<Queue>                          m_transferQueue;
   core::Shared_Ptr<Surface>                        m_surface;
-  core::Shared_Ptr<Swap_Chain>                     m_swapchain;
+  core::Shared_Ptr<Swap_Chain>                     m_swapchain; 
   core::vector<core::Shared_Ptr<Swap_Chain_Image>> m_swapchainImages;
   core::vector<core::Shared_Ptr<Image_View>>       m_swapchainImagesViews;
   core::vector<core::Shared_Ptr<Framebuffer>>      m_swapchainFramebuffers;
   core::Shared_Ptr<Debug_Utils_Messenger>          m_debugUtilsMessenger;
   core::Shared_Ptr<system::SDL_Window_Container>   m_windowContainer;
   core::Shared_Ptr<Pipeline>                       m_graphicsPipeline;
-  core::Shared_Ptr<Command_Pool>                   m_commandPool;
+  core::Shared_Ptr<Command_Pool>                   m_graphicsCommandPool;
+  core::Shared_Ptr<Command_Pool>                   m_transferCommandPool;
   core::Shared_Ptr<Device_Memory>                  m_depthImageDeviceMemory;
   core::Shared_Ptr<Image>                          m_depthImage;
   core::Shared_Ptr<Image_View>                     m_depthImageView;
   core::Shared_Ptr<Buffer>                         m_vertexBuffer;
   core::Shared_Ptr<Device_Memory>                  m_vertexBufferMemory;
 
-  core::array<core::Shared_Ptr<Command_Buffer>, cFramesCount>   m_commandBuffers;
+  core::array<core::Shared_Ptr<Command_Buffer>, cFramesCount>   m_graphicsCommandBuffers;
   core::array<core::Shared_Ptr<Semaphore>, cFramesCount>        m_imageAvailableSemaphores;
   core::array<core::Shared_Ptr<Semaphore>, cFramesCount>        m_renderFinishedSemaphores;
   core::array<core::Shared_Ptr<Fence>, cFramesCount>            m_inFlightFences;

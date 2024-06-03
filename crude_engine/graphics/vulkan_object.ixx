@@ -36,7 +36,6 @@ const Type& Vulkan_Object<Type, Allocator>::getHandle() const
 template<class Type, class Allocator>
 const VkAllocationCallbacks* Vulkan_Object<Type, Allocator>::getPVkAllocationCallbacks()
 {
-  // !TODO
   static VkAllocationCallbacks instance = Allocator();
   return nullptr;
 }
