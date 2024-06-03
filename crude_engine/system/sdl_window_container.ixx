@@ -25,6 +25,9 @@ public:
   std::shared_ptr<SDL_Window> getWindow();
   std::shared_ptr<const SDL_Window> getWindow() const;
 
+  core::uint32 getWidth() const;
+  core::uint32 getHeight() const;
+
 private:
   std::shared_ptr<SDL_Window> m_window;
 };

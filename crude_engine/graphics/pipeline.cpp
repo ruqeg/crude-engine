@@ -4,8 +4,6 @@ module crude.graphics.pipeline;
 
 import crude.graphics.surface;
 import crude.graphics.device;
-import crude.graphics.pipeline_layout;
-import crude.graphics.render_pass;
 import crude.graphics.vulkan_utils;
 import crude.core.std_containers_heap;
 import crude.core.algorithms;
@@ -70,16 +68,6 @@ Pipeline::Pipeline(core::Shared_Ptr<const Device>                           devi
 Pipeline::~Pipeline()
 {
   vkDestroyPipeline(m_device->getHandle(), m_handle, getPVkAllocationCallbacks());
-}
-
-const VkPipelineBindPoint Pipeline::getBindPoint() const
-{
-  return m_bindPoint;
-}
-
-core::Shared_Ptr<const Pipeline_Layout> Pipeline::getPipelineLayout()
-{
-  return m_pipelineLayout;
 }
 
 }

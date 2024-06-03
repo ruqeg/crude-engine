@@ -8,7 +8,10 @@ export
 class Application : public crude::Engine
 {
 public:
+  Application(crude::core::Shared_Ptr<crude::system::SDL_Window_Container> windowContainer);
   void run() noexcept;
+private:
+  void mainLoop();
 };
 
 }

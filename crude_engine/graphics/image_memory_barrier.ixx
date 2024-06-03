@@ -5,7 +5,7 @@ module;
 export module crude.graphics.image_memory_barrier;
 
 import crude.core.shared_ptr;
-import crude.graphics.image_subresource_range;
+export import crude.graphics.image_subresource_range;
 
 export namespace crude::graphics
 {

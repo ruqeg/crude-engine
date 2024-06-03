@@ -3,10 +3,10 @@ module crude.graphics.color_blend_state_create_info;
 namespace crude::graphics
 {
 
-Color_Blend_State_Create_Info::Color_Blend_State_Create_Info(const core::span<VkPipelineColorBlendAttachmentState>&  attachments,
-                                                             const core::array<core::float32, 4>&                    blendConstants,
-                                                             VkBool32                                                logicOpEnable,
-                                                             VkLogicOp                                               logicOp)
+Color_Blend_State_Create_Info::Color_Blend_State_Create_Info(const core::span<Pipeline_Color_Blend_Attachment_State>&  attachments,
+                                                             const core::array<core::float32, 4>&                      blendConstants,
+                                                             VkBool32                                                  logicOpEnable,
+                                                             VkLogicOp                                                 logicOp)
  {
   this->sType              = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
   this->pNext              = nullptr;

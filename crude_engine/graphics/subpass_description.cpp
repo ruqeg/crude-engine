@@ -8,10 +8,10 @@ namespace crude::graphics
 {
 
 Subpass_Description::Subpass_Description(VkPipelineBindPoint                                pipelineBindPoint,
-                                         const core::span<VkAttachmentReference>&           inputAttachments,
-                                         const core::span<VkAttachmentReference>&           colorAttachments,
+                                         const core::span<Attachment_Reference>&            inputAttachments,
+                                         const core::span<Attachment_Reference>&            colorAttachments,
                                          //!TODO const Array_Unsafe<Attachment_Reference>&  resolveAttachments,
-                                         const core::Optional<VkAttachmentReference*>&      depthStencilAttachment,
+                                         const Attachment_Reference*                        depthStencilAttachment,
                                          const core::span<core::uint32>&                    preserveAttachments)
 {
   this->flags = 0u;
@@ -25,7 +25,7 @@ Subpass_Description::Subpass_Description(VkPipelineBindPoint                    
   this->pColorAttachments       = colorAttachments.data();
   this->pPreserveAttachments    = preserveAttachments.data();
 
-  this->pDepthStencilAttachment = depthStencilAttachment.valueOr(nullptr);
+  this->pDepthStencilAttachment = depthStencilAttachment;
 
   // !TODO
   this->pResolveAttachments = nullptr;

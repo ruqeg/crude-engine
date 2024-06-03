@@ -9,18 +9,18 @@ import crude.core.alias;
 export namespace crude::graphics
 {
 
-// ! sizeof(Attachment_Description) == sizeof(VkAttachmentDescription)
+// !TODO sizeof(Attachment_Description) == sizeof(VkAttachmentDescription)
 // for render_pass.cpp
 struct Attachment_Description final : public VkAttachmentDescription
 {
   explicit Attachment_Description(VkFormat               format,
-                                  VkSampleCountFlagBits  samples,
+                                  VkImageLayout          initialLayout,
+                                  VkImageLayout          finalLayout,
                                   VkAttachmentLoadOp     loadOp,
                                   VkAttachmentStoreOp    storeOp,
-                                  VkAttachmentLoadOp     stencilLoadOp,
-                                  VkAttachmentStoreOp    stencilStoreOp,
-                                  VkImageLayout          initialLayout,
-                                  VkImageLayout          finalLayout);
+                                  VkSampleCountFlagBits  samples        = VK_SAMPLE_COUNT_1_BIT,
+                                  VkAttachmentLoadOp     stencilLoadOp  = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                                  VkAttachmentStoreOp    stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE);
 };
 
 }

@@ -3,11 +3,11 @@ module crude.engine;
 namespace crude
 {
 
-Engine::Engine()
-{
-  m_windowContainer = core::makeShared<system::SDL_Window_Container>("TEST", 600, 600, system::SDL_WINDOW_CONTAINER_FLAG_VULKAN);
-  m_renderer = core::makeShared<graphics::Renderer>(m_windowContainer);
-}
+Engine::Engine(core::Shared_Ptr<system::SDL_Window_Container> windowContainer)
+  :
+  m_renderer(windowContainer)
+{}
+
 void Engine::initialize(const Engine_Config& config)
 {
   initializeMemory(config.defaultFreeRBTCapacity);

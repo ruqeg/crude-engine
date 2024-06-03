@@ -4,13 +4,13 @@ namespace crude::graphics
 {
 
 Attachment_Description::Attachment_Description(VkFormat               format,
-                                               VkSampleCountFlagBits  samples,
+                                               VkImageLayout          initialLayout,
+                                               VkImageLayout          finalLayout,
                                                VkAttachmentLoadOp     loadOp,
                                                VkAttachmentStoreOp    storeOp,
+                                               VkSampleCountFlagBits  samples,
                                                VkAttachmentLoadOp     stencilLoadOp,
-                                               VkAttachmentStoreOp    stencilStoreOp,
-                                               VkImageLayout          initialLayout,
-                                               VkImageLayout          finalLayout)
+                                               VkAttachmentStoreOp    stencilStoreOp)
 {
   this->flags           = 0u;
   this->format          = format;

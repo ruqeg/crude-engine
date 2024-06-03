@@ -22,6 +22,20 @@ std::shared_ptr<const SDL_Window> SDL_Window_Container::getWindow() const
   return m_window;
 }
 
+core::uint32 SDL_Window_Container::getWidth() const
+{
+  int width, height;
+  SDL_GetWindowSize(m_window.get(), &width, &height);
+  return width;
+}
+
+core::uint32 SDL_Window_Container::getHeight() const
+{
+  int width, height;
+  SDL_GetWindowSize(m_window.get(), &width, &height);
+  return height;
+}
+
 std::shared_ptr<SDL_Window> SDL_Window_Container::getWindow()
 {
   return m_window;

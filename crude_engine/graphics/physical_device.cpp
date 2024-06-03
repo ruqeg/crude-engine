@@ -23,7 +23,7 @@ bool Physical_Device::getSupportSurface(core::Shared_Ptr<const Surface> surface,
   return presentSupport;
 }
   
-VkSurfaceCapabilitiesKHR Physical_Device::getSurfaceCapabilitis(core::Shared_Ptr<const Surface> surface) const
+VkSurfaceCapabilitiesKHR Physical_Device::getSurfaceCapabilitis(core::Shared_Ptr<const Surface> surface) const 
 {
   VkSurfaceCapabilitiesKHR capabilities;
   vkGetPhysicalDeviceSurfaceCapabilitiesKHR(
@@ -33,7 +33,7 @@ VkSurfaceCapabilitiesKHR Physical_Device::getSurfaceCapabilitis(core::Shared_Ptr
   return capabilities;
 }
    
-core::vector<VkSurfaceFormatKHR> Physical_Device::getSurfaceFormats(core::Shared_Ptr<const Surface> surface)
+core::vector<VkSurfaceFormatKHR> Physical_Device::getSurfaceFormats(core::Shared_Ptr<const Surface> surface) const
 {
   core::uint32 formatCount;
   vkGetPhysicalDeviceSurfaceFormatsKHR(
@@ -56,7 +56,7 @@ core::vector<VkSurfaceFormatKHR> Physical_Device::getSurfaceFormats(core::Shared
   return formats;
 }
 
-core::vector<VkPresentModeKHR> Physical_Device::getSurfacePresentModes(core::Shared_Ptr<const Surface> surface)
+core::vector<VkPresentModeKHR> Physical_Device::getSurfacePresentModes(core::Shared_Ptr<const Surface> surface) const
 {
   core::uint32 presentModeCount;
   vkGetPhysicalDeviceSurfacePresentModesKHR(

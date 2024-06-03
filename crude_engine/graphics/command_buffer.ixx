@@ -7,8 +7,8 @@ export module crude.graphics.command_buffer;
 import crude.core.shared_ptr;
 import crude.core.std_containers_stack;
 import crude.graphics.vulkan_object;
-import crude.graphics.image_memory_barrier;
-import crude.graphics.buffer;
+export import crude.graphics.image_memory_barrier;
+export import crude.graphics.buffer;
 
 export namespace crude::graphics
 {

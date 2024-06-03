@@ -7,9 +7,9 @@ export module crude.graphics.render_pass;
 import crude.core.shared_ptr;
 import crude.core.std_containers_stack;
 import crude.graphics.vulkan_object;
-import crude.graphics.subpass_dependency;
-import crude.graphics.subpass_description;
-import crude.graphics.attachment_description;
+export import crude.graphics.subpass_dependency;
+export import crude.graphics.subpass_description;
+export import crude.graphics.attachment_description;
 
 export namespace crude::graphics
 {

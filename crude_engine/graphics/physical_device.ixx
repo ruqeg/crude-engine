@@ -19,8 +19,8 @@ public:
   explicit Physical_Device(VkPhysicalDevice vkPhysicalDevice);
   bool getSupportSurface(core::Shared_Ptr<const Surface> surface, core::uint32 queueFamilyIndex) const;
   VkSurfaceCapabilitiesKHR getSurfaceCapabilitis(core::Shared_Ptr<const Surface> surface) const;
-  core::vector<VkSurfaceFormatKHR> getSurfaceFormats(core::Shared_Ptr<const Surface> surface);
-  core::vector<VkPresentModeKHR> getSurfacePresentModes(core::Shared_Ptr<const Surface> surface);
+  core::vector<VkSurfaceFormatKHR> getSurfaceFormats(core::Shared_Ptr<const Surface> surface) const;
+  core::vector<VkPresentModeKHR> getSurfacePresentModes(core::Shared_Ptr<const Surface> surface) const;
   core::vector<VkQueueFamilyProperties> getQueueFamilyProperties() const;
   core::vector<VkExtensionProperties> getExtensionProperties() const;
   VkFormatProperties getFormatProperties(VkFormat format) const;
