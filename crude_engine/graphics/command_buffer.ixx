@@ -21,6 +21,13 @@ class Framebuffer;
 class Pipeline;
 class Descriptor_Set;
 
+struct Vertex_Buffer_Bind
+{
+  Vertex_Buffer_Bind(core::Shared_Ptr<Buffer> buffer, VkDeviceSize offset)
+    : buffer(buffer), offset(offset) {}
+  core::Shared_Ptr<Buffer>  buffer;
+  VkDeviceSize              offset;
+};
 
 class Command_Buffer : public Vulkan_Object<VkCommandBuffer>
 {
@@ -54,6 +61,12 @@ public:
   void setViewport(core::span<VkViewport> viewports);
 
   void setScissor(core::span<VkRect2D> scissors);
+  
+  void bindVertexBuffers(core::uint32 firstBinding, const core::span<Vertex_Buffer_Bind>& vertexBuffersBind);
+
+  // !TODO
+  //template<core::size_t N>
+  //void bindVertexBuffers(core::uint32 firstBinding, const core::array<Vertex_Buffer_Bind, N>& vertexBuffersBind);
 
   void bindDescriptorSets(core::Shared_Ptr<Pipeline>                    pipeline,
                           core::span<core::Shared_Ptr<Descriptor_Set>>  descriptorSets,

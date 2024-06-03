@@ -12,8 +12,8 @@ export namespace crude::graphics
 class Vertex_Input_State_Create_Info : public VkPipelineVertexInputStateCreateInfo
 {
 public:
-  explicit Vertex_Input_State_Create_Info(const core::span<VkVertexInputBindingDescription>&    bindingDescriptions,
-                                          const core::span<VkVertexInputAttributeDescription>&  attributeDescriptions);
+  explicit Vertex_Input_State_Create_Info(const core::span<const VkVertexInputBindingDescription>&    bindingDescriptions,
+                                          const core::span<const VkVertexInputAttributeDescription>&  attributeDescriptions);
 };
 
 }

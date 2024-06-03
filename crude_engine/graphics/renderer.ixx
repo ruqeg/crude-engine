@@ -27,6 +27,7 @@ export import crude.graphics.fence;
 export import crude.graphics.semaphore;
 export import crude.graphics.image_view;
 export import crude.graphics.image;
+export import crude.graphics.buffer;
 export import crude.graphics.device_memory;
 export import crude.graphics.framebuffer;
 export import crude.graphics.swap_chain_image;
@@ -63,8 +64,9 @@ private:
   void initalizeCommandPool();
   void initializeDepthImage();
   void initializeSwapchainFramebuffers();
+  void initializeVertexBuffer();
   void initializeCommandBuffers();
-  void initializeSemaphores();
+  void initializeSyncObjects();
 private:
   core::Shared_Ptr<Physical_Device> pickPhysicalDevice();
   Queue_Family_Indices findDeviceQueueFamilies(core::Shared_Ptr<Physical_Device> physicalDevice);
@@ -99,6 +101,8 @@ private:
   core::Shared_Ptr<Device_Memory>                  m_depthImageDeviceMemory;
   core::Shared_Ptr<Image>                          m_depthImage;
   core::Shared_Ptr<Image_View>                     m_depthImageView;
+  core::Shared_Ptr<Buffer>                         m_vertexBuffer;
+  core::Shared_Ptr<Device_Memory>                  m_vertexBufferMemory;
 
   core::array<core::Shared_Ptr<Command_Buffer>, cFramesCount>   m_commandBuffers;
   core::array<core::Shared_Ptr<Semaphore>, cFramesCount>        m_imageAvailableSemaphores;

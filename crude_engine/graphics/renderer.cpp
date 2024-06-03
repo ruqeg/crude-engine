@@ -1,11 +1,49 @@
 #include <vulkan/vulkan.hpp>
+#include <cstring>
 
 module crude.graphics.renderer;
 
 import crude.core.logger;
+import crude.math.fuicont;
 
 namespace crude::graphics
 {
+
+struct Vertex
+{
+  math::MFLOAT3 pos;
+  math::MFLOAT3 color;
+
+  static const VkVertexInputBindingDescription& getBindingDescription() {
+    static VkVertexInputBindingDescription bindingDescription{};
+    bindingDescription.binding = 0;
+    bindingDescription.stride = sizeof(Vertex);
+    bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+    return bindingDescription;
+  }
+
+  static const core::array<VkVertexInputAttributeDescription, 2>& getAttributeDescriptions() {
+    static core::array<VkVertexInputAttributeDescription, 2> attributeDescriptions{};
+    attributeDescriptions[0].binding = 0;
+    attributeDescriptions[0].location = 0;
+    attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
+    attributeDescriptions[0].offset = offsetof(Vertex, pos);
+
+    attributeDescriptions[1].binding = 0;
+    attributeDescriptions[1].location = 1;
+    attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
+    attributeDescriptions[1].offset = offsetof(Vertex, color);
+
+    return attributeDescriptions;
+  }
+};
+
+constexpr core::array<Vertex, 3u> vertices = 
+{
+    Vertex{math::MFLOAT3{ 0.0f,-0.5f, 0.0f}, math::MFLOAT3{1.0f, 0.0f, 0.0f}},
+    Vertex{math::MFLOAT3{ 0.5f, 0.5f, 0.0f}, math::MFLOAT3{0.0f, 1.0f, 0.0f}},
+    Vertex{math::MFLOAT3{-0.5f, 0.5f, 0.0f}, math::MFLOAT3{0.0f, 0.0f, 1.0f}}
+};
 
 constexpr core::array<const char*, 1> deviceEnabledExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
 constexpr core::array<const char*, 1> instanceEnabledLayers = { "VK_LAYER_KHRONOS_validation" };
@@ -23,8 +61,9 @@ Renderer::Renderer(core::Shared_Ptr<system::SDL_Window_Container> windowContaine
   initalizeCommandPool();
   initializeDepthImage();
   initializeSwapchainFramebuffers();
+  initializeVertexBuffer();
   initializeCommandBuffers();
-  initializeSemaphores();
+  initializeSyncObjects();
 }
 
 Renderer::~Renderer()
@@ -81,7 +120,7 @@ void Renderer::drawFrame()
     core::logError(core::Debug::Channel::Graphics, "Failed to present swap chain image!");
   }
 
-  m_currentFrame = (m_currentFrame + 1u) % 2u;
+  m_currentFrame = (m_currentFrame + 1u) % cFramesCount;
 }
 
 void Renderer::initializeInstance()
@@ -265,9 +304,13 @@ void Renderer::recordCommandBuffer(core::Shared_Ptr<Command_Buffer> commandBuffe
   scissor.extent = m_swapchain->getExtent();
   commandBuffer->setScissor(core::span(&scissor, 1u));
 
-  //commandBuffer->bindDescriptorSets(m_graphicsPipeline, core::span(&m_descriptorSets[m_currentFrame], 1u));
+  core::array<Vertex_Buffer_Bind, 1u> vertexBuffersBinds =
+  {
+    Vertex_Buffer_Bind(m_vertexBuffer, 0u)
+  };
 
-  commandBuffer->draw(3u, 1u);
+  commandBuffer->bindVertexBuffers(0u, vertexBuffersBinds);
+  commandBuffer->draw(vertices.size(), 1, 0, 0);
 
   commandBuffer->endRenderPass();
 
@@ -293,7 +336,7 @@ void Renderer::initalizeGraphicsPipeline()
     Shader_Stage_Create_Info(VK_SHADER_STAGE_FRAGMENT_BIT, fragShaderModule, "main"),
   };
 
-  auto vertexInputStateInfo = Vertex_Input_State_Create_Info({}, {});
+  auto vertexInputStateInfo = Vertex_Input_State_Create_Info(core::span(&Vertex::getBindingDescription(), 1u), Vertex::getAttributeDescriptions());
   auto inputAssembly = Input_Assembly_State_Create_Info(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FALSE);
   auto viewportState = Viewport_State_Create_Info(1u, 1u);
   auto rasterizer = Rasterization_State_Create_Info(VK_FALSE, VK_FALSE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_BACK_BIT, VK_FRONT_FACE_CLOCKWISE, VK_FALSE, 0.0f, 0.0f, 0.0f, 1.f);
@@ -396,6 +439,20 @@ void Renderer::initializeSwapchainFramebuffers()
   }
 }
 
+void Renderer::initializeVertexBuffer()
+{
+  m_vertexBuffer = core::makeShared<Buffer>(m_device, vertices.size() * sizeof(vertices[0]), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
+  auto memRequirements = m_vertexBuffer->getMemoryRequirements();
+  m_vertexBufferMemory = core::makeShared<Device_Memory>(m_device, memRequirements.size, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+  m_vertexBufferMemory->bind(*m_vertexBuffer);
+  auto data = m_vertexBufferMemory->map();
+  if (data.hasValue())
+  {
+    std::memcpy(data.value(), vertices.data(), vertices.size() * sizeof(vertices[0]));
+    m_vertexBufferMemory->unmap();
+  }
+}
+
 void Renderer::initializeCommandBuffers()
 {
   for (auto& commandBuffer : m_commandBuffers)
@@ -404,7 +461,7 @@ void Renderer::initializeCommandBuffers()
   }
 }
 
-void Renderer::initializeSemaphores()
+void Renderer::initializeSyncObjects()
 {
   for (core::uint32 i = 0; i < cFramesCount; i++)
   {

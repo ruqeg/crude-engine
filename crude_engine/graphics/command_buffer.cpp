@@ -172,6 +172,19 @@ void Command_Buffer::setScissor(core::span<VkRect2D> scissors)
     scissors.data());
 }
 
+void Command_Buffer::bindVertexBuffers(core::uint32 firstBinding, const core::span<Vertex_Buffer_Bind>& vertexBuffersBind)
+{
+  core::vector<VkBuffer> vkBuffers(vertexBuffersBind.size());
+  core::vector<VkDeviceSize> vkOffsets(vertexBuffersBind.size());
+  for (core::uint32 i = 0; i < vertexBuffersBind.size(); ++i)
+  {
+    vkBuffers[i] = vertexBuffersBind[i].buffer->getHandle();
+    vkOffsets[i] = vertexBuffersBind[i].offset;
+  }
+
+  vkCmdBindVertexBuffers(m_handle, firstBinding, vertexBuffersBind.size(), vkBuffers.data(), vkOffsets.data());
+}
+
 void Command_Buffer::bindDescriptorSets(core::Shared_Ptr<Pipeline>                    pipeline,
                                         core::span<core::Shared_Ptr<Descriptor_Set>>  descriptorSets,
                                         core::span<core::uint32>                      dynamicOffsets)
