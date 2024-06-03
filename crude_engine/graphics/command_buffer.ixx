@@ -63,6 +63,8 @@ public:
   void setScissor(core::span<VkRect2D> scissors);
   
   void bindVertexBuffers(core::uint32 firstBinding, const core::span<Vertex_Buffer_Bind>& vertexBuffersBind);
+  void bindVertexBuffer(core::uint32 firstBinding, core::Shared_Ptr<Buffer> vertexBuffer, VkDeviceSize offset = 0u);
+  void bindIndexBuffer(core::Shared_Ptr<Buffer> indexBuffer, VkIndexType indexType, VkDeviceSize offset = 0u);
 
   void copyBuffer(core::Shared_Ptr<const Buffer> srcBuffer, core::Shared_Ptr<Buffer> dstBuffer, VkDeviceSize size);
 
@@ -75,6 +77,7 @@ public:
                           core::span<core::uint32>                      dynamicOffsets = {});
 
   void draw(core::uint32 vertexCount, core::uint32 instanceCount = 0u, core::uint32 firstVertex = 0u, core::uint32 firstInstance = 0u);
+  void drawIndexed(core::uint32 indexCount, core::uint32 instanceCount, core::uint32 firstIndex = 0u, core::int32 vertexOffset = 0u, core::uint32 firstInstance = 0u);
 
   void endRenderPass();
   // !TODO void begin(VkCommandBufferUsageFlags flags with VkCommandBufferInheritanceInfo);

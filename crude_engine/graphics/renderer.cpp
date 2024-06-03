@@ -38,11 +38,15 @@ struct Vertex
   }
 };
 
-constexpr core::array<Vertex, 3u> vertices = 
-{
-    Vertex{math::MFLOAT3{ 0.0f,-0.5f, 0.0f}, math::MFLOAT3{1.0f, 0.0f, 0.0f}},
-    Vertex{math::MFLOAT3{ 0.5f, 0.5f, 0.0f}, math::MFLOAT3{0.0f, 1.0f, 0.0f}},
-    Vertex{math::MFLOAT3{-0.5f, 0.5f, 0.0f}, math::MFLOAT3{0.0f, 0.0f, 1.0f}}
+constexpr core::array<Vertex, 4u> vertices = {
+    Vertex{math::MFLOAT3{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}},
+    Vertex{math::MFLOAT3{0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}},
+    Vertex{math::MFLOAT3{0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}},
+    Vertex{math::MFLOAT3{-0.5f, 0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}}
+};
+
+constexpr core::array<core::uint16, 6> indices = {
+    0, 1, 2, 2, 3, 0
 };
 
 constexpr core::array<const char*, 1> deviceEnabledExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
@@ -62,6 +66,7 @@ Renderer::Renderer(core::Shared_Ptr<system::SDL_Window_Container> windowContaine
   initializeDepthImage();
   initializeSwapchainFramebuffers();
   initializeVertexBuffer();
+  initializeIndexBuffer();
   initializeCommandBuffers();
   initializeSyncObjects();
 }
@@ -303,14 +308,9 @@ void Renderer::recordCommandBuffer(core::Shared_Ptr<Command_Buffer> commandBuffe
   scissor.offset = { 0, 0 };
   scissor.extent = m_swapchain->getExtent();
   commandBuffer->setScissor(core::span(&scissor, 1u));
-
-  core::array<Vertex_Buffer_Bind, 1u> vertexBuffersBinds =
-  {
-    Vertex_Buffer_Bind(m_vertexBuffer, 0u)
-  };
-
-  commandBuffer->bindVertexBuffers(0u, vertexBuffersBinds);
-  commandBuffer->draw(vertices.size(), 1, 0, 0);
+  commandBuffer->bindVertexBuffer(0u, m_vertexBuffer);
+  commandBuffer->bindIndexBuffer(m_indexBuffer, VK_INDEX_TYPE_UINT16);
+  commandBuffer->drawIndexed(indices.size(), 1, 0, 0);
 
   commandBuffer->endRenderPass();
 
@@ -467,8 +467,39 @@ void Renderer::initializeVertexBuffer()
   commandBuffer->begin();
   commandBuffer->copyBuffer(stagingBuffer, m_vertexBuffer, bufferSize);
   commandBuffer->end();
-  m_graphicsQueue->sumbit(core::span(&commandBuffer, 1u));
-  m_graphicsQueue->waitIdle();
+  m_transferQueue->sumbit(core::span(&commandBuffer, 1u));
+  m_transferQueue->waitIdle();
+}
+
+void Renderer::initializeIndexBuffer()
+{
+  VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
+
+  const Queue_Family_Indices queueIndices = findDeviceQueueFamilies(m_device->getPhysicalDevice());
+  core::array<core::uint32, 2u> queueFamilyIndices = { queueIndices.graphicsFamily.value(), queueIndices.transferFamily.value() };
+
+  auto stagingBuffer = core::makeShared<Buffer>(m_device, bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, queueFamilyIndices);
+  auto memRequirements = stagingBuffer->getMemoryRequirements();
+  auto staggingBufferMemory = core::makeShared<Device_Memory>(m_device, memRequirements.size, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+  staggingBufferMemory->bind(*stagingBuffer);
+  auto data = staggingBufferMemory->map();
+  if (data.hasValue())
+  {
+    std::memcpy(data.value(), indices.data(), bufferSize);
+    staggingBufferMemory->unmap();
+  }
+
+  m_indexBuffer = core::makeShared<Buffer>(m_device, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, queueFamilyIndices);
+  memRequirements = m_indexBuffer->getMemoryRequirements();
+  m_indexBufferMemory = core::makeShared<Device_Memory>(m_device, memRequirements.size, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+  m_indexBufferMemory->bind(*m_indexBuffer);
+
+  auto commandBuffer = core::makeShared<Command_Buffer>(m_device, m_transferCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+  commandBuffer->begin();
+  commandBuffer->copyBuffer(stagingBuffer, m_indexBuffer, bufferSize);
+  commandBuffer->end();
+  m_transferQueue->sumbit(core::span(&commandBuffer, 1u));
+  m_transferQueue->waitIdle();
 }
 
 void Renderer::initializeCommandBuffers()

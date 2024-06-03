@@ -66,6 +66,7 @@ private:
   void initializeDepthImage();
   void initializeSwapchainFramebuffers();
   void initializeVertexBuffer();
+  void initializeIndexBuffer();
   void initializeCommandBuffers();
   void initializeSyncObjects();
 private:
@@ -106,6 +107,8 @@ private:
   core::Shared_Ptr<Image_View>                     m_depthImageView;
   core::Shared_Ptr<Buffer>                         m_vertexBuffer;
   core::Shared_Ptr<Device_Memory>                  m_vertexBufferMemory;
+  core::Shared_Ptr<Buffer>                         m_indexBuffer;
+  core::Shared_Ptr<Device_Memory>                  m_indexBufferMemory;
 
   core::array<core::Shared_Ptr<Command_Buffer>, cFramesCount>   m_graphicsCommandBuffers;
   core::array<core::Shared_Ptr<Semaphore>, cFramesCount>        m_imageAvailableSemaphores;

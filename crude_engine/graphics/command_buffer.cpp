@@ -185,6 +185,16 @@ void Command_Buffer::bindVertexBuffers(core::uint32 firstBinding, const core::sp
   vkCmdBindVertexBuffers(m_handle, firstBinding, vertexBuffersBind.size(), vkBuffers.data(), vkOffsets.data());
 }
 
+void Command_Buffer::bindVertexBuffer(core::uint32 firstBinding, core::Shared_Ptr<Buffer> vertexBuffer, VkDeviceSize offset)
+{
+  vkCmdBindVertexBuffers(m_handle, firstBinding, 1u, &vertexBuffer->getHandle(), &offset);
+}
+
+void Command_Buffer::bindIndexBuffer(core::Shared_Ptr<Buffer> indexBuffer, VkIndexType indexType, VkDeviceSize offset)
+{
+  vkCmdBindIndexBuffer(m_handle, indexBuffer->getHandle(), offset, indexType);
+}
+
 void Command_Buffer::copyBuffer(core::Shared_Ptr<const Buffer> srcBuffer, core::Shared_Ptr<Buffer> dstBuffer, VkDeviceSize size)
 {
   VkBufferCopy copyRegion{};
@@ -219,6 +229,11 @@ void Command_Buffer::bindDescriptorSets(core::Shared_Ptr<Pipeline>              
 void Command_Buffer::draw(core::uint32 vertexCount, core::uint32 instanceCount, core::uint32 firstVertex, core::uint32 firstInstance)
 {
   vkCmdDraw(m_handle, vertexCount, instanceCount, firstVertex, firstInstance);
+}
+
+void Command_Buffer::drawIndexed(core::uint32 indexCount, core::uint32 instanceCount, core::uint32 firstIndex, core::int32 vertexOffset, core::uint32 firstInstance)
+{
+  vkCmdDrawIndexed(m_handle, indexCount, instanceCount, firstIndex, vertexOffset, firstInstance);
 }
 
 void Command_Buffer::endRenderPass()
