@@ -441,16 +441,30 @@ void Renderer::initializeSwapchainFramebuffers()
 
 void Renderer::initializeVertexBuffer()
 {
-  m_vertexBuffer = core::makeShared<Buffer>(m_device, vertices.size() * sizeof(vertices[0]), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
-  auto memRequirements = m_vertexBuffer->getMemoryRequirements();
-  m_vertexBufferMemory = core::makeShared<Device_Memory>(m_device, memRequirements.size, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-  m_vertexBufferMemory->bind(*m_vertexBuffer);
-  auto data = m_vertexBufferMemory->map();
+  VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
+
+  auto stagingBuffer = core::makeShared<Buffer>(m_device, bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+  auto memRequirements = stagingBuffer->getMemoryRequirements();
+  auto staggingBufferMemory = core::makeShared<Device_Memory>(m_device, memRequirements.size, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+  staggingBufferMemory->bind(*stagingBuffer);
+  auto data = staggingBufferMemory->map();
   if (data.hasValue())
   {
-    std::memcpy(data.value(), vertices.data(), vertices.size() * sizeof(vertices[0]));
-    m_vertexBufferMemory->unmap();
+    std::memcpy(data.value(), vertices.data(), bufferSize);
+    staggingBufferMemory->unmap();
   }
+
+  m_vertexBuffer = core::makeShared<Buffer>(m_device, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
+  memRequirements = m_vertexBuffer->getMemoryRequirements();
+  m_vertexBufferMemory = core::makeShared<Device_Memory>(m_device, memRequirements.size, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+  m_vertexBufferMemory->bind(*m_vertexBuffer);
+
+  auto commandBuffer = core::makeShared<Command_Buffer>(m_device, m_commandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+  commandBuffer->begin();
+  commandBuffer->copyBuffer(stagingBuffer, m_vertexBuffer, bufferSize);
+  commandBuffer->end();
+  m_graphicsQueue->sumbit(core::span(&commandBuffer, 1u));
+  m_graphicsQueue->waitIdle();
 }
 
 void Renderer::initializeCommandBuffers()

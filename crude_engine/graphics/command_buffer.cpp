@@ -185,6 +185,15 @@ void Command_Buffer::bindVertexBuffers(core::uint32 firstBinding, const core::sp
   vkCmdBindVertexBuffers(m_handle, firstBinding, vertexBuffersBind.size(), vkBuffers.data(), vkOffsets.data());
 }
 
+void Command_Buffer::copyBuffer(core::Shared_Ptr<const Buffer> srcBuffer, core::Shared_Ptr<Buffer> dstBuffer, VkDeviceSize size)
+{
+  VkBufferCopy copyRegion{};
+  copyRegion.srcOffset = 0;
+  copyRegion.dstOffset = 0;
+  copyRegion.size      = size;
+  vkCmdCopyBuffer(m_handle, srcBuffer->getHandle(), dstBuffer->getHandle(), 1, &copyRegion);
+}
+
 void Command_Buffer::bindDescriptorSets(core::Shared_Ptr<Pipeline>                    pipeline,
                                         core::span<core::Shared_Ptr<Descriptor_Set>>  descriptorSets,
                                         core::span<core::uint32>                      dynamicOffsets)

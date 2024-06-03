@@ -64,6 +64,8 @@ public:
   
   void bindVertexBuffers(core::uint32 firstBinding, const core::span<Vertex_Buffer_Bind>& vertexBuffersBind);
 
+  void copyBuffer(core::Shared_Ptr<const Buffer> srcBuffer, core::Shared_Ptr<Buffer> dstBuffer, VkDeviceSize size);
+
   // !TODO
   //template<core::size_t N>
   //void bindVertexBuffers(core::uint32 firstBinding, const core::array<Vertex_Buffer_Bind, N>& vertexBuffersBind);

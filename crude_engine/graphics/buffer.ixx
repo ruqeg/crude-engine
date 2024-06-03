@@ -33,6 +33,7 @@ private:
                   core::span<core::uint32>        queueFamilyIndices);
 private:
   const core::Shared_Ptr<const Device>  m_device;
+  VkDeviceSize                          m_size;
 };
 
 }
