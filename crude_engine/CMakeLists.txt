@@ -22,13 +22,15 @@ add_subdirectory(math)
 add_subdirectory(network)
 add_subdirectory(system)
 add_subdirectory(graphics)
+add_subdirectory(scene)
 
-source_group(core REGULAR_EXPRESSION "core/*")
-source_group(ecs REGULAR_EXPRESSION "ecs/*")
-source_group(math REGULAR_EXPRESSION "math/*")
-source_group(network REGULAR_EXPRESSION "network/*")
-source_group(system REGULAR_EXPRESSION "system/*")
-source_group(graphics REGULAR_EXPRESSION "graphics/*")
+source_group(core REGULAR_EXPRESSION "${CMAKE_CURRENT_SOURCE_DIR}/core/*")
+source_group(ecs REGULAR_EXPRESSION "${CMAKE_CURRENT_SOURCE_DIR}/ecs/*")
+source_group(math REGULAR_EXPRESSION "${CMAKE_CURRENT_SOURCE_DIR}/math/*")
+source_group(network REGULAR_EXPRESSION "${CMAKE_CURRENT_SOURCE_DIR}/network/*")
+source_group(system REGULAR_EXPRESSION "${CMAKE_CURRENT_SOURCE_DIR}/system/*")
+source_group(graphics REGULAR_EXPRESSION "${CMAKE_CURRENT_SOURCE_DIR}/graphics/*")
+source_group(scene REGULAR_EXPRESSION "${CMAKE_CURRENT_SOURCE_DIR}/scene/*")
 
 install(TARGETS crude_engine
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

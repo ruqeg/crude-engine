@@ -129,10 +129,39 @@ Matrix smatrix::transpose(CMatrix m) noexcept
   return Matrix();
 }
 
-Matrix smatrix::inverse(Vector* pDeterminant, CMatrix m) noexcept
+Matrix smatrix::inverse(CMatrix m) noexcept
 {
-  core::assert(false && "!TODO");
-  return Matrix();
+  // !TODO optimize it
+  const Vector a = m.r[0];
+  const Vector b = m.r[1];
+  const Vector c = m.r[2];
+  const Vector d = m.r[3];
+  
+  const core::float32& x = m._41; 
+  const core::float32& y = m._42; 
+  const core::float32& z = m._43; 
+  const core::float32& w = m._44; 
+  
+  Vector s = svector::cross3(a, b);
+  Vector t = svector::cross3(c, d);
+  Vector u = svector::subtract(svector::scale(a, y), svector::scale(b, x));
+  Vector v = svector::subtract(svector::scale(c, w), svector::scale(d, z));
+  
+  core::float32 invDet = 1.0f / svector::getX(svector::add(svector::dot3(s, v), svector::dot3(t, u)));
+  s = svector::scale(s, invDet);
+  t = svector::scale(t, invDet);
+  u = svector::scale(u, invDet);
+  v = svector::scale(v, invDet);
+  
+  Vector r0 = svector::add(svector::cross3(b, v), svector::scale(t, y));
+  Vector r1 = svector::subtract(svector::cross3(v, a), svector::scale(t, x));
+  Vector r2 = svector::add(svector::cross3(d, u), svector::scale(s, w));
+  Vector r3 = svector::subtract(svector::cross3(u, c), svector::scale(s, z));
+  
+  return (smatrix::set(svector::getX(r0), svector::getY(r0), svector::getZ(r0), -svector::getX(svector::dot3(b, t)),
+                       svector::getX(r1), svector::getY(r1), svector::getZ(r1), svector::getX(svector::dot3(a, t)),
+                       svector::getX(r2), svector::getY(r2), svector::getZ(r2), -svector::getX(svector::dot3(d, s)),
+                       svector::getX(r3), svector::getY(r3), svector::getZ(r3), svector::getX(svector::dot3(c, s))));
 }
 
 Vector smatrix::determinant(CMatrix m) noexcept
@@ -460,7 +489,7 @@ Matrix smatrix::lookAtLH(CVector eyePosition, CVector focusPosition, CVector upD
   const Vector up = svector::normalize3(svector::subtract(upDirection, eyePosition));
   const Vector right = svector::cross3(forward, up);
 
-  Matrix m(right, up, forward, svector::fill(0.f));
+  Matrix m(right, up, forward, svector::set(0.f, 0.f, 0.f, 1.f));
   return m;
 #endif
 }
@@ -531,8 +560,36 @@ Matrix smatrix::perspectiveFovLH(core::float32 fovAngleY, core::float32 aspectRa
 
 Matrix smatrix::perspectiveFovRH(core::float32 fovAngleY, core::float32 aspectRatio, core::float32 nearZ, core::float32 farZ) noexcept
 {
-  core::assert(false && "!TODO");
-  return Matrix();
+#if defined(_CRUDE_NO_INTRINSICS)
+  core::float32 sinFov = scalar::sin(0.5f * fovAngleY);
+  core::float32 cosFov = scalar::cos(0.5f * fovAngleY);
+
+  core::float32 height = cosFov / sinFov;
+  core::float32 width = height / aspectRatio;
+  core::float32 fRange = farZ / (nearZ - farZ);
+
+  Matrix m;
+  m.m[0][0] = width;
+  m.m[0][1] = 0.0f;
+  m.m[0][2] = 0.0f;
+  m.m[0][3] = 0.0f;
+
+  m.m[1][0] = 0.0f;
+  m.m[1][1] = height;
+  m.m[1][2] = 0.0f;
+  m.m[1][3] = 0.0f;
+
+  m.m[2][0] = 0.0f;
+  m.m[2][1] = 0.0f;
+  m.m[2][2] = fRange;
+  m.m[2][3] = -1.0f;
+
+  m.m[3][0] = 0.0f;
+  m.m[3][1] = 0.0f;
+  m.m[3][2] = fRange * nearZ;
+  m.m[3][3] = 0.0f;
+  return m;
+#endif
 }
 
 Matrix smatrix::perspectiveOffCenterLH(core::float32 viewLeft, core::float32 viewRight, core::float32 viewBottom, core::float32 viewTop, core::float32 nearZ, core::float32 farZ) noexcept
@@ -568,6 +625,20 @@ Matrix smatrix::orthographicOffCenterLH(core::float32 viewLeft, core::float32 vi
 Matrix smatrix::orthographicOffCenterRH(core::float32 viewLeft, core::float32 viewRight, core::float32 viewBottom, core::float32 viewTop, core::float32 nearZ, core::float32 farZ) noexcept
 {
   return Matrix();
+}
+
+Vector svector::transformCoord3(CVector v, CMatrix m) noexcept
+{
+  Vector z = svector::splatZ(v);
+  Vector y = svector::splatY(v);
+  Vector x = svector::splatX(v);
+
+  Vector result = svector::multiplyAdd(z, m.r[2], m.r[3]);
+  result = svector::multiplyAdd(y, m.r[1], result);
+  result = svector::multiplyAdd(x, m.r[0], result);
+
+  Vector w = svector::splatW(result);
+  return svector::divide(result, w);
 }
 
 }

@@ -14,8 +14,8 @@ namespace crude::graphics
 
 struct Vertex
 {
-  math::FLOAT3 pos;
-  math::FLOAT3 color;
+  math::Float3 pos;
+  math::Float3 color;
 
   static const VkVertexInputBindingDescription& getBindingDescription() {
     static VkVertexInputBindingDescription bindingDescription{};
@@ -42,10 +42,10 @@ struct Vertex
 };
 
 constexpr core::array<Vertex, 4u> vertices = {
-    Vertex{math::FLOAT3{-0.5f, -0.5f, 0.0f}, math::FLOAT3{1.0f, 0.0f, 0.0f}},
-    Vertex{math::FLOAT3{0.5f, -0.5f, 0.0f}, math::FLOAT3{0.0f, 1.0f, 0.0f}},
-    Vertex{math::FLOAT3{0.5f, 0.5f, 0.0f}, math::FLOAT3{0.0f, 0.0f, 0.0f}},
-    Vertex{math::FLOAT3{-0.5f, 0.5f, 0.0f}, math::FLOAT3{1.0f, 1.0f, 0.0f}}
+    Vertex{math::Float3{-0.5f, -0.5f, 0.0f}, math::Float3{1.0f, 0.0f, 0.0f}},
+    Vertex{math::Float3{0.5f, -0.5f, 0.0f}, math::Float3{0.0f, 1.0f, 0.0f}},
+    Vertex{math::Float3{0.5f, 0.5f, 0.0f}, math::Float3{0.0f, 0.0f, 1.0f}},
+    Vertex{math::Float3{-0.5f, 0.5f, 0.0f}, math::Float3{1.0f, 1.0f, 0.0f}}
 };
 
 constexpr core::array<core::uint16, 6> indices = {
@@ -54,9 +54,9 @@ constexpr core::array<core::uint16, 6> indices = {
 
 struct Uniform_Buffer_Object
 {
-  math::FLOAT4X4 model;
-  math::FLOAT4X4 view;
-  math::FLOAT4X4 proj;
+  math::Float4x4 model;
+  math::Float4x4 view;
+  math::Float4x4 proj;
 };
 
 
@@ -358,12 +358,15 @@ void Renderer::recordCommandBuffer(core::Shared_Ptr<Command_Buffer> commandBuffe
 void Renderer::updateUniformBuffer(core::uint32 currentImage)
 {
   Uniform_Buffer_Object ubo{};
+
+  const core::float32 aspect = m_swapchain->getExtent().width / (core::float32)m_swapchain->getExtent().height;
+  m_camera.setPosition(0.0, 0.0, -5.0);
+  m_camera.calculateProjectionMatrix(math::CPI4, aspect, 0.1f, 10.0f);
+  m_camera.calculateMatrix();
+
   math::storeFloat4x4(ubo.model, math::smatrix::translation(0.0, 0.0, 0.0));
-  math::storeFloat4x4(ubo.view, math::smatrix::translation(0.0, 0.0, 0.0));
-  math::storeFloat4x4(ubo.proj, math::smatrix::perspectiveFovLH(math::CPI4, m_swapchain->getExtent().width / (core::float32)m_swapchain->getExtent().height, 0.0f, 10.0f));
- /* ubo.model = glm::rotate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-  ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-  ubo.proj = glm::perspective(glm::radians(45.0f), swapChainExtent.width / (float)swapChainExtent.height, 0.1f, 10.0f);*/
+  math::storeFloat4x4(ubo.view, math::smatrix::translation(0.0, 0.0, 5.0));
+  math::storeFloat4x4(ubo.proj, m_camera.getViewToClipMatrix());
   
   auto data = m_uniformBufferMemory[currentImage]->map();
   if (data.hasValue())

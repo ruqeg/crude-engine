@@ -36,10 +36,10 @@ using Vector = float32x4_t;
 using Vector = __vector4;
 #endif
 
+using CVector = const Vector&;
+
 namespace svector
 {
-
-using CVector = const Vector&;
 
 Vector setInt(core::uint32 x, core::uint32 y, core::uint32 z, core::uint32 w) noexcept;
 Vector fillInt(core::uint32 value) noexcept;

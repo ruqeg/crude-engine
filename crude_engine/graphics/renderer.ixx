@@ -34,6 +34,7 @@ export import crude.graphics.swap_chain_image;
 export import crude.graphics.descriptor_pool;
 export import crude.graphics.descriptor_set;
 export import crude.core.filesystem;
+export import crude.scene.camera;
 
 export namespace crude::graphics
 {
@@ -121,6 +122,7 @@ private:
   core::array<core::Shared_Ptr<Semaphore>, cFramesCount>        m_renderFinishedSemaphores;
   core::array<core::Shared_Ptr<Fence>, cFramesCount>            m_inFlightFences;
   core::uint32                                                  m_currentFrame;
+  scene::Camera                                                 m_camera;
 };
 
 }

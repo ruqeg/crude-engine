@@ -3,7 +3,6 @@ module;
 export module crude.math.matrix;
 
 export import crude.math.vector;
-export import crude.math.fuicont;
 
 export namespace crude::math
 {
@@ -47,18 +46,18 @@ struct Matrix
          core::float32 m30, core::float32 m31, core::float32 m32, core::float32 m33) noexcept;
 };
 
-namespace smatrix
-{
-
 using CMatrix = const Matrix&;
 using CVector = const Vector&;
+
+namespace smatrix
+{
 
 bool isIdentity(CMatrix m) noexcept;
 
 Matrix multiply(CMatrix m1, CMatrix m2) noexcept;
 Matrix multiplyTranspose(CMatrix m1, CMatrix m2) noexcept;
 Matrix transpose(CMatrix m) noexcept;
-Matrix inverse(Vector* pDeterminant, CMatrix m) noexcept;
+Matrix inverse(CMatrix m) noexcept;
 Vector determinant(CMatrix m) noexcept;
 
 Matrix identity() noexcept;
@@ -96,6 +95,14 @@ Matrix orthographicLH(core::float32 viewWidth, core::float32 viewHeight, core::f
 Matrix orthographicRH(core::float32 viewWidth, core::float32 viewHeight, core::float32 nearZ, core::float32 farZ) noexcept;
 Matrix orthographicOffCenterLH(core::float32 viewLeft, core::float32 viewRight, core::float32 viewBottom, core::float32 viewTop, core::float32 nearZ, core::float32 farZ) noexcept;
 Matrix orthographicOffCenterRH(core::float32 viewLeft, core::float32 viewRight, core::float32 viewBottom, core::float32 viewTop, core::float32 nearZ, core::float32 farZ) noexcept;
+
+}
+
+// !TODO it looks weird
+namespace svector
+{
+
+Vector transformCoord3(CVector v, CMatrix m) noexcept;
 
 }
 
