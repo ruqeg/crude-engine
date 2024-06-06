@@ -15,8 +15,8 @@ public:
   Camera();
   ~Camera() = default;
 public:
-  void calculateProjectionMatrix(core::float32 fovRadians, core::float32 aspectRatio, core::float32 nearZ, core::float32 farZ);
-  void calculateMatrix();
+  void calculateViewToClipMatrix(core::float32 fovRadians, core::float32 aspectRatio, core::float32 nearZ, core::float32 farZ);
+  void calculateWorldToViewMatrix();
 public:
   void setPosition(const math::Vector& newPosition);
   void setPosition(core::float32 x, core::float32 y, core::float32 z);

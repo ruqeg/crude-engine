@@ -485,11 +485,26 @@ Matrix smatrix::reflect(CVector reflectionPlane) noexcept
 Matrix smatrix::lookAtLH(CVector eyePosition, CVector focusPosition, CVector upDirection) noexcept
 {
 #if defined(_CRUDE_NO_INTRINSICS)
-  const Vector forward = svector::normalize3(svector::subtract(focusPosition, eyePosition));
-  const Vector up = svector::normalize3(svector::subtract(upDirection, eyePosition));
-  const Vector right = svector::cross3(forward, up);
+  Vector eyeDirection = svector::subtract(focusPosition, eyePosition);
+  Vector r2 = svector::normalize3(eyeDirection);
 
-  Matrix m(right, up, forward, svector::set(0.f, 0.f, 0.f, 1.f));
+  Vector r0 = svector::cross3(upDirection, r2);
+  r0 = svector::normalize3(r0);
+
+  Vector r1 = svector::cross3(r2, r0);
+
+  Vector negEyePosition = svector::negate(eyePosition);
+
+  Vector d0 = svector::dot3(r0, negEyePosition);
+  Vector d1 = svector::dot3(r1, negEyePosition);
+  Vector d2 = svector::dot3(r2, negEyePosition);
+
+  Matrix m;
+  m.r[0] = r0;
+  m.r[1] = r1;
+  m.r[2] = r2;
+  m.r[3] = svector::set(svector::getX(d0), svector::getX(d1), svector::getX(d2), 1.0f);
+
   return m;
 #endif
 }

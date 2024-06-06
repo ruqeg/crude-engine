@@ -361,11 +361,11 @@ void Renderer::updateUniformBuffer(core::uint32 currentImage)
 
   const core::float32 aspect = m_swapchain->getExtent().width / (core::float32)m_swapchain->getExtent().height;
   m_camera.setPosition(0.0, 0.0, -5.0);
-  m_camera.calculateProjectionMatrix(math::CPI4, aspect, 0.1f, 10.0f);
-  m_camera.calculateMatrix();
+  m_camera.calculateViewToClipMatrix(math::CPI4, aspect, 0.1f, 10.0f);
+  m_camera.calculateWorldToViewMatrix();
 
   math::storeFloat4x4(ubo.model, math::smatrix::translation(0.0, 0.0, 0.0));
-  math::storeFloat4x4(ubo.view, math::smatrix::translation(0.0, 0.0, 5.0));
+  math::storeFloat4x4(ubo.view, m_camera.getWorldToViewMatrix());
   math::storeFloat4x4(ubo.proj, m_camera.getViewToClipMatrix());
   
   auto data = m_uniformBufferMemory[currentImage]->map();

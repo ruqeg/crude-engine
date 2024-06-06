@@ -11,10 +11,10 @@ Camera::Camera()
   m_positionVector = math::loadFloat3(m_positionFloat3);
   m_rotationFloat3 = math::Float3(0.0f, 0.0f, 0.0f);
   m_rotationVector = math::loadFloat3(m_rotationFloat3);
-  calculateMatrix();
+  calculateWorldToViewMatrix();
 }
 
-void Camera::calculateProjectionMatrix(core::float32 fovRadians, core::float32 aspectRatio, core::float32 nearZ, core::float32 farZ)
+void Camera::calculateViewToClipMatrix(core::float32 fovRadians, core::float32 aspectRatio, core::float32 nearZ, core::float32 farZ)
 {
   m_farZ = farZ;
   m_nearZ = nearZ;
@@ -25,7 +25,7 @@ void Camera::calculateProjectionMatrix(core::float32 fovRadians, core::float32 a
   math::storeFloat4x4(m_clipToViewFloat4x4, m_clipToViewMatrix);
 }
 
-void Camera::calculateMatrix()
+void Camera::calculateWorldToViewMatrix()
 {
   const math::Matrix cameraRotationMatrix = math::smatrix::rotationRollPitchYawFromVector(m_rotationVector);
   const math::Vector cameraDirection = math::svector::transformCoord3(cDefaultCameraForwardVector, cameraRotationMatrix);
