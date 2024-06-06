@@ -5,14 +5,17 @@ module crude.graphics.renderer;
 
 import crude.core.logger;
 import crude.math.fuicont;
+import crude.math.convert;
+import crude.math.matrix;
+import crude.math.constants;
 
 namespace crude::graphics
 {
 
 struct Vertex
 {
-  math::MFLOAT3 pos;
-  math::MFLOAT3 color;
+  math::FLOAT3 pos;
+  math::FLOAT3 color;
 
   static const VkVertexInputBindingDescription& getBindingDescription() {
     static VkVertexInputBindingDescription bindingDescription{};
@@ -39,15 +42,23 @@ struct Vertex
 };
 
 constexpr core::array<Vertex, 4u> vertices = {
-    Vertex{math::MFLOAT3{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}},
-    Vertex{math::MFLOAT3{0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}},
-    Vertex{math::MFLOAT3{0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}},
-    Vertex{math::MFLOAT3{-0.5f, 0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}}
+    Vertex{math::FLOAT3{-0.5f, -0.5f, 0.0f}, math::FLOAT3{1.0f, 0.0f, 0.0f}},
+    Vertex{math::FLOAT3{0.5f, -0.5f, 0.0f}, math::FLOAT3{0.0f, 1.0f, 0.0f}},
+    Vertex{math::FLOAT3{0.5f, 0.5f, 0.0f}, math::FLOAT3{0.0f, 0.0f, 0.0f}},
+    Vertex{math::FLOAT3{-0.5f, 0.5f, 0.0f}, math::FLOAT3{1.0f, 1.0f, 0.0f}}
 };
 
 constexpr core::array<core::uint16, 6> indices = {
     0, 1, 2, 2, 3, 0
 };
+
+struct Uniform_Buffer_Object
+{
+  math::FLOAT4X4 model;
+  math::FLOAT4X4 view;
+  math::FLOAT4X4 proj;
+};
+
 
 constexpr core::array<const char*, 1> deviceEnabledExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
 constexpr core::array<const char*, 1> instanceEnabledLayers = { "VK_LAYER_KHRONOS_validation" };
@@ -61,12 +72,14 @@ Renderer::Renderer(core::Shared_Ptr<system::SDL_Window_Container> windowContaine
   initializeSurface();
   initializeDevice();
   initializeSwapchain();
+  initalizeDescriptorSet();
   initalizeGraphicsPipeline();
   initalizeCommandPool();
   initializeDepthImage();
   initializeSwapchainFramebuffers();
   initializeVertexBuffer();
   initializeIndexBuffer();
+  initializeUniformBuffers();
   initializeCommandBuffers();
   initializeSyncObjects();
 }
@@ -264,15 +277,23 @@ core::Shared_Ptr<Render_Pass> Renderer::initializeRenderPass()
   return renderPass;
 }
 
-core::Shared_Ptr<Descriptor_Set_Layout> Renderer::initalizeDescriptorSetLayout()
+void Renderer::initalizeDescriptorSet()
 {
   core::array<Descriptor_Set_Layout_Binding, 1u> layoutBindings =
   {
-    Descriptor_Set_Layout_Binding(0u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT)
+    Descriptor_Set_Layout_Binding(0u, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1u, VK_SHADER_STAGE_VERTEX_BIT)
   };
 
-  auto descriptorSetLayout = crude::core::makeShared<crude::graphics::Descriptor_Set_Layout>(m_device, layoutBindings);
-  return descriptorSetLayout;
+  core::array<Descriptor_Pool_Size, 1u> poolSizes =
+  {
+    Descriptor_Pool_Size(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, cFramesCount)
+  };
+
+  auto descriptorPool = core::makeShared<Descriptor_Pool>(m_device, poolSizes);
+  auto descriptorSetLayout = core::makeShared<Descriptor_Set_Layout>(m_device, layoutBindings);
+
+  for (auto& m_descriptorSet : m_descriptorSets)
+    m_descriptorSet = core::makeShared<Descriptor_Set>(m_device, descriptorPool, descriptorSetLayout);
 }
 
 void Renderer::recordCommandBuffer(core::Shared_Ptr<Command_Buffer> commandBuffer, core::uint32 imageIndex)
@@ -310,6 +331,20 @@ void Renderer::recordCommandBuffer(core::Shared_Ptr<Command_Buffer> commandBuffe
   commandBuffer->setScissor(core::span(&scissor, 1u));
   commandBuffer->bindVertexBuffer(0u, m_vertexBuffer);
   commandBuffer->bindIndexBuffer(m_indexBuffer, VK_INDEX_TYPE_UINT16);
+
+
+  updateUniformBuffer(m_currentFrame);
+  for (core::uint32 i = 0; i < cFramesCount; i++)
+  {
+    const Descriptor_Buffer_Info bufferInfo(m_uniformBuffer[i], sizeof(Uniform_Buffer_Object));
+    const core::array<Write_Descriptor_Set, 1> descriptorWrites = 
+    {
+      Write_Descriptor_Set(m_descriptorSets[i], 0u, 0u, 1u, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, {}, bufferInfo)
+    };
+    m_device->updateDescriptorSets(descriptorWrites, {});
+  }
+  commandBuffer->bindDescriptorSets(m_graphicsPipeline, core::span(&m_descriptorSets[m_currentFrame], 1u), {});
+    
   commandBuffer->drawIndexed(indices.size(), 1, 0, 0);
 
   commandBuffer->endRenderPass();
@@ -317,6 +352,23 @@ void Renderer::recordCommandBuffer(core::Shared_Ptr<Command_Buffer> commandBuffe
   if (!commandBuffer->end())
   {
     core::logError(core::Debug::Channel::Graphics, "Failed to record command buffer!");
+  }
+}
+
+void Renderer::updateUniformBuffer(core::uint32 currentImage)
+{
+  Uniform_Buffer_Object ubo{};
+  math::storeFloat4x4(ubo.model, math::smatrix::translation(0.0, 0.0, 0.0));
+  math::storeFloat4x4(ubo.view, math::smatrix::translation(0.0, 0.0, 0.0));
+  math::storeFloat4x4(ubo.proj, math::smatrix::perspectiveFovLH(math::CPI4, m_swapchain->getExtent().width / (core::float32)m_swapchain->getExtent().height, 0.0f, 10.0f));
+ /* ubo.model = glm::rotate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+  ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+  ubo.proj = glm::perspective(glm::radians(45.0f), swapChainExtent.width / (float)swapChainExtent.height, 0.1f, 10.0f);*/
+  
+  auto data = m_uniformBufferMemory[currentImage]->map();
+  if (data.hasValue())
+  {
+    std::memcpy(data.value(), &ubo, sizeof(ubo));
   }
 }
 
@@ -360,8 +412,8 @@ void Renderer::initalizeGraphicsPipeline()
 
   core::array<VkDynamicState, 2u> dynamicStates = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
   auto dynamicState = Dynamic_State_Create_Info(dynamicStates);
+  core::vector<core::Shared_Ptr<const Descriptor_Set_Layout>> descriptorSetLayouts = { m_descriptorSets[0]->getSetLayout() };
 
-  core::vector<core::Shared_Ptr<Descriptor_Set_Layout>> descriptorSetLayouts = { };
   auto m_pipelineLayout = core::makeShared<Pipeline_Layout>(m_device, descriptorSetLayouts);
 
   m_graphicsPipeline = core::makeShared<Pipeline>(
@@ -386,7 +438,7 @@ void Renderer::initalizeCommandPool()
 {
   const Queue_Family_Indices queueIndices = findDeviceQueueFamilies(m_device->getPhysicalDevice());
   m_graphicsCommandPool = core::makeShared<Command_Pool>(m_device, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, queueIndices.graphicsFamily.value());
-  m_transferCommandPool = core::makeShared<Command_Pool>(m_device, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, queueIndices.transferFamily.value());
+  m_transferCommandPool = m_graphicsCommandPool; // = core::makeShared<Command_Pool>(m_device, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, queueIndices.transferFamily.value());
 }
 
 void Renderer::initializeDepthImage()
@@ -445,7 +497,7 @@ void Renderer::initializeVertexBuffer()
   VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
 
   const Queue_Family_Indices queueIndices = findDeviceQueueFamilies(m_device->getPhysicalDevice());
-  core::array<core::uint32, 2u> queueFamilyIndices = { queueIndices.graphicsFamily.value(), queueIndices.transferFamily.value() };
+  core::array<core::uint32, 2u> queueFamilyIndices = { queueIndices.graphicsFamily.value() };
 
   auto stagingBuffer = core::makeShared<Buffer>(m_device, bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, queueFamilyIndices);
   auto memRequirements = stagingBuffer->getMemoryRequirements();
@@ -476,7 +528,7 @@ void Renderer::initializeIndexBuffer()
   VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
 
   const Queue_Family_Indices queueIndices = findDeviceQueueFamilies(m_device->getPhysicalDevice());
-  core::array<core::uint32, 2u> queueFamilyIndices = { queueIndices.graphicsFamily.value(), queueIndices.transferFamily.value() };
+  core::array<core::uint32, 2u> queueFamilyIndices = { queueIndices.graphicsFamily.value() };
 
   auto stagingBuffer = core::makeShared<Buffer>(m_device, bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, queueFamilyIndices);
   auto memRequirements = stagingBuffer->getMemoryRequirements();
@@ -500,6 +552,40 @@ void Renderer::initializeIndexBuffer()
   commandBuffer->end();
   m_transferQueue->sumbit(core::span(&commandBuffer, 1u));
   m_transferQueue->waitIdle();
+}
+
+void Renderer::initializeUniformBuffers()
+{
+  VkDeviceSize bufferSize = sizeof(Uniform_Buffer_Object);
+
+  const Queue_Family_Indices queueIndices = findDeviceQueueFamilies(m_device->getPhysicalDevice());
+  core::array<core::uint32, 2u> queueFamilyIndices = { queueIndices.graphicsFamily.value() };
+
+  auto stagingBuffer = core::makeShared<Buffer>(m_device, bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, queueFamilyIndices);
+  auto memRequirements = stagingBuffer->getMemoryRequirements();
+  auto staggingBufferMemory = core::makeShared<Device_Memory>(m_device, memRequirements.size, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+  staggingBufferMemory->bind(*stagingBuffer);
+  auto data = staggingBufferMemory->map();
+  if (data.hasValue())
+  {
+    std::memcpy(data.value(), indices.data(), bufferSize);
+    staggingBufferMemory->unmap();
+  }
+
+  for (core::uint32 i = 0; i < cFramesCount; ++i)
+  {
+    m_uniformBuffer[i] = core::makeShared<Buffer>(m_device, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, queueFamilyIndices);
+    memRequirements = m_uniformBuffer[i]->getMemoryRequirements();
+    m_uniformBufferMemory[i] = core::makeShared<Device_Memory>(m_device, memRequirements.size, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+    m_uniformBufferMemory[i]->bind(*m_uniformBuffer[i]);
+
+    auto commandBuffer = core::makeShared<Command_Buffer>(m_device, m_transferCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+    commandBuffer->begin();
+    commandBuffer->copyBuffer(stagingBuffer, m_uniformBuffer[i], bufferSize);
+    commandBuffer->end();
+    m_transferQueue->sumbit(core::span(&commandBuffer, 1u));
+    m_transferQueue->waitIdle();
+  }
 }
 
 void Renderer::initializeCommandBuffers()
@@ -548,8 +634,8 @@ Renderer::Queue_Family_Indices Renderer::findDeviceQueueFamilies(core::Shared_Pt
   {
     if (queueProperties[i].queueFlags & VK_QUEUE_GRAPHICS_BIT)
       indices.graphicsFamily = i;
-    else if (queueProperties[i].queueFlags & VK_QUEUE_TRANSFER_BIT)
-      indices.transferFamily = i;
+    //else if (queueProperties[i].queueFlags & VK_QUEUE_TRANSFER_BIT)
+    //  indices.transferFamily = i;
   
     if (physicalDevice->getSupportSurface(m_surface, i))
       indices.presentFamily = i;
@@ -587,18 +673,18 @@ void Renderer::initializeLogicDevice(core::Shared_Ptr<Physical_Device> physicalD
 
   float queuePriorities[] = { 1.f };
 
-  core::array<Device_Queue_Create_Info, 3> deviceQueueCreateInfos =
+  core::array<Device_Queue_Create_Info, 2> deviceQueueCreateInfos =
   {
     Device_Queue_Create_Info(queueIndices.graphicsFamily.value(), queuePriorities),
     Device_Queue_Create_Info(queueIndices.presentFamily.value(), queuePriorities),
-    Device_Queue_Create_Info(queueIndices.transferFamily.value(), queuePriorities)
+    //Device_Queue_Create_Info(queueIndices.transferFamily.value(), queuePriorities)
   };
 
   m_device = core::makeShared<Device>(physicalDevice, deviceQueueCreateInfos, deviceFeatures, deviceEnabledExtensions, instanceEnabledLayers);
 
   m_graphicsQueue = m_device->getQueue(queueIndices.graphicsFamily.value(), 0u);
   m_presentQueue = m_device->getQueue(queueIndices.presentFamily.value(), 0u);
-  m_transferQueue = m_device->getQueue(queueIndices.transferFamily.value(), 0u);
+  m_transferQueue = m_graphicsQueue; // m_device->getQueue(queueIndices.transferFamily.value(), 0u);
 }
 
 VkSurfaceFormatKHR Renderer::chooseSwapSurfaceFormat(const crude::core::vector<VkSurfaceFormatKHR>& availableFormats)

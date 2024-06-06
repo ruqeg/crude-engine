@@ -6,8 +6,8 @@ namespace crude::graphics
 {
 
 Descriptor_Buffer_Info::Descriptor_Buffer_Info(core::Shared_Ptr<Buffer>  buffer,
-                                               VkDeviceSize              offset,
-                                               VkDeviceSize              range)
+                                               VkDeviceSize              range,
+                                               VkDeviceSize              offset)
   :
   m_buffer(buffer)
 {

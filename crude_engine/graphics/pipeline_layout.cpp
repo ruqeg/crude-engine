@@ -11,14 +11,16 @@ import crude.core.algorithms;
 namespace crude::graphics
 {
 
-Pipeline_Layout::Pipeline_Layout(core::Shared_Ptr<const Device>                              device,
-                                 const core::span<core::Shared_Ptr<Descriptor_Set_Layout>>&  descriptorSetLayouts,
-                                 const core::span<VkPushConstantRange>&                      pushConstantRanges)
+Pipeline_Layout::Pipeline_Layout(core::Shared_Ptr<const Device>                                      device,
+                                 const core::vector<core::Shared_Ptr<const Descriptor_Set_Layout>>&  descriptorSetLayouts,
+                                 const core::vector<VkPushConstantRange>&                            pushConstantRanges)
   :
-  m_device(device)
+  m_device(device),
+  m_setLayouts(descriptorSetLayouts),
+  m_pushConstantRanges(pushConstantRanges)
 {
-  core::vector<VkDescriptorSetLayout> vkDescriptorSetLayoutHandles(descriptorSetLayouts.size());
-  core::Algorithms::copyc(descriptorSetLayouts.begin(), descriptorSetLayouts.end(), vkDescriptorSetLayoutHandles.begin(), [](auto& src, auto& dst) -> void {
+  core::vector<VkDescriptorSetLayout> vkDescriptorSetLayoutHandles(m_setLayouts.size());
+  core::Algorithms::copyc(m_setLayouts.begin(), m_setLayouts.end(), vkDescriptorSetLayoutHandles.begin(), [](auto& src, auto& dst) -> void {
     *dst = (*src)->getHandle();
   });
 
@@ -29,8 +31,8 @@ Pipeline_Layout::Pipeline_Layout(core::Shared_Ptr<const Device>                 
 
   vkCreateInfo.setLayoutCount          = vkDescriptorSetLayoutHandles.size();
   vkCreateInfo.pSetLayouts             = vkDescriptorSetLayoutHandles.data();
-  vkCreateInfo.pushConstantRangeCount  = static_cast<core::uint32>(pushConstantRanges.size());
-  vkCreateInfo.pPushConstantRanges     = pushConstantRanges.data();
+  vkCreateInfo.pushConstantRangeCount  = static_cast<core::uint32>(m_pushConstantRanges.size());
+  vkCreateInfo.pPushConstantRanges     = m_pushConstantRanges.data();
 
   VkResult result = vkCreatePipelineLayout(m_device->getHandle(), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
   vulkanHandleResult(result, "failed to create pipeline layout");

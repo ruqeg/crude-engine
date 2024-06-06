@@ -24,14 +24,14 @@ Matrix::Matrix(core::float32 m00, core::float32 m01, core::float32 m02, core::fl
 #endif
 }
 
-bool SysMatrix::isIdentity(CMatrix m) noexcept
+bool smatrix::isIdentity(CMatrix m) noexcept
 {
 #if defined(_CRUDE_NO_INTRINSICS)
   return (m.m[0][0] == 1) && (m.m[1][1] == 1) && (m.m[2][2] == 1) && (m.m[3][3] == 1);
 #endif
 }
 
-Matrix SysMatrix::multiply(CMatrix m1, CMatrix m2) noexcept
+Matrix smatrix::multiply(CMatrix m1, CMatrix m2) noexcept
 {
 #if defined(_CRUDE_NO_INTRINSICS)
   Matrix mResult;
@@ -77,7 +77,7 @@ Matrix SysMatrix::multiply(CMatrix m1, CMatrix m2) noexcept
 #endif
 }
 
-Matrix SysMatrix::multiplyTranspose(CMatrix m1, CMatrix m2) noexcept
+Matrix smatrix::multiplyTranspose(CMatrix m1, CMatrix m2) noexcept
 {
 #if defined(_CRUDE_NO_INTRINSICS)
 
@@ -123,37 +123,37 @@ Matrix SysMatrix::multiplyTranspose(CMatrix m1, CMatrix m2) noexcept
 #endif
 }
 
-Matrix SysMatrix::transpose(CMatrix m) noexcept
+Matrix smatrix::transpose(CMatrix m) noexcept
 {
   core::assert(false && "!TODO");
   return Matrix();
 }
 
-Matrix SysMatrix::inverse(Vector* pDeterminant, CMatrix m) noexcept
+Matrix smatrix::inverse(Vector* pDeterminant, CMatrix m) noexcept
 {
   core::assert(false && "!TODO");
   return Matrix();
 }
 
-Vector SysMatrix::determinant(CMatrix m) noexcept
+Vector smatrix::determinant(CMatrix m) noexcept
 {
   core::assert(false && "!TODO");
   return Vector();
 }
 
-Matrix SysMatrix::identity() noexcept
+Matrix smatrix::identity() noexcept
 {
 #if defined(_CRUDE_NO_INTRINSICS)
   Matrix m;
-  m.r[0] = SysVector::set(1.f, 0.f, 0.f, 0.f);
-  m.r[1] = SysVector::set(0.f, 1.f, 0.f, 0.f);
-  m.r[2] = SysVector::set(0.f, 0.f, 1.f, 0.f);
-  m.r[3] = SysVector::set(0.f, 0.f, 0.f, 1.f);
+  m.r[0] = svector::set(1.f, 0.f, 0.f, 0.f);
+  m.r[1] = svector::set(0.f, 1.f, 0.f, 0.f);
+  m.r[2] = svector::set(0.f, 0.f, 1.f, 0.f);
+  m.r[3] = svector::set(0.f, 0.f, 0.f, 1.f);
   return m;
 #endif
 }
 
-Matrix SysMatrix::set(core::float32 m00, core::float32 m01, core::float32 m02, core::float32 m03, core::float32 m10, core::float32 m11, core::float32 m12, core::float32 m13, core::float32 m20, core::float32 m21, core::float32 m22, core::float32 m23, core::float32 m30, core::float32 m31, core::float32 m32, core::float32 m33) noexcept
+Matrix smatrix::set(core::float32 m00, core::float32 m01, core::float32 m02, core::float32 m03, core::float32 m10, core::float32 m11, core::float32 m12, core::float32 m13, core::float32 m20, core::float32 m21, core::float32 m22, core::float32 m23, core::float32 m30, core::float32 m31, core::float32 m32, core::float32 m33) noexcept
 {
 #if defined(_CRUDE_NO_INTRINSICS)
   Matrix m;
@@ -165,7 +165,7 @@ Matrix SysMatrix::set(core::float32 m00, core::float32 m01, core::float32 m02, c
 #endif
 }
 
-Matrix SysMatrix::translation(core::float32 offsetX, core::float32 offsetY, core::float32 offsetZ) noexcept
+Matrix smatrix::translation(core::float32 offsetX, core::float32 offsetY, core::float32 offsetZ) noexcept
 {
 #if defined(_CRUDE_NO_INTRINSICS)
   Matrix m;
@@ -192,7 +192,7 @@ Matrix SysMatrix::translation(core::float32 offsetX, core::float32 offsetY, core
 #endif
 }
 
-Matrix SysMatrix::translationFromVector(CVector offset) noexcept
+Matrix smatrix::translationFromVector(CVector offset) noexcept
 {
 #if defined(_CRUDE_NO_INTRINSICS)
   Matrix m;
@@ -219,7 +219,7 @@ Matrix SysMatrix::translationFromVector(CVector offset) noexcept
 #endif
 }
 
-Matrix SysMatrix::scaling(core::float32 scaleX, core::float32 scaleY, core::float32 scaleZ) noexcept
+Matrix smatrix::scaling(core::float32 scaleX, core::float32 scaleY, core::float32 scaleZ) noexcept
 {
 #if defined(_CRUDE_NO_INTRINSICS)
   Matrix m;
@@ -246,7 +246,7 @@ Matrix SysMatrix::scaling(core::float32 scaleX, core::float32 scaleY, core::floa
 #endif
 }
 
-Matrix SysMatrix::scalingFromVector(CVector scale) noexcept
+Matrix smatrix::scalingFromVector(CVector scale) noexcept
 {
 #if defined(_CRUDE_NO_INTRINSICS)
   Matrix m;
@@ -273,11 +273,11 @@ Matrix SysMatrix::scalingFromVector(CVector scale) noexcept
 #endif
 }
 
-Matrix SysMatrix::rotationX(core::float32 angle) noexcept
+Matrix smatrix::rotationX(core::float32 angle) noexcept
 {
 #if defined(_CRUDE_NO_INTRINSICS)
-  core::float32 fSinAngle = Scalar::sin(angle);
-  core::float32 fCosAngle = Scalar::cos(angle);
+  core::float32 fSinAngle = scalar::sin(angle);
+  core::float32 fCosAngle = scalar::cos(angle);
   
   Matrix m;
   m.m[0][0] = 1.0f;
@@ -303,11 +303,11 @@ Matrix SysMatrix::rotationX(core::float32 angle) noexcept
 #endif
 }
 
-Matrix SysMatrix::rotationY(core::float32 angle) noexcept
+Matrix smatrix::rotationY(core::float32 angle) noexcept
 {
 #if defined(_CRUDE_NO_INTRINSICS)
-  core::float32 fSinAngle = Scalar::sin(angle);
-  core::float32 fCosAngle = Scalar::cos(angle);
+  core::float32 fSinAngle = scalar::sin(angle);
+  core::float32 fCosAngle = scalar::cos(angle);
 
   Matrix m;
   m.m[0][0] = fCosAngle;
@@ -333,11 +333,11 @@ Matrix SysMatrix::rotationY(core::float32 angle) noexcept
 #endif
 }
 
-Matrix SysMatrix::rotationZ(core::float32 angle) noexcept
+Matrix smatrix::rotationZ(core::float32 angle) noexcept
 {
 #if defined(_CRUDE_NO_INTRINSICS)
-  core::float32 fSinAngle = Scalar::sin(angle);
-  core::float32 fCosAngle = Scalar::cos(angle);
+  core::float32 fSinAngle = scalar::sin(angle);
+  core::float32 fCosAngle = scalar::cos(angle);
 
   Matrix m;
   m.m[0][0] = fCosAngle;
@@ -363,17 +363,17 @@ Matrix SysMatrix::rotationZ(core::float32 angle) noexcept
 #endif
 }
 
-Matrix SysMatrix::rotationRollPitchYaw(core::float32 pitch, core::float32 yaw, core::float32 roll) noexcept
+Matrix smatrix::rotationRollPitchYaw(core::float32 pitch, core::float32 yaw, core::float32 roll) noexcept
 {
 #if defined(_CRUDE_NO_INTRINSICS)
-  core::float32 cp = Scalar::cos(pitch);
-  core::float32 sp = Scalar::sin(pitch);
+  core::float32 cp = scalar::cos(pitch);
+  core::float32 sp = scalar::sin(pitch);
 
-  core::float32 cy = Scalar::cos(yaw);
-  core::float32 sy = Scalar::sin(yaw);
+  core::float32 cy = scalar::cos(yaw);
+  core::float32 sy = scalar::sin(yaw);
 
-  core::float32 cr = Scalar::cos(roll);
-  core::float32 sr = Scalar::sin(roll);
+  core::float32 cr = scalar::cos(roll);
+  core::float32 sr = scalar::sin(roll);
 
   Matrix m;
   m.m[0][0] = cr * cy + sr * sp * sy;
@@ -399,17 +399,17 @@ Matrix SysMatrix::rotationRollPitchYaw(core::float32 pitch, core::float32 yaw, c
 #endif
 }
 
-Matrix SysMatrix::rotationRollPitchYawFromVector(CVector angles) noexcept
+Matrix smatrix::rotationRollPitchYawFromVector(CVector angles) noexcept
 {
 #if defined(_CRUDE_NO_INTRINSICS)
-  core::float32 cp = Scalar::cos(angles.vector4_f32[0]);
-  core::float32 sp = Scalar::sin(angles.vector4_f32[0]);
+  core::float32 cp = scalar::cos(angles.vector4_f32[0]);
+  core::float32 sp = scalar::sin(angles.vector4_f32[0]);
 
-  core::float32 cy = Scalar::cos(angles.vector4_f32[1]);
-  core::float32 sy = Scalar::sin(angles.vector4_f32[1]);
+  core::float32 cy = scalar::cos(angles.vector4_f32[1]);
+  core::float32 sy = scalar::sin(angles.vector4_f32[1]);
 
-  core::float32 cr = Scalar::cos(angles.vector4_f32[2]);
-  core::float32 sr = Scalar::sin(angles.vector4_f32[2]);
+  core::float32 cr = scalar::cos(angles.vector4_f32[2]);
+  core::float32 sr = scalar::sin(angles.vector4_f32[2]);
 
   Matrix m;
   m.m[0][0] = cr * cy + sr * sp * sy;
@@ -435,103 +435,137 @@ Matrix SysMatrix::rotationRollPitchYawFromVector(CVector angles) noexcept
 #endif
 }
 
-Matrix SysMatrix::rotationNormal(CVector normalAxis, core::float32 angle) noexcept
+Matrix smatrix::rotationNormal(CVector normalAxis, core::float32 angle) noexcept
 {
   core::assert(false && "!TODO");
   return Matrix();
 }
 
-Matrix SysMatrix::rotationAxis(CVector axis, core::float32 angle) noexcept
+Matrix smatrix::rotationAxis(CVector axis, core::float32 angle) noexcept
 {
   core::assert(false && "!TODO");
   return Matrix();
 }
 
-Matrix SysMatrix::reflect(CVector reflectionPlane) noexcept
+Matrix smatrix::reflect(CVector reflectionPlane) noexcept
 {
   core::assert(false && "!TODO");
   return Matrix();
 }
 
-Matrix SysMatrix::lookAtLH(CVector eyePosition, CVector focusPosition, CVector upDirection) noexcept
+Matrix smatrix::lookAtLH(CVector eyePosition, CVector focusPosition, CVector upDirection) noexcept
+{
+#if defined(_CRUDE_NO_INTRINSICS)
+  const Vector forward = svector::normalize3(svector::subtract(focusPosition, eyePosition));
+  const Vector up = svector::normalize3(svector::subtract(upDirection, eyePosition));
+  const Vector right = svector::cross3(forward, up);
+
+  Matrix m(right, up, forward, svector::fill(0.f));
+  return m;
+#endif
+}
+
+Matrix smatrix::lookAtRH(CVector eyePosition, CVector focusPosition, CVector upDirection) noexcept
 {
   core::assert(false && "!TODO");
   return Matrix();
 }
 
-Matrix SysMatrix::lookAtRH(CVector eyePosition, CVector focusPosition, CVector upDirection) noexcept
+Matrix smatrix::lookToLH(CVector eyePosition, CVector eyeDirection, CVector upDirection) noexcept
 {
   core::assert(false && "!TODO");
   return Matrix();
 }
 
-Matrix SysMatrix::lookToLH(CVector eyePosition, CVector eyeDirection, CVector upDirection) noexcept
+Matrix smatrix::lookToRH(CVector eyePosition, CVector eyeDirection, CVector upDirection) noexcept
 {
   core::assert(false && "!TODO");
   return Matrix();
 }
 
-Matrix SysMatrix::lookToRH(CVector eyePosition, CVector eyeDirection, CVector upDirection) noexcept
+Matrix smatrix::perspectiveLH(core::float32 viewWidth, core::float32 viewHeight, core::float32 nearZ, core::float32 farZ) noexcept
 {
   core::assert(false && "!TODO");
   return Matrix();
 }
 
-Matrix SysMatrix::perspectiveLH(core::float32 viewWidth, core::float32 viewHeight, core::float32 nearZ, core::float32 farZ) noexcept
+Matrix smatrix::perspectiveRH(core::float32 viewWidth, core::float32 viewHeight, core::float32 nearZ, core::float32 farZ) noexcept
 {
   core::assert(false && "!TODO");
   return Matrix();
 }
 
-Matrix SysMatrix::perspectiveRH(core::float32 viewWidth, core::float32 viewHeight, core::float32 nearZ, core::float32 farZ) noexcept
+Matrix smatrix::perspectiveFovLH(core::float32 fovAngleY, core::float32 aspectRatio, core::float32 nearZ, core::float32 farZ) noexcept
+{
+#if defined(_CRUDE_NO_INTRINSICS)
+  core::float32 sinFov = scalar::sin(0.5f * fovAngleY);
+  core::float32 cosFov = scalar::cos(0.5f * fovAngleY);
+
+  core::float32 height = cosFov / sinFov;
+  core::float32 width = height / aspectRatio;
+  core::float32 fRange = farZ / (farZ - nearZ);
+
+  Matrix m;
+  m.m[0][0] = width;
+  m.m[0][1] = 0.0f;
+  m.m[0][2] = 0.0f;
+  m.m[0][3] = 0.0f;
+
+  m.m[1][0] = 0.0f;
+  m.m[1][1] = height;
+  m.m[1][2] = 0.0f;
+  m.m[1][3] = 0.0f;
+
+  m.m[2][0] = 0.0f;
+  m.m[2][1] = 0.0f;
+  m.m[2][2] = fRange;
+  m.m[2][3] = 1.0f;
+
+  m.m[3][0] = 0.0f;
+  m.m[3][1] = 0.0f;
+  m.m[3][2] = -fRange * nearZ;
+  m.m[3][3] = 0.0f;
+  return m;
+#endif
+}
+
+Matrix smatrix::perspectiveFovRH(core::float32 fovAngleY, core::float32 aspectRatio, core::float32 nearZ, core::float32 farZ) noexcept
 {
   core::assert(false && "!TODO");
   return Matrix();
 }
 
-Matrix SysMatrix::perspectiveFovLH(core::float32 fovAngleY, core::float32 aspectRatio, core::float32 nearZ, core::float32 farZ) noexcept
+Matrix smatrix::perspectiveOffCenterLH(core::float32 viewLeft, core::float32 viewRight, core::float32 viewBottom, core::float32 viewTop, core::float32 nearZ, core::float32 farZ) noexcept
 {
   core::assert(false && "!TODO");
   return Matrix();
 }
 
-Matrix SysMatrix::perspectiveFovRH(core::float32 fovAngleY, core::float32 aspectRatio, core::float32 nearZ, core::float32 farZ) noexcept
+Matrix smatrix::perspectiveOffCenterRH(core::float32 viewLeft, core::float32 viewRight, core::float32 viewBottom, core::float32 viewTop, core::float32 nearZ, core::float32 farZ) noexcept
 {
   core::assert(false && "!TODO");
   return Matrix();
 }
 
-Matrix SysMatrix::perspectiveOffCenterLH(core::float32 viewLeft, core::float32 viewRight, core::float32 viewBottom, core::float32 viewTop, core::float32 nearZ, core::float32 farZ) noexcept
+Matrix smatrix::orthographicLH(core::float32 viewWidth, core::float32 viewHeight, core::float32 nearZ, core::float32 farZ) noexcept
 {
   core::assert(false && "!TODO");
   return Matrix();
 }
 
-Matrix SysMatrix::perspectiveOffCenterRH(core::float32 viewLeft, core::float32 viewRight, core::float32 viewBottom, core::float32 viewTop, core::float32 nearZ, core::float32 farZ) noexcept
+Matrix smatrix::orthographicRH(core::float32 viewWidth, core::float32 viewHeight, core::float32 nearZ, core::float32 farZ) noexcept
 {
   core::assert(false && "!TODO");
   return Matrix();
 }
 
-Matrix SysMatrix::orthographicLH(core::float32 viewWidth, core::float32 viewHeight, core::float32 nearZ, core::float32 farZ) noexcept
+Matrix smatrix::orthographicOffCenterLH(core::float32 viewLeft, core::float32 viewRight, core::float32 viewBottom, core::float32 viewTop, core::float32 nearZ, core::float32 farZ) noexcept
 {
   core::assert(false && "!TODO");
   return Matrix();
 }
 
-Matrix SysMatrix::orthographicRH(core::float32 viewWidth, core::float32 viewHeight, core::float32 nearZ, core::float32 farZ) noexcept
-{
-  core::assert(false && "!TODO");
-  return Matrix();
-}
-
-Matrix SysMatrix::orthographicOffCenterLH(core::float32 viewLeft, core::float32 viewRight, core::float32 viewBottom, core::float32 viewTop, core::float32 nearZ, core::float32 farZ) noexcept
-{
-  core::assert(false && "!TODO");
-  return Matrix();
-}
-
-Matrix SysMatrix::orthographicOffCenterRH(core::float32 viewLeft, core::float32 viewRight, core::float32 viewBottom, core::float32 viewTop, core::float32 nearZ, core::float32 farZ) noexcept
+Matrix smatrix::orthographicOffCenterRH(core::float32 viewLeft, core::float32 viewRight, core::float32 viewBottom, core::float32 viewTop, core::float32 nearZ, core::float32 farZ) noexcept
 {
   return Matrix();
 }

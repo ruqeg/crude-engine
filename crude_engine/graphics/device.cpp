@@ -65,8 +65,8 @@ core::Shared_Ptr<Queue> Device::getQueue(core::uint32 queueFamilyIndex, core::ui
   return queue;
 }
 
-void Device::updateDescriptorSets(const core::span<Write_Descriptor_Set>&  descriptorWrites,
-                                  const core::span<VkCopyDescriptorSet>&   descriptorCopies)
+void Device::updateDescriptorSets(const core::span<const Write_Descriptor_Set>&  descriptorWrites,
+                                  const core::span<const VkCopyDescriptorSet>&   descriptorCopies)
 {
   core::vector<VkWriteDescriptorSet> vkDescriptorWrites(descriptorWrites.size());
 

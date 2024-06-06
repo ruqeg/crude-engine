@@ -31,6 +31,8 @@ export import crude.graphics.buffer;
 export import crude.graphics.device_memory;
 export import crude.graphics.framebuffer;
 export import crude.graphics.swap_chain_image;
+export import crude.graphics.descriptor_pool;
+export import crude.graphics.descriptor_set;
 export import crude.core.filesystem;
 
 export namespace crude::graphics
@@ -48,7 +50,7 @@ private:
 
     bool isComplete() const
     {
-      return graphicsFamily.hasValue() && presentFamily.hasValue() && transferFamily.hasValue();
+      return graphicsFamily.hasValue() && presentFamily.hasValue(); //&& transferFamily.hasValue();
     }
   };
 public:
@@ -61,12 +63,14 @@ private:
   void initializeSurface();
   void initializeDevice();
   void initializeSwapchain();
+  void initalizeDescriptorSet();
   void initalizeGraphicsPipeline();
   void initalizeCommandPool();
   void initializeDepthImage();
   void initializeSwapchainFramebuffers();
   void initializeVertexBuffer();
   void initializeIndexBuffer();
+  void initializeUniformBuffers();
   void initializeCommandBuffers();
   void initializeSyncObjects();
 private:
@@ -82,34 +86,36 @@ private:
   VkFormat findSupportedFormat(const core::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
   core::vector<char> readFile(const char* filename);
   core::Shared_Ptr<Render_Pass> initializeRenderPass();
-  core::Shared_Ptr<Descriptor_Set_Layout> initalizeDescriptorSetLayout();
   void recordCommandBuffer(core::Shared_Ptr<Command_Buffer> commandBuffer, core::uint32 imageIndex);
+  void updateUniformBuffer(core::uint32 currentImage);
 private:
   static constexpr core::uint32 cFramesCount = 2u;
 private:
-  core::Shared_Ptr<Instance>                       m_instance;
-  core::Shared_Ptr<Device>                         m_device;
-  core::Shared_Ptr<Queue>                          m_graphicsQueue;
-  core::Shared_Ptr<Queue>                          m_presentQueue;
-  core::Shared_Ptr<Queue>                          m_transferQueue;
-  core::Shared_Ptr<Surface>                        m_surface;
-  core::Shared_Ptr<Swap_Chain>                     m_swapchain; 
-  core::vector<core::Shared_Ptr<Swap_Chain_Image>> m_swapchainImages;
-  core::vector<core::Shared_Ptr<Image_View>>       m_swapchainImagesViews;
-  core::vector<core::Shared_Ptr<Framebuffer>>      m_swapchainFramebuffers;
-  core::Shared_Ptr<Debug_Utils_Messenger>          m_debugUtilsMessenger;
-  core::Shared_Ptr<system::SDL_Window_Container>   m_windowContainer;
-  core::Shared_Ptr<Pipeline>                       m_graphicsPipeline;
-  core::Shared_Ptr<Command_Pool>                   m_graphicsCommandPool;
-  core::Shared_Ptr<Command_Pool>                   m_transferCommandPool;
-  core::Shared_Ptr<Device_Memory>                  m_depthImageDeviceMemory;
-  core::Shared_Ptr<Image>                          m_depthImage;
-  core::Shared_Ptr<Image_View>                     m_depthImageView;
-  core::Shared_Ptr<Buffer>                         m_vertexBuffer;
-  core::Shared_Ptr<Device_Memory>                  m_vertexBufferMemory;
-  core::Shared_Ptr<Buffer>                         m_indexBuffer;
-  core::Shared_Ptr<Device_Memory>                  m_indexBufferMemory;
-
+  core::Shared_Ptr<Instance>                            m_instance;
+  core::Shared_Ptr<Device>                              m_device;
+  core::Shared_Ptr<Queue>                               m_graphicsQueue;
+  core::Shared_Ptr<Queue>                               m_presentQueue;
+  core::Shared_Ptr<Queue>                               m_transferQueue;
+  core::Shared_Ptr<Surface>                             m_surface;
+  core::Shared_Ptr<Swap_Chain>                          m_swapchain; 
+  core::vector<core::Shared_Ptr<Swap_Chain_Image>>      m_swapchainImages;
+  core::vector<core::Shared_Ptr<Image_View>>            m_swapchainImagesViews;
+  core::vector<core::Shared_Ptr<Framebuffer>>           m_swapchainFramebuffers;
+  core::Shared_Ptr<Debug_Utils_Messenger>               m_debugUtilsMessenger;
+  core::Shared_Ptr<system::SDL_Window_Container>        m_windowContainer;
+  core::Shared_Ptr<Pipeline>                            m_graphicsPipeline;
+  core::Shared_Ptr<Command_Pool>                        m_graphicsCommandPool;
+  core::Shared_Ptr<Command_Pool>                        m_transferCommandPool;
+  core::Shared_Ptr<Device_Memory>                       m_depthImageDeviceMemory;
+  core::Shared_Ptr<Image>                               m_depthImage;
+  core::Shared_Ptr<Image_View>                          m_depthImageView;
+  core::Shared_Ptr<Buffer>                              m_vertexBuffer;
+  core::Shared_Ptr<Device_Memory>                       m_vertexBufferMemory;
+  core::Shared_Ptr<Buffer>                              m_indexBuffer;
+  core::Shared_Ptr<Device_Memory>                       m_indexBufferMemory;
+  core::array <core::Shared_Ptr<Descriptor_Set>, cFramesCount>  m_descriptorSets;
+  core::array<core::Shared_Ptr<Buffer>, cFramesCount>           m_uniformBuffer;
+  core::array<core::Shared_Ptr<Device_Memory>, cFramesCount>    m_uniformBufferMemory;
   core::array<core::Shared_Ptr<Command_Buffer>, cFramesCount>   m_graphicsCommandBuffers;
   core::array<core::Shared_Ptr<Semaphore>, cFramesCount>        m_imageAvailableSemaphores;
   core::array<core::Shared_Ptr<Semaphore>, cFramesCount>        m_renderFinishedSemaphores;

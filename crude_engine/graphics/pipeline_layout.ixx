@@ -6,6 +6,7 @@ export module crude.graphics.pipeline_layout;
 
 import crude.core.shared_ptr;
 import crude.core.std_containers_stack;
+import crude.core.std_containers_heap;
 import crude.graphics.vulkan_object;
 
 export namespace crude::graphics
@@ -17,12 +18,14 @@ class Descriptor_Set_Layout;
 class Pipeline_Layout : public Vulkan_Object<VkPipelineLayout>
 {
 public:
-  explicit Pipeline_Layout(core::Shared_Ptr<const Device>                              device,
-                           const core::span<core::Shared_Ptr<Descriptor_Set_Layout>>&  descriptorSetLayouts,
-                           const core::span<VkPushConstantRange>&                      pushConstantRanges = {});
+  explicit Pipeline_Layout(core::Shared_Ptr<const Device>                                      device,
+                           const core::vector<core::Shared_Ptr<const Descriptor_Set_Layout>>&  descriptorSetLayouts,
+                           const core::vector<VkPushConstantRange>&                            pushConstantRanges = {});
   ~Pipeline_Layout();
 private:
-  core::Shared_Ptr<const Device>  m_device;
+  core::vector<core::Shared_Ptr<const Descriptor_Set_Layout>>  m_setLayouts;
+  core::vector<VkPushConstantRange>                            m_pushConstantRanges;
+  core::Shared_Ptr<const Device>                               m_device;
 };
 
 }

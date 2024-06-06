@@ -41,13 +41,13 @@ VectorU32::operator Vector() const noexcept
   return v;
 }
 
-Vector SysVector::zero() noexcept
+Vector svector::zero() noexcept
 {
   VectorF32 vResult = { { { 0.0f, 0.0f, 0.0f, 0.0f } } };
   return vResult;
 }
 
-Vector SysVector::set(core::float32 x, core::float32 y, core::float32 z, core::float32 w) noexcept
+Vector svector::set(core::float32 x, core::float32 y, core::float32 z, core::float32 w) noexcept
 {
 #if defined(_CRUDE_NO_INTRINSICS)
   VectorF32 vResult = { { { x, y, z, w } } };
@@ -57,7 +57,7 @@ Vector SysVector::set(core::float32 x, core::float32 y, core::float32 z, core::f
 #endif
 }
 
-Vector SysVector::setInt(core::uint32 x, core::uint32 y, core::uint32 z, core::uint32 w) noexcept
+Vector svector::setInt(core::uint32 x, core::uint32 y, core::uint32 z, core::uint32 w) noexcept
 {
 #if defined(_CRUDE_NO_INTRINSICS)
   VectorU32 vResult = { { { x, y, z, w } } };
@@ -68,7 +68,7 @@ Vector SysVector::setInt(core::uint32 x, core::uint32 y, core::uint32 z, core::u
 #endif
 }
 
-Vector SysVector::fill(core::float32 value) noexcept
+Vector svector::fill(core::float32 value) noexcept
 {
 #if defined(_CRUDE_NO_INTRINSICS)
   VectorF32 vResult = { { { value, value, value, value } } };
@@ -79,7 +79,7 @@ Vector SysVector::fill(core::float32 value) noexcept
 
 }
 
-Vector SysVector::fillInt(core::uint32 value) noexcept
+Vector svector::fillInt(core::uint32 value) noexcept
 {
 #if defined(_CRUDE_NO_INTRINSICS)
   VectorU32 vResult = { { { value, value, value, value } } };
@@ -90,7 +90,7 @@ Vector SysVector::fillInt(core::uint32 value) noexcept
 #endif
 }
 
-Vector SysVector::trueInt() noexcept
+Vector svector::trueInt() noexcept
 {
 #if defined(_CRUDE_NO_INTRINSICS)
   VectorU32 vResult = { { { 0xFFFFFFFFU, 0xFFFFFFFFU, 0xFFFFFFFFU, 0xFFFFFFFFU } } };
@@ -101,7 +101,7 @@ Vector SysVector::trueInt() noexcept
 #endif
 }
 
-Vector SysVector::falseInt() noexcept
+Vector svector::falseInt() noexcept
 {
 #if defined(_CRUDE_NO_INTRINSICS)
   VectorU32 vResult = { { { 0x00000000U, 0x00000000U, 0x00000000U, 0x00000000U } } };
@@ -111,7 +111,7 @@ Vector SysVector::falseInt() noexcept
 #endif
 }
 
-Vector SysVector::splatX(CVector v) noexcept
+Vector svector::splatX(CVector v) noexcept
 {
 #if defined(_CRUDE_NO_INTRINSICS)
   Vector vResult;
@@ -126,7 +126,7 @@ Vector SysVector::splatX(CVector v) noexcept
 #endif
 }
 
-Vector SysVector::splatY(CVector v) noexcept
+Vector svector::splatY(CVector v) noexcept
 {
   Vector vResult;
   vResult.vector4_f32[0]
@@ -137,7 +137,7 @@ Vector SysVector::splatY(CVector v) noexcept
   return vResult;
 }
 
-Vector SysVector::splatZ(CVector v) noexcept
+Vector svector::splatZ(CVector v) noexcept
 {
   Vector vResult;
   vResult.vector4_f32[0]
@@ -148,7 +148,7 @@ Vector SysVector::splatZ(CVector v) noexcept
   return vResult;
 }
 
-Vector SysVector::splatW(CVector v) noexcept
+Vector svector::splatW(CVector v) noexcept
 {
   Vector vResult;
   vResult.vector4_f32[0]
@@ -159,7 +159,7 @@ Vector SysVector::splatW(CVector v) noexcept
   return vResult;
 }
 
-Vector SysVector::splatOne() noexcept
+Vector svector::splatOne() noexcept
 {
   Vector vResult;
   vResult.vector4_f32[0]
@@ -170,7 +170,7 @@ Vector SysVector::splatOne() noexcept
   return vResult;
 }
 
-Vector SysVector::splatInfinity() noexcept
+Vector svector::splatInfinity() noexcept
 {
   Vector vResult;
   vResult.vector4_f32[0]
@@ -181,7 +181,7 @@ Vector SysVector::splatInfinity() noexcept
   return vResult;
 }
 
-Vector SysVector::splatQNaN() noexcept
+Vector svector::splatQNaN() noexcept
 {
   Vector vResult;
   vResult.vector4_f32[0]
@@ -192,7 +192,7 @@ Vector SysVector::splatQNaN() noexcept
   return vResult;
 }
 
-Vector SysVector::splatEpsilon() noexcept
+Vector svector::splatEpsilon() noexcept
 {
   Vector vResult;
   vResult.vector4_f32[0] =
@@ -203,47 +203,47 @@ Vector SysVector::splatEpsilon() noexcept
 
 }
 
-core::float32 SysVector::getX(CVector v) noexcept
+core::float32 svector::getX(CVector v) noexcept
 {
   return v.vector4_f32[0];
 }
 
-core::float32 SysVector::getY(CVector v) noexcept
+core::float32 svector::getY(CVector v) noexcept
 {
   return v.vector4_f32[1];
 }
 
-core::float32 SysVector::getZ(CVector v) noexcept
+core::float32 svector::getZ(CVector v) noexcept
 {
   return v.vector4_f32[2];
 }
 
-core::float32 SysVector::getW(CVector v) noexcept
+core::float32 svector::getW(CVector v) noexcept
 {
   return v.vector4_f32[3];
 }
 
-core::uint32 SysVector::getIntX(CVector v) noexcept
+core::uint32 svector::getIntX(CVector v) noexcept
 {
   return v.vector4_u32[0];
 }
 
-core::uint32 SysVector::getIntY(CVector v) noexcept
+core::uint32 svector::getIntY(CVector v) noexcept
 {
   return v.vector4_u32[1];
 }
 
-core::uint32 SysVector::getIntZ(CVector v) noexcept
+core::uint32 svector::getIntZ(CVector v) noexcept
 {
   return v.vector4_u32[2];
 }
 
-core::uint32 SysVector::getIntW(CVector v) noexcept
+core::uint32 svector::getIntW(CVector v) noexcept
 {
   return v.vector4_u32[3];
 }
 
-Vector SysVector::setX(CVector v, core::float32 x) noexcept
+Vector svector::setX(CVector v, core::float32 x) noexcept
 {
   VectorF32 vResult = { { {
     x,
@@ -254,7 +254,7 @@ Vector SysVector::setX(CVector v, core::float32 x) noexcept
   return vResult.v;
 }
 
-Vector SysVector::setY(CVector v, core::float32 y) noexcept
+Vector svector::setY(CVector v, core::float32 y) noexcept
 {
   VectorF32 vResult = { { {
     v.vector4_f32[0],
@@ -265,7 +265,7 @@ Vector SysVector::setY(CVector v, core::float32 y) noexcept
   return vResult.v;
 }
 
-Vector SysVector::setZ(CVector v, core::float32 z) noexcept
+Vector svector::setZ(CVector v, core::float32 z) noexcept
 {
   VectorF32 vResult = { { {
     v.vector4_f32[0],
@@ -276,7 +276,7 @@ Vector SysVector::setZ(CVector v, core::float32 z) noexcept
   return vResult.v;
 }
 
-Vector SysVector::setW(CVector v, core::float32 w) noexcept
+Vector svector::setW(CVector v, core::float32 w) noexcept
 {
   VectorF32 vResult = { { {
     v.vector4_f32[0],
@@ -287,7 +287,7 @@ Vector SysVector::setW(CVector v, core::float32 w) noexcept
   return vResult.v;
 }
 
-Vector SysVector::setIntX(CVector v, core::uint32 x) noexcept
+Vector svector::setIntX(CVector v, core::uint32 x) noexcept
 {
   VectorU32 vResult = { { {
     x,
@@ -298,7 +298,7 @@ Vector SysVector::setIntX(CVector v, core::uint32 x) noexcept
   return vResult.v;
 }
 
-Vector SysVector::setIntY(CVector v, core::uint32 y) noexcept
+Vector svector::setIntY(CVector v, core::uint32 y) noexcept
 {
   VectorU32 vResult = { { {
     v.vector4_u32[0],
@@ -309,7 +309,7 @@ Vector SysVector::setIntY(CVector v, core::uint32 y) noexcept
   return vResult.v;
 }
 
-Vector SysVector::setIntZ(CVector v, core::uint32 z) noexcept
+Vector svector::setIntZ(CVector v, core::uint32 z) noexcept
 {
   VectorU32 vResult = { { {
     v.vector4_u32[0],
@@ -320,7 +320,7 @@ Vector SysVector::setIntZ(CVector v, core::uint32 z) noexcept
   return vResult.v;
 }
 
-Vector SysVector::setIntW(CVector v, core::uint32 w) noexcept
+Vector svector::setIntW(CVector v, core::uint32 w) noexcept
 {
   VectorU32 vResult = { { {
     v.vector4_u32[0],
@@ -331,7 +331,7 @@ Vector SysVector::setIntW(CVector v, core::uint32 w) noexcept
   return vResult.v;
 }
 
-Vector SysVector::equal(CVector v1, CVector v2) noexcept
+Vector svector::equal(CVector v1, CVector v2) noexcept
 {
   VectorU32 vResult = { { {
     (v1.vector4_f32[0] == v2.vector4_f32[0]) ? 0xFFFFFFFF : 0,
@@ -342,7 +342,7 @@ Vector SysVector::equal(CVector v1, CVector v2) noexcept
   return vResult.v;
 }
 
-Vector SysVector::equalInt(CVector v1, CVector v2) noexcept
+Vector svector::equalInt(CVector v1, CVector v2) noexcept
 {
   VectorU32 vResult = { { {
     (v1.vector4_u32[0] == v2.vector4_u32[0]) ? 0xFFFFFFFF : 0,
@@ -353,7 +353,7 @@ Vector SysVector::equalInt(CVector v1, CVector v2) noexcept
   return vResult.v;
 }
 
-Vector SysVector::nearEqual(CVector v1, CVector v2, CVector epsilon) noexcept
+Vector svector::nearEqual(CVector v1, CVector v2, CVector epsilon) noexcept
 {
   core::float32 fDeltaX = v1.vector4_f32[0] - v2.vector4_f32[0];
   core::float32 fDeltaY = v1.vector4_f32[1] - v2.vector4_f32[1];
@@ -374,7 +374,7 @@ Vector SysVector::nearEqual(CVector v1, CVector v2, CVector epsilon) noexcept
   return vResult.v;
 }
 
-Vector SysVector::notEqual(CVector v1, CVector v2) noexcept
+Vector svector::notEqual(CVector v1, CVector v2) noexcept
 {
   VectorU32 vResult = { { {
     (v1.vector4_f32[0] != v2.vector4_f32[0]) ? 0xFFFFFFFF : 0,
@@ -385,7 +385,7 @@ Vector SysVector::notEqual(CVector v1, CVector v2) noexcept
   return vResult.v;
 }
 
-Vector SysVector::notEqualInt(CVector v1, CVector v2) noexcept
+Vector svector::notEqualInt(CVector v1, CVector v2) noexcept
 {
   VectorU32 vResult = { { {
     (v1.vector4_u32[0] != v2.vector4_u32[0]) ? 0xFFFFFFFF : 0,
@@ -396,7 +396,7 @@ Vector SysVector::notEqualInt(CVector v1, CVector v2) noexcept
   return vResult.v;
 }
 
-Vector SysVector::greater(CVector v1, CVector v2) noexcept
+Vector svector::greater(CVector v1, CVector v2) noexcept
 {
   VectorU32 vResult = { { {
     (v1.vector4_f32[0] > v2.vector4_f32[0]) ? 0xFFFFFFFF : 0,
@@ -407,7 +407,7 @@ Vector SysVector::greater(CVector v1, CVector v2) noexcept
   return vResult.v;
 }
 
-Vector SysVector::greaterOrEqual(CVector v1, CVector v2) noexcept
+Vector svector::greaterOrEqual(CVector v1, CVector v2) noexcept
 {
   VectorU32 vResult = { { {
     (v1.vector4_f32[0] >= v2.vector4_f32[0]) ? 0xFFFFFFFF : 0,
@@ -418,7 +418,7 @@ Vector SysVector::greaterOrEqual(CVector v1, CVector v2) noexcept
   return vResult.v;
 }
 
-Vector SysVector::less(CVector v1, CVector v2) noexcept
+Vector svector::less(CVector v1, CVector v2) noexcept
 {
   VectorU32 vResult = { { {
     (v1.vector4_f32[0] < v2.vector4_f32[0]) ? 0xFFFFFFFF : 0,
@@ -429,7 +429,7 @@ Vector SysVector::less(CVector v1, CVector v2) noexcept
   return vResult.v;
 }
 
-Vector SysVector::lessOrEqual(CVector v1, CVector v2) noexcept
+Vector svector::lessOrEqual(CVector v1, CVector v2) noexcept
 {
   VectorU32 vResult = { { {
     (v1.vector4_f32[0] <= v2.vector4_f32[0]) ? 0xFFFFFFFF : 0,
@@ -440,7 +440,7 @@ Vector SysVector::lessOrEqual(CVector v1, CVector v2) noexcept
   return vResult.v;
 }
 
-Vector SysVector::inBounds(CVector v, CVector bounds) noexcept
+Vector svector::inBounds(CVector v, CVector bounds) noexcept
 {
   core::float32 absBoundsX = bounds.vector4_f32[0] > 0.0f ? bounds.vector4_f32[0] : -bounds.vector4_f32[0];
   core::float32 absBoundsY = bounds.vector4_f32[1] > 0.0f ? bounds.vector4_f32[1] : -bounds.vector4_f32[1];
@@ -456,7 +456,7 @@ Vector SysVector::inBounds(CVector v, CVector bounds) noexcept
   return vResult.v;
 }
 
-Vector SysVector::isNaN(CVector v) noexcept
+Vector svector::isNaN(CVector v) noexcept
 {
   VectorU32 vResult = { { {
     (v.vector4_f32[0] == 0x7FC00000) ? 0xFFFFFFFFU : 0,
@@ -467,7 +467,7 @@ Vector SysVector::isNaN(CVector v) noexcept
   return vResult.v;
 }
 
-Vector SysVector::isInfinite(CVector v) noexcept
+Vector svector::isInfinite(CVector v) noexcept
 {
   VectorU32 vResult = { { {
     (v.vector4_f32[0] == 0x7F800000) ? 0xFFFFFFFFU : 0,
@@ -478,7 +478,7 @@ Vector SysVector::isInfinite(CVector v) noexcept
   return vResult.v;
 }
 
-Vector SysVector::min(CVector v1, CVector v2) noexcept
+Vector svector::min(CVector v1, CVector v2) noexcept
 {
   VectorF32 vResult = { { {
     (v1.vector4_f32[0] < v2.vector4_f32[0]) ? v1.vector4_f32[0] : v2.vector4_f32[0],
@@ -489,7 +489,7 @@ Vector SysVector::min(CVector v1, CVector v2) noexcept
   return vResult.v;
 }
 
-Vector SysVector::max(CVector v1, CVector v2) noexcept
+Vector svector::max(CVector v1, CVector v2) noexcept
 {
   VectorF32 vResult = { { {
     (v1.vector4_f32[0] > v2.vector4_f32[0]) ? v1.vector4_f32[0] : v2.vector4_f32[0],
@@ -500,63 +500,63 @@ Vector SysVector::max(CVector v1, CVector v2) noexcept
   return vResult.v;
 }
 
-Vector SysVector::round(CVector v) noexcept
+Vector svector::round(CVector v) noexcept
 {
   VectorF32 vResult = { { {
-    Scalar::round(v.vector4_f32[0]),
-    Scalar::round(v.vector4_f32[1]),
-    Scalar::round(v.vector4_f32[2]),
-    Scalar::round(v.vector4_f32[3])
+    scalar::round(v.vector4_f32[0]),
+    scalar::round(v.vector4_f32[1]),
+    scalar::round(v.vector4_f32[2]),
+    scalar::round(v.vector4_f32[3])
   } } };
   return vResult.v;
 }
 
-Vector SysVector::floor(CVector v) noexcept
+Vector svector::floor(CVector v) noexcept
 {
   VectorF32 vResult = { { {
-    Scalar::floor(v.vector4_f32[0]),
-    Scalar::floor(v.vector4_f32[1]),
-    Scalar::floor(v.vector4_f32[2]),
-    Scalar::floor(v.vector4_f32[3])
+    scalar::floor(v.vector4_f32[0]),
+    scalar::floor(v.vector4_f32[1]),
+    scalar::floor(v.vector4_f32[2]),
+    scalar::floor(v.vector4_f32[3])
   } } };
   return vResult.v;
 }
 
-Vector SysVector::ceil(CVector v) noexcept
+Vector svector::ceil(CVector v) noexcept
 {
   VectorF32 vResult = { { {
-    Scalar::ceil(v.vector4_f32[0]),
-    Scalar::ceil(v.vector4_f32[1]),
-    Scalar::ceil(v.vector4_f32[2]),
-    Scalar::ceil(v.vector4_f32[3])
+    scalar::ceil(v.vector4_f32[0]),
+    scalar::ceil(v.vector4_f32[1]),
+    scalar::ceil(v.vector4_f32[2]),
+    scalar::ceil(v.vector4_f32[3])
   } } };
   return vResult.v;
 }
 
-Vector SysVector::trunc(CVector v) noexcept
+Vector svector::trunc(CVector v) noexcept
 {
   VectorF32 vResult = { { {
-    Scalar::trunc(v.vector4_f32[0]),
-    Scalar::trunc(v.vector4_f32[1]),
-    Scalar::trunc(v.vector4_f32[2]),
-    Scalar::trunc(v.vector4_f32[3])
+    scalar::trunc(v.vector4_f32[0]),
+    scalar::trunc(v.vector4_f32[1]),
+    scalar::trunc(v.vector4_f32[2]),
+    scalar::trunc(v.vector4_f32[3])
   } } };
   return vResult.v;
 }
 
 
-Vector SysVector::clamp(CVector v, CVector vmin, CVector vmax) noexcept
+Vector svector::clamp(CVector v, CVector vmin, CVector vmax) noexcept
 {
   VectorF32 vResult = { { {
-    Scalar::clamp(v.vector4_f32[0], vmin.vector4_f32[0], vmax.vector4_f32[0]),
-    Scalar::clamp(v.vector4_f32[1], vmin.vector4_f32[1], vmax.vector4_f32[1]),
-    Scalar::clamp(v.vector4_f32[2], vmin.vector4_f32[2], vmax.vector4_f32[2]),
-    Scalar::clamp(v.vector4_f32[3], vmin.vector4_f32[3], vmax.vector4_f32[3])
+    scalar::clamp(v.vector4_f32[0], vmin.vector4_f32[0], vmax.vector4_f32[0]),
+    scalar::clamp(v.vector4_f32[1], vmin.vector4_f32[1], vmax.vector4_f32[1]),
+    scalar::clamp(v.vector4_f32[2], vmin.vector4_f32[2], vmax.vector4_f32[2]),
+    scalar::clamp(v.vector4_f32[3], vmin.vector4_f32[3], vmax.vector4_f32[3])
   } } };
   return vResult.v;
 }
 
-Vector SysVector::andInt(CVector v1, CVector v2) noexcept
+Vector svector::andInt(CVector v1, CVector v2) noexcept
 {
   VectorU32 vResult = { { {
     v1.vector4_u32[0] & v2.vector4_u32[0],
@@ -567,7 +567,7 @@ Vector SysVector::andInt(CVector v1, CVector v2) noexcept
   return vResult.v;
 }
 
-Vector SysVector::orInt(CVector v1, CVector v2) noexcept
+Vector svector::orInt(CVector v1, CVector v2) noexcept
 {
   VectorU32 vResult = { { {
     v1.vector4_u32[0] | v2.vector4_u32[0],
@@ -578,7 +578,7 @@ Vector SysVector::orInt(CVector v1, CVector v2) noexcept
   return vResult.v;
 }
 
-Vector SysVector::norInt(CVector v1, CVector v2) noexcept
+Vector svector::norInt(CVector v1, CVector v2) noexcept
 {
   VectorU32 vResult = { { {
     ~(v1.vector4_u32[0] | v2.vector4_u32[0]),
@@ -589,7 +589,7 @@ Vector SysVector::norInt(CVector v1, CVector v2) noexcept
   return vResult.v;
 }
 
-Vector SysVector::xorInt(CVector v1, CVector v2) noexcept
+Vector svector::xorInt(CVector v1, CVector v2) noexcept
 {
   VectorU32 vResult = { { {
     v1.vector4_u32[0] ^ v2.vector4_u32[0],
@@ -600,7 +600,7 @@ Vector SysVector::xorInt(CVector v1, CVector v2) noexcept
   return vResult.v;
 }
 
-Vector SysVector::select(CVector v1, CVector v2, CVector control) noexcept
+Vector svector::select(CVector v1, CVector v2, CVector control) noexcept
 {
   VectorU32 vResult = { { {
     (v1.vector4_u32[0] & control.vector4_u32[0]) | (v2.vector4_u32[0] & ~control.vector4_u32[0]),
@@ -611,7 +611,7 @@ Vector SysVector::select(CVector v1, CVector v2, CVector control) noexcept
   return vResult.v;
 }
 
-Vector SysVector::negate(CVector v) noexcept
+Vector svector::negate(CVector v) noexcept
 {
   VectorF32 vResult = { { {
     -v.vector4_f32[0],
@@ -622,7 +622,7 @@ Vector SysVector::negate(CVector v) noexcept
   return vResult.v;
 }
 
-Vector SysVector::add(CVector v1, CVector v2) noexcept
+Vector svector::add(CVector v1, CVector v2) noexcept
 {
   VectorF32 vResult = { { {
     v1.vector4_f32[0] + v2.vector4_f32[0],
@@ -633,7 +633,7 @@ Vector SysVector::add(CVector v1, CVector v2) noexcept
   return vResult.v;
 }
 
-Vector SysVector::subtract(CVector v1, CVector v2) noexcept
+Vector svector::subtract(CVector v1, CVector v2) noexcept
 {
   VectorF32 vResult = { { {
     v1.vector4_f32[0] - v2.vector4_f32[0],
@@ -644,7 +644,7 @@ Vector SysVector::subtract(CVector v1, CVector v2) noexcept
   return vResult.v;
 }
 
-Vector SysVector::multiply(CVector v1, CVector v2) noexcept
+Vector svector::multiply(CVector v1, CVector v2) noexcept
 {
   VectorF32 vResult = { { {
     v1.vector4_f32[0] * v2.vector4_f32[0],
@@ -655,7 +655,7 @@ Vector SysVector::multiply(CVector v1, CVector v2) noexcept
   return vResult.v;
 }
 
-Vector SysVector::multiplyAdd(CVector v1, CVector v2, CVector v3) noexcept
+Vector svector::multiplyAdd(CVector v1, CVector v2, CVector v3) noexcept
 {
   VectorF32 vResult = { { {
     v1.vector4_f32[0] * v2.vector4_f32[0] + v3.vector4_f32[0],
@@ -666,7 +666,7 @@ Vector SysVector::multiplyAdd(CVector v1, CVector v2, CVector v3) noexcept
   return vResult.v;
 }
 
-Vector SysVector::divide(CVector v1, CVector v2) noexcept
+Vector svector::divide(CVector v1, CVector v2) noexcept
 {
   VectorF32 vResult = { { {
     v1.vector4_f32[0] / v2.vector4_f32[0],
@@ -677,7 +677,7 @@ Vector SysVector::divide(CVector v1, CVector v2) noexcept
   return vResult.v;
 }
 
-Vector SysVector::divideAdd(CVector v1, CVector v2, CVector v3) noexcept
+Vector svector::divideAdd(CVector v1, CVector v2, CVector v3) noexcept
 {
   VectorF32 vResult = { { {
     v1.vector4_f32[0] / v2.vector4_f32[0] + v3.vector4_f32[0],
@@ -688,7 +688,7 @@ Vector SysVector::divideAdd(CVector v1, CVector v2, CVector v3) noexcept
   return vResult.v;
 }
 
-Vector SysVector::scale(CVector v, core::float32 s) noexcept
+Vector svector::scale(CVector v, core::float32 s) noexcept
 {
   VectorF32 vResult = { { {
     v.vector4_f32[0] * s,
@@ -699,209 +699,209 @@ Vector SysVector::scale(CVector v, core::float32 s) noexcept
   return vResult.v;
 }
 
-Vector SysVector::sqrt(CVector v) noexcept
+Vector svector::sqrt(CVector v) noexcept
 {
   VectorF32 vResult = { { {
-    Scalar::sqrt(v.vector4_f32[0]),
-    Scalar::sqrt(v.vector4_f32[1]),
-    Scalar::sqrt(v.vector4_f32[2]),
-    Scalar::sqrt(v.vector4_f32[3])
+    scalar::sqrt(v.vector4_f32[0]),
+    scalar::sqrt(v.vector4_f32[1]),
+    scalar::sqrt(v.vector4_f32[2]),
+    scalar::sqrt(v.vector4_f32[3])
   } } };
   return vResult.v;
 }
 
-Vector SysVector::exp2(CVector v) noexcept
+Vector svector::exp2(CVector v) noexcept
 {
   VectorF32 vResult = { { {
-    Scalar::exp2(v.vector4_f32[0]),
-    Scalar::exp2(v.vector4_f32[1]),
-    Scalar::exp2(v.vector4_f32[2]),
-    Scalar::exp2(v.vector4_f32[3])
+    scalar::exp2(v.vector4_f32[0]),
+    scalar::exp2(v.vector4_f32[1]),
+    scalar::exp2(v.vector4_f32[2]),
+    scalar::exp2(v.vector4_f32[3])
   } } };
   return vResult.v;
 }
 
-Vector SysVector::exp(CVector v) noexcept
+Vector svector::exp(CVector v) noexcept
 {
   VectorF32 vResult = { { {
-    Scalar::exp(v.vector4_f32[0]),
-    Scalar::exp(v.vector4_f32[1]),
-    Scalar::exp(v.vector4_f32[2]),
-    Scalar::exp(v.vector4_f32[3])
+    scalar::exp(v.vector4_f32[0]),
+    scalar::exp(v.vector4_f32[1]),
+    scalar::exp(v.vector4_f32[2]),
+    scalar::exp(v.vector4_f32[3])
   } } };
   return vResult.v;
 }
 
-Vector SysVector::log2(CVector v) noexcept
+Vector svector::log2(CVector v) noexcept
 {
   VectorF32 vResult = { { {
-    Scalar::log2(v.vector4_f32[0]),
-    Scalar::log2(v.vector4_f32[1]),
-    Scalar::log2(v.vector4_f32[2]),
-    Scalar::log2(v.vector4_f32[3])
+    scalar::log2(v.vector4_f32[0]),
+    scalar::log2(v.vector4_f32[1]),
+    scalar::log2(v.vector4_f32[2]),
+    scalar::log2(v.vector4_f32[3])
   } } };
   return vResult.v;
 }
 
-Vector SysVector::log10(CVector v) noexcept
+Vector svector::log10(CVector v) noexcept
 {
   VectorF32 vResult = { { {
-    Scalar::log10(v.vector4_f32[0]),
-    Scalar::log10(v.vector4_f32[1]),
-    Scalar::log10(v.vector4_f32[2]),
-    Scalar::log10(v.vector4_f32[3])
+    scalar::log10(v.vector4_f32[0]),
+    scalar::log10(v.vector4_f32[1]),
+    scalar::log10(v.vector4_f32[2]),
+    scalar::log10(v.vector4_f32[3])
   } } };
   return vResult.v;
 }
 
-Vector SysVector::log(CVector v) noexcept
+Vector svector::log(CVector v) noexcept
 {
   VectorF32 vResult = { { {
-    Scalar::log(v.vector4_f32[0]),
-    Scalar::log(v.vector4_f32[1]),
-    Scalar::log(v.vector4_f32[2]),
-    Scalar::log(v.vector4_f32[3])
+    scalar::log(v.vector4_f32[0]),
+    scalar::log(v.vector4_f32[1]),
+    scalar::log(v.vector4_f32[2]),
+    scalar::log(v.vector4_f32[3])
   } } };
   return vResult.v;
 }
 
-Vector SysVector::pow(CVector v1, CVector v2) noexcept
+Vector svector::pow(CVector v1, CVector v2) noexcept
 {
   VectorF32 vResult = { { {
-    Scalar::pow(v1.vector4_f32[0], v2.vector4_f32[0]),
-    Scalar::pow(v1.vector4_f32[1], v2.vector4_f32[1]),
-    Scalar::pow(v1.vector4_f32[2], v2.vector4_f32[2]),
-    Scalar::pow(v1.vector4_f32[3], v2.vector4_f32[3])
+    scalar::pow(v1.vector4_f32[0], v2.vector4_f32[0]),
+    scalar::pow(v1.vector4_f32[1], v2.vector4_f32[1]),
+    scalar::pow(v1.vector4_f32[2], v2.vector4_f32[2]),
+    scalar::pow(v1.vector4_f32[3], v2.vector4_f32[3])
   } } };
   return vResult.v;
 }
 
-Vector SysVector::abs(CVector v) noexcept
+Vector svector::abs(CVector v) noexcept
 {
   VectorF32 vResult = { { {
-    Scalar::abs(v.vector4_f32[0]),
-    Scalar::abs(v.vector4_f32[1]),
-    Scalar::abs(v.vector4_f32[2]),
-    Scalar::abs(v.vector4_f32[3])
+    scalar::abs(v.vector4_f32[0]),
+    scalar::abs(v.vector4_f32[1]),
+    scalar::abs(v.vector4_f32[2]),
+    scalar::abs(v.vector4_f32[3])
   } } };
   return vResult.v;
 }
 
-Vector SysVector::cos(CVector v) noexcept
+Vector svector::cos(CVector v) noexcept
 {
   VectorF32 vResult = { { {
-    Scalar::cos(v.vector4_f32[0]),
-    Scalar::cos(v.vector4_f32[1]),
-    Scalar::cos(v.vector4_f32[2]),
-    Scalar::cos(v.vector4_f32[3])
+    scalar::cos(v.vector4_f32[0]),
+    scalar::cos(v.vector4_f32[1]),
+    scalar::cos(v.vector4_f32[2]),
+    scalar::cos(v.vector4_f32[3])
   } } };
   return vResult.v;
 }
 
-Vector SysVector::sin(CVector v) noexcept
+Vector svector::sin(CVector v) noexcept
 {
   VectorF32 vResult = { { {
-    Scalar::sin(v.vector4_f32[0]),
-    Scalar::sin(v.vector4_f32[1]),
-    Scalar::sin(v.vector4_f32[2]),
-    Scalar::sin(v.vector4_f32[3])
+    scalar::sin(v.vector4_f32[0]),
+    scalar::sin(v.vector4_f32[1]),
+    scalar::sin(v.vector4_f32[2]),
+    scalar::sin(v.vector4_f32[3])
   } } };
   return vResult.v;
 }
 
-Vector SysVector::tan(CVector v) noexcept
+Vector svector::tan(CVector v) noexcept
 {
   VectorF32 vResult = { { {
-    Scalar::tan(v.vector4_f32[0]),
-    Scalar::tan(v.vector4_f32[1]),
-    Scalar::tan(v.vector4_f32[2]),
-    Scalar::tan(v.vector4_f32[3])
+    scalar::tan(v.vector4_f32[0]),
+    scalar::tan(v.vector4_f32[1]),
+    scalar::tan(v.vector4_f32[2]),
+    scalar::tan(v.vector4_f32[3])
   } } };
   return vResult.v;
 }
 
-Vector SysVector::arcCos(CVector v) noexcept
+Vector svector::arcCos(CVector v) noexcept
 {
   VectorF32 vResult = { { {
-    Scalar::arcCos(v.vector4_f32[0]),
-    Scalar::arcCos(v.vector4_f32[1]),
-    Scalar::arcCos(v.vector4_f32[2]),
-    Scalar::arcCos(v.vector4_f32[3])
+    scalar::arcCos(v.vector4_f32[0]),
+    scalar::arcCos(v.vector4_f32[1]),
+    scalar::arcCos(v.vector4_f32[2]),
+    scalar::arcCos(v.vector4_f32[3])
   } } };
   return vResult.v;
 }
 
-Vector SysVector::arcSin(CVector v) noexcept
+Vector svector::arcSin(CVector v) noexcept
 {
   VectorF32 vResult = { { {
-    Scalar::arcSin(v.vector4_f32[0]),
-    Scalar::arcSin(v.vector4_f32[1]),
-    Scalar::arcSin(v.vector4_f32[2]),
-    Scalar::arcSin(v.vector4_f32[3])
+    scalar::arcSin(v.vector4_f32[0]),
+    scalar::arcSin(v.vector4_f32[1]),
+    scalar::arcSin(v.vector4_f32[2]),
+    scalar::arcSin(v.vector4_f32[3])
   } } };
   return vResult.v;
 }
 
-Vector SysVector::arcTan(CVector v) noexcept
+Vector svector::arcTan(CVector v) noexcept
 {
   VectorF32 vResult = { { {
-    Scalar::arcTan(v.vector4_f32[0]),
-    Scalar::arcTan(v.vector4_f32[1]),
-    Scalar::arcTan(v.vector4_f32[2]),
-    Scalar::arcTan(v.vector4_f32[3])
+    scalar::arcTan(v.vector4_f32[0]),
+    scalar::arcTan(v.vector4_f32[1]),
+    scalar::arcTan(v.vector4_f32[2]),
+    scalar::arcTan(v.vector4_f32[3])
   } } };
   return vResult.v;
 }
 
-Vector SysVector::covector1(CVector v, CVector e1) noexcept
+Vector svector::covector1(CVector v, CVector e1) noexcept
 {
   Vector vResult;
-  vResult.vector4_f32[0] = SysVector::dot1(v, e1).vector4_f32[0];
+  vResult.vector4_f32[0] = svector::dot1(v, e1).vector4_f32[0];
   vResult.vector4_f32[1] = 1.0f;
   vResult.vector4_f32[2] = 1.0f;
   vResult.vector4_f32[3] = 1.0f;
   return vResult;
 }
 
-Vector SysVector::dot1(CVector v1, CVector v2, CVector e1, Vector* cov) noexcept
+Vector svector::dot1(CVector v1, CVector v2, CVector e1, Vector* cov) noexcept
 {
-  Vector covector = SysVector::covector1(v2, e1);
+  Vector covector = svector::covector1(v2, e1);
 
   if (cov != nullptr)
   {
     *cov = covector;
   }
 
-  Vector vResult = SysVector::dot1(v1, covector);
+  Vector vResult = svector::dot1(v1, covector);
   return vResult;
 }
 
-Vector SysVector::dot1(CVector v1, CVector v2) noexcept
+Vector svector::dot1(CVector v1, CVector v2) noexcept
 {
   core::float32 fDot = v1.vector4_f32[0] * v2.vector4_f32[0];
 
-  Vector vResult = SysVector::fill(fDot);
+  Vector vResult = svector::fill(fDot);
   return vResult;
 }
 
-Vector SysVector::length1(CVector v) noexcept
+Vector svector::length1(CVector v) noexcept
 {
-  Vector vOrthoDotResult = SysVector::dot1(v, v);
+  Vector vOrthoDotResult = svector::dot1(v, v);
   core::float32 fOrthoDotResult = vOrthoDotResult.vector4_f32[0];
-  core::float32 fOrthoNormLength = Scalar::sqrt(fOrthoDotResult);
-  Vector vResult = SysVector::fill(fOrthoNormLength);
+  core::float32 fOrthoNormLength = scalar::sqrt(fOrthoDotResult);
+  Vector vResult = svector::fill(fOrthoNormLength);
   return vResult;
 }
 
-Vector SysVector::lengthSq1(CVector v) noexcept
+Vector svector::lengthSq1(CVector v) noexcept
 {
-  Vector vResult = SysVector::dot1(v, v);
+  Vector vResult = svector::dot1(v, v);
   return vResult;
 }
 
-Vector SysVector::normalize1(CVector v) noexcept
+Vector svector::normalize1(CVector v) noexcept
 {
-  Vector vLength = SysVector::lengthSq1(v);
+  Vector vLength = svector::lengthSq1(v);
   core::float32 fLength = vLength.vector4_f32[0];
   core::float32 fInvLength;
 
@@ -911,7 +911,7 @@ Vector SysVector::normalize1(CVector v) noexcept
   }
   else
   {
-    fInvLength = Constans::CMAXF32;
+    fInvLength = CMAXF32;
   }
 
   Vector vResult;
@@ -923,72 +923,72 @@ Vector SysVector::normalize1(CVector v) noexcept
   return vResult;
 }
 
-Vector SysVector::cos1(CVector v1, CVector v2) noexcept
+Vector svector::cos1(CVector v1, CVector v2) noexcept
 {
-  Vector vDot = SysVector::dot1(v1, v2);
-  Vector vLength1 = SysVector::lengthSq1(v1);
-  Vector vLength2 = SysVector::lengthSq1(v2);
+  Vector vDot = svector::dot1(v1, v2);
+  Vector vLength1 = svector::lengthSq1(v1);
+  Vector vLength2 = svector::lengthSq1(v2);
   core::float32 fDot = vDot.vector4_f32[0];
   core::float32 fLength1 = vLength1.vector4_f32[0];
   core::float32 fLength2 = vLength2.vector4_f32[0];
   core::float32 fMul = fLength1 * fLength2;
-  core::float32 fSqrtMul = Scalar::sqrt(fMul);
+  core::float32 fSqrtMul = scalar::sqrt(fMul);
   core::float32 fCos = fDot / fSqrtMul;
-  Vector vResult = SysVector::fill(fCos);
+  Vector vResult = svector::fill(fCos);
   return vResult;
 }
 
-Vector SysVector::covector2(CVector v, CVector e1, CVector e2) noexcept
+Vector svector::covector2(CVector v, CVector e1, CVector e2) noexcept
 {
   Vector vResult;
-  vResult.vector4_f32[0] = SysVector::dot2(v, e1).vector4_f32[0];
-  vResult.vector4_f32[1] = SysVector::dot2(v, e2).vector4_f32[0];
+  vResult.vector4_f32[0] = svector::dot2(v, e1).vector4_f32[0];
+  vResult.vector4_f32[1] = svector::dot2(v, e2).vector4_f32[0];
   vResult.vector4_f32[2] = 1.0f;
   vResult.vector4_f32[3] = 1.0f;
 
   return vResult;
 }
 
-Vector SysVector::dot2(CVector v1, CVector v2, CVector e1, CVector e2, Vector* cov) noexcept
+Vector svector::dot2(CVector v1, CVector v2, CVector e1, CVector e2, Vector* cov) noexcept
 {
-  Vector covector = SysVector::covector2(v2, e1, e2);
+  Vector covector = svector::covector2(v2, e1, e2);
 
   if (cov != nullptr)
   {
     *cov = covector;
   }
 
-  Vector vResult = SysVector::dot2(v1, covector);
+  Vector vResult = svector::dot2(v1, covector);
   return vResult;
 }
 
-Vector SysVector::dot2(CVector v1, CVector v2) noexcept
+Vector svector::dot2(CVector v1, CVector v2) noexcept
 {
   core::float32 fDot = v1.vector4_f32[0] * v2.vector4_f32[0] +
     v1.vector4_f32[1] * v2.vector4_f32[1];
 
-  Vector vResult = SysVector::fill(fDot);
+  Vector vResult = svector::fill(fDot);
   return vResult;
 }
 
-Vector SysVector::length2(CVector v) noexcept
+Vector svector::length2(CVector v) noexcept
 {
-  Vector vOrthoDotResult = SysVector::dot2(v, v);
+  Vector vOrthoDotResult = svector::dot2(v, v);
   core::float32 fOrthoDotResult = vOrthoDotResult.vector4_f32[0];
-  core::float32 fOrthoNormLength = Scalar::sqrt(fOrthoDotResult);
-  Vector vResult = SysVector::fill(fOrthoNormLength);
+  core::float32 fOrthoNormLength = scalar::sqrt(fOrthoDotResult);
+  Vector vResult = svector::fill(fOrthoNormLength);
   return vResult;
 }
 
-Vector SysVector::lengthSq2(CVector v) noexcept
+Vector svector::lengthSq2(CVector v) noexcept
 {
-  Vector vResult = SysVector::dot2(v, v);
+  Vector vResult = svector::dot2(v, v);
   return vResult;
 }
 
-Vector SysVector::normalize2(CVector v) noexcept
+Vector svector::normalize2(CVector v) noexcept
 {
-  Vector vLength = SysVector::lengthSq2(v);
+  Vector vLength = svector::lengthSq2(v);
   core::float32 fLength = vLength.vector4_f32[0];
   core::float32 fInvLength;
 
@@ -998,7 +998,7 @@ Vector SysVector::normalize2(CVector v) noexcept
   }
   else
   {
-    fInvLength = Constans::CMAXF32;
+    fInvLength = CMAXF32;
   }
 
   Vector vResult;
@@ -1011,73 +1011,73 @@ Vector SysVector::normalize2(CVector v) noexcept
 }
 
 Vector
-SysVector::cos2(CVector v1, CVector v2) noexcept
+svector::cos2(CVector v1, CVector v2) noexcept
 {
-  Vector vDot = SysVector::dot2(v1, v2);
-  Vector vLength1 = SysVector::lengthSq2(v1);
-  Vector vLength2 = SysVector::lengthSq2(v2);
+  Vector vDot = svector::dot2(v1, v2);
+  Vector vLength1 = svector::lengthSq2(v1);
+  Vector vLength2 = svector::lengthSq2(v2);
   core::float32 fDot = vDot.vector4_f32[0];
   core::float32 fLength1 = vLength1.vector4_f32[0];
   core::float32 fLength2 = vLength2.vector4_f32[0];
   core::float32 fMul = fLength1 * fLength2;
-  core::float32 fSqrtMul = Scalar::sqrt(fMul);
+  core::float32 fSqrtMul = scalar::sqrt(fMul);
   core::float32 fCos = fDot / fSqrtMul;
-  Vector vResult = SysVector::fill(fCos);
+  Vector vResult = svector::fill(fCos);
   return vResult;
 }
 
-Vector SysVector::covector3(CVector v, CVector e1, CVector e2, CVector e3) noexcept
+Vector svector::covector3(CVector v, CVector e1, CVector e2, CVector e3) noexcept
 {
   Vector vResult;
-  vResult.vector4_f32[0] = SysVector::dot3(v, e1).vector4_f32[0];
-  vResult.vector4_f32[1] = SysVector::dot3(v, e2).vector4_f32[0];
-  vResult.vector4_f32[2] = SysVector::dot3(v, e3).vector4_f32[0];
+  vResult.vector4_f32[0] = svector::dot3(v, e1).vector4_f32[0];
+  vResult.vector4_f32[1] = svector::dot3(v, e2).vector4_f32[0];
+  vResult.vector4_f32[2] = svector::dot3(v, e3).vector4_f32[0];
   vResult.vector4_f32[3] = 1.0f;
 
   return vResult;
 }
 
-Vector SysVector::dot3(CVector v1, CVector v2, CVector e1, CVector e2, CVector e3, Vector* cov) noexcept
+Vector svector::dot3(CVector v1, CVector v2, CVector e1, CVector e2, CVector e3, Vector* cov) noexcept
 {
-  Vector covector = SysVector::covector3(v2, e1, e2, e3);
+  Vector covector = svector::covector3(v2, e1, e2, e3);
 
   if (cov != nullptr)
   {
     *cov = covector;
   }
 
-  Vector vResult = SysVector::dot3(v1, covector);
+  Vector vResult = svector::dot3(v1, covector);
   return vResult;
 }
 
-Vector SysVector::dot3(CVector v1, CVector v2) noexcept
+Vector svector::dot3(CVector v1, CVector v2) noexcept
 {
   core::float32 fDot = v1.vector4_f32[0] * v2.vector4_f32[0] +
     v1.vector4_f32[1] * v2.vector4_f32[1] +
     v1.vector4_f32[2] * v2.vector4_f32[2];
 
-  Vector vResult = SysVector::fill(fDot);
+  Vector vResult = svector::fill(fDot);
   return vResult;
 }
 
-Vector SysVector::length3(CVector v) noexcept
+Vector svector::length3(CVector v) noexcept
 {
-  Vector vOrthoDotResult = SysVector::dot3(v, v);
+  Vector vOrthoDotResult = svector::dot3(v, v);
   core::float32 fOrthoDotResult = vOrthoDotResult.vector4_f32[0];
-  core::float32 fOrthoNormLength = Scalar::sqrt(fOrthoDotResult);
-  Vector vResult = SysVector::fill(fOrthoNormLength);
+  core::float32 fOrthoNormLength = scalar::sqrt(fOrthoDotResult);
+  Vector vResult = svector::fill(fOrthoNormLength);
   return vResult;
 }
 
-Vector SysVector::lengthSq3(CVector v) noexcept
+Vector svector::lengthSq3(CVector v) noexcept
 {
-  Vector vResult = SysVector::dot3(v, v);
+  Vector vResult = svector::dot3(v, v);
   return vResult;
 }
 
-Vector SysVector::normalize3(CVector v) noexcept
+Vector svector::normalize3(CVector v) noexcept
 {
-  Vector vLength = SysVector::lengthSq3(v);
+  Vector vLength = svector::lengthSq3(v);
   core::float32 fLength = vLength.vector4_f32[0];
   core::float32 fInvLength;
 
@@ -1087,7 +1087,7 @@ Vector SysVector::normalize3(CVector v) noexcept
   }
   else
   {
-    fInvLength = Constans::CMAXF32;
+    fInvLength = CMAXF32;
   }
 
   Vector vResult;
@@ -1099,74 +1099,74 @@ Vector SysVector::normalize3(CVector v) noexcept
   return vResult;
 }
 
-Vector SysVector::cos3(CVector v1, CVector v2) noexcept
+Vector svector::cos3(CVector v1, CVector v2) noexcept
 {
-  Vector vDot = SysVector::dot3(v1, v2);
-  Vector vLength1 = SysVector::lengthSq3(v1);
-  Vector vLength2 = SysVector::lengthSq3(v2);
+  Vector vDot = svector::dot3(v1, v2);
+  Vector vLength1 = svector::lengthSq3(v1);
+  Vector vLength2 = svector::lengthSq3(v2);
   core::float32 fDot = vDot.vector4_f32[0];
   core::float32 fLength1 = vLength1.vector4_f32[0];
   core::float32 fLength2 = vLength2.vector4_f32[0];
   core::float32 fMul = fLength1 * fLength2;
-  core::float32 fSqrtMul = Scalar::sqrt(fMul);
+  core::float32 fSqrtMul = scalar::sqrt(fMul);
   core::float32 fCos = fDot / fSqrtMul;
-  Vector vResult = SysVector::fill(fCos);
+  Vector vResult = svector::fill(fCos);
   return vResult;
 }
 
-Vector SysVector::covector4(CVector v, CVector e1, CVector e2, CVector e3, CVector e4) noexcept
+Vector svector::covector4(CVector v, CVector e1, CVector e2, CVector e3, CVector e4) noexcept
 {
   Vector vResult;
-  vResult.vector4_f32[0] = SysVector::dot4(v, e1).vector4_f32[0];
-  vResult.vector4_f32[1] = SysVector::dot4(v, e2).vector4_f32[0];
-  vResult.vector4_f32[2] = SysVector::dot4(v, e3).vector4_f32[0];
-  vResult.vector4_f32[3] = SysVector::dot4(v, e4).vector4_f32[0];
+  vResult.vector4_f32[0] = svector::dot4(v, e1).vector4_f32[0];
+  vResult.vector4_f32[1] = svector::dot4(v, e2).vector4_f32[0];
+  vResult.vector4_f32[2] = svector::dot4(v, e3).vector4_f32[0];
+  vResult.vector4_f32[3] = svector::dot4(v, e4).vector4_f32[0];
 
   return vResult;
 }
 
-Vector SysVector::dot4(CVector v1, CVector v2, CVector e1, CVector e2, CVector e3, CVector e4, Vector* cov) noexcept
+Vector svector::dot4(CVector v1, CVector v2, CVector e1, CVector e2, CVector e3, CVector e4, Vector* cov) noexcept
 {
-  Vector covector = SysVector::covector4(v2, e1, e2, e3, e4);
+  Vector covector = svector::covector4(v2, e1, e2, e3, e4);
 
   if (cov != nullptr)
   {
     *cov = covector;
   }
 
-  Vector vResult = SysVector::dot4(v1, covector);
+  Vector vResult = svector::dot4(v1, covector);
   return vResult;
 }
 
-Vector SysVector::dot4(CVector v1, CVector v2) noexcept
+Vector svector::dot4(CVector v1, CVector v2) noexcept
 {
   core::float32 fDot = v1.vector4_f32[0] * v2.vector4_f32[0] +
     v1.vector4_f32[1] * v2.vector4_f32[1] +
     v1.vector4_f32[2] * v2.vector4_f32[2] +
     v1.vector4_f32[3] * v2.vector4_f32[3];
 
-  Vector vResult = SysVector::fill(fDot);
+  Vector vResult = svector::fill(fDot);
   return vResult;
 }
 
-Vector SysVector::length4(CVector v) noexcept
+Vector svector::length4(CVector v) noexcept
 {
-  Vector vOrthoDotResult = SysVector::dot4(v, v);
+  Vector vOrthoDotResult = svector::dot4(v, v);
   core::float32 fOrthoDotResult = vOrthoDotResult.vector4_f32[0];
-  core::float32 fOrthoNormLength = Scalar::sqrt(fOrthoDotResult);
-  Vector vResult = SysVector::fill(fOrthoNormLength);
+  core::float32 fOrthoNormLength = scalar::sqrt(fOrthoDotResult);
+  Vector vResult = svector::fill(fOrthoNormLength);
   return vResult;
 }
 
-Vector SysVector::lengthSq4(CVector v) noexcept
+Vector svector::lengthSq4(CVector v) noexcept
 {
-  Vector vResult = SysVector::dot4(v, v);
+  Vector vResult = svector::dot4(v, v);
   return vResult;
 }
 
-Vector SysVector::normalize4(CVector v) noexcept
+Vector svector::normalize4(CVector v) noexcept
 {
-  Vector vLength = SysVector::lengthSq4(v);
+  Vector vLength = svector::lengthSq4(v);
   core::float32 fLength = vLength.vector4_f32[0];
   core::float32 fInvLength;
 
@@ -1176,7 +1176,7 @@ Vector SysVector::normalize4(CVector v) noexcept
   }
   else
   {
-    fInvLength = Constans::CMAXF32;
+    fInvLength = CMAXF32;
   }
 
   Vector vResult;
@@ -1188,104 +1188,104 @@ Vector SysVector::normalize4(CVector v) noexcept
   return vResult;
 }
 
-Vector SysVector::cos4(CVector v1, CVector v2) noexcept
+Vector svector::cos4(CVector v1, CVector v2) noexcept
 {
-  Vector vDot = SysVector::dot4(v1, v2);
-  Vector vLength1 = SysVector::lengthSq4(v1);
-  Vector vLength2 = SysVector::lengthSq4(v2);
+  Vector vDot = svector::dot4(v1, v2);
+  Vector vLength1 = svector::lengthSq4(v1);
+  Vector vLength2 = svector::lengthSq4(v2);
   core::float32 fDot = vDot.vector4_f32[0];
   core::float32 fLength1 = vLength1.vector4_f32[0];
   core::float32 fLength2 = vLength2.vector4_f32[0];
   core::float32 fMul = fLength1 * fLength2;
-  core::float32 fSqrtMul = Scalar::sqrt(fMul);
+  core::float32 fSqrtMul = scalar::sqrt(fMul);
   core::float32 fCos = fDot / fSqrtMul;
-  Vector vResult = SysVector::fill(fCos);
+  Vector vResult = svector::fill(fCos);
   return vResult;
 }
 
-Vector SysVector::project1(CVector v1, CVector v2) noexcept
+Vector svector::project1(CVector v1, CVector v2) noexcept
 {
-  core::float32 x = SysVector::getX(SysVector::dot1(v1, v2));
-  core::float32 y = SysVector::getX(SysVector::lengthSq1(v2));
-  Vector vResult = SysVector::scale(v2, x / y);
+  core::float32 x = svector::getX(svector::dot1(v1, v2));
+  core::float32 y = svector::getX(svector::lengthSq1(v2));
+  Vector vResult = svector::scale(v2, x / y);
   return vResult;
 }
 
-Vector SysVector::reject1(CVector v1, CVector v2) noexcept
+Vector svector::reject1(CVector v1, CVector v2) noexcept
 {
-  Vector vProject = SysVector::project1(v1, v2);
-  Vector vResult = SysVector::subtract(v1, vProject);
+  Vector vProject = svector::project1(v1, v2);
+  Vector vResult = svector::subtract(v1, vProject);
   return vResult;
 }
 
-Vector SysVector::project2(CVector v1, CVector v2) noexcept
+Vector svector::project2(CVector v1, CVector v2) noexcept
 {
-  core::float32 x = SysVector::getX(SysVector::dot2(v1, v2));
-  core::float32 y = SysVector::getX(SysVector::lengthSq2(v2));
-  Vector vResult = SysVector::scale(v2, x / y);
+  core::float32 x = svector::getX(svector::dot2(v1, v2));
+  core::float32 y = svector::getX(svector::lengthSq2(v2));
+  Vector vResult = svector::scale(v2, x / y);
   return vResult;
 }
 
-Vector SysVector::reject2(CVector v1, CVector v2) noexcept
+Vector svector::reject2(CVector v1, CVector v2) noexcept
 {
-  Vector vProject = SysVector::project2(v1, v2);
-  Vector vResult = SysVector::subtract(v1, vProject);
+  Vector vProject = svector::project2(v1, v2);
+  Vector vResult = svector::subtract(v1, vProject);
   return vResult;
 }
 
-Vector SysVector::project3(CVector v1, CVector v2) noexcept
+Vector svector::project3(CVector v1, CVector v2) noexcept
 {
-  core::float32 x = SysVector::getX(SysVector::dot3(v1, v2));
-  core::float32 y = SysVector::getX(SysVector::lengthSq3(v2));
-  Vector vResult = SysVector::scale(v2, x / y);
+  core::float32 x = svector::getX(svector::dot3(v1, v2));
+  core::float32 y = svector::getX(svector::lengthSq3(v2));
+  Vector vResult = svector::scale(v2, x / y);
   return vResult;
 }
 
-Vector SysVector::reject3(CVector v1, CVector v2) noexcept
+Vector svector::reject3(CVector v1, CVector v2) noexcept
 {
-  Vector vProject = SysVector::project3(v1, v2);
-  Vector vResult = SysVector::subtract(v1, vProject);
+  Vector vProject = svector::project3(v1, v2);
+  Vector vResult = svector::subtract(v1, vProject);
   return vResult;
 }
 
-Vector SysVector::project4(CVector v1, CVector v2) noexcept
+Vector svector::project4(CVector v1, CVector v2) noexcept
 {
-  core::float32 x = SysVector::getX(SysVector::dot4(v1, v2));
-  core::float32 y = SysVector::getX(SysVector::lengthSq4(v2));
-  Vector vResult = SysVector::scale(v2, x / y);
+  core::float32 x = svector::getX(svector::dot4(v1, v2));
+  core::float32 y = svector::getX(svector::lengthSq4(v2));
+  Vector vResult = svector::scale(v2, x / y);
   return vResult;
 }
 
-Vector SysVector::reject4(CVector v1, CVector v2) noexcept
+Vector svector::reject4(CVector v1, CVector v2) noexcept
 {
-  Vector vProject = SysVector::project4(v1, v2);
-  Vector vResult = SysVector::subtract(v1, vProject);
+  Vector vProject = svector::project4(v1, v2);
+  Vector vResult = svector::subtract(v1, vProject);
   return vResult;
 }
 
-Vector SysVector::tripleProduct3(CVector v1, CVector v2, CVector v3, CVector e1, CVector e2, CVector e3) noexcept
+Vector svector::tripleProduct3(CVector v1, CVector v2, CVector v3, CVector e1, CVector e2, CVector e3) noexcept
 {
-  core::float32 x = SysVector::getX(SysVector::tripleProduct3(v1, v2, v3));
-  core::float32 y = SysVector::getX(SysVector::tripleProduct3(e1, e2, e3));
-  Vector vResult = SysVector::fill(x * y);
+  core::float32 x = svector::getX(svector::tripleProduct3(v1, v2, v3));
+  core::float32 y = svector::getX(svector::tripleProduct3(e1, e2, e3));
+  Vector vResult = svector::fill(x * y);
   return vResult;
 }
 
-Vector SysVector::cross3(CVector v1, CVector v2, CVector e1, CVector e2, CVector e3) noexcept
+Vector svector::cross3(CVector v1, CVector v2, CVector e1, CVector e2, CVector e3) noexcept
 {
   Vector vResult;
   {
     core::float32 s1 = v1.vector4_f32[1] * v2.vector4_f32[2] - v1.vector4_f32[2] * v2.vector4_f32[1];
     core::float32 s2 = v1.vector4_f32[2] * v2.vector4_f32[0] - v1.vector4_f32[0] * v2.vector4_f32[2];
     core::float32 s3 = v1.vector4_f32[0] * v2.vector4_f32[1] - v1.vector4_f32[1] * v2.vector4_f32[0];
-    vResult = SysVector::scale(e1, s1);
-    vResult = SysVector::add(vResult, SysVector::scale(e2, s2));
-    vResult = SysVector::add(vResult, SysVector::scale(e3, s3));
+    vResult = svector::scale(e1, s1);
+    vResult = svector::add(vResult, svector::scale(e2, s2));
+    vResult = svector::add(vResult, svector::scale(e3, s3));
   }
   return vResult;
 }
 
-Vector SysVector::tripleProduct3(CVector v1, CVector v2, CVector v3) noexcept
+Vector svector::tripleProduct3(CVector v1, CVector v2, CVector v3) noexcept
 {
   core::float32 x;
   {
@@ -1294,11 +1294,11 @@ Vector SysVector::tripleProduct3(CVector v1, CVector v2, CVector v3) noexcept
     x += v1.vector4_f32[2] * (v2.vector4_f32[0] * v3.vector4_f32[1] - v2.vector4_f32[1] * v3.vector4_f32[0]);
   }
 
-  Vector vResult = SysVector::fill(x);
+  Vector vResult = svector::fill(x);
   return vResult;
 }
 
-Vector SysVector::cross3(CVector v1, CVector v2) noexcept
+Vector svector::cross3(CVector v1, CVector v2) noexcept
 {
   Vector vResult;
   {

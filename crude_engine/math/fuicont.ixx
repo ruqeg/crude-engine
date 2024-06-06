@@ -9,322 +9,375 @@ import crude.core.alias;
 export namespace crude::math
 {
 
-struct MFLOAT1
+struct FLOAT1
 {
   core::float32 x;
 
-  MFLOAT1() = default;
+  FLOAT1() = default;
 
-  MFLOAT1(const MFLOAT1&) = default;
-  MFLOAT1& operator=(const MFLOAT1&) = default;
+  FLOAT1(const FLOAT1&) = default;
+  FLOAT1& operator=(const FLOAT1&) = default;
 
-  MFLOAT1(MFLOAT1&&) = default;
-  MFLOAT1& operator=(MFLOAT1&&) = default;
+  FLOAT1(FLOAT1&&) = default;
+  FLOAT1& operator=(FLOAT1&&) = default;
 
-  constexpr MFLOAT1(core::float32 x) noexcept
+  constexpr FLOAT1(core::float32 x) noexcept
     :
     x(x) {}
 
-  bool operator==(const MFLOAT1&) const = default;
-  auto operator<=>(const MFLOAT1&) const = default;
+  bool operator==(const FLOAT1&) const = default;
+  auto operator<=>(const FLOAT1&) const = default;
 };
 
-struct alignas(16) MFLOAT1A : public MFLOAT1
+struct alignas(16) FLOAT1A : public FLOAT1
 {
-  using MFLOAT1::MFLOAT1;
+  using FLOAT1::FLOAT1;
 };
 
-struct MFLOAT2
+struct FLOAT2
 {
   core::float32 x;
   core::float32 y;
 
-  MFLOAT2() = default;
+  FLOAT2() = default;
 
-  MFLOAT2(const MFLOAT2&) = default;
-  MFLOAT2& operator=(const MFLOAT2&) = default;
+  FLOAT2(const FLOAT2&) = default;
+  FLOAT2& operator=(const FLOAT2&) = default;
 
-  MFLOAT2(MFLOAT2&&) = default;
-  MFLOAT2& operator=(MFLOAT2&&) = default;
+  FLOAT2(FLOAT2&&) = default;
+  FLOAT2& operator=(FLOAT2&&) = default;
 
-  constexpr MFLOAT2(core::float32 x, core::float32 y) noexcept
+  constexpr FLOAT2(core::float32 x, core::float32 y) noexcept
     : 
     x(x), y(y) {}
 
-  bool operator==(const MFLOAT2&) const = default;
-  auto operator<=>(const MFLOAT2&) const = default;
+  bool operator==(const FLOAT2&) const = default;
+  auto operator<=>(const FLOAT2&) const = default;
 };
 
-struct alignas(16) MFLOAT2A : public MFLOAT2
+struct alignas(16) FLOAT2A : public FLOAT2
 {
-  using MFLOAT2::MFLOAT2;
+  using FLOAT2::FLOAT2;
 };
 
-struct MFLOAT3
+struct FLOAT3
 {
   core::float32 x;
   core::float32 y;
   core::float32 z;
 
-  MFLOAT3() = default;
+  FLOAT3() = default;
 
-  MFLOAT3(const MFLOAT3&) = default;
-  MFLOAT3& operator=(const MFLOAT3&) = default;
+  FLOAT3(const FLOAT3&) = default;
+  FLOAT3& operator=(const FLOAT3&) = default;
 
-  MFLOAT3(MFLOAT3&&) = default;
-  MFLOAT3& operator=(MFLOAT3&&) = default;
+  FLOAT3(FLOAT3&&) = default;
+  FLOAT3& operator=(FLOAT3&&) = default;
 
-  constexpr MFLOAT3(core::float32 x, core::float32 y, core::float32 z) noexcept
+  constexpr FLOAT3(core::float32 x, core::float32 y, core::float32 z) noexcept
     : x(x), y(y), z(z)
   {}
 
-  bool operator==(const MFLOAT3&) const = default;
-  auto operator<=>(const MFLOAT3&) const = default;
+  bool operator==(const FLOAT3&) const = default;
+  auto operator<=>(const FLOAT3&) const = default;
 };
 
-struct alignas(16) MFLOAT3A : public MFLOAT3
+struct alignas(16) FLOAT3A : public FLOAT3
 {
-  using MFLOAT3::MFLOAT3;
+  using FLOAT3::FLOAT3;
 };
 
-struct MFLOAT4
+struct FLOAT4
 {
   core::float32 x;
   core::float32 y;
   core::float32 z;
   core::float32 w;
 
-  MFLOAT4() = default;
+  FLOAT4() = default;
 
-  MFLOAT4(const MFLOAT4&) = default;
-  MFLOAT4& operator=(const MFLOAT4&) = default;
+  FLOAT4(const FLOAT4&) = default;
+  FLOAT4& operator=(const FLOAT4&) = default;
 
-  MFLOAT4(MFLOAT4&&) = default;
-  MFLOAT4& operator=(MFLOAT4&&) = default;
+  FLOAT4(FLOAT4&&) = default;
+  FLOAT4& operator=(FLOAT4&&) = default;
 
-  constexpr MFLOAT4(core::float32 x, core::float32 y, core::float32 z, core::float32 w) noexcept
+  constexpr FLOAT4(core::float32 x, core::float32 y, core::float32 z, core::float32 w) noexcept
     : x(x), y(y), z(z), w(w)
   {}
 
-  bool operator==(const MFLOAT4&) const = default;
-  auto operator<=>(const MFLOAT4&) const = default;
+  bool operator==(const FLOAT4&) const = default;
+  auto operator<=>(const FLOAT4&) const = default;
 };
 
-struct alignas(16) MFLOAT4A : public MFLOAT4
+struct alignas(16) FLOAT4A : public FLOAT4
 {
-  using MFLOAT4::MFLOAT4;
+  using FLOAT4::FLOAT4;
 };
 
-struct MINT1
+struct FLOAT4X4
+{
+  union
+  {
+    struct
+    {
+      core::float32 _00;
+      core::float32 _01;
+      core::float32 _02;
+      core::float32 _03;
+      core::float32 _10;
+      core::float32 _11;
+      core::float32 _12;
+      core::float32 _13;
+      core::float32 _20;
+      core::float32 _21;
+      core::float32 _22;
+      core::float32 _23;
+      core::float32 _30;
+      core::float32 _31;
+      core::float32 _32;
+      core::float32 _33;
+    };
+    core::float32 m[4][4];
+  };
+
+  FLOAT4X4() = default;
+
+  FLOAT4X4(const FLOAT4X4&) = default;
+  FLOAT4X4& operator=(const FLOAT4X4&) = default;
+
+  FLOAT4X4(FLOAT4X4&&) = default;
+  FLOAT4X4& operator=(FLOAT4X4&&) = default;
+
+  constexpr FLOAT4X4(core::float32 m00, core::float32 m01, core::float32 m02, core::float32 m03,
+                      core::float32 m10, core::float32 m11, core::float32 m12, core::float32 m13,
+                      core::float32 m20, core::float32 m21, core::float32 m22, core::float32 m23,
+                      core::float32 m30, core::float32 m31, core::float32 m32, core::float32 m33) noexcept
+    : _00(m00), _01(m01), _02(m02), _03(m03)
+    , _10(m10), _11(m11), _12(m12), _13(m13)
+    , _20(m20), _21(m21), _22(m22), _23(m23)
+    , _30(m30), _31(m31), _32(m32), _33(m33)
+  {}
+
+  bool operator==(const FLOAT4X4&) const = default;
+  auto operator<=>(const FLOAT4X4&) const = default;
+};
+
+struct alignas(64) FLOAT4X4A : public FLOAT4X4
+{
+  using FLOAT4X4::FLOAT4X4;
+};
+
+struct INT1
 {
   core::int32 x;
 
-  MINT1() = default;
+  INT1() = default;
 
-  MINT1(const MINT1&) = default;
-  MINT1& operator=(const MINT1&) = default;
+  INT1(const INT1&) = default;
+  INT1& operator=(const INT1&) = default;
 
-  MINT1(MINT1&&) = default;
-  MINT1& operator=(MINT1&&) = default;
+  INT1(INT1&&) = default;
+  INT1& operator=(INT1&&) = default;
 
-  constexpr MINT1(core::int32 x) noexcept
+  constexpr INT1(core::int32 x) noexcept
     :
     x(x) {}
 
-  bool operator==(const MINT1&) const = default;
-  auto operator<=>(const MINT1&) const = default;
+  bool operator==(const INT1&) const = default;
+  auto operator<=>(const INT1&) const = default;
 };
 
-struct alignas(16) MINT1A : public MINT1
+struct alignas(16) INT1A : public INT1
 {
-  using MINT1::MINT1;
+  using INT1::INT1;
 };
 
-struct MINT2
+struct INT2
 {
   core::int32 x;
   core::int32 y;
 
-  MINT2() = default;
+  INT2() = default;
 
-  MINT2(const MINT2&) = default;
-  MINT2& operator=(const MINT2&) = default;
+  INT2(const INT2&) = default;
+  INT2& operator=(const INT2&) = default;
 
-  MINT2(MINT2&&) = default;
-  MINT2& operator=(MINT2&&) = default;
+  INT2(INT2&&) = default;
+  INT2& operator=(INT2&&) = default;
 
-  constexpr MINT2(core::int32 x, core::int32 y) noexcept
+  constexpr INT2(core::int32 x, core::int32 y) noexcept
     :
     x(x), y(y) {}
 
-  bool operator==(const MINT2&) const = default;
-  auto operator<=>(const MINT2&) const = default;
+  bool operator==(const INT2&) const = default;
+  auto operator<=>(const INT2&) const = default;
 };
 
-struct alignas(16) MINT2A : public MINT2
+struct alignas(16) INT2A : public INT2
 {
-  using MINT2::MINT2;
+  using INT2::INT2;
 };
 
-struct MINT3
+struct INT3
 {
   core::int32 x;
   core::int32 y;
   core::int32 z;
 
-  MINT3() = default;
+  INT3() = default;
 
-  MINT3(const MINT3&) = default;
-  MINT3& operator=(const MINT3&) = default;
+  INT3(const INT3&) = default;
+  INT3& operator=(const INT3&) = default;
 
-  MINT3(MINT3&&) = default;
-  MINT3& operator=(MINT3&&) = default;
+  INT3(INT3&&) = default;
+  INT3& operator=(INT3&&) = default;
 
-  constexpr MINT3(core::int32 x, core::int32 y, core::int32 z) noexcept
+  constexpr INT3(core::int32 x, core::int32 y, core::int32 z) noexcept
     :
     x(x), y(y), z(z) {}
 
-  bool operator==(const MINT3&) const = default;
-  auto operator<=>(const MINT3&) const = default;
+  bool operator==(const INT3&) const = default;
+  auto operator<=>(const INT3&) const = default;
 };
 
-struct alignas(16) MINT3A : public MINT3
+struct alignas(16) INT3A : public INT3
 {
-  using MINT3::MINT3;
+  using INT3::INT3;
 };
 
-struct MINT4
+struct INT4
 {
   core::int32 x;
   core::int32 y;
   core::int32 z;
   core::int32 w;
 
-  MINT4() = default;
+  INT4() = default;
 
-  MINT4(const MINT4&) = default;
-  MINT4& operator=(const MINT4&) = default;
+  INT4(const INT4&) = default;
+  INT4& operator=(const INT4&) = default;
 
-  MINT4(MINT4&&) = default;
-  MINT4& operator=(MINT4&&) = default;
+  INT4(INT4&&) = default;
+  INT4& operator=(INT4&&) = default;
 
-  constexpr MINT4(core::int32 x, core::int32 y, core::int32 z, core::int32 w) noexcept
+  constexpr INT4(core::int32 x, core::int32 y, core::int32 z, core::int32 w) noexcept
     :
     x(x), y(y), z(z), w(w) {}
 
-  bool operator==(const MINT4&) const = default;
-  auto operator<=>(const MINT4&) const = default;
+  bool operator==(const INT4&) const = default;
+  auto operator<=>(const INT4&) const = default;
 };
 
-struct alignas(16) MINT4A : public MINT4
+struct alignas(16) INT4A : public INT4
 {
-  using MINT4::MINT4;
+  using INT4::INT4;
 };
 
-struct MUINT1
+struct UINT1
 {
   core::uint32 x;
 
-  MUINT1() = default;
+  UINT1() = default;
 
-  MUINT1(const MUINT1&) = default;
-  MUINT1& operator=(const MUINT1&) = default;
+  UINT1(const UINT1&) = default;
+  UINT1& operator=(const UINT1&) = default;
 
-  MUINT1(MUINT1&&) = default;
-  MUINT1& operator=(MUINT1&&) = default;
+  UINT1(UINT1&&) = default;
+  UINT1& operator=(UINT1&&) = default;
 
-  constexpr MUINT1(core::uint32 x) noexcept
+  constexpr UINT1(core::uint32 x) noexcept
     :
     x(x) {}
 
-  bool operator==(const MUINT1&) const = default;
-  auto operator<=>(const MUINT1&) const = default;
+  bool operator==(const UINT1&) const = default;
+  auto operator<=>(const UINT1&) const = default;
 };
 
-struct alignas(16) MUINT1A : public MUINT1
+struct alignas(16) UINT1A : public UINT1
 {
-  using MUINT1::MUINT1;
+  using UINT1::UINT1;
 };
 
-struct MUINT2
+struct UINT2
 {
   core::uint32 x;
   core::uint32 y;
 
-  MUINT2() = default;
+  UINT2() = default;
 
-  MUINT2(const MUINT2&) = default;
-  MUINT2& operator=(const MUINT2&) = default;
+  UINT2(const UINT2&) = default;
+  UINT2& operator=(const UINT2&) = default;
 
-  MUINT2(MUINT2&&) = default;
-  MUINT2& operator=(MUINT2&&) = default;
+  UINT2(UINT2&&) = default;
+  UINT2& operator=(UINT2&&) = default;
 
-  constexpr MUINT2(core::uint32 x, core::uint32 y) noexcept
+  constexpr UINT2(core::uint32 x, core::uint32 y) noexcept
     :
     x(x), y(y) {}
 
-  bool operator==(const MUINT2&) const = default;
-  auto operator<=>(const MUINT2&) const = default;
+  bool operator==(const UINT2&) const = default;
+  auto operator<=>(const UINT2&) const = default;
 };
 
-struct alignas(16) MUINT2A : public MUINT2
+struct alignas(16) UINT2A : public UINT2
 {
-  using MUINT2::MUINT2;
+  using UINT2::UINT2;
 };
 
-struct MUINT3
+struct UINT3
 {
   core::uint32 x;
   core::uint32 y;
   core::uint32 z;
 
-  MUINT3() = default;
+  UINT3() = default;
 
-  MUINT3(const MUINT3&) = default;
-  MUINT3& operator=(const MUINT3&) = default;
+  UINT3(const UINT3&) = default;
+  UINT3& operator=(const UINT3&) = default;
 
-  MUINT3(MUINT3&&) = default;
-  MUINT3& operator=(MUINT3&&) = default;
+  UINT3(UINT3&&) = default;
+  UINT3& operator=(UINT3&&) = default;
 
-  constexpr MUINT3(core::uint32 x, core::uint32 y, core::uint32 z) noexcept
+  constexpr UINT3(core::uint32 x, core::uint32 y, core::uint32 z) noexcept
     :
     x(x), y(y), z(z) {}
 
-  bool operator==(const MUINT3&) const = default;
-  auto operator<=>(const MUINT3&) const = default;
+  bool operator==(const UINT3&) const = default;
+  auto operator<=>(const UINT3&) const = default;
 };
 
-struct alignas(16) MUINT3A : public MUINT3
+struct alignas(16) UINT3A : public UINT3
 {
-  using MUINT3::MUINT3;
+  using UINT3::UINT3;
 };
 
-struct MUINT4
+struct UINT4
 {
   core::uint32 x;
   core::uint32 y;
   core::uint32 z;
   core::uint32 w;
 
-  MUINT4() = default;
+  UINT4() = default;
 
-  MUINT4(const MUINT4&) = default;
-  MUINT4& operator=(const MUINT4&) = default;
+  UINT4(const UINT4&) = default;
+  UINT4& operator=(const UINT4&) = default;
 
-  MUINT4(MUINT4&&) = default;
-  MUINT4& operator=(MUINT4&&) = default;
+  UINT4(UINT4&&) = default;
+  UINT4& operator=(UINT4&&) = default;
 
-  constexpr MUINT4(core::uint32 x, core::uint32 y, core::uint32 z, core::uint32 w) noexcept
+  constexpr UINT4(core::uint32 x, core::uint32 y, core::uint32 z, core::uint32 w) noexcept
     :
     x(x), y(y), z(z), w(w) {}
 
-  bool operator==(const MUINT4&) const = default;
-  auto operator<=>(const MUINT4&) const = default;
+  bool operator==(const UINT4&) const = default;
+  auto operator<=>(const UINT4&) const = default;
 };
 
-struct alignas(16) MUINT4A : public MUINT4
+struct alignas(16) UINT4A : public UINT4
 {
-  using MUINT4::MUINT4;
+  using UINT4::UINT4;
 };
 
 }

@@ -1,4 +1,5 @@
 #include <vulkan/vulkan.hpp>
+#include <cmath>
 
 module crude.graphics.descriptor_pool;
 
@@ -9,13 +10,16 @@ namespace crude::graphics
 {
 
 Descriptor_Pool::Descriptor_Pool(core::Shared_Ptr<const Device>           device,
-                                 const core::span<VkDescriptorPoolSize>&  poolSizes,
-                                 core::uint32                             maxSets,
+                                 const core::span<Descriptor_Pool_Size>&  poolSizes,
                                  bool                                     freeDescriptorSet)
   :
   m_device(device),
   m_freeDescriptorSet(m_freeDescriptorSet)
 {
+  core::uint32 maxSets = 0u;
+  for (auto& poolSize : poolSizes)
+    maxSets = std::max(poolSize.descriptorCount, maxSets);
+
   VkDescriptorPoolCreateInfo vkCreateInfo{};
   vkCreateInfo.sType          = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
   vkCreateInfo.pNext          = nullptr;

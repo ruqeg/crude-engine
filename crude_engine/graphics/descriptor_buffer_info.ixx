@@ -14,8 +14,8 @@ struct Descriptor_Buffer_Info : private VkDescriptorBufferInfo
 {
 public:
   explicit Descriptor_Buffer_Info(core::Shared_Ptr<Buffer>  buffer,
-                                  VkDeviceSize              offset,
-                                  VkDeviceSize              range);
+                                  VkDeviceSize              range,
+                                  VkDeviceSize              offset = 0);
 private:
   core::Shared_Ptr<Buffer>  m_buffer;
 

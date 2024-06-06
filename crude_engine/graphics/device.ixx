@@ -36,8 +36,8 @@ public:
   core::Shared_Ptr<const Physical_Device> getPhysicalDevice() const;
   core::Shared_Ptr<Queue> getQueue(core::uint32 queueFamilyIndex, core::uint32 queueIndex) const;
   // !TODO VkCopyDescriptorSet or replace Write_Descriptor_Set back to VkWriteDescriptorSet
-  void updateDescriptorSets(const core::span<Write_Descriptor_Set>&  descriptorWrites,
-                            const core::span<VkCopyDescriptorSet>&   descriptorCopies);
+  void updateDescriptorSets(const core::span<const Write_Descriptor_Set>&  descriptorWrites,
+                            const core::span<const VkCopyDescriptorSet>&   descriptorCopies);
   void waitIdle();
   bool waitForFences(core::span<Fence> fences, bool waitAll, core::uint64 timeout = UINT64_MAX) const;
   bool resetForFences(core::span<Fence> fences) const;
