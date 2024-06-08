@@ -22,6 +22,9 @@ class Engine
 public:
   Engine(core::Shared_Ptr<system::SDL_Window_Container> windowContainer);
 public:
+  void update();
+  void render();
+public:
   static void initialize(const Engine_Config& config);
 private:
   static void initializeMemory(core::uint32 defaultFreeRBTCapacity);

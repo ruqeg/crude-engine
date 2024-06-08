@@ -10,6 +10,7 @@ target_sources(crude_engine
     stack_allocator.cpp
     string.cpp
     memory_manager.cpp
+    timer.cpp
     system_allocator.cpp)
 
 target_sources(crude_engine
@@ -48,4 +49,5 @@ target_sources(crude_engine
     string.ixx
     system_allocator.ixx
     tree_iterator_base.ixx
+    timer.ixx
     utility.ixx)
