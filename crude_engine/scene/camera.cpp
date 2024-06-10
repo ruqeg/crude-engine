@@ -1,5 +1,3 @@
-#include <DirectXMath.h>
-
 module crude.scene.camera;
 
 import crude.math.convert;
@@ -34,14 +32,6 @@ void Camera::calculateWorldToViewMatrix()
   const math::Vector cameraTarget = math::svector::add(m_positionVector, cameraDirection);
   const math::Vector upDir = math::svector::transformCoord3(cDefaultCameraTopVector, cameraRotationMatrix);
   m_worldToViewMatrix = math::smatrix::lookAtLH(m_positionVector, cameraTarget, upDir);
-  /*m_worldToViewMatrix = math::smatrix::lookAtLH(
-    math::svector::set(0, 0, -5, 0),
-    math::svector::set(0, 0.3, -4, 0),
-    math::svector::set(0, 1, 0, 0));*/
-  DirectX::XMMATRIX m = DirectX::XMMatrixLookAtLH(
-    DirectX::XMVectorSet(0, 0, -5, 0),
-    DirectX::XMVectorSet(0, 0.3, -4, 0),
-    DirectX::XMVectorSet(0, 1, 0, 0));
   m_viewToWorldMatrix = math::smatrix::inverse(m_worldToViewMatrix);
   math::storeFloat4x4(m_worldToViewFloat4x4, m_worldToViewMatrix);
   math::storeFloat4x4(m_viewToWorldFloat4x4, m_viewToWorldMatrix);
