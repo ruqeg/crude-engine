@@ -1,11 +1,15 @@
 module;
 
+#include <SDL3/SDL_scancode.h>
+
 export module crude.system.keyboard_event;
 
 import crude.core.alias;
 
 export namespace crude::system
 {
+
+using Scancode = SDL_Scancode;
 
 enum Keyboard_Event_Type
 {

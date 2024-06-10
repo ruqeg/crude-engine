@@ -7,9 +7,7 @@ Mouse_Event_Handler::Mouse_Event_Handler()
   :
   m_leftIsDown(false),
   m_rightIsDown(false),
-  m_middleDown(false),
-  m_x(0),
-  m_y(0)
+  m_middleDown(false)
 {}
   
 Mouse_Event Mouse_Event_Handler::readEvent()
@@ -26,98 +24,61 @@ Mouse_Event Mouse_Event_Handler::readEvent()
   }
 }
 
-bool Mouse_Event_Handler::eventBufferIsEmpty() const
-{
-  return m_eventBuffer.empty();
-}
-
-bool Mouse_Event_Handler::isLeftDown() const
-{
-  return m_leftIsDown;
-}
-
-bool Mouse_Event_Handler::isMiddleDown() const
-{
-  return m_middleDown;
-}
-
-bool Mouse_Event_Handler::isRightDown() const
-{
-  return m_rightIsDown;
-}
-
-core::int32 Mouse_Event_Handler::getPositionX() const
-{
-  return m_x;
-}
-
-core::int32 Mouse_Event_Handler::getPositionY() const
-{
-  return m_y;
-}
-
-const Mouse_Point& Mouse_Event_Handler::getPosition() const
-{
-  const Mouse_Point point = { m_x, m_y };
-  return point;
-}
-
-void Mouse_Event_Handler::onLeftPressed(core::int32 x, core::int32 y)
+void Mouse_Event_Handler::onLeftPressed(const Mouse_Point& position)
 {
   m_leftIsDown = true;
-  m_eventBuffer.push(Mouse_Event(MOUSE_EVENT_TYPE_LPRESS, x, y));
+  m_eventBuffer.push(Mouse_Event(MOUSE_EVENT_TYPE_LPRESS, position));
 }
 
-void Mouse_Event_Handler::onLeftReleased(core::int32 x, core::int32 y)
+void Mouse_Event_Handler::onLeftReleased(const Mouse_Point& position)
 {
   m_leftIsDown = false;
-  m_eventBuffer.push(Mouse_Event(MOUSE_EVENT_TYPE_LRELEASE, x, y));
+  m_eventBuffer.push(Mouse_Event(MOUSE_EVENT_TYPE_LRELEASE, position));
 }
 
-void Mouse_Event_Handler::onRightPressed(core::int32 x, core::int32 y)
+void Mouse_Event_Handler::onRightPressed(const Mouse_Point& position)
 {
   m_rightIsDown = true;
-  m_eventBuffer.push(Mouse_Event(MOUSE_EVENT_TYPE_RPRESS, x, y));
+  m_eventBuffer.push(Mouse_Event(MOUSE_EVENT_TYPE_RPRESS, position));
 }
 
-void Mouse_Event_Handler::onRightReleased(core::int32 x, core::int32 y)
+void Mouse_Event_Handler::onRightReleased(const Mouse_Point& position)
 {
   m_rightIsDown = false;
-  m_eventBuffer.push(Mouse_Event(MOUSE_EVENT_TYPE_RRELEASE, x, y));
+  m_eventBuffer.push(Mouse_Event(MOUSE_EVENT_TYPE_RRELEASE, position));
 }
 
-void Mouse_Event_Handler::onMiddlePressed(core::int32 x, core::int32 y)
+void Mouse_Event_Handler::onMiddlePressed(const Mouse_Point& position)
 {
   m_middleDown = true;
-  m_eventBuffer.push(Mouse_Event(MOUSE_EVENT_TYPE_MPRESS, x, y));
+  m_eventBuffer.push(Mouse_Event(MOUSE_EVENT_TYPE_MPRESS, position));
 }
 
-void Mouse_Event_Handler::onMiddleReleased(core::int32 x, core::int32 y)
+void Mouse_Event_Handler::onMiddleReleased(const Mouse_Point& position)
 {
   m_middleDown = false;
-  m_eventBuffer.push(Mouse_Event(MOUSE_EVENT_TYPE_MRELEASE, x, y));
+  m_eventBuffer.push(Mouse_Event(MOUSE_EVENT_TYPE_MRELEASE, position));
 }
 
-void Mouse_Event_Handler::onWheelUp(core::int32 x, core::int32 y)
+void Mouse_Event_Handler::onWheelUp(const Mouse_Point& position)
 {
-  m_eventBuffer.push(Mouse_Event(MOUSE_EVENT_TYPE_WHEELUP, x, y));
+  m_eventBuffer.push(Mouse_Event(MOUSE_EVENT_TYPE_WHEELUP, position));
 }
 
-void Mouse_Event_Handler::onWheelDown(core::int32 x, core::int32 y)
+void Mouse_Event_Handler::onWheelDown(const Mouse_Point& position)
 {
-  m_eventBuffer.push(Mouse_Event(MOUSE_EVENT_TYPE_WHEELDOWN, x, y));
+  m_eventBuffer.push(Mouse_Event(MOUSE_EVENT_TYPE_WHEELDOWN, position));
 }
 
-void Mouse_Event_Handler::onMouseMove(core::int32 x, core::int32 y)
+void Mouse_Event_Handler::onMouseMove(const Mouse_Point& position, const Mouse_Point& positionRel)
 {
-  m_x = x;
-  m_y = y;
-  m_eventBuffer.push(Mouse_Event(MOUSE_EVENT_TYPE_MOVE, x, y));
+  m_position = position;
+  m_eventBuffer.push(Mouse_Event(MOUSE_EVENT_TYPE_MOVE, position, positionRel));
 }
 
-void Mouse_Event_Handler::onMouseMoveRaw(core::int32 x, core::int32 y)
+void Mouse_Event_Handler::onMouseMoveRaw(const Mouse_Point& position)
 {
-  m_eventBuffer.push(Mouse_Event(MOUSE_EVENT_TYPE_RAW_MOVE, x, y));
+  m_eventBuffer.push(Mouse_Event(MOUSE_EVENT_TYPE_RAW_MOVE, position));
 }
 
 }

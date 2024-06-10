@@ -59,6 +59,7 @@ public:
   ~Renderer();
 public:
   void drawFrame();
+  scene::Camera& getCamera() { return m_camera; }
 private:
   void initializeInstance();
   void initializeSurface();

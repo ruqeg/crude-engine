@@ -3,14 +3,16 @@ module;
 export module crude.system.mouse_event;
 
 import crude.core.alias;
+import crude.math.fuicont;
 
 export namespace crude::system
 {
 
-struct Mouse_Point
+struct Mouse_Point : public math::Float2 
 {
-  core::int32 x;
-  core::int32 y;
+  Mouse_Point() = default;
+  constexpr Mouse_Point(core::float32 x, core::float32 y) noexcept 
+    : math::Float2(x, y) {}
 };
 	
 enum Mouse_Event_Type
@@ -32,19 +34,23 @@ class Mouse_Event
 {
 public:
   Mouse_Event()
-    : m_type(MOUSE_EVENT_TYPE_INVALID), m_x(0), m_y(0) {}
-  Mouse_Event(const Mouse_Event_Type type, const core::int32 x, const core::int32 y)
-    : m_type(type), m_x(x), m_y(y) {}
+    : m_type(MOUSE_EVENT_TYPE_INVALID) {}
+  Mouse_Event(const Mouse_Event_Type type, const core::float32 x, const core::float32 y, const core::float32 xrel = 0.0f, const core::float32 yrel = 0.0f)
+    : m_type(type), m_position(x, y), m_positionRel(xrel, yrel) {}
+  Mouse_Event(const Mouse_Event_Type type, const Mouse_Point& position, const Mouse_Point& positionRel = {})
+    : m_type(type), m_position(position), m_positionRel(positionRel) {}
   bool isVaild() const { return m_type != MOUSE_EVENT_TYPE_INVALID; }
   Mouse_Event_Type getType() const { return m_type; };
-  Mouse_Point getPosition() const { return {m_x, m_y}; }
-  core::int32 getPositionX() const { return m_x; }
-  core::int32 getPositionY() const { return m_y; }
-
+  const Mouse_Point& getPosition() const { return m_position; }
+  core::float32 getPositionX() const { return m_position.x; }
+  core::float32 getPositionY() const { return m_position.y; }
+  const Mouse_Point& getPositionRel() const { return m_positionRel; }
+  core::float32 getPositionRelX() const { return m_positionRel.x; }
+  core::float32 getPositionRelY() const { return m_positionRel.y; }
 private:
   Mouse_Event_Type  m_type;
-  core::int32       m_x;
-  core::int32       m_y;
+  Mouse_Point       m_position;
+  Mouse_Point       m_positionRel;
 };
 
 }

@@ -2,12 +2,14 @@ module;
 
 #include <utility>
 #include <Windows.h>
+#include <algorithm>
 
 export module crude.core.logger;
 
 export import crude.core.debug;
 export import crude.core.alias;
 
+import crude.core.std_containers_stack;
 import crude.core.string;
 import crude.core.utility;
 
@@ -52,13 +54,19 @@ public:
 
   template<typename... Args>
   void operator()(const Debug::Channel  channel,
-    const char* format,
-    Args&&...             args) const noexcept;
+                  const char*           format,
+                  Args&&...             args) const noexcept;
 
 private:
   const char* m_filename;
   int32             m_line;
   Debug::Verbosity  m_verbosity;
+
+private:
+  static constexpr core::array<Debug::Channel, 1> gHideChannelsLogs =
+  {
+    Debug::Channel::Memory
+  };
 };
 
 template<typename... Args>
@@ -124,9 +132,11 @@ void Logger::debugPrintF(const char* filename,
 
 template<typename ...Args>
 void Log_Object::operator()(const Debug::Channel  channel,
-  const char* format,
-  Args&&...             args) const noexcept
+                            const char*           format,
+                            Args&&...             args) const noexcept
 {
+  if (std::find(gHideChannelsLogs.begin(), gHideChannelsLogs.end(), channel) != gHideChannelsLogs.end())
+      return;
   Logger::debugPrintF(m_filename, m_line, channel, m_verbosity, format, std::forward<Args>(args)...);
 }
 

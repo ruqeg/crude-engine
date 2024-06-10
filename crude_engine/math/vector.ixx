@@ -21,10 +21,6 @@ struct __vector4
   };
 };
 
-}
-
-export namespace crude::math
-{
 // !TODO complete SIMD (in the next life) or just switch to DirectXMath
 #if defined(_CRUDE_SSE_INTRINSICS) && !defined(_CRUDE_NO_INTRINSICS)
 #error "!TODO"
@@ -33,12 +29,12 @@ using Vector = __m128;
 #error "!TODO"
 using Vector = float32x4_t;
 #else
-using Vector = __vector4;
+export using Vector = __vector4;
 #endif
 
-using CVector = const Vector&;
+export using CVector = const Vector&;
 
-namespace svector
+export namespace svector
 {
 
 Vector setInt(core::uint32 x, core::uint32 y, core::uint32 z, core::uint32 w) noexcept;
@@ -175,5 +171,32 @@ Vector cos4(CVector v1, CVector v2) noexcept;
 Vector project4(CVector v1, CVector v2) noexcept;
 Vector reject4(CVector v1, CVector v2) noexcept;
 }
+
+struct alignas(16) VectorF32
+{
+  union
+  {
+    core::float32  f[4];
+    Vector         v;
+  };
+
+  operator Vector() const noexcept { return v; }
+};
+
+struct alignas(16) VectorU32
+{
+  union
+  {
+    core::uint32  u[4];
+    Vector  v;
+  };
+
+  operator Vector() const noexcept { return v; }
+};
+
+export constexpr core::uint32 gSelect0 = 0x00000000;
+export constexpr core::uint32 gSelect1 = 0xFFFFFFFF;
+
+export VectorU32 gVectorSelect1110 = { { { gSelect1, gSelect1, gSelect1, gSelect0 } } };
 
 }

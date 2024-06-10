@@ -9,38 +9,6 @@ module crude.math.vector;
 namespace crude::math
 {
 
-struct alignas(16) VectorF32
-{
-  union
-  {
-    core::float32  f[4];
-    Vector         v;
-  };
-
-  operator Vector() const noexcept;
-};
-
-struct alignas(16) VectorU32
-{
-  union
-  {
-    core::uint32  u[4];
-    Vector  v;
-  };
-
-  operator Vector() const noexcept;
-};
-
-VectorF32::operator Vector() const noexcept
-{
-  return v;
-}
-
-VectorU32::operator Vector() const noexcept
-{
-  return v;
-}
-
 Vector svector::zero() noexcept
 {
   VectorF32 vResult = { { { 0.0f, 0.0f, 0.0f, 0.0f } } };
@@ -603,10 +571,10 @@ Vector svector::xorInt(CVector v1, CVector v2) noexcept
 Vector svector::select(CVector v1, CVector v2, CVector control) noexcept
 {
   VectorU32 vResult = { { {
-    (v1.vector4_u32[0] & control.vector4_u32[0]) | (v2.vector4_u32[0] & ~control.vector4_u32[0]),
-    (v1.vector4_u32[1] & control.vector4_u32[1]) | (v2.vector4_u32[1] & ~control.vector4_u32[1]),
-    (v1.vector4_u32[2] & control.vector4_u32[2]) | (v2.vector4_u32[2] & ~control.vector4_u32[2]),
-    (v1.vector4_u32[3] & control.vector4_u32[3]) | (v2.vector4_u32[3] & ~control.vector4_u32[3])
+    (v1.vector4_u32[0] & ~control.vector4_u32[0]) | (v2.vector4_u32[0] & control.vector4_u32[0]),
+    (v1.vector4_u32[1] & ~control.vector4_u32[1]) | (v2.vector4_u32[1] & control.vector4_u32[1]),
+    (v1.vector4_u32[2] & ~control.vector4_u32[2]) | (v2.vector4_u32[2] & control.vector4_u32[2]),
+    (v1.vector4_u32[3] & ~control.vector4_u32[3]) | (v2.vector4_u32[3] & control.vector4_u32[3])
   } } };
   return vResult.v;
 }
@@ -1077,7 +1045,7 @@ Vector svector::lengthSq3(CVector v) noexcept
 
 Vector svector::normalize3(CVector v) noexcept
 {
-  Vector vLength = svector::lengthSq3(v);
+  Vector vLength = svector::length3(v);
   core::float32 fLength = vLength.vector4_f32[0];
   core::float32 fInvLength;
 

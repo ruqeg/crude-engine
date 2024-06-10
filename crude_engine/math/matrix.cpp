@@ -1,3 +1,5 @@
+#include <algorithm>
+
 module crude.math.matrix;
 
 import crude.math.scalar;
@@ -125,8 +127,12 @@ Matrix smatrix::multiplyTranspose(CMatrix m1, CMatrix m2) noexcept
 
 Matrix smatrix::transpose(CMatrix m) noexcept
 {
-  core::assert(false && "!TODO");
-  return Matrix();
+  // !TODO optimize
+  Vector r0 = svector::set(m._11, m._21, m._31, m._41);
+  Vector r1 = svector::set(m._12, m._22, m._32, m._42);
+  Vector r2 = svector::set(m._13, m._23, m._33, m._43);
+  Vector r3 = svector::set(m._14, m._24, m._34, m._44);
+  return Matrix(r0, r1, r2, r3);
 }
 
 Matrix smatrix::inverse(CMatrix m) noexcept
@@ -484,8 +490,18 @@ Matrix smatrix::reflect(CVector reflectionPlane) noexcept
 
 Matrix smatrix::lookAtLH(CVector eyePosition, CVector focusPosition, CVector upDirection) noexcept
 {
-#if defined(_CRUDE_NO_INTRINSICS)
   Vector eyeDirection = svector::subtract(focusPosition, eyePosition);
+  return lookToLH(eyePosition, eyeDirection, upDirection);
+}
+
+Matrix smatrix::lookAtRH(CVector eyePosition, CVector focusPosition, CVector upDirection) noexcept
+{
+  core::assert(false && "!TODO");
+  return Matrix();
+}
+
+Matrix smatrix::lookToLH(CVector eyePosition, CVector eyeDirection, CVector upDirection) noexcept
+{
   Vector r2 = svector::normalize3(eyeDirection);
 
   Vector r0 = svector::cross3(upDirection, r2);
@@ -500,25 +516,14 @@ Matrix smatrix::lookAtLH(CVector eyePosition, CVector focusPosition, CVector upD
   Vector d2 = svector::dot3(r2, negEyePosition);
 
   Matrix m;
-  m.r[0] = r0;
-  m.r[1] = r1;
-  m.r[2] = r2;
-  m.r[3] = svector::set(svector::getX(d0), svector::getX(d1), svector::getX(d2), 1.0f);
+  m.r[0] = svector::select(d0, r0, gVectorSelect1110);
+  m.r[1] = svector::select(d1, r1, gVectorSelect1110);
+  m.r[2] = svector::select(d2, r2, gVectorSelect1110);
+  m.r[3] = svector::set(0.f, 0.f, 0.f, 1.0f);
+
+  m = transpose(m);
 
   return m;
-#endif
-}
-
-Matrix smatrix::lookAtRH(CVector eyePosition, CVector focusPosition, CVector upDirection) noexcept
-{
-  core::assert(false && "!TODO");
-  return Matrix();
-}
-
-Matrix smatrix::lookToLH(CVector eyePosition, CVector eyeDirection, CVector upDirection) noexcept
-{
-  core::assert(false && "!TODO");
-  return Matrix();
 }
 
 Matrix smatrix::lookToRH(CVector eyePosition, CVector eyeDirection, CVector upDirection) noexcept

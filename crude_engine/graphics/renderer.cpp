@@ -334,15 +334,6 @@ void Renderer::recordCommandBuffer(core::Shared_Ptr<Command_Buffer> commandBuffe
 
 
   updateUniformBuffer(m_currentFrame);
-  for (core::uint32 i = 0; i < cFramesCount; i++)
-  {
-    const Descriptor_Buffer_Info bufferInfo(m_uniformBuffer[i], sizeof(Uniform_Buffer_Object));
-    const core::array<Write_Descriptor_Set, 1> descriptorWrites = 
-    {
-      Write_Descriptor_Set(m_descriptorSets[i], 0u, 0u, 1u, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, {}, bufferInfo)
-    };
-    m_device->updateDescriptorSets(descriptorWrites, {});
-  }
   commandBuffer->bindDescriptorSets(m_graphicsPipeline, core::span(&m_descriptorSets[m_currentFrame], 1u), {});
     
   commandBuffer->drawIndexed(indices.size(), 1, 0, 0);
@@ -360,10 +351,9 @@ void Renderer::updateUniformBuffer(core::uint32 currentImage)
   Uniform_Buffer_Object ubo{};
 
   const core::float32 aspect = m_swapchain->getExtent().width / (core::float32)m_swapchain->getExtent().height;
-  m_camera.setPosition(0.0, 0.0, -5.0);
   m_camera.calculateViewToClipMatrix(math::CPI4, aspect, 0.1f, 10.0f);
   m_camera.calculateWorldToViewMatrix();
-
+  
   math::storeFloat4x4(ubo.model, math::smatrix::translation(0.0, 0.0, 0.0));
   math::storeFloat4x4(ubo.view, m_camera.getWorldToViewMatrix());
   math::storeFloat4x4(ubo.proj, m_camera.getViewToClipMatrix());
@@ -373,6 +363,7 @@ void Renderer::updateUniformBuffer(core::uint32 currentImage)
   {
     std::memcpy(data.value(), &ubo, sizeof(ubo));
   }
+  m_uniformBufferMemory[currentImage]->unmap();
 }
 
 void Renderer::initalizeGraphicsPipeline()
@@ -499,10 +490,7 @@ void Renderer::initializeVertexBuffer()
 {
   VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
 
-  const Queue_Family_Indices queueIndices = findDeviceQueueFamilies(m_device->getPhysicalDevice());
-  core::array<core::uint32, 2u> queueFamilyIndices = { queueIndices.graphicsFamily.value() };
-
-  auto stagingBuffer = core::makeShared<Buffer>(m_device, bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, queueFamilyIndices);
+  auto stagingBuffer = core::makeShared<Buffer>(m_device, bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
   auto memRequirements = stagingBuffer->getMemoryRequirements();
   auto staggingBufferMemory = core::makeShared<Device_Memory>(m_device, memRequirements.size, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
   staggingBufferMemory->bind(*stagingBuffer);
@@ -513,7 +501,7 @@ void Renderer::initializeVertexBuffer()
     staggingBufferMemory->unmap();
   }
 
-  m_vertexBuffer = core::makeShared<Buffer>(m_device, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, queueFamilyIndices);
+  m_vertexBuffer = core::makeShared<Buffer>(m_device, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
   memRequirements = m_vertexBuffer->getMemoryRequirements();
   m_vertexBufferMemory = core::makeShared<Device_Memory>(m_device, memRequirements.size, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
   m_vertexBufferMemory->bind(*m_vertexBuffer);
@@ -530,10 +518,7 @@ void Renderer::initializeIndexBuffer()
 {
   VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
 
-  const Queue_Family_Indices queueIndices = findDeviceQueueFamilies(m_device->getPhysicalDevice());
-  core::array<core::uint32, 2u> queueFamilyIndices = { queueIndices.graphicsFamily.value() };
-
-  auto stagingBuffer = core::makeShared<Buffer>(m_device, bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, queueFamilyIndices);
+  auto stagingBuffer = core::makeShared<Buffer>(m_device, bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
   auto memRequirements = stagingBuffer->getMemoryRequirements();
   auto staggingBufferMemory = core::makeShared<Device_Memory>(m_device, memRequirements.size, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
   staggingBufferMemory->bind(*stagingBuffer);
@@ -544,7 +529,7 @@ void Renderer::initializeIndexBuffer()
     staggingBufferMemory->unmap();
   }
 
-  m_indexBuffer = core::makeShared<Buffer>(m_device, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, queueFamilyIndices);
+  m_indexBuffer = core::makeShared<Buffer>(m_device, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
   memRequirements = m_indexBuffer->getMemoryRequirements();
   m_indexBufferMemory = core::makeShared<Device_Memory>(m_device, memRequirements.size, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
   m_indexBufferMemory->bind(*m_indexBuffer);
@@ -561,10 +546,7 @@ void Renderer::initializeUniformBuffers()
 {
   VkDeviceSize bufferSize = sizeof(Uniform_Buffer_Object);
 
-  const Queue_Family_Indices queueIndices = findDeviceQueueFamilies(m_device->getPhysicalDevice());
-  core::array<core::uint32, 2u> queueFamilyIndices = { queueIndices.graphicsFamily.value() };
-
-  auto stagingBuffer = core::makeShared<Buffer>(m_device, bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, queueFamilyIndices);
+  auto stagingBuffer = core::makeShared<Buffer>(m_device, bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
   auto memRequirements = stagingBuffer->getMemoryRequirements();
   auto staggingBufferMemory = core::makeShared<Device_Memory>(m_device, memRequirements.size, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
   staggingBufferMemory->bind(*stagingBuffer);
@@ -577,7 +559,7 @@ void Renderer::initializeUniformBuffers()
 
   for (core::uint32 i = 0; i < cFramesCount; ++i)
   {
-    m_uniformBuffer[i] = core::makeShared<Buffer>(m_device, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, queueFamilyIndices);
+    m_uniformBuffer[i] = core::makeShared<Buffer>(m_device, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
     memRequirements = m_uniformBuffer[i]->getMemoryRequirements();
     m_uniformBufferMemory[i] = core::makeShared<Device_Memory>(m_device, memRequirements.size, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
     m_uniformBufferMemory[i]->bind(*m_uniformBuffer[i]);
@@ -588,6 +570,16 @@ void Renderer::initializeUniformBuffers()
     commandBuffer->end();
     m_transferQueue->sumbit(core::span(&commandBuffer, 1u));
     m_transferQueue->waitIdle();
+  }
+
+  for (core::uint32 i = 0; i < cFramesCount; i++)
+  {
+    const Descriptor_Buffer_Info bufferInfo(m_uniformBuffer[i], sizeof(Uniform_Buffer_Object));
+    const core::array<Write_Descriptor_Set, 1> descriptorWrites =
+    {
+      Write_Descriptor_Set(m_descriptorSets[i], 0u, 0u, 1u, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, {}, bufferInfo)
+    };
+    m_device->updateDescriptorSets(descriptorWrites, {});
   }
 }
 

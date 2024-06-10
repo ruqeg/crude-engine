@@ -9,16 +9,3 @@ void Application::run() noexcept
 {
   mainLoop();
 }
-
-void Application::mainLoop()
-{
-  bool quit = false;
-  while (quit == false)
-  {
-    m_ioManager.update();
-    if (m_ioManager.getWindowEH().readEvent().shouldClose())
-      quit = true;
-    m_renderer.drawFrame();
-  }
-
-}
