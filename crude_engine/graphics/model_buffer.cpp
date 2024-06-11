@@ -22,7 +22,7 @@ Model_Buffer::Model_Buffer(core::Shared_Ptr<Queue>         queue,
   }
 
   core::vector<scene::Vertex_GPU> modelGpuVertices(modelVerticesNum);
-  core::vector<scene::Index_Triangle_GPU> modelGpuIndices(modelIndicesNum);
+  core::vector<scene::Index_Triangle_GPU> modelGpuIndices(modelIndicesNum / 3);
   core::uint32 modelGpuVertexInx = 0u;
   core::uint32 modelGpuIndexInx = 0u;
   for (const scene::Mesh& mesh : modelGeometry.getMeshes())
@@ -40,6 +40,5 @@ Model_Buffer::Model_Buffer(core::Shared_Ptr<Queue>         queue,
   m_vertexBuffer = core::makeShared<Buffer_Dependent<scene::Vertex_GPU>>(queue, commandPool, modelGpuVertices, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
   m_indexBuffer = core::makeShared<Buffer_Dependent<scene::Index_Triangle_GPU>>(queue, commandPool, modelGpuIndices, VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
 }
-
 
 }

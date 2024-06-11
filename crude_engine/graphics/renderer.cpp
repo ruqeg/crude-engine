@@ -12,44 +12,17 @@ import crude.math.constants;
 namespace crude::graphics
 {
 
-struct Vertex
+constexpr core::array<scene::Vertex_CPU, 4u> vertices = {
+    scene::Vertex_CPU{math::Float3{-0.5f, -0.5f, 0.0f}, math::Float3{1.0f, 0.0f, 0.0f}, math::Float2{}, math::Float3{}, math::Float3{}, math::Float3{}},
+    scene::Vertex_CPU{math::Float3{0.5f, -0.5f, 0.0f}, math::Float3{0.0f, 1.0f, 0.0f}, math::Float2{}, math::Float3{}, math::Float3{}, math::Float3{}},
+    scene::Vertex_CPU{math::Float3{0.5f, 0.5f, 0.0f}, math::Float3{0.0f, 0.0f, 1.0f}, math::Float2{}, math::Float3{}, math::Float3{}, math::Float3{}},
+    scene::Vertex_CPU{math::Float3{-0.5f, 0.5f, 0.0f}, math::Float3{1.0f, 1.0f, 0.0f}, math::Float2{}, math::Float3{}, math::Float3{}, math::Float3{}}
+};
+
+ core::array<scene::Index_Triangle_CPU, 2> indices = 
 {
-  math::Float3 pos;
-  math::Float3 color;
-
-  static const VkVertexInputBindingDescription& getBindingDescription() {
-    static VkVertexInputBindingDescription bindingDescription{};
-    bindingDescription.binding = 0;
-    bindingDescription.stride = sizeof(Vertex);
-    bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-    return bindingDescription;
-  }
-
-  static const core::array<VkVertexInputAttributeDescription, 2>& getAttributeDescriptions() {
-    static core::array<VkVertexInputAttributeDescription, 2> attributeDescriptions{};
-    attributeDescriptions[0].binding = 0;
-    attributeDescriptions[0].location = 0;
-    attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
-    attributeDescriptions[0].offset = offsetof(Vertex, pos);
-
-    attributeDescriptions[1].binding = 0;
-    attributeDescriptions[1].location = 1;
-    attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
-    attributeDescriptions[1].offset = offsetof(Vertex, color);
-
-    return attributeDescriptions;
-  }
-};
-
-constexpr core::array<Vertex, 4u> vertices = {
-    Vertex{math::Float3{-0.5f, -0.5f, 0.0f}, math::Float3{1.0f, 0.0f, 0.0f}},
-    Vertex{math::Float3{0.5f, -0.5f, 0.0f}, math::Float3{0.0f, 1.0f, 0.0f}},
-    Vertex{math::Float3{0.5f, 0.5f, 0.0f}, math::Float3{0.0f, 0.0f, 1.0f}},
-    Vertex{math::Float3{-0.5f, 0.5f, 0.0f}, math::Float3{1.0f, 1.0f, 0.0f}}
-};
-
-constexpr core::array<core::uint16, 6> indices = {
-    0, 1, 2, 2, 3, 0
+    scene::Index_Triangle_CPU{0u, 1u, 2u},
+    scene::Index_Triangle_CPU{2u, 3u, 0u}
 };
 
 struct Uniform_Buffer_Object
@@ -77,8 +50,7 @@ Renderer::Renderer(core::Shared_Ptr<system::SDL_Window_Container> windowContaine
   initalizeCommandPool();
   initializeDepthImage();
   initializeSwapchainFramebuffers();
-  initializeVertexBuffer();
-  initializeIndexBuffer();
+  initializeModelBuffer();
   initializeUniformBuffers();
   initializeCommandBuffers();
   initializeSyncObjects();
@@ -329,14 +301,15 @@ void Renderer::recordCommandBuffer(core::Shared_Ptr<Command_Buffer> commandBuffe
   scissor.offset = { 0, 0 };
   scissor.extent = m_swapchain->getExtent();
   commandBuffer->setScissor(core::span(&scissor, 1u));
-  commandBuffer->bindVertexBuffer(0u, m_vertexBuffer);
-  commandBuffer->bindIndexBuffer(m_indexBuffer, VK_INDEX_TYPE_UINT16);
+
+  // or swap
+  commandBuffer->bindModelBuffer(m_modelBuffer, 0u);
 
 
   updateUniformBuffer(m_currentFrame);
   commandBuffer->bindDescriptorSets(m_graphicsPipeline, core::span(&m_descriptorSets[m_currentFrame], 1u), {});
     
-  commandBuffer->drawIndexed(indices.size(), 1, 0, 0);
+  commandBuffer->drawIndexed(3 * indices.size(), 1, 0, 0);
 
   commandBuffer->endRenderPass();
 
@@ -382,7 +355,7 @@ void Renderer::initalizeGraphicsPipeline()
     Shader_Stage_Create_Info(VK_SHADER_STAGE_FRAGMENT_BIT, fragShaderModule, "main"),
   };
 
-  auto vertexInputStateInfo = Vertex_Input_State_Create_Info(core::span(&Vertex::getBindingDescription(), 1u), Vertex::getAttributeDescriptions());
+  auto vertexInputStateInfo = Vertex_Input_State_Create_Info(core::span(&scene::Vertex_GPU::getBindingDescription(), 1u), scene::Vertex_GPU::getAttributeDescriptions());
   auto inputAssembly = Input_Assembly_State_Create_Info(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FALSE);
   auto viewportState = Viewport_State_Create_Info(1u, 1u);
   auto rasterizer = Rasterization_State_Create_Info(VK_FALSE, VK_FALSE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_BACK_BIT, VK_FRONT_FACE_CLOCKWISE, VK_FALSE, 0.0f, 0.0f, 0.0f, 1.f);
@@ -486,60 +459,20 @@ void Renderer::initializeSwapchainFramebuffers()
   }
 }
 
-void Renderer::initializeVertexBuffer()
+void Renderer::initializeModelBuffer()
 {
-  VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
-
-  auto stagingBuffer = core::makeShared<Buffer>(m_device, bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
-  auto memRequirements = stagingBuffer->getMemoryRequirements();
-  auto staggingBufferMemory = core::makeShared<Device_Memory>(m_device, memRequirements.size, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-  staggingBufferMemory->bind(*stagingBuffer);
-  auto data = staggingBufferMemory->map();
-  if (data.hasValue())
-  {
-    std::memcpy(data.value(), vertices.data(), bufferSize);
-    staggingBufferMemory->unmap();
-  }
-
-  m_vertexBuffer = core::makeShared<Buffer>(m_device, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
-  memRequirements = m_vertexBuffer->getMemoryRequirements();
-  m_vertexBufferMemory = core::makeShared<Device_Memory>(m_device, memRequirements.size, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-  m_vertexBufferMemory->bind(*m_vertexBuffer);
-
-  auto commandBuffer = core::makeShared<Command_Buffer>(m_device, m_transferCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
-  commandBuffer->begin();
-  commandBuffer->copyBuffer(stagingBuffer, m_vertexBuffer, bufferSize);
-  commandBuffer->end();
-  m_transferQueue->sumbit(core::span(&commandBuffer, 1u));
-  m_transferQueue->waitIdle();
-}
-
-void Renderer::initializeIndexBuffer()
-{
-  VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
-
-  auto stagingBuffer = core::makeShared<Buffer>(m_device, bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
-  auto memRequirements = stagingBuffer->getMemoryRequirements();
-  auto staggingBufferMemory = core::makeShared<Device_Memory>(m_device, memRequirements.size, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-  staggingBufferMemory->bind(*stagingBuffer);
-  auto data = staggingBufferMemory->map();
-  if (data.hasValue())
-  {
-    std::memcpy(data.value(), indices.data(), bufferSize);
-    staggingBufferMemory->unmap();
-  }
-
-  m_indexBuffer = core::makeShared<Buffer>(m_device, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
-  memRequirements = m_indexBuffer->getMemoryRequirements();
-  m_indexBufferMemory = core::makeShared<Device_Memory>(m_device, memRequirements.size, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-  m_indexBufferMemory->bind(*m_indexBuffer);
-
-  auto commandBuffer = core::makeShared<Command_Buffer>(m_device, m_transferCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
-  commandBuffer->begin();
-  commandBuffer->copyBuffer(stagingBuffer, m_indexBuffer, bufferSize);
-  commandBuffer->end();
-  m_transferQueue->sumbit(core::span(&commandBuffer, 1u));
-  m_transferQueue->waitIdle();
+  scene::Mesh_Range range;
+  range.vertexOffset = 0;
+  range.indexOffset = 0;
+  range.vertexNum = vertices.size();
+  range.indexNum = indices.size() * 3;
+  scene::Mesh mesh;
+  mesh.setVertices(vertices);
+  mesh.setIndices(indices);
+  scene::Model_Geometry modelGeometry;
+  modelGeometry.setRanges(core::span(&range, 1u));
+  modelGeometry.setMeshes(core::span(&mesh, 1u));
+  m_modelBuffer = core::makeShared<graphics::Model_Buffer>(m_transferQueue, m_transferCommandPool, modelGeometry);
 }
 
 void Renderer::initializeUniformBuffers()

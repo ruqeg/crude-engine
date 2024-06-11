@@ -33,6 +33,7 @@ export import crude.graphics.framebuffer;
 export import crude.graphics.swap_chain_image;
 export import crude.graphics.descriptor_pool;
 export import crude.graphics.descriptor_set;
+export import crude.graphics.model_buffer;
 export import crude.core.filesystem;
 export import crude.scene.camera;
 
@@ -70,8 +71,7 @@ private:
   void initalizeCommandPool();
   void initializeDepthImage();
   void initializeSwapchainFramebuffers();
-  void initializeVertexBuffer();
-  void initializeIndexBuffer();
+  void initializeModelBuffer();
   void initializeUniformBuffers();
   void initializeCommandBuffers();
   void initializeSyncObjects();
@@ -111,10 +111,7 @@ private:
   core::Shared_Ptr<Device_Memory>                       m_depthImageDeviceMemory;
   core::Shared_Ptr<Image>                               m_depthImage;
   core::Shared_Ptr<Image_View>                          m_depthImageView;
-  core::Shared_Ptr<Buffer>                              m_vertexBuffer;
-  core::Shared_Ptr<Device_Memory>                       m_vertexBufferMemory;
-  core::Shared_Ptr<Buffer>                              m_indexBuffer;
-  core::Shared_Ptr<Device_Memory>                       m_indexBufferMemory;
+  core::Shared_Ptr<Model_Buffer>                        m_modelBuffer;
   core::array <core::Shared_Ptr<Descriptor_Set>, cFramesCount>  m_descriptorSets;
   core::array<core::Shared_Ptr<Buffer>, cFramesCount>           m_uniformBuffer;
   core::array<core::Shared_Ptr<Device_Memory>, cFramesCount>    m_uniformBufferMemory;

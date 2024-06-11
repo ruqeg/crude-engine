@@ -20,6 +20,7 @@ class Render_Pass;
 class Framebuffer;
 class Pipeline;
 class Descriptor_Set;
+class Model_Buffer;
 
 struct Vertex_Buffer_Bind
 {
@@ -62,8 +63,9 @@ public:
 
   void setScissor(core::span<VkRect2D> scissors);
   
+  void bindModelBuffer(core::Shared_Ptr<Model_Buffer> modelBuffer, core::uint32 vertexBinding);
   void bindVertexBuffers(core::uint32 firstBinding, const core::span<Vertex_Buffer_Bind>& vertexBuffersBind);
-  void bindVertexBuffer(core::uint32 firstBinding, core::Shared_Ptr<Buffer> vertexBuffer, VkDeviceSize offset = 0u);
+  void bindVertexBuffer(core::Shared_Ptr<Buffer> vertexBuffer, core::uint32 firstBinding, VkDeviceSize offset = 0u);
   void bindIndexBuffer(core::Shared_Ptr<Buffer> indexBuffer, VkIndexType indexType, VkDeviceSize offset = 0u);
 
   void copyBuffer(core::Shared_Ptr<const Buffer> srcBuffer, core::Shared_Ptr<Buffer> dstBuffer, VkDeviceSize size);

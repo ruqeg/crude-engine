@@ -17,8 +17,10 @@ public:
                core::Shared_Ptr<Command_Pool>  commandPool, 
                const scene::Model_Geometry&    modelGeometry);
 private:
-  core::Shared_Ptr<Buffer_Dependent<scene::Vertex_GPU>>          m_vertexBuffer;
-  core::Shared_Ptr<Buffer_Dependent<scene::Index_Triangle_GPU>>  m_indexBuffer;
+  core::Shared_Ptr<Buffer_Dependent<scene::Vertex_GPU>>           m_vertexBuffer;
+  core::Shared_Ptr<Buffer_Dependent<scene::Index_Triangle_GPU>>   m_indexBuffer;
+
+  friend class Command_Buffer;
 };
 
 }

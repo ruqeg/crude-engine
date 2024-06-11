@@ -20,11 +20,11 @@ class Model_Geometry
 public:
   Model_Geometry() = default;
   ~Model_Geometry() = default;
-  Model_Geometry(const core::vector<Mesh>& meshes, const core::vector<Mesh_Range>& ranges) noexcept
-    : m_meshes(meshes), m_ranges(ranges) {}
+  Model_Geometry(const core::span<const Mesh>& meshes, const core::span<const Mesh_Range>& ranges) noexcept
+    : m_meshes(meshes.begin(), meshes.end()), m_ranges(ranges.begin(), ranges.end()) {}
 public:
-  void setMeshes(const core::vector<Mesh>& meshes) { m_meshes = meshes; }
-  void setRanges(const core::vector<Mesh_Range>& ranges) { m_ranges = ranges; }
+  void setMeshes(const core::span<const Mesh>& meshes) { m_meshes.assign(meshes.begin(), meshes.end()); }
+  void setRanges(const core::span<const Mesh_Range>& ranges) { m_ranges.assign(ranges.begin(), ranges.end()); }
   const core::vector<Mesh>& getMeshes() const { return m_meshes; }
   const core::vector<Mesh_Range>& getRanges() const { return m_ranges; }
   core::vector<Mesh>& getMeshes() { return m_meshes; }

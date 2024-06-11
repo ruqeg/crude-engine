@@ -10,6 +10,7 @@ import crude.graphics.render_pass;
 import crude.graphics.framebuffer;
 import crude.graphics.pipeline;
 import crude.graphics.pipeline_layout;
+import crude.graphics.model_buffer;
 import crude.graphics.descriptor_set;
 import crude.graphics.vulkan_utils;
 import crude.core.std_containers_heap;
@@ -185,7 +186,14 @@ void Command_Buffer::bindVertexBuffers(core::uint32 firstBinding, const core::sp
   vkCmdBindVertexBuffers(m_handle, firstBinding, vertexBuffersBind.size(), vkBuffers.data(), vkOffsets.data());
 }
 
-void Command_Buffer::bindVertexBuffer(core::uint32 firstBinding, core::Shared_Ptr<Buffer> vertexBuffer, VkDeviceSize offset)
+void Command_Buffer::bindModelBuffer(core::Shared_Ptr<Model_Buffer> modelBuffer, core::uint32 vertexBinding)
+{
+  // !!!!!TODO
+  bindVertexBuffer(modelBuffer->m_vertexBuffer->getBuffer(), vertexBinding);
+  bindIndexBuffer(modelBuffer->m_indexBuffer->getBuffer(), VK_INDEX_TYPE_UINT16);
+}
+
+void Command_Buffer::bindVertexBuffer(core::Shared_Ptr<Buffer> vertexBuffer, core::uint32 firstBinding, VkDeviceSize offset)
 {
   vkCmdBindVertexBuffers(m_handle, firstBinding, 1u, &vertexBuffer->getHandle(), &offset);
 }
