@@ -30,4 +30,9 @@ Command_Pool::~Command_Pool()
   vkDestroyCommandPool(m_device->getHandle(), m_handle, getPVkAllocationCallbacks());
 }
 
+core::Shared_Ptr<const Device> const Command_Pool::getDevice()
+{ 
+  return m_device;
+}
+
 }

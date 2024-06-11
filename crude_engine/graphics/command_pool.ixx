@@ -19,6 +19,7 @@ public:
                         VkCommandPoolCreateFlags        flags,
                         core::uint32                    queueFamilyIndex);
   ~Command_Pool();
+  core::Shared_Ptr<const Device> const getDevice();
 private:
   core::Shared_Ptr<const Device>  m_device;
 };

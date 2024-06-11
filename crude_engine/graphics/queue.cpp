@@ -23,7 +23,7 @@ bool Queue::sumbit(const core::span<core::Shared_Ptr<Command_Buffer>>&  commandB
                    const core::span<VkPipelineStageFlags>&              waitStageMasks,
                    const core::span<core::Shared_Ptr<Semaphore>>&       waitSemaphores,
                    const core::span<core::Shared_Ptr<Semaphore>>&       signalSemaphores,
-                   const core::Optional<core::Shared_Ptr<Fence>>&               fence)
+                   const core::Optional<core::Shared_Ptr<Fence>>&       fence)
 {
   if (waitSemaphores.size() != waitStageMasks.size())
   {

@@ -39,7 +39,7 @@ export import crude.scene.camera;
 export namespace crude::graphics
 {
 
-// !TODO
+// !TODO :D
 class Renderer
 {
 private:

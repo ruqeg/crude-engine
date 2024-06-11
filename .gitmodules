@@ -4,3 +4,6 @@
 [submodule "extlibs/SDL"]
 	path = extlibs/SDL
 	url = https://github.com/libsdl-org/SDL.git
+[submodule "extlibs/tinygltf"]
+	path = extlibs/tinygltf
+	url = https://github.com/syoyo/tinygltf.git

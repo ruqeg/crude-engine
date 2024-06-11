@@ -1,5 +1,6 @@
 target_sources(crude_engine
     PRIVATE
+    model_buffer.cpp
     renderer.cpp
     application.cpp
     attachment_description.cpp
@@ -50,6 +51,7 @@ target_sources(crude_engine
 target_sources(crude_engine
     PUBLIC
     FILE_SET cxx_modules_graphics TYPE CXX_MODULES FILES
+    model_buffer.ixx
     renderer.ixx
     application.ixx
     attachment_description.ixx

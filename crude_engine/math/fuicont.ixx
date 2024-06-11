@@ -3,7 +3,7 @@ module;
 export module crude.math.fuicont;
 
 import <compare>;
-import crude.core.alias;
+export import crude.core.alias;
 
 export namespace crude::math
 {

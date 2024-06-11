@@ -48,6 +48,13 @@ Device_Memory::Device_Memory(core::Shared_Ptr<const Device>  device,
   initalize(allocationSize, memoryTypeIndex);
 }
 
+Device_Memory::Device_Memory(core::Shared_Ptr<const Device>  device, 
+                             VkMemoryRequirements            memoryRequirements, 
+                             VkMemoryPropertyFlags           memoryProperties)
+  :
+  Device_Memory(device, memoryRequirements.size, memoryRequirements.memoryTypeBits, memoryProperties)
+{}
+
 void Device_Memory::initalize(VkDeviceSize allocationSize, core::uint32 memoryTypeIndex)
 {
   VkMemoryAllocateInfo vkAllocateInfo{};

@@ -21,6 +21,10 @@ public:
   explicit Device_Memory(core::Shared_Ptr<const Device>  device,
                          VkDeviceSize                    allocationSize,
                          core::uint32                    memoryTypeIndex);
+  
+  explicit Device_Memory(core::Shared_Ptr<const Device>  device,
+                         VkMemoryRequirements            memoryRequirements,
+                         VkMemoryPropertyFlags           memoryProperties);
 
   explicit Device_Memory(core::Shared_Ptr<const Device>  device,
                          VkDeviceSize                    allocationSize,

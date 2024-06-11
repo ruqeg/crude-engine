@@ -36,27 +36,27 @@ void Engine::update(core::float64 elapsed)
   // !TODO :D
   if (m_ioManager.getKeyboardEH().keyIsPressed(system::Scancode::SDL_SCANCODE_W))
   {
-    m_renderer.getCamera().addPosition(math::svector::scale(m_renderer.getCamera().getForwardVector(), 10 * elapsed));
+    m_renderer.getCamera().addPosition(math::svector::scale(m_renderer.getCamera().getForwardVector(), 7 * elapsed));
   }
   if (m_ioManager.getKeyboardEH().keyIsPressed(system::Scancode::SDL_SCANCODE_S))
   {
-    m_renderer.getCamera().addPosition(math::svector::scale(m_renderer.getCamera().getForwardVector(), -10 * elapsed));
+    m_renderer.getCamera().addPosition(math::svector::scale(m_renderer.getCamera().getForwardVector(), -7 * elapsed));
   }
   if (m_ioManager.getKeyboardEH().keyIsPressed(system::Scancode::SDL_SCANCODE_A))
   {
-    m_renderer.getCamera().addPosition(math::svector::scale(m_renderer.getCamera().getRightVector(), -10 * elapsed));
+    m_renderer.getCamera().addPosition(math::svector::scale(m_renderer.getCamera().getRightVector(), -7 * elapsed));
   }
   if (m_ioManager.getKeyboardEH().keyIsPressed(system::Scancode::SDL_SCANCODE_D))
   {
-    m_renderer.getCamera().addPosition(math::svector::scale(m_renderer.getCamera().getRightVector(), 10 * elapsed));
+    m_renderer.getCamera().addPosition(math::svector::scale(m_renderer.getCamera().getRightVector(), 7 * elapsed));
   }
   if (m_ioManager.getKeyboardEH().keyIsPressed(system::Scancode::SDL_SCANCODE_E))
   {
-    m_renderer.getCamera().addPosition(math::svector::scale(m_renderer.getCamera().getTopVector(), -10 * elapsed));
+    m_renderer.getCamera().addPosition(math::svector::scale(m_renderer.getCamera().getTopVector(), -7 * elapsed));
   }
   if (m_ioManager.getKeyboardEH().keyIsPressed(system::Scancode::SDL_SCANCODE_Q))
   {
-    m_renderer.getCamera().addPosition(math::svector::scale(m_renderer.getCamera().getTopVector(), 10 * elapsed));
+    m_renderer.getCamera().addPosition(math::svector::scale(m_renderer.getCamera().getTopVector(), 7 * elapsed));
   }
   while (!m_ioManager.getMouseEH().eventBufferIsEmpty())
   {
@@ -66,8 +66,8 @@ void Engine::update(core::float64 elapsed)
       if (m_ioManager.getMouseEH().isRightDown())
       {
         m_renderer.getCamera().addRotation(
-          -0.1 * me.getPositionRelY() * elapsed,
-          0.1 * me.getPositionRelX() * elapsed,
+          -0.15 * me.getPositionRelY() * elapsed,
+          0.15 * me.getPositionRelX() * elapsed,
           0.f);
       }
     }
