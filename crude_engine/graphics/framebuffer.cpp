@@ -12,9 +12,9 @@ namespace crude::graphics
 {
 
 
-Framebuffer::Framebuffer(core::Shared_Ptr<const Device>                     device,
-                         core::Shared_Ptr<Render_Pass>                      renderPass,
-                         const core::vector<core::Shared_Ptr<Image_View>>&  attachments,
+Framebuffer::Framebuffer(core::shared_ptr<const Device>                     device,
+                         core::shared_ptr<Render_Pass>                      renderPass,
+                         const core::vector<core::shared_ptr<Image_View>>&  attachments,
                          core::uint32                                       width,
                          core::uint32                                       height,
                          core::uint32                                       layers)

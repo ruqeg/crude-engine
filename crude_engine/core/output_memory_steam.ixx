@@ -5,7 +5,6 @@ module;
 #include <algorithm>
 
 import crude.core.alias;
-import crude.core.shared_ptr;
 import crude.core.std_containers_stack;
 import crude.core.std_containers_heap;
 
@@ -21,7 +20,7 @@ public:
   ~Output_Memory_Stream() = default;
 
 public:
-  Shared_Ptr<vector<byte>> getBufferPtr() const;
+  shared_ptr<vector<byte>> getBufferPtr() const;
   uint32 getLength() const;
 
   void write(const void* inData, uint32 inByteCount);
@@ -30,17 +29,17 @@ public:
   void write(const T& inData);
 
 private:
-  Shared_Ptr<vector<byte>>  m_buffer;
+  shared_ptr<vector<byte>>  m_buffer;
   uint32                    m_head;
 };
 
 Output_Memory_Stream::Output_Memory_Stream()
   :
-  m_buffer(makeShared<vector<byte>>()),
+  m_buffer(allocateShared<vector<byte>>()),
   m_head(0u)
 {}
 
-Shared_Ptr<vector<byte>> Output_Memory_Stream::getBufferPtr() const
+shared_ptr<vector<byte>> Output_Memory_Stream::getBufferPtr() const
 {
   return m_buffer;
 }

@@ -8,7 +8,7 @@ import crude.graphics.vulkan_utils;
 namespace crude::graphics
 {
 
-Semaphore::Semaphore(core::Shared_Ptr<const Device> device, VkSemaphoreCreateFlags flags)
+Semaphore::Semaphore(core::shared_ptr<const Device> device, VkSemaphoreCreateFlags flags)
   :
   m_device(device)
 {

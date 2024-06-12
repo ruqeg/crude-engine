@@ -3,7 +3,6 @@ module;
 export module crude.ecs.archetype;
 
 import crude.ecs.alias;
-import crude.core.shared_ptr;
 import crude.core.std_containers_heap;
 
 export namespace crude::ecs
@@ -28,7 +27,7 @@ private:
   };
 
 public:
-  Archetype(core::Shared_Ptr<Component_Register> componentRegister, Archetype_ID id, const core::set<Component_ID>& type);
+  Archetype(core::shared_ptr<Component_Register> componentRegister, Archetype_ID id, const core::set<Component_ID>& type);
   ~Archetype();
 
   void clear();
@@ -64,7 +63,7 @@ private:
   core::uint64                          m_componentsDataSize;
   core::queue<core::uint64>             m_freeRows;
   core::uint64                          m_entitiesNum;
-  core::Shared_Ptr<Component_Register>  m_componentRegister;
+  core::shared_ptr<Component_Register>  m_componentRegister;
 
   // !TODO std::unordered_map<Column, Archetype_Edge>   m_edges;
 };

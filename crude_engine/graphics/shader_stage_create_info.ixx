@@ -4,7 +4,7 @@ module;
 
 export module crude.graphics.shader_stage_create_info;
 
-import crude.core.shared_ptr;
+import crude.core.std_containers_heap;
 
 export namespace crude::graphics
 {
@@ -15,10 +15,10 @@ class Shader_Stage_Create_Info : public VkPipelineShaderStageCreateInfo
 {
 public:
   explicit Shader_Stage_Create_Info(VkShaderStageFlagBits                  stage,
-                                    core::Shared_Ptr<const Shader_Module>  shaderModule,
+                                    core::shared_ptr<const Shader_Module>  shaderModule,
                                     const char*                            pEntrypoint);
 private:
-  core::Shared_Ptr<const Shader_Module>  m_shaderModule;
+  core::shared_ptr<const Shader_Module>  m_shaderModule;
 };
 
 }

@@ -11,10 +11,10 @@ import crude.core.algorithms;
 namespace crude::graphics
 {
 
-Pipeline::Pipeline(core::Shared_Ptr<const Device>                           device,
-                   core::Shared_Ptr<const Render_Pass>                      renderPass,
-                   core::Shared_Ptr<const Pipeline_Layout>                  pipelineLayout,
-                   core::Shared_Ptr<const Pipeline>                         basePipeline,
+Pipeline::Pipeline(core::shared_ptr<const Device>                           device,
+                   core::shared_ptr<Render_Pass>                            renderPass,
+                   core::shared_ptr<const Pipeline_Layout>                  pipelineLayout,
+                   core::shared_ptr<const Pipeline>                         basePipeline,
                    const core::span<Shader_Stage_Create_Info>&              shaderStages,
                    const core::Optional<Vertex_Input_State_Create_Info>&    vertexInputState,
                    const core::Optional<Tessellation_State_Create_Info>&    tessellationState,

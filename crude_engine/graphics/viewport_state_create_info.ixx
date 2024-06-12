@@ -6,7 +6,7 @@ export module crude.graphics.viewport_state_create_info;
 
 import crude.core.alias;
 import crude.core.std_containers_stack;
-import crude.core.shared_ptr;
+import crude.core.std_containers_heap;
 
 export namespace crude::graphics
 {

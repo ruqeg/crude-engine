@@ -12,8 +12,8 @@ import crude.graphics.semaphore;
 namespace crude::graphics
 {
 
-Swap_Chain::Swap_Chain(core::Shared_Ptr<const Device>   device,
-                       core::Shared_Ptr<const Surface>  surface,
+Swap_Chain::Swap_Chain(core::shared_ptr<const Device>   device,
+                       core::shared_ptr<const Surface>  surface,
                        const VkSurfaceFormatKHR&        surfaceFormat,
                        const VkExtent2D&                extent,
                        VkImageUsageFlags                imageUsage,
@@ -26,7 +26,7 @@ Swap_Chain::Swap_Chain(core::Shared_Ptr<const Device>   device,
                        VkPresentModeKHR                 presentMode,
                        VkBool32                         clipped,
                        VkSwapchainCreateFlagsKHR        flags,
-                       core::Shared_Ptr<Swap_Chain>     oldSwapchain)
+                       core::shared_ptr<Swap_Chain>     oldSwapchain)
   :
   m_device(device),
   m_surface(surface),
@@ -64,7 +64,7 @@ Swap_Chain::~Swap_Chain()
   vkDestroySwapchainKHR(m_device->getHandle(), m_handle, getPVkAllocationCallbacks());
 }
   
-const core::vector<core::Shared_Ptr<Swap_Chain_Image>>& Swap_Chain::getSwapchainImages()
+const core::vector<core::shared_ptr<Swap_Chain_Image>>& Swap_Chain::getSwapchainImages()
 {
   if (!m_swapChainImages.empty())
   {
@@ -85,7 +85,7 @@ const core::vector<core::Shared_Ptr<Swap_Chain_Image>>& Swap_Chain::getSwapchain
   m_swapChainImages.resize(imageCount);
   for (core::uint32 i = 0; i < imageCount; ++i)
   {
-    m_swapChainImages[i] = makeShared<Swap_Chain_Image>(
+    m_swapChainImages[i] = core::allocateShared<Swap_Chain_Image>(
       m_device,
       vkSwapchainImages[i],
       m_surfaceFormat.format,
@@ -97,8 +97,8 @@ const core::vector<core::Shared_Ptr<Swap_Chain_Image>>& Swap_Chain::getSwapchain
   return m_swapChainImages;
 }
 
-Swap_Chain_Next_Image Swap_Chain::acquireNextImage(const core::Optional<core::Shared_Ptr<Semaphore>>&  semaphore,
-                                                   const core::Optional<core::Shared_Ptr<Fence>>&      fence,
+Swap_Chain_Next_Image Swap_Chain::acquireNextImage(const core::Optional<core::shared_ptr<Semaphore>>&  semaphore,
+                                                   const core::Optional<core::shared_ptr<Fence>>&      fence,
                                                    core::uint64                                        timeout)
 {
   core::uint32 imageIndex;

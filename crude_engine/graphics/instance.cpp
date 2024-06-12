@@ -77,7 +77,7 @@ Instance::~Instance()
   vkDestroyInstance(m_handle, getPVkAllocationCallbacks());
 }
   
-core::vector<core::Shared_Ptr<Physical_Device>> Instance::getPhysicalDevices()
+core::vector<core::shared_ptr<Physical_Device>> Instance::getPhysicalDevices()
 {
   core::uint32 vkPhysicalDeviceCount = 0u;
   vkEnumeratePhysicalDevices(
@@ -96,10 +96,10 @@ core::vector<core::Shared_Ptr<Physical_Device>> Instance::getPhysicalDevices()
       &vkPhysicalDeviceCount,
       vkPhysicalDevices.data());
 
-  core::vector<core::Shared_Ptr<Physical_Device>> physicaDevices(vkPhysicalDeviceCount);
+  core::vector<core::shared_ptr<Physical_Device>> physicaDevices(vkPhysicalDeviceCount);
   for (core::uint32 i = 0u; i < vkPhysicalDeviceCount; ++i)
   {
-    physicaDevices[i] = core::makeShared<Physical_Device>(vkPhysicalDevices[i]);
+    physicaDevices[i] = core::allocateShared<Physical_Device>(vkPhysicalDevices[i]);
   }
   
   return physicaDevices;

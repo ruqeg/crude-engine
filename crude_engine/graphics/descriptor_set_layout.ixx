@@ -5,7 +5,7 @@ module;
 export module crude.graphics.descriptor_set_layout;
 
 import crude.core.alias;
-import crude.core.shared_ptr;
+import crude.core.std_containers_heap;
 import crude.core.std_containers_stack;
 import crude.graphics.vulkan_object;
 
@@ -30,11 +30,11 @@ struct Descriptor_Set_Layout_Binding final : public VkDescriptorSetLayoutBinding
 class Descriptor_Set_Layout : public Vulkan_Object<VkDescriptorSetLayout>
 {
 public:
-  explicit Descriptor_Set_Layout(core::Shared_Ptr<const Device>                    device,
+  explicit Descriptor_Set_Layout(core::shared_ptr<const Device>                    device,
                                  const core::span<Descriptor_Set_Layout_Binding>&  bindings);
   ~Descriptor_Set_Layout();
 private:
-  core::Shared_Ptr<const Device>  m_device;
+  core::shared_ptr<const Device>  m_device;
 };
 
 }

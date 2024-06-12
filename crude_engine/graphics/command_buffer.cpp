@@ -20,8 +20,8 @@ import crude.core.assert;
 namespace crude::graphics
 {
 
-Command_Buffer::Command_Buffer(core::Shared_Ptr<const Device>  device,
-                               core::Shared_Ptr<Command_Pool>  commandPool,
+Command_Buffer::Command_Buffer(core::shared_ptr<const Device>  device,
+                               core::shared_ptr<Command_Pool>  commandPool,
                                VkCommandBufferLevel            level)
   :
   m_device(device),
@@ -93,12 +93,12 @@ void Command_Buffer::barrier(VkPipelineStageFlags              srcStage,
   }
 }
   
-void Command_Buffer::copyBufferToImage(core::Shared_Ptr<Buffer>       srcBuffer, 
-                                       core::Shared_Ptr<Image>        dstImage, 
+void Command_Buffer::copyBufferToImage(core::shared_ptr<Buffer>       srcBuffer, 
+                                       core::shared_ptr<Image>        dstImage, 
                                        core::span<VkBufferImageCopy>  regions)
 {
-  core::assert(srcBuffer.valid());
-  core::assert(dstImage.valid());
+  core::assert(srcBuffer.get());
+  core::assert(dstImage.get());
   core::assert(regions.data());
 
   vkCmdCopyBufferToImage(
@@ -116,14 +116,14 @@ bool Command_Buffer::reset(VkCommandBufferResetFlags flags)
   return result != VK_ERROR_OUT_OF_DEVICE_MEMORY;
 }
 
-void Command_Buffer::beginRenderPass(core::Shared_Ptr<Render_Pass>  renderPass,
-                                     core::Shared_Ptr<Framebuffer>  framebuffer,
+void Command_Buffer::beginRenderPass(core::shared_ptr<Render_Pass>  renderPass,
+                                     core::shared_ptr<Framebuffer>  framebuffer,
                                      core::span<VkClearValue>       clearValues,
                                      const VkRect2D&                renderArea, 
                                      VkSubpassContents              contents)
 {
-  core::assert(renderPass.valid());
-  core::assert(framebuffer.valid());
+  core::assert(renderPass.get());
+  core::assert(framebuffer.get());
   core::assert(clearValues.data());
 
   VkRenderPassBeginInfo renderPassInfo{};
@@ -143,9 +143,9 @@ void Command_Buffer::beginRenderPass(core::Shared_Ptr<Render_Pass>  renderPass,
   m_withinRenderPass = true;
 }
 
-void Command_Buffer::bindPipeline(core::Shared_Ptr<Pipeline> pipeline)
+void Command_Buffer::bindPipeline(core::shared_ptr<Pipeline> pipeline)
 {
-  core::assert(pipeline.valid());
+  core::assert(pipeline.get());
 
   vkCmdBindPipeline(
     m_handle,
@@ -186,24 +186,24 @@ void Command_Buffer::bindVertexBuffers(core::uint32 firstBinding, const core::sp
   vkCmdBindVertexBuffers(m_handle, firstBinding, vertexBuffersBind.size(), vkBuffers.data(), vkOffsets.data());
 }
 
-void Command_Buffer::bindModelBuffer(core::Shared_Ptr<Model_Buffer> modelBuffer, core::uint32 vertexBinding)
+void Command_Buffer::bindModelBuffer(core::shared_ptr<Model_Buffer> modelBuffer, core::uint32 vertexBinding)
 {
   // !!!!!TODO
   bindVertexBuffer(modelBuffer->m_vertexBuffer->getBuffer(), vertexBinding);
-  bindIndexBuffer(modelBuffer->m_indexBuffer->getBuffer(), VK_INDEX_TYPE_UINT16);
+  bindIndexBuffer(modelBuffer->m_indexBuffer->getBuffer(), scene::Index_Triangle_GPU::getType());
 }
 
-void Command_Buffer::bindVertexBuffer(core::Shared_Ptr<Buffer> vertexBuffer, core::uint32 firstBinding, VkDeviceSize offset)
+void Command_Buffer::bindVertexBuffer(core::shared_ptr<Buffer> vertexBuffer, core::uint32 firstBinding, VkDeviceSize offset)
 {
   vkCmdBindVertexBuffers(m_handle, firstBinding, 1u, &vertexBuffer->getHandle(), &offset);
 }
 
-void Command_Buffer::bindIndexBuffer(core::Shared_Ptr<Buffer> indexBuffer, VkIndexType indexType, VkDeviceSize offset)
+void Command_Buffer::bindIndexBuffer(core::shared_ptr<Buffer> indexBuffer, VkIndexType indexType, VkDeviceSize offset)
 {
   vkCmdBindIndexBuffer(m_handle, indexBuffer->getHandle(), offset, indexType);
 }
 
-void Command_Buffer::copyBuffer(core::Shared_Ptr<const Buffer> srcBuffer, core::Shared_Ptr<Buffer> dstBuffer, VkDeviceSize size)
+void Command_Buffer::copyBuffer(core::shared_ptr<const Buffer> srcBuffer, core::shared_ptr<Buffer> dstBuffer, VkDeviceSize size)
 {
   VkBufferCopy copyRegion{};
   copyRegion.srcOffset = 0;
@@ -212,8 +212,8 @@ void Command_Buffer::copyBuffer(core::Shared_Ptr<const Buffer> srcBuffer, core::
   vkCmdCopyBuffer(m_handle, srcBuffer->getHandle(), dstBuffer->getHandle(), 1, &copyRegion);
 }
 
-void Command_Buffer::bindDescriptorSets(core::Shared_Ptr<Pipeline>                    pipeline,
-                                        core::span<core::Shared_Ptr<Descriptor_Set>>  descriptorSets,
+void Command_Buffer::bindDescriptorSets(core::shared_ptr<Pipeline>                    pipeline,
+                                        core::span<core::shared_ptr<Descriptor_Set>>  descriptorSets,
                                         core::span<core::uint32>                      dynamicOffsets)
 {
   constexpr core::uint32 offset = 0u;

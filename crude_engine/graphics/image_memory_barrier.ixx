@@ -4,7 +4,7 @@ module;
 
 export module crude.graphics.image_memory_barrier;
 
-import crude.core.shared_ptr;
+export import crude.core.std_containers_heap;
 export import crude.graphics.image_subresource_range;
 
 export namespace crude::graphics
@@ -15,13 +15,13 @@ class Image;
 class Image_Memory_Barrier : public VkImageMemoryBarrier
 {
 public:
-  explicit Image_Memory_Barrier(core::Shared_Ptr<Image>  image,
+  explicit Image_Memory_Barrier(core::shared_ptr<Image>  image,
                                 VkImageLayout            newLayout,
                                 Image_Subresource_Range  subresourceRange,
                                 core::uint32             srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
                                 core::uint32             dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED);
 private:
-  core::Shared_Ptr<Image>  m_image;
+  core::shared_ptr<Image>  m_image;
 
 public:
   friend class Command_Buffer;

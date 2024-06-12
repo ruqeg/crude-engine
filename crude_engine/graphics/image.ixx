@@ -4,7 +4,7 @@ module;
 
 export module crude.graphics.image;
 
-import crude.core.shared_ptr;
+import crude.core.std_containers_heap;
 import crude.graphics.vulkan_object;
 
 export namespace crude::graphics
@@ -16,7 +16,7 @@ class Image : public Vulkan_Object<VkImage>
 {
 public:
   // create image from handle
-  explicit Image(core::Shared_Ptr<const Device>  device,
+  explicit Image(core::shared_ptr<const Device>  device,
                  VkImage                         handle,
                  VkFormat                        format,
                  VkExtent3D                      extent,
@@ -24,7 +24,7 @@ public:
                  VkImageType                     type);
 
   // create image 2d
-  explicit Image(core::Shared_Ptr<const Device>  device,
+  explicit Image(core::shared_ptr<const Device>  device,
                  VkImageCreateFlags              flags,
                  VkFormat                        format,
                  const VkExtent2D&               extent,
@@ -42,7 +42,7 @@ public:
   VkImageLayout getLayout() const;
   VkMemoryRequirements getMemoryRequirements() const;
 protected:
-  const core::Shared_Ptr<const Device>  m_device;
+  const core::shared_ptr<const Device>  m_device;
   VkFormat                              m_format;
   VkExtent3D                            m_extent;
   VkImageUsageFlags                     m_usage;

@@ -10,7 +10,7 @@ export namespace crude::core
 class IAllocator_Allocate
 {
 public:
-  virtual [[nodiscard]] void* allocate(size_t size) noexcept = 0u;
+  virtual [[nodiscard]] void* allocate(core::size_t size) noexcept = 0u;
 };
 
 

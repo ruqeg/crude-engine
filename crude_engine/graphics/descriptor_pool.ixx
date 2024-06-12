@@ -4,8 +4,8 @@ module;
 
 export module crude.graphics.descriptor_pool;
 
-import crude.core.shared_ptr;
 import crude.core.std_containers_stack;
+import crude.core.std_containers_heap;
 import crude.graphics.vulkan_object;
 
 export namespace crude::graphics
@@ -25,13 +25,13 @@ struct Descriptor_Pool_Size final : public VkDescriptorPoolSize
 class Descriptor_Pool : public Vulkan_Object<VkDescriptorPool>
 {
 public:
-  explicit Descriptor_Pool(core::Shared_Ptr<const Device>           device,
+  explicit Descriptor_Pool(core::shared_ptr<const Device>           device,
                            const core::span<Descriptor_Pool_Size>&  poolSizes,
                            bool                                     freeDescriptorSet = false);
   ~Descriptor_Pool();
   bool canFreeDescriptorSet() const;
 private:
-  const core::Shared_Ptr<const Device>  m_device;
+  const core::shared_ptr<const Device>  m_device;
   const bool                            m_freeDescriptorSet;
 };
 

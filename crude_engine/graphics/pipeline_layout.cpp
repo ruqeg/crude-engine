@@ -11,8 +11,8 @@ import crude.core.algorithms;
 namespace crude::graphics
 {
 
-Pipeline_Layout::Pipeline_Layout(core::Shared_Ptr<const Device>                                      device,
-                                 const core::vector<core::Shared_Ptr<const Descriptor_Set_Layout>>&  descriptorSetLayouts,
+Pipeline_Layout::Pipeline_Layout(core::shared_ptr<const Device>                                      device,
+                                 const core::vector<core::shared_ptr<const Descriptor_Set_Layout>>&  descriptorSetLayouts,
                                  const core::vector<VkPushConstantRange>&                            pushConstantRanges)
   :
   m_device(device),

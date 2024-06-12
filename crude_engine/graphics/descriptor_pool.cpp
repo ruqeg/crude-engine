@@ -9,7 +9,7 @@ import crude.graphics.vulkan_utils;
 namespace crude::graphics
 {
 
-Descriptor_Pool::Descriptor_Pool(core::Shared_Ptr<const Device>           device,
+Descriptor_Pool::Descriptor_Pool(core::shared_ptr<const Device>           device,
                                  const core::span<Descriptor_Pool_Size>&  poolSizes,
                                  bool                                     freeDescriptorSet)
   :

@@ -4,7 +4,7 @@ module;
 
 export module crude.graphics.sampler;
 
-import crude.core.shared_ptr;
+import crude.core.std_containers_heap;
 import crude.graphics.vulkan_object;
 
 export namespace crude::graphics
@@ -15,7 +15,7 @@ class Device;
 class Sampler : public Vulkan_Object<VkSampler>
 {
 public:
-  explicit Sampler(core::Shared_Ptr<const Device>  device,
+  explicit Sampler(core::shared_ptr<const Device>  device,
                    VkFilter                        magFilter,
                    VkFilter                        minFilter,
                    VkSamplerMipmapMode             mipmapMode,
@@ -33,7 +33,7 @@ public:
                    VkBool32                        unnormalizedCoordinates);
   ~Sampler();
 private:
-  core::Shared_Ptr<const Device>  m_device;
+  core::shared_ptr<const Device>  m_device;
 };
 
 }

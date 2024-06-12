@@ -8,7 +8,6 @@ module;
 export module crude.core.output_memory_bit_stream;
 
 import crude.core.alias;
-import crude.core.shared_ptr;
 import crude.core.std_containers_stack;
 import crude.core.std_containers_heap;
 
@@ -25,7 +24,7 @@ public:
   void writeBits(uint8 inData, uint64 inBitCount);
   void writeBits(const void* inData, uint64 inBitCount);
 
-  Shared_Ptr<vector<byte>> getBufferPtr() const;
+  shared_ptr<vector<byte>> getBufferPtr() const;
   uint32 getBitLength() const;
   uint32 getByteLength() const;
 
@@ -42,7 +41,7 @@ private:
   void reallocBuffer(uint32 inNewBiyCapacity);
 
 private:
-  Shared_Ptr<vector<byte>>  m_buffer;
+  shared_ptr<vector<byte>>  m_buffer;
   uint32                    m_bitHead;
   uint32                    m_bitCapacity;
 };
@@ -51,7 +50,7 @@ Output_Memory_Bit_Stream::Output_Memory_Bit_Stream()
   :
   m_bitHead(0u),
   m_bitCapacity(0u),
-  m_buffer(makeShared<vector<byte>>())
+  m_buffer(allocateShared<vector<byte>>())
 {
   reallocBuffer(256);
 }
@@ -97,7 +96,7 @@ void Output_Memory_Bit_Stream::writeBits(const void* inData, uint64 inBitCount)
   }
 }
 
-Shared_Ptr<vector<byte>> Output_Memory_Bit_Stream::getBufferPtr() const
+shared_ptr<vector<byte>> Output_Memory_Bit_Stream::getBufferPtr() const
 {
   return m_buffer;
 }

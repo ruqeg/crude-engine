@@ -11,9 +11,9 @@ import crude.core.algorithms;
 namespace crude::graphics
 {
 
-Descriptor_Set::Descriptor_Set(core::Shared_Ptr<const Device>            device,
-                               core::Shared_Ptr<Descriptor_Pool>         pool,
-                               core::Shared_Ptr<Descriptor_Set_Layout>&  setLayout)
+Descriptor_Set::Descriptor_Set(core::shared_ptr<const Device>            device,
+                               core::shared_ptr<Descriptor_Pool>         pool,
+                               core::shared_ptr<Descriptor_Set_Layout>&  setLayout)
   :
   m_device(device),
   m_pool(pool),
@@ -36,17 +36,17 @@ Descriptor_Set::~Descriptor_Set()
     vkFreeDescriptorSets(m_device->getHandle(), m_pool->getHandle(), 1u, &m_handle);
 }
 
-core::Shared_Ptr<const Device> Descriptor_Set::getDevice() noexcept 
+core::shared_ptr<const Device> Descriptor_Set::getDevice() noexcept 
 { 
   return m_device; 
 }
 
-core::Shared_Ptr<Descriptor_Set_Layout> Descriptor_Set::getSetLayout() noexcept 
+core::shared_ptr<Descriptor_Set_Layout> Descriptor_Set::getSetLayout() noexcept 
 { 
   return m_setLayout; 
 }
 
-core::Shared_Ptr<Descriptor_Pool> Descriptor_Set::getPool() noexcept 
+core::shared_ptr<Descriptor_Pool> Descriptor_Set::getPool() noexcept 
 { 
   return m_pool; 
 }

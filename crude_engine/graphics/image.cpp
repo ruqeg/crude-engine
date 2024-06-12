@@ -8,7 +8,7 @@ import crude.graphics.vulkan_utils;
 namespace crude::graphics
 {
 
-Image::Image(core::Shared_Ptr<const Device>  device,
+Image::Image(core::shared_ptr<const Device>  device,
              VkImage                         handle,
              VkFormat                        format,
              VkExtent3D                      extent,
@@ -25,7 +25,7 @@ Image::Image(core::Shared_Ptr<const Device>  device,
   m_layout      = VK_IMAGE_LAYOUT_UNDEFINED;
 }
 
-Image::Image(core::Shared_Ptr<const Device>  device,
+Image::Image(core::shared_ptr<const Device>  device,
              VkImageCreateFlags              flags,
              VkFormat                        format,
              const VkExtent2D&               extent,

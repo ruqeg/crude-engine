@@ -4,9 +4,9 @@ module;
 
 export module crude.graphics.subpass_description;
 
-import crude.core.shared_ptr;
 import crude.core.optional;
 import crude.core.std_containers_stack;
+import crude.core.std_containers_heap;
 
 export namespace crude::graphics
 {

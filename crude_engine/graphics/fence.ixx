@@ -4,7 +4,7 @@ module;
 
 export module crude.graphics.fence;
 
-import crude.core.shared_ptr;
+import crude.core.std_containers_heap;
 import crude.graphics.vulkan_object;
 
 export namespace crude::graphics
@@ -15,12 +15,12 @@ class Device;
 class Fence : public Vulkan_Object<VkFence>
 {
 public:
-  explicit Fence(core::Shared_Ptr<const Device> device, VkFenceCreateFlags flags);
+  explicit Fence(core::shared_ptr<const Device> device, VkFenceCreateFlags flags);
   ~Fence();
   bool wait(core::uint64 timeout = UINT64_MAX);
   bool reset();
 private:
-  core::Shared_Ptr<const Device>  m_device;
+  core::shared_ptr<const Device>  m_device;
 };
 
 }

@@ -32,7 +32,7 @@ void Debug_Utils_Messenger::destroyDebugUtilsMessengerEXT(VkInstance            
   }
 }
 
-Debug_Utils_Messenger::Debug_Utils_Messenger(core::Shared_Ptr<const Instance>      instance,
+Debug_Utils_Messenger::Debug_Utils_Messenger(core::shared_ptr<const Instance>      instance,
                                              PFN_vkDebugUtilsMessengerCallbackEXT  pfnUserCallback,
                                              VkDebugUtilsMessageSeverityFlagsEXT   messageSeverity,
                                              VkDebugUtilsMessageTypeFlagsEXT       messageType,

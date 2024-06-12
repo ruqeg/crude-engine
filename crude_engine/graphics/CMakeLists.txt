@@ -1,5 +1,7 @@
 target_sources(crude_engine
     PRIVATE
+    vertex_buffer.cpp
+    index_buffer.cpp
     model_buffer.cpp
     renderer.cpp
     application.cpp
@@ -51,6 +53,8 @@ target_sources(crude_engine
 target_sources(crude_engine
     PUBLIC
     FILE_SET cxx_modules_graphics TYPE CXX_MODULES FILES
+    vertex_buffer.ixx
+    index_buffer.ixx
     buffer_dependent.ixx
     model_buffer.ixx
     renderer.ixx

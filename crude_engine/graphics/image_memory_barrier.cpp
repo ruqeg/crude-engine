@@ -8,7 +8,7 @@ import crude.graphics.vulkan_utils;
 namespace crude::graphics
 {
 
-Image_Memory_Barrier::Image_Memory_Barrier(core::Shared_Ptr<Image>  image,
+Image_Memory_Barrier::Image_Memory_Barrier(core::shared_ptr<Image>  image,
                                            VkImageLayout            newLayout,
                                            Image_Subresource_Range  subresourceRange,
                                            core::uint32             srcQueueFamilyIndex,

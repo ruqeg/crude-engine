@@ -5,7 +5,7 @@ module;
 
 export module crude.network.udp_socket;
 
-import crude.core.shared_ptr;
+import crude.core.std_containers_heap;
 import crude.core.std_containers_stack;
 import crude.core.alias;
 import crude.network.socket_address;
@@ -14,7 +14,7 @@ export namespace crude::network
 {
 
 class UDP_Socket;
-using UDP_Socket_Ptr = core::Shared_Ptr<UDP_Socket>;
+using UDP_Socket_Ptr = core::shared_ptr<UDP_Socket>;
 
 class UDP_Socket
 {

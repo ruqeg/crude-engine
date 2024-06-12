@@ -8,7 +8,7 @@ import crude.graphics.vulkan_utils;
 namespace crude::graphics
 {
 
-Fence::Fence(core::Shared_Ptr<const Device> device, VkFenceCreateFlags flags)
+Fence::Fence(core::shared_ptr<const Device> device, VkFenceCreateFlags flags)
   :
   m_device(device)
 {

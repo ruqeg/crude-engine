@@ -5,7 +5,7 @@ import crude.core.logger;
 namespace crude
 {
 
-Engine::Engine(core::Shared_Ptr<system::SDL_Window_Container> windowContainer)
+Engine::Engine(core::shared_ptr<system::SDL_Window_Container> windowContainer)
   :
   m_renderer(windowContainer)
 {

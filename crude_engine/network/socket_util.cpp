@@ -4,7 +4,7 @@
 module crude.network.socket_util;
 
 import crude.core.assert;
-import crude.core.shared_ptr;
+import crude.core.std_containers_heap;
 
 namespace crude::network
 {
@@ -17,7 +17,7 @@ UDP_Socket_Ptr Socket_Util::createUDPSocket(Socket_Address_Family inFamily)
     core::assert("TODO" && false);
     return nullptr;
   }
-  return core::makeShared<UDP_Socket>(s);
+  return core::allocateShared<UDP_Socket>(s);
 }
 
 TCP_Socket_Ptr Socket_Util::createTCPSocket(Socket_Address_Family inFamily)
@@ -28,7 +28,7 @@ TCP_Socket_Ptr Socket_Util::createTCPSocket(Socket_Address_Family inFamily)
     core::assert("TODO" && false);
     return nullptr;
   }
-  return core::makeShared<TCP_Socket>(s);
+  return core::allocateShared<TCP_Socket>(s);
 }
 
 fd_set* Socket_Util::fillSetFromArray(fd_set& outSet, const core::vector<TCP_Socket_Ptr>* inSockets)

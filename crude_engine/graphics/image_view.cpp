@@ -10,8 +10,8 @@ namespace crude::graphics
 {
   
 
-Image_View::Image_View(core::Shared_Ptr<const Device>  device,
-                       core::Shared_Ptr<const Image>   image,
+Image_View::Image_View(core::shared_ptr<const Device>  device,
+                       core::shared_ptr<const Image>   image,
                        VkFormat                        format,
                        const Image_Subresource_Range&  subresourceRange,
                        const VkComponentMapping&       components)

@@ -16,6 +16,7 @@ struct Index_Triangle_GPU
   Index_Triangle_GPU(core::uint16 p0, core::uint16 p1, core::uint16 p2)
     : p0(p0), p1(p1), p2(p2) {}
   explicit operator math::Uint3() const noexcept { return math::Uint3(p0, p1, p2); }
+  static VkIndexType getType() { return VK_INDEX_TYPE_UINT16; }
   core::uint16 p0;
   core::uint16 p1;
   core::uint16 p2;

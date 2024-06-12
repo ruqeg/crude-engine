@@ -6,8 +6,8 @@ module crude.graphics.descriptor_image_info;
 namespace crude::graphics
 {
 
-Descriptor_Image_Info::Descriptor_Image_Info(core::Shared_Ptr<Sampler>     sampler,
-                                             core::Shared_Ptr<Image_View>  imageView,
+Descriptor_Image_Info::Descriptor_Image_Info(core::shared_ptr<Sampler>     sampler,
+                                             core::shared_ptr<Image_View>  imageView,
                                              VkImageLayout                 imageLayout)
   :
   m_sampler(sampler),

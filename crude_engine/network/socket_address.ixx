@@ -9,7 +9,7 @@ export module crude.network.socket_address;
 
 import crude.core.alias;
 import crude.core.std_containers_stack;
-import crude.core.shared_ptr;
+import crude.core.std_containers_heap;
 
 export namespace crude::network
 {
@@ -47,7 +47,7 @@ enum Socket_Address_Family
 };
 
 class Socket_Address;
-using Socket_Address_Ptr = core::Shared_Ptr<Socket_Address>;
+using Socket_Address_Ptr = core::shared_ptr<Socket_Address>;
 
 class Socket_Address
 {

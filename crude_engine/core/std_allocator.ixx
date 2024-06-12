@@ -17,40 +17,21 @@ struct STD_Allocator
   template<class U>
   constexpr STD_Allocator(const STD_Allocator<U>&) noexcept {}
 
-  [[nodiscard]] T* allocate(size_t n);
+  [[nodiscard]] T* allocate(core::size_t size) noexcept
+  {
+    return static_cast<T*>(Memory_Manager::getDefaultAllocator()->allocate(size * sizeof(T)));
+  }
 
-  void deallocate(T* ptr, size_t n) noexcept;
+  void deallocate(T* ptr, core::size_t size) noexcept
+  {
+    Memory_Manager::getDefaultAllocator()->deallocate(ptr);
+  }
 };
 
 template<class T, class U>
-bool operator==(const STD_Allocator<T>&, const STD_Allocator<U>&);
+bool operator==(const STD_Allocator<T>&, const STD_Allocator<U>&) { return true; }
 
 template<class T, class U>
-bool operator!=(const STD_Allocator<T>&, const STD_Allocator<U>&);
-
-template<class T, class U>
-bool operator==(const STD_Allocator<T>&, const STD_Allocator<U>&)
-{
-  return true;
-}
-
-template<class T, class U>
-bool operator!=(const STD_Allocator<T>&, const STD_Allocator<U>&)
-{
-  return false;
-}
-
-template<class T>
-[[nodiscard]] T* STD_Allocator<T>::allocate(size_t n)
-{
-  T* ptr = static_cast<T*>(Memory_Manager::getDefaultAllocator()->allocate(n * sizeof(T)));
-  return ptr;
-}
-
-template<class T>
-void STD_Allocator<T>::deallocate(T* ptr, size_t n) noexcept
-{
-  Memory_Manager::getDefaultAllocator()->deallocate(ptr);
-}
+bool operator!=(const STD_Allocator<T>&, const STD_Allocator<U>&) { return false; }
 
 }

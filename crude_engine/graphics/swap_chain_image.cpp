@@ -7,7 +7,7 @@ import crude.graphics.device;
 namespace crude::graphics
 {
 
-Swap_Chain_Image::Swap_Chain_Image(core::Shared_Ptr<const Device>  device,
+Swap_Chain_Image::Swap_Chain_Image(core::shared_ptr<const Device>  device,
                                    VkImage                         handle,
                                    VkFormat                        format,
                                    VkColorSpaceKHR                 colorSpace,

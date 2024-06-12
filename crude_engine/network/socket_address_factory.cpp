@@ -48,7 +48,7 @@ Socket_Address_Ptr Socket_Address_Factory::createIPv4FromString(const char* inSt
     return nullptr;
   }
 
-  auto toRet = core::makeShared<Socket_Address>(*result->ai_addr);
+  auto toRet = core::allocateShared<Socket_Address>(*result->ai_addr);
   freeaddrinfo(result);
   return toRet;
 }

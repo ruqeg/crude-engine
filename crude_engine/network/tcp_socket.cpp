@@ -44,7 +44,7 @@ TCP_Socket_Ptr TCP_Socket::accept(Socket_Address& inFromAddress)
     return nullptr;
   }
 
-  return core::makeShared<TCP_Socket>(s);
+  return core::allocateShared<TCP_Socket>(s);
 }
 
 core::int64 TCP_Socket::send(const core::span<const byte>& inData)

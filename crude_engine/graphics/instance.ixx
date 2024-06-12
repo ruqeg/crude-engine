@@ -4,7 +4,6 @@ module;
 
 export module crude.graphics.instance;
 
-export import crude.core.shared_ptr;
 export import crude.core.std_containers_stack;
 export import crude.core.std_containers_heap;
 export import crude.graphics.vulkan_object;
@@ -27,7 +26,7 @@ public:
                      const core::span<const char* const>&  enabledLayers      = {},
                      VkInstanceCreateFlags                 flags              = 0u);
   ~Instance();
-  core::vector<core::Shared_Ptr<Physical_Device>> getPhysicalDevices();
+  core::vector<core::shared_ptr<Physical_Device>> getPhysicalDevices();
 };
 
 }

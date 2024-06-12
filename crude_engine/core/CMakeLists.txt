@@ -39,7 +39,6 @@ target_sources(crude_engine
     output_memory_steam.ixx
     pool_allocator.ixx
     rb_tree.ixx
-    shared_ptr.ixx
     size_holder.ixx
     stack_allocator.ixx
     stack_linked_list.ixx

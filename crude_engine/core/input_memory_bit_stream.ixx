@@ -8,7 +8,6 @@ module;
 export module crude.core.input_memory_bit_stream;
 
 import crude.core.alias;
-import crude.core.shared_ptr;
 import crude.core.std_containers_stack;
 import crude.core.std_containers_heap;
 
@@ -18,14 +17,14 @@ export namespace crude::core
 class Input_Memory_Bit_Stream
 {
 public:
-  Input_Memory_Bit_Stream(Shared_Ptr<vector<byte>> inData);
+  Input_Memory_Bit_Stream(shared_ptr<vector<byte>> inData);
   ~Input_Memory_Bit_Stream() = default;
 
 public:
   void readBits(uint8& outData, uint64 inBitCount);
   void readBits(void* outData, uint64 inBitCount);
 
-  Shared_Ptr<vector<byte>> getBufferPtr() const;
+  shared_ptr<vector<byte>> getBufferPtr() const;
   uint32 getBitLength() const;
   uint32 getByteLength() const;
 
@@ -39,12 +38,12 @@ public:
   }
 
 private:
-  Shared_Ptr<vector<byte>>  m_buffer;
+  shared_ptr<vector<byte>>  m_buffer;
   uint32                    m_bitHead;
   uint32                    m_bitCapacity;
 };
 
-Input_Memory_Bit_Stream::Input_Memory_Bit_Stream(Shared_Ptr<vector<byte>> inData)
+Input_Memory_Bit_Stream::Input_Memory_Bit_Stream(shared_ptr<vector<byte>> inData)
   :
   m_bitHead(0u),
   m_bitCapacity(inData->size() << 3),
@@ -91,7 +90,7 @@ void Input_Memory_Bit_Stream::readBits(void* outData, uint64 inBitCount)
   }
 }
 
-Shared_Ptr<vector<byte>> Input_Memory_Bit_Stream::getBufferPtr() const
+shared_ptr<vector<byte>> Input_Memory_Bit_Stream::getBufferPtr() const
 {
   return m_buffer;
 }

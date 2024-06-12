@@ -36,7 +36,7 @@ struct Uniform_Buffer_Object
 constexpr core::array<const char*, 1> deviceEnabledExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
 constexpr core::array<const char*, 1> instanceEnabledLayers = { "VK_LAYER_KHRONOS_validation" };
 
-Renderer::Renderer(core::Shared_Ptr<system::SDL_Window_Container> windowContainer)
+Renderer::Renderer(core::shared_ptr<system::SDL_Window_Container> windowContainer)
   :
   m_windowContainer(windowContainer),
   m_currentFrame(0u)
@@ -141,20 +141,20 @@ void Renderer::initializeInstance()
   // Initialize instance
   const Application application("crude_example", VK_MAKE_VERSION(1, 0, 0), "crude_engine", VK_MAKE_VERSION(1, 0, 0));
 
-  m_instance = core::makeShared<Instance>(debugCallback, application, enabledExtensions, instanceEnabledLayers);
+  m_instance = core::allocateShared<Instance>(debugCallback, application, enabledExtensions, instanceEnabledLayers);
 
   // Initialize debugCallback
-  m_debugUtilsMessenger = core::makeShared<Debug_Utils_Messenger>(m_instance, debugCallback);
+  m_debugUtilsMessenger = core::allocateShared<Debug_Utils_Messenger>(m_instance, debugCallback);
 }
 
 void Renderer::initializeSurface()
 {
-  m_surface = core::makeShared<Surface>(m_instance, m_windowContainer);
+  m_surface = core::allocateShared<Surface>(m_instance, m_windowContainer);
 }
 
 void Renderer::initializeDevice()
 {
-  core::Shared_Ptr<Physical_Device> physicalDevice = pickPhysicalDevice();
+  core::shared_ptr<Physical_Device> physicalDevice = pickPhysicalDevice();
   if (!physicalDevice)
   {
     core::logError(core::Debug::Channel::Graphics, "Failed to find suitable physical device!");
@@ -179,7 +179,7 @@ void Renderer::initializeSwapchain()
   const Queue_Family_Indices queueIndices = findDeviceQueueFamilies(m_device->getPhysicalDevice());
   core::vector<core::uint32> queueFamilyIndices = { queueIndices.graphicsFamily.value(), queueIndices.presentFamily.value() };
 
-  m_swapchain = core::makeShared<Swap_Chain>(
+  m_swapchain = core::allocateShared<Swap_Chain>(
     m_device,
     m_surface,
     surfaceFormat,
@@ -200,11 +200,11 @@ void Renderer::initializeSwapchain()
   m_swapchainImagesViews.resize(m_swapchainImages.size());
   for (core::uint32 i = 0; i < m_swapchainImages.size(); ++i)
   {
-    m_swapchainImagesViews[i] = core::makeShared<Image_View>(m_device, m_swapchainImages[i], surfaceFormat.format, Image_Subresource_Range(m_swapchainImages[i]));
+    m_swapchainImagesViews[i] = core::allocateShared<Image_View>(m_device, m_swapchainImages[i], surfaceFormat.format, Image_Subresource_Range(m_swapchainImages[i]));
   }
 }
 
-core::Shared_Ptr<Render_Pass> Renderer::initializeRenderPass()
+core::shared_ptr<Render_Pass> Renderer::initializeRenderPass()
 {
   core::array<Attachment_Reference, 1u> colorAttachmentsRef = 
   { 
@@ -245,7 +245,7 @@ core::Shared_Ptr<Render_Pass> Renderer::initializeRenderPass()
       VK_ATTACHMENT_STORE_OP_STORE)
   };
 
-  auto renderPass = core::makeShared<Render_Pass>(m_device, subpasses, subpassesDependencies, attachments);
+  auto renderPass = core::allocateShared<Render_Pass>(m_device, subpasses, subpassesDependencies, attachments);
   return renderPass;
 }
 
@@ -261,14 +261,14 @@ void Renderer::initalizeDescriptorSet()
     Descriptor_Pool_Size(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, cFramesCount)
   };
 
-  auto descriptorPool = core::makeShared<Descriptor_Pool>(m_device, poolSizes);
-  auto descriptorSetLayout = core::makeShared<Descriptor_Set_Layout>(m_device, layoutBindings);
+  auto descriptorPool = core::allocateShared<Descriptor_Pool>(m_device, poolSizes);
+  auto descriptorSetLayout = core::allocateShared<Descriptor_Set_Layout>(m_device, layoutBindings);
 
   for (auto& m_descriptorSet : m_descriptorSets)
-    m_descriptorSet = core::makeShared<Descriptor_Set>(m_device, descriptorPool, descriptorSetLayout);
+    m_descriptorSet = core::allocateShared<Descriptor_Set>(m_device, descriptorPool, descriptorSetLayout);
 }
 
-void Renderer::recordCommandBuffer(core::Shared_Ptr<Command_Buffer> commandBuffer, core::uint32 imageIndex)
+void Renderer::recordCommandBuffer(core::shared_ptr<Command_Buffer> commandBuffer, core::uint32 imageIndex)
 {
   if (!commandBuffer->begin())
   {
@@ -346,8 +346,8 @@ void Renderer::initalizeGraphicsPipeline()
 
   const auto vertShaderCode = readFile(vertShaderPathA);
   const auto fragShaderCode = readFile(fragShaderPathA);
-  auto vertShaderModule = core::makeShared<Shader_Module>(m_device, vertShaderCode);
-  auto fragShaderModule = core::makeShared<Shader_Module>(m_device, fragShaderCode);
+  auto vertShaderModule = core::allocateShared<Shader_Module>(m_device, vertShaderCode);
+  auto fragShaderModule = core::allocateShared<Shader_Module>(m_device, fragShaderCode);
 
   core::array<Shader_Stage_Create_Info, 2u> shaderStagesInfo =
   {
@@ -379,11 +379,11 @@ void Renderer::initalizeGraphicsPipeline()
 
   core::array<VkDynamicState, 2u> dynamicStates = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
   auto dynamicState = Dynamic_State_Create_Info(dynamicStates);
-  core::vector<core::Shared_Ptr<const Descriptor_Set_Layout>> descriptorSetLayouts = { m_descriptorSets[0]->getSetLayout() };
+  core::vector<core::shared_ptr<const Descriptor_Set_Layout>> descriptorSetLayouts = { m_descriptorSets[0]->getSetLayout() };
 
-  auto m_pipelineLayout = core::makeShared<Pipeline_Layout>(m_device, descriptorSetLayouts);
+  auto m_pipelineLayout = core::allocateShared<Pipeline_Layout>(m_device, descriptorSetLayouts);
 
-  m_graphicsPipeline = core::makeShared<Pipeline>(
+  m_graphicsPipeline = core::allocateShared<Pipeline>(
     m_device,
     initializeRenderPass(),
     m_pipelineLayout,
@@ -404,8 +404,8 @@ void Renderer::initalizeGraphicsPipeline()
 void Renderer::initalizeCommandPool()
 {
   const Queue_Family_Indices queueIndices = findDeviceQueueFamilies(m_device->getPhysicalDevice());
-  m_graphicsCommandPool = core::makeShared<Command_Pool>(m_device, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, queueIndices.graphicsFamily.value());
-  m_transferCommandPool = m_graphicsCommandPool; // = core::makeShared<Command_Pool>(m_device, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, queueIndices.transferFamily.value());
+  m_graphicsCommandPool = core::allocateShared<Command_Pool>(m_device, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, queueIndices.graphicsFamily.value());
+  m_transferCommandPool = m_graphicsCommandPool; // = core::allocateShared<Command_Pool>(m_device, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, queueIndices.transferFamily.value());
 }
 
 void Renderer::initializeDepthImage()
@@ -414,7 +414,7 @@ void Renderer::initializeDepthImage()
   const VkExtent2D extent = chooseSwapExtent(surfaceCapabilites);
 
   const VkFormat depthFormat = findDepthFormat();
-  m_depthImage = core::makeShared<Image>(
+  m_depthImage = core::allocateShared<Image>(
     m_device,
     0u,
     depthFormat,
@@ -429,10 +429,10 @@ void Renderer::initializeDepthImage()
 
   VkMemoryRequirements memRequirements = m_depthImage->getMemoryRequirements();
 
-  m_depthImageDeviceMemory = core::makeShared<Device_Memory>(m_device, memRequirements.size, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+  m_depthImageDeviceMemory = core::allocateShared<Device_Memory>(m_device, memRequirements.size, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
   m_depthImageDeviceMemory->bind(*m_depthImage);
 
-  auto commandBuffer = core::makeShared<Command_Buffer>(m_device, m_transferCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+  auto commandBuffer = core::allocateShared<Command_Buffer>(m_device, m_transferCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
   commandBuffer->begin();
 
   core::array<Image_Memory_Barrier, 1u> barriers = 
@@ -445,7 +445,7 @@ void Renderer::initializeDepthImage()
   m_graphicsQueue->sumbit(crude::core::span(&commandBuffer, 1u));
   m_graphicsQueue->waitIdle();
 
-  m_depthImageView = makeShared<Image_View>(m_device, m_depthImage, depthFormat, Image_Subresource_Range(m_depthImage));
+  m_depthImageView = core::allocateShared<Image_View>(m_device, m_depthImage, depthFormat, Image_Subresource_Range(m_depthImage));
 }
 
 void Renderer::initializeSwapchainFramebuffers()
@@ -453,9 +453,9 @@ void Renderer::initializeSwapchainFramebuffers()
   m_swapchainFramebuffers.resize(m_swapchainImagesViews.size());
   for (core::uint32 i = 0; i < m_swapchainFramebuffers.size(); ++i)
   {
-    core::vector<core::Shared_Ptr<Image_View>> attachments = { m_swapchainImagesViews[i], m_depthImageView };
+    core::vector<core::shared_ptr<Image_View>> attachments = { m_swapchainImagesViews[i], m_depthImageView };
 
-    m_swapchainFramebuffers[i] = core::makeShared<Framebuffer>(m_device, m_graphicsPipeline->getRenderPass(), attachments, m_swapchain->getExtent().width, m_swapchain->getExtent().height, 1u);
+    m_swapchainFramebuffers[i] = core::allocateShared<Framebuffer>(m_device, m_graphicsPipeline->getRenderPass(), attachments, m_swapchain->getExtent().width, m_swapchain->getExtent().height, 1u);
   }
 }
 
@@ -472,16 +472,16 @@ void Renderer::initializeModelBuffer()
   scene::Model_Geometry modelGeometry;
   modelGeometry.setRanges(core::span(&range, 1u));
   modelGeometry.setMeshes(core::span(&mesh, 1u));
-  m_modelBuffer = core::makeShared<graphics::Model_Buffer>(m_transferQueue, m_transferCommandPool, modelGeometry);
+  m_modelBuffer = core::allocateShared<graphics::Model_Buffer>(m_transferQueue, m_transferCommandPool, modelGeometry);
 }
 
 void Renderer::initializeUniformBuffers()
 {
   VkDeviceSize bufferSize = sizeof(Uniform_Buffer_Object);
 
-  auto stagingBuffer = core::makeShared<Buffer>(m_device, bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+  auto stagingBuffer = core::allocateShared<Buffer>(m_device, bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
   auto memRequirements = stagingBuffer->getMemoryRequirements();
-  auto staggingBufferMemory = core::makeShared<Device_Memory>(m_device, memRequirements.size, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+  auto staggingBufferMemory = core::allocateShared<Device_Memory>(m_device, memRequirements.size, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
   staggingBufferMemory->bind(*stagingBuffer);
   auto data = staggingBufferMemory->map();
   if (data.hasValue())
@@ -492,12 +492,12 @@ void Renderer::initializeUniformBuffers()
 
   for (core::uint32 i = 0; i < cFramesCount; ++i)
   {
-    m_uniformBuffer[i] = core::makeShared<Buffer>(m_device, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
+    m_uniformBuffer[i] = core::allocateShared<Buffer>(m_device, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
     memRequirements = m_uniformBuffer[i]->getMemoryRequirements();
-    m_uniformBufferMemory[i] = core::makeShared<Device_Memory>(m_device, memRequirements.size, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+    m_uniformBufferMemory[i] = core::allocateShared<Device_Memory>(m_device, memRequirements.size, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
     m_uniformBufferMemory[i]->bind(*m_uniformBuffer[i]);
 
-    auto commandBuffer = core::makeShared<Command_Buffer>(m_device, m_transferCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+    auto commandBuffer = core::allocateShared<Command_Buffer>(m_device, m_transferCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
     commandBuffer->begin();
     commandBuffer->copyBuffer(stagingBuffer, m_uniformBuffer[i], bufferSize);
     commandBuffer->end();
@@ -520,7 +520,7 @@ void Renderer::initializeCommandBuffers()
 {
   for (core::uint32 i = 0; i < cFramesCount; ++i)
   {
-    m_graphicsCommandBuffers[i] = core::makeShared<Command_Buffer>(m_device, m_graphicsCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+    m_graphicsCommandBuffers[i] = core::allocateShared<Command_Buffer>(m_device, m_graphicsCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
   }
 }
 
@@ -528,20 +528,20 @@ void Renderer::initializeSyncObjects()
 {
   for (core::uint32 i = 0; i < cFramesCount; i++)
   {
-    m_imageAvailableSemaphores[i] = core::makeShared<Semaphore>(m_device);
-    m_renderFinishedSemaphores[i] = core::makeShared<Semaphore>(m_device);
-    m_inFlightFences[i] = core::makeShared<Fence>(m_device, VK_FENCE_CREATE_SIGNALED_BIT);
+    m_imageAvailableSemaphores[i] = core::allocateShared<Semaphore>(m_device);
+    m_renderFinishedSemaphores[i] = core::allocateShared<Semaphore>(m_device);
+    m_inFlightFences[i] = core::allocateShared<Fence>(m_device, VK_FENCE_CREATE_SIGNALED_BIT);
   }
 }
 
-core::Shared_Ptr<Physical_Device> Renderer::pickPhysicalDevice()
+core::shared_ptr<Physical_Device> Renderer::pickPhysicalDevice()
 {
   auto physicalDevices = m_instance->getPhysicalDevices();
   for (auto& physicalDevice : physicalDevices)
   {
-    const Queue_Family_Indices queueIndices = findDeviceQueueFamilies(*physicalDevice);
-    const bool extensionsSupported = checkDeviceExtensionSupport(*physicalDevice);
-    const bool swapChainAdequate = checkSurfaceSupport(*physicalDevice, m_surface);
+    const Queue_Family_Indices queueIndices = findDeviceQueueFamilies(physicalDevice);
+    const bool extensionsSupported = checkDeviceExtensionSupport(physicalDevice);
+    const bool swapChainAdequate = checkSurfaceSupport(physicalDevice, m_surface);
     const auto& supportedFeatures = physicalDevice->getFeatures();
 
     if (queueIndices.isComplete() && extensionsSupported && swapChainAdequate && supportedFeatures.samplerAnisotropy)
@@ -553,7 +553,7 @@ core::Shared_Ptr<Physical_Device> Renderer::pickPhysicalDevice()
   return nullptr;
 }
 
-Renderer::Queue_Family_Indices Renderer::findDeviceQueueFamilies(core::Shared_Ptr<Physical_Device> physicalDevice)
+Renderer::Queue_Family_Indices Renderer::findDeviceQueueFamilies(core::shared_ptr<const Physical_Device> physicalDevice)
 {
   Queue_Family_Indices indices;
   
@@ -572,7 +572,7 @@ Renderer::Queue_Family_Indices Renderer::findDeviceQueueFamilies(core::Shared_Pt
   return indices;
 }
 
-bool Renderer::checkDeviceExtensionSupport(core::Shared_Ptr<Physical_Device> physicalDevice)
+bool Renderer::checkDeviceExtensionSupport(core::shared_ptr<const Physical_Device> physicalDevice)
 {
   static const core::vector<const char*> deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
   
@@ -587,12 +587,12 @@ bool Renderer::checkDeviceExtensionSupport(core::Shared_Ptr<Physical_Device> phy
   return requiredExtensions.empty();
 }
 
-bool Renderer::checkSurfaceSupport(core::Shared_Ptr<Physical_Device> physicalDevice, core::Shared_Ptr<Surface> surface)
+bool Renderer::checkSurfaceSupport(core::shared_ptr<const Physical_Device> physicalDevice, core::shared_ptr<Surface> surface)
 {
   return !physicalDevice->getSurfaceFormats(surface).empty() && !physicalDevice->getSurfacePresentModes(surface).empty();
 }
 
-void Renderer::initializeLogicDevice(core::Shared_Ptr<Physical_Device> physicalDevice)
+void Renderer::initializeLogicDevice(core::shared_ptr<const Physical_Device> physicalDevice)
 {
   const Queue_Family_Indices queueIndices = findDeviceQueueFamilies(physicalDevice);
 
@@ -608,7 +608,7 @@ void Renderer::initializeLogicDevice(core::Shared_Ptr<Physical_Device> physicalD
     //Device_Queue_Create_Info(queueIndices.transferFamily.value(), queuePriorities)
   };
 
-  m_device = core::makeShared<Device>(physicalDevice, deviceQueueCreateInfos, deviceFeatures, deviceEnabledExtensions, instanceEnabledLayers);
+  m_device = core::allocateShared<Device>(physicalDevice, deviceQueueCreateInfos, deviceFeatures, deviceEnabledExtensions, instanceEnabledLayers);
 
   m_graphicsQueue = m_device->getQueue(queueIndices.graphicsFamily.value(), 0u);
   m_presentQueue = m_device->getQueue(queueIndices.presentFamily.value(), 0u);

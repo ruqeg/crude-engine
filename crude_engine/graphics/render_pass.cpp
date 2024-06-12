@@ -8,7 +8,7 @@ import crude.graphics.vulkan_utils;
 namespace crude::graphics
 {
   
-Render_Pass::Render_Pass(core::Shared_Ptr<const Device>             device,
+Render_Pass::Render_Pass(core::shared_ptr<const Device>             device,
                          const core::span<Subpass_Description>&     subpasses,
                          const core::span<Subpass_Dependency>&      subpassesDependencies,
                          const core::span<Attachment_Description>&  attachments)

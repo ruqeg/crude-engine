@@ -8,7 +8,7 @@ import crude.graphics.vulkan_utils;
 namespace crude::graphics
 {
   
-Sampler::Sampler(core::Shared_Ptr<const Device>  device,
+Sampler::Sampler(core::shared_ptr<const Device>  device,
                  VkFilter                        magFilter,
                  VkFilter                        minFilter,
                  VkSamplerMipmapMode             mipmapMode,

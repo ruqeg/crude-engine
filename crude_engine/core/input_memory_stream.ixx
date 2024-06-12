@@ -4,7 +4,6 @@ module;
 #include <algorithm>
 
 import crude.core.alias;
-import crude.core.shared_ptr;
 import crude.core.std_containers_stack;
 import crude.core.std_containers_heap;
 
@@ -16,7 +15,7 @@ export namespace crude::core
 class Input_Memory_Stream
 {
 public:
-  Input_Memory_Stream(Shared_Ptr<vector<byte>> inData);
+  Input_Memory_Stream(shared_ptr<vector<byte>> inData);
   ~Input_Memory_Stream() = default;
 
 public:
@@ -28,11 +27,11 @@ public:
   void read(T& outData);
 
 private:
-  Shared_Ptr<vector<byte>>  m_buffer;
+  shared_ptr<vector<byte>>  m_buffer;
   uint32                    m_head;
 };
 
-Input_Memory_Stream::Input_Memory_Stream(Shared_Ptr<vector<byte>> inData)
+Input_Memory_Stream::Input_Memory_Stream(shared_ptr<vector<byte>> inData)
   :
   m_buffer(inData),
   m_head(0u)

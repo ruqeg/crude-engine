@@ -5,7 +5,7 @@ module;
 export module crude.graphics.debug_utils_messenger;
 
 import crude.core.std_containers_stack;
-import crude.core.shared_ptr;
+import crude.core.std_containers_heap;
 import crude.graphics.vulkan_object;
 
 export namespace crude::graphics
@@ -16,7 +16,7 @@ class Instance;
 class Debug_Utils_Messenger : public Vulkan_Object<VkDebugUtilsMessengerEXT>
 {
 public:
-  Debug_Utils_Messenger(core::Shared_Ptr<const Instance>      instance,
+  Debug_Utils_Messenger(core::shared_ptr<const Instance>      instance,
                         PFN_vkDebugUtilsMessengerCallbackEXT  pfnUserCallback,
                         VkDebugUtilsMessageSeverityFlagsEXT   messageSeverity = DEFAULT_DEBUG_UTILS_MESSENGER_MESSAGE_SEVERITY,
                         VkDebugUtilsMessageTypeFlagsEXT       messageType     = DEFAULT_DEBUG_UTILS_MESSENGER_MESSAGE_TYPE,
@@ -46,7 +46,7 @@ private:
     VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
     VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
 private:
-  core::Shared_Ptr<const Instance> m_instance;
+  core::shared_ptr<const Instance> m_instance;
 };
 
 }

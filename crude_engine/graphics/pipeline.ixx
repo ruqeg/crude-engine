@@ -16,9 +16,9 @@ export import crude.graphics.depth_stencil_state_create_info;
 export import crude.graphics.color_blend_state_create_info;
 export import crude.graphics.dynamic_state_create_info;
 export import crude.graphics.tessellation_state_create_info;
-export import crude.core.shared_ptr;
 export import crude.core.optional;
 export import crude.core.std_containers_stack;
+export import crude.core.std_containers_heap;
 export import crude.graphics.pipeline_layout;
 export import crude.graphics.render_pass;
 
@@ -30,10 +30,10 @@ class Device;
 class Pipeline : public Vulkan_Object<VkPipeline>
 {
 public:
-  explicit Pipeline(core::Shared_Ptr<const Device>                           device,
-                    core::Shared_Ptr<const Render_Pass>                      renderPass,
-                    core::Shared_Ptr<const Pipeline_Layout>                  pipelineLayout,
-                    core::Shared_Ptr<const Pipeline>                         basePipeline,
+  explicit Pipeline(core::shared_ptr<const Device>                           device,
+                    core::shared_ptr<Render_Pass>                            renderPass,
+                    core::shared_ptr<const Pipeline_Layout>                  pipelineLayout,
+                    core::shared_ptr<const Pipeline>                         basePipeline,
                     const core::span<Shader_Stage_Create_Info>&              shaderStages,
                     const core::Optional<Vertex_Input_State_Create_Info>&    vertexInputState,
                     const core::Optional<Tessellation_State_Create_Info>&    tessellationState,
@@ -47,13 +47,13 @@ public:
                     core::uint32                                             subpass);
   ~Pipeline();
   const VkPipelineBindPoint getBindPoint() const { return m_bindPoint; }
-  core::Shared_Ptr<const Pipeline_Layout> getPipelineLayout() const { return m_pipelineLayout; }
-  core::Shared_Ptr<const Render_Pass> getRenderPass() const { return m_renderPass; }
+  core::shared_ptr<const Pipeline_Layout> getPipelineLayout() const { return m_pipelineLayout; }
+  core::shared_ptr<Render_Pass> getRenderPass() { return m_renderPass; }
 private:
-  core::Shared_Ptr<const Device>           m_device;
-  core::Shared_Ptr<const Render_Pass>      m_renderPass;
-  core::Shared_Ptr<const Pipeline_Layout>  m_pipelineLayout;
-  core::Shared_Ptr<const Pipeline>         m_basePipeline;
+  core::shared_ptr<const Device>           m_device;
+  core::shared_ptr<Render_Pass>            m_renderPass;
+  core::shared_ptr<const Pipeline_Layout>  m_pipelineLayout;
+  core::shared_ptr<const Pipeline>         m_basePipeline;
   const VkPipelineBindPoint                m_bindPoint;
 };
 

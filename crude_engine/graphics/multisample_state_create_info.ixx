@@ -4,7 +4,6 @@ module;
 
 export module crude.graphics.multisample_state_create_info;
 
-import crude.core.shared_ptr;
 import crude.core.std_containers_stack;
 import crude.core.std_containers_heap;
 import crude.graphics.vulkan_object;

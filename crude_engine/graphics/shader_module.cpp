@@ -8,7 +8,7 @@ import crude.graphics.vulkan_utils;
 namespace crude::graphics
 {
 
-Shader_Module::Shader_Module(core::Shared_Ptr<const Device> device, core::span<const char> code)
+Shader_Module::Shader_Module(core::shared_ptr<const Device> device, core::span<const char> code)
   :
   m_device(device)
 {

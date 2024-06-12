@@ -23,7 +23,7 @@ Device_Queue_Create_Info::Device_Queue_Create_Info(core::uint32                 
   this->queueFamilyIndex  = queueFamilyIndex;
 }
 
-Device::Device(core::Shared_Ptr<const Physical_Device>      physicalDevice,
+Device::Device(core::shared_ptr<const Physical_Device>      physicalDevice,
                const core::span<Device_Queue_Create_Info>&  queueDescriptors,
                const VkPhysicalDeviceFeatures&              enabledFeatures,
                core::span<const char* const>                enabledExtensions,
@@ -53,14 +53,14 @@ Device::~Device()
   vkDestroyDevice(m_handle, nullptr);
 }
   
-core::Shared_Ptr<const Physical_Device> Device::getPhysicalDevice() const
+core::shared_ptr<const Physical_Device> Device::getPhysicalDevice() const
 {
   return m_physicalDevice;
 }
   
-core::Shared_Ptr<Queue> Device::getQueue(core::uint32 queueFamilyIndex, core::uint32 queueIndex) const
+core::shared_ptr<Queue> Device::getQueue(core::uint32 queueFamilyIndex, core::uint32 queueIndex) const
 {
-  core::Shared_Ptr<Queue> queue = core::makeShared<Queue>(queueFamilyIndex, queueIndex);
+  core::shared_ptr<Queue> queue = core::allocateShared<Queue>(queueFamilyIndex, queueIndex);
   vkGetDeviceQueue(m_handle, queueFamilyIndex, queueIndex, &queue->getHandle());
   return queue;
 }

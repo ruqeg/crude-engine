@@ -8,7 +8,7 @@ import crude.graphics.device;
 namespace crude::graphics
 {
 
-Command_Pool::Command_Pool(core::Shared_Ptr<const Device>  device,
+Command_Pool::Command_Pool(core::shared_ptr<const Device>  device,
                            VkCommandPoolCreateFlags        flags,
                            core::uint32                    queueFamilyIndex)
   :
@@ -30,7 +30,7 @@ Command_Pool::~Command_Pool()
   vkDestroyCommandPool(m_device->getHandle(), m_handle, getPVkAllocationCallbacks());
 }
 
-core::Shared_Ptr<const Device> const Command_Pool::getDevice()
+core::shared_ptr<const Device> const Command_Pool::getDevice()
 { 
   return m_device;
 }

@@ -7,7 +7,7 @@ import crude.graphics.descriptor_set;
 namespace crude::graphics
 {
 
-Write_Descriptor_Set::Write_Descriptor_Set(core::Shared_Ptr<Descriptor_Set>               descriptorSet,
+Write_Descriptor_Set::Write_Descriptor_Set(core::shared_ptr<Descriptor_Set>               descriptorSet,
                                            core::uint32                                   binding,
                                            core::uint32                                   arrayElement,
                                            core::uint32                                   descriptorCount,

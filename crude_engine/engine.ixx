@@ -21,7 +21,7 @@ struct Engine_Config
 class Engine
 {
 public:
-  Engine(core::Shared_Ptr<system::SDL_Window_Container> windowContainer);
+  Engine(core::shared_ptr<system::SDL_Window_Container> windowContainer);
 public:
   void mainLoop();
   void update(core::float64 elapsed);

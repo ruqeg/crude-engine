@@ -4,11 +4,11 @@ module;
 
 export module crude.graphics.command_buffer;
 
-import crude.core.shared_ptr;
 import crude.core.std_containers_stack;
 import crude.graphics.vulkan_object;
 export import crude.graphics.image_memory_barrier;
 export import crude.graphics.buffer;
+export import crude.core.std_containers_heap;
 
 export namespace crude::graphics
 {
@@ -24,17 +24,17 @@ class Model_Buffer;
 
 struct Vertex_Buffer_Bind
 {
-  Vertex_Buffer_Bind(core::Shared_Ptr<Buffer> buffer, VkDeviceSize offset)
+  Vertex_Buffer_Bind(core::shared_ptr<Buffer> buffer, VkDeviceSize offset)
     : buffer(buffer), offset(offset) {}
-  core::Shared_Ptr<Buffer>  buffer;
+  core::shared_ptr<Buffer>  buffer;
   VkDeviceSize              offset;
 };
 
 class Command_Buffer : public Vulkan_Object<VkCommandBuffer>
 {
 public:
-  explicit Command_Buffer(core::Shared_Ptr<const Device>  device,
-                          core::Shared_Ptr<Command_Pool>  commandPool,
+  explicit Command_Buffer(core::shared_ptr<const Device>  device,
+                          core::shared_ptr<Command_Pool>  commandPool,
                           VkCommandBufferLevel            level);
 
   bool begin(VkCommandBufferUsageFlags flags = 0u);
@@ -45,37 +45,37 @@ public:
                VkPipelineStageFlags              dstStage, 
                core::span<Image_Memory_Barrier>  imageMemoryBarriers);
   
-  void copyBufferToImage(core::Shared_Ptr<Buffer>       srcBuffer, 
-                         core::Shared_Ptr<Image>        dstImage, 
+  void copyBufferToImage(core::shared_ptr<Buffer>       srcBuffer, 
+                         core::shared_ptr<Image>        dstImage, 
                          core::span<VkBufferImageCopy>  regions);
   
   bool reset(VkCommandBufferResetFlags flags = VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
 
-  void beginRenderPass(core::Shared_Ptr<Render_Pass>  renderPass,
-                       core::Shared_Ptr<Framebuffer>  framebuffer,
+  void beginRenderPass(core::shared_ptr<Render_Pass>  renderPass,
+                       core::shared_ptr<Framebuffer>  framebuffer,
                        core::span<VkClearValue>       clearValues,
                        const VkRect2D&                renderArea = {0, 0, 0, 0}, 
                        VkSubpassContents              contents = VK_SUBPASS_CONTENTS_INLINE);
 
-  void bindPipeline(core::Shared_Ptr<Pipeline> pipeline);
+  void bindPipeline(core::shared_ptr<Pipeline> pipeline);
 
   void setViewport(core::span<VkViewport> viewports);
 
   void setScissor(core::span<VkRect2D> scissors);
   
-  void bindModelBuffer(core::Shared_Ptr<Model_Buffer> modelBuffer, core::uint32 vertexBinding);
+  void bindModelBuffer(core::shared_ptr<Model_Buffer> modelBuffer, core::uint32 vertexBinding);
   void bindVertexBuffers(core::uint32 firstBinding, const core::span<Vertex_Buffer_Bind>& vertexBuffersBind);
-  void bindVertexBuffer(core::Shared_Ptr<Buffer> vertexBuffer, core::uint32 firstBinding, VkDeviceSize offset = 0u);
-  void bindIndexBuffer(core::Shared_Ptr<Buffer> indexBuffer, VkIndexType indexType, VkDeviceSize offset = 0u);
+  void bindVertexBuffer(core::shared_ptr<Buffer> vertexBuffer, core::uint32 firstBinding, VkDeviceSize offset = 0u);
+  void bindIndexBuffer(core::shared_ptr<Buffer> indexBuffer, VkIndexType indexType, VkDeviceSize offset = 0u);
 
-  void copyBuffer(core::Shared_Ptr<const Buffer> srcBuffer, core::Shared_Ptr<Buffer> dstBuffer, VkDeviceSize size);
+  void copyBuffer(core::shared_ptr<const Buffer> srcBuffer, core::shared_ptr<Buffer> dstBuffer, VkDeviceSize size);
 
   // !TODO
   //template<core::size_t N>
   //void bindVertexBuffers(core::uint32 firstBinding, const core::array<Vertex_Buffer_Bind, N>& vertexBuffersBind);
 
-  void bindDescriptorSets(core::Shared_Ptr<Pipeline>                    pipeline,
-                          core::span<core::Shared_Ptr<Descriptor_Set>>  descriptorSets,
+  void bindDescriptorSets(core::shared_ptr<Pipeline>                    pipeline,
+                          core::span<core::shared_ptr<Descriptor_Set>>  descriptorSets,
                           core::span<core::uint32>                      dynamicOffsets = {});
 
   void draw(core::uint32 vertexCount, core::uint32 instanceCount = 0u, core::uint32 firstVertex = 0u, core::uint32 firstInstance = 0u);
@@ -85,8 +85,8 @@ public:
   // !TODO void begin(VkCommandBufferUsageFlags flags with VkCommandBufferInheritanceInfo);
   ~Command_Buffer();
 private:
-  const core::Shared_Ptr<const Device>  m_device;
-  const core::Shared_Ptr<Command_Pool>  m_commandPool;
+  const core::shared_ptr<const Device>  m_device;
+  const core::shared_ptr<Command_Pool>  m_commandPool;
   bool                                  m_withinRenderPass = false;
   bool                                  m_recording = false;
 };

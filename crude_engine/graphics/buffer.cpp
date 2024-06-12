@@ -8,14 +8,14 @@ import crude.graphics.vulkan_utils;
 namespace crude::graphics
 {
 
-Buffer::Buffer(core::Shared_Ptr<const Device>  device,
+Buffer::Buffer(core::shared_ptr<const Device>  device,
                VkDeviceSize                    size,
                VkBufferUsageFlags              usage)
   :
   Buffer(device, size, usage, VK_SHARING_MODE_EXCLUSIVE, {})
 {}
 
-Buffer::Buffer(core::Shared_Ptr<const Device>  device,
+Buffer::Buffer(core::shared_ptr<const Device>  device,
                VkDeviceSize                    size,
                VkBufferUsageFlags              usage,
                core::span<core::uint32>        queueFamilyIndices)
@@ -23,7 +23,7 @@ Buffer::Buffer(core::Shared_Ptr<const Device>  device,
   Buffer(device, size, usage, VK_SHARING_MODE_CONCURRENT, queueFamilyIndices) 
 {}
 
-Buffer::Buffer(core::Shared_Ptr<const Device>  device,
+Buffer::Buffer(core::shared_ptr<const Device>  device,
                VkDeviceSize                    size,
                VkBufferUsageFlags              usage,
                VkSharingMode                   sharingMode,

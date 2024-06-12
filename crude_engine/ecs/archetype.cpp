@@ -9,7 +9,7 @@ import crude.ecs.component_register;
 namespace crude::ecs
 {
 
-Archetype::Archetype(core::Shared_Ptr<Component_Register> componentRegister, Archetype_ID id, const core::set<Component_ID>& type)
+Archetype::Archetype(core::shared_ptr<Component_Register> componentRegister, Archetype_ID id, const core::set<Component_ID>& type)
   :
   m_componentRegister(componentRegister),
   m_id(id),

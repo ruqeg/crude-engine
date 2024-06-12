@@ -1,5 +1,6 @@
 module;
 
+#include <memory>
 #include <unordered_map>
 #include <set>
 #include <vector>
@@ -27,5 +28,14 @@ using deque = std::deque<T, Allocator>;
 
 template<class T, class Allocator = STD_Allocator<T>>
 using queue = std::queue<T, deque<T,  Allocator>>;
+
+template<class T>
+using shared_ptr = std::shared_ptr<T>;
+
+template <class T, class ...Args>
+shared_ptr<T> allocateShared(Args&&... args) noexcept
+{
+  return std::allocate_shared<T>(STD_Allocator<T>(), std::forward<Args>(args)...);
+}
 
 }

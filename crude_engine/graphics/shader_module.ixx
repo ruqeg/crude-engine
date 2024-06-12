@@ -4,7 +4,7 @@ module;
 
 export module crude.graphics.shader_module;
 
-import crude.core.shared_ptr;
+import crude.core.std_containers_heap;
 import crude.core.std_containers_stack;
 import crude.graphics.vulkan_object;
 
@@ -16,10 +16,10 @@ class Device;
 class Shader_Module : public Vulkan_Object<VkShaderModule>
 {
 public:
-  explicit Shader_Module(core::Shared_Ptr<const Device> device, core::span<const char> code);
+  explicit Shader_Module(core::shared_ptr<const Device> device, core::span<const char> code);
   ~Shader_Module();
 private:
-  core::Shared_Ptr<const Device>  m_device;
+  core::shared_ptr<const Device>  m_device;
 };
 
 }

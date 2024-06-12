@@ -12,7 +12,7 @@ namespace crude::ecs
 
 World::World()
 {
-  m_componentRegister = core::makeShared<Component_Register>();
+  m_componentRegister = core::allocateShared<Component_Register>();
 }
 
 Entity World::entity()

@@ -4,7 +4,6 @@ export module crude.ecs.world;
 
 import crude.core.std_containers_stack;
 import crude.core.std_containers_heap;
-import crude.core.shared_ptr;
 import crude.core.optional;
 import crude.ecs.alias;
 import crude.ecs.id_manager;
@@ -116,7 +115,7 @@ private:
 
   core::unordered_map<Entity_ID, Entity_Record>     m_entityToRecord;
   core::unordered_map<Component_ID, Archetype_Map>  m_componentToArchetypeMap;
-  core::Shared_Ptr<Component_Register>              m_componentRegister;
+  core::shared_ptr<Component_Register>              m_componentRegister;
   core::vector<Archetype>                           m_archetypes;
 
   template<class ...Components>

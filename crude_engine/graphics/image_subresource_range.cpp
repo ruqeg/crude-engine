@@ -8,7 +8,7 @@ import crude.graphics.format;
 namespace crude::graphics
 {
 
-Image_Subresource_Range::Image_Subresource_Range(core::Shared_Ptr<Image>  image,
+Image_Subresource_Range::Image_Subresource_Range(core::shared_ptr<Image>  image,
                                                  core::uint32             baseMipLevel,
                                                  core::uint32             levelCount,
                                                  core::uint32             baseArrayLayer,

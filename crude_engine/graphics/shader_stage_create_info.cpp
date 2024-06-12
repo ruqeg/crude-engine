@@ -8,7 +8,7 @@ namespace crude::graphics
 {
 
 Shader_Stage_Create_Info::Shader_Stage_Create_Info(VkShaderStageFlagBits                  stage,
-                                                   core::Shared_Ptr<const Shader_Module>  shaderModule,
+                                                   core::shared_ptr<const Shader_Module>  shaderModule,
                                                    const char*                            pEntrypoint)
   :
   m_shaderModule(shaderModule)

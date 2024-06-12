@@ -6,7 +6,7 @@ module;
 export module crude.graphics.surface;
 
 import crude.core.std_containers_stack;
-import crude.core.shared_ptr;
+import crude.core.std_containers_heap;
 import crude.graphics.instance;
 import crude.graphics.vulkan_object;
 import crude.graphics.vulkan_utils;
@@ -20,7 +20,7 @@ class Instance;
 class Surface : public Vulkan_Object<VkSurfaceKHR>
 {
 public:
-  explicit Surface(core::Shared_Ptr<const Instance> instance, core::Shared_Ptr<system::SDL_Window_Container> window)
+  explicit Surface(core::shared_ptr<const Instance> instance, core::shared_ptr<system::SDL_Window_Container> window)
     :
     m_instance(instance),
     m_window(window)
@@ -47,8 +47,8 @@ public:
   }
 
 protected:
-  core::Shared_Ptr<const Instance>                m_instance;
-  core::Shared_Ptr<system::SDL_Window_Container>  m_window;
+  core::shared_ptr<const Instance>                m_instance;
+  core::shared_ptr<system::SDL_Window_Container>  m_window;
 };
 
 }

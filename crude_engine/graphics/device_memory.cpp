@@ -11,7 +11,7 @@ import crude.graphics.vulkan_utils;
 namespace crude::graphics
 {
 
-Device_Memory::Device_Memory(core::Shared_Ptr<const Device>  device,
+Device_Memory::Device_Memory(core::shared_ptr<const Device>  device,
                              VkDeviceSize                    allocationSize,
                              core::uint32                    memoryTypeFilter,
                              VkMemoryPropertyFlags           memoryProperties)
@@ -39,7 +39,7 @@ Device_Memory::Device_Memory(core::Shared_Ptr<const Device>  device,
   initalize(allocationSize, memoryTypeIndex);
 }
 
-Device_Memory::Device_Memory(core::Shared_Ptr<const Device>  device,
+Device_Memory::Device_Memory(core::shared_ptr<const Device>  device,
                              VkDeviceSize                    allocationSize,
                              core::uint32                    memoryTypeIndex)
   :
@@ -48,7 +48,7 @@ Device_Memory::Device_Memory(core::Shared_Ptr<const Device>  device,
   initalize(allocationSize, memoryTypeIndex);
 }
 
-Device_Memory::Device_Memory(core::Shared_Ptr<const Device>  device, 
+Device_Memory::Device_Memory(core::shared_ptr<const Device>  device, 
                              VkMemoryRequirements            memoryRequirements, 
                              VkMemoryPropertyFlags           memoryProperties)
   :

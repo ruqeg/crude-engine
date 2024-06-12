@@ -5,16 +5,16 @@
 
 export module crude.network.tcp_socket;
 
-import crude.core.shared_ptr;
 import crude.core.alias;
 import crude.core.std_containers_stack;
+import crude.core.std_containers_heap;
 import crude.network.socket_address;
 
 export namespace crude::network
 {
 
 class TCP_Socket;
-using TCP_Socket_Ptr = core::Shared_Ptr<TCP_Socket>;
+using TCP_Socket_Ptr = core::shared_ptr<TCP_Socket>;
 
 class TCP_Socket
 {

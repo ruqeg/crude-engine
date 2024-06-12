@@ -4,7 +4,7 @@ module;
 
 export module crude.graphics.device_memory;
 
-import crude.core.shared_ptr;
+import crude.core.std_containers_heap;
 import crude.core.optional;
 import crude.graphics.vulkan_object;
 
@@ -18,15 +18,15 @@ class Buffer;
 class Device_Memory : public Vulkan_Object<VkDeviceMemory>
 {
 public:
-  explicit Device_Memory(core::Shared_Ptr<const Device>  device,
+  explicit Device_Memory(core::shared_ptr<const Device>  device,
                          VkDeviceSize                    allocationSize,
                          core::uint32                    memoryTypeIndex);
   
-  explicit Device_Memory(core::Shared_Ptr<const Device>  device,
+  explicit Device_Memory(core::shared_ptr<const Device>  device,
                          VkMemoryRequirements            memoryRequirements,
                          VkMemoryPropertyFlags           memoryProperties);
 
-  explicit Device_Memory(core::Shared_Ptr<const Device>  device,
+  explicit Device_Memory(core::shared_ptr<const Device>  device,
                          VkDeviceSize                    allocationSize,
                          core::uint32                    memoryTypeFilter,
                          VkMemoryPropertyFlags           memoryProperties);
@@ -38,7 +38,7 @@ public:
 private:
   void initalize(VkDeviceSize allocationSize, core::uint32 memoryTypeIndex);
 private:
-  core::Shared_Ptr<const Device>  m_device;
+  core::shared_ptr<const Device>  m_device;
 };
 
 }
