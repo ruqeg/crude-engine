@@ -1,7 +1,5 @@
 target_sources(crude_engine
     PRIVATE
-    vertex_buffer.cpp
-    index_buffer.cpp
     model_buffer.cpp
     renderer.cpp
     application.cpp

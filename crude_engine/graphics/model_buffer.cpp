@@ -9,8 +9,7 @@ import crude.graphics.fence;
 namespace crude::graphics
 {
 
-Model_Buffer::Model_Buffer(core::shared_ptr<Queue>         queue, 
-                           core::shared_ptr<Command_Pool>  commandPool, 
+Model_Buffer::Model_Buffer(core::shared_ptr<Command_Pool>  commandPool, 
                            const scene::Model_Geometry&    modelGeometry)
 {
   core::uint32 modelVerticesNum = 0u;
@@ -37,8 +36,8 @@ Model_Buffer::Model_Buffer(core::shared_ptr<Queue>         queue,
     }
   }
 
-  m_vertexBuffer = core::allocateShared<Buffer_Dependent<scene::Vertex_GPU>>(queue, commandPool, modelGpuVertices, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
-  m_indexBuffer = core::allocateShared<Buffer_Dependent<scene::Index_Triangle_GPU>>(queue, commandPool, modelGpuIndices, VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
+  m_vertexBuffer = core::allocateShared<Vertex_Buffer>(commandPool, modelGpuVertices);
+  m_indexBuffer = core::allocateShared<Index_Buffer>(commandPool, modelGpuIndices, scene::Index_Triangle_GPU::getType());
 }
 
 }
