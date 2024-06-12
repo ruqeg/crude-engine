@@ -203,12 +203,10 @@ void Command_Buffer::bindIndexBuffer(core::shared_ptr<Buffer> indexBuffer, VkInd
   vkCmdBindIndexBuffer(m_handle, indexBuffer->getHandle(), offset, indexType);
 }
 
-void Command_Buffer::copyBuffer(core::shared_ptr<const Buffer> srcBuffer, core::shared_ptr<Buffer> dstBuffer, VkDeviceSize size)
+void Command_Buffer::copyBuffer(core::shared_ptr<const Buffer>  srcBuffer, 
+                                core::shared_ptr<Buffer>        dstBuffer, 
+                                const VkBufferCopy&             copyRegion)
 {
-  VkBufferCopy copyRegion{};
-  copyRegion.srcOffset = 0;
-  copyRegion.dstOffset = 0;
-  copyRegion.size      = size;
   vkCmdCopyBuffer(m_handle, srcBuffer->getHandle(), dstBuffer->getHandle(), 1, &copyRegion);
 }
 

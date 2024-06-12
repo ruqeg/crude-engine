@@ -477,7 +477,7 @@ void Renderer::initializeModelBuffer()
 
 void Renderer::initializeUniformBuffers()
 {
-  VkDeviceSize bufferSize = sizeof(Uniform_Buffer_Object);
+  /*VkDeviceSize bufferSize = sizeof(Uniform_Buffer_Object);
 
   auto stagingBuffer = core::allocateShared<Buffer>(m_device, bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
   auto memRequirements = stagingBuffer->getMemoryRequirements();
@@ -513,7 +513,7 @@ void Renderer::initializeUniformBuffers()
       Write_Descriptor_Set(m_descriptorSets[i], 0u, 0u, 1u, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, {}, bufferInfo)
     };
     m_device->updateDescriptorSets(descriptorWrites, {});
-  }
+  }*/
 }
 
 void Renderer::initializeCommandBuffers()

@@ -31,6 +31,7 @@ public:
                          core::uint32                    memoryTypeFilter,
                          VkMemoryPropertyFlags           memoryProperties);
   ~Device_Memory();
+
   void bind(Image& image, VkDeviceSize offset = 0u);
   void bind(Buffer& buffer, VkDeviceSize offset = 0u);
   core::Optional<void*> map(VkDeviceSize offset = 0u, VkDeviceSize size = VK_WHOLE_SIZE, VkMemoryMapFlags flags = 0);

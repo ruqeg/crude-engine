@@ -68,7 +68,9 @@ public:
   void bindVertexBuffer(core::shared_ptr<Buffer> vertexBuffer, core::uint32 firstBinding, VkDeviceSize offset = 0u);
   void bindIndexBuffer(core::shared_ptr<Buffer> indexBuffer, VkIndexType indexType, VkDeviceSize offset = 0u);
 
-  void copyBuffer(core::shared_ptr<const Buffer> srcBuffer, core::shared_ptr<Buffer> dstBuffer, VkDeviceSize size);
+  void copyBuffer(core::shared_ptr<const Buffer>  srcBuffer, 
+                  core::shared_ptr<Buffer>        dstBuffer, 
+                  const VkBufferCopy&             copyRegion);
 
   // !TODO
   //template<core::size_t N>

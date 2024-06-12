@@ -53,9 +53,9 @@ target_sources(crude_engine
 target_sources(crude_engine
     PUBLIC
     FILE_SET cxx_modules_graphics TYPE CXX_MODULES FILES
+    staging_buffer.ixx
     vertex_buffer.ixx
     index_buffer.ixx
-    buffer_dependent.ixx
     model_buffer.ixx
     renderer.ixx
     application.ixx
