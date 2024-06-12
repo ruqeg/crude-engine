@@ -5,6 +5,7 @@ module crude.graphics.command_buffer;
 
 import crude.graphics.command_pool;
 import crude.graphics.device;
+import crude.graphics.buffer;
 import crude.graphics.image;
 import crude.graphics.render_pass;
 import crude.graphics.framebuffer;
@@ -19,6 +20,11 @@ import crude.core.assert;
 
 namespace crude::graphics
 {
+
+Vertex_Buffer_Bind::Vertex_Buffer_Bind(core::shared_ptr<Buffer> buffer, VkDeviceSize offset)
+  : 
+  buffer(buffer), offset(offset) 
+{}
 
 Command_Buffer::Command_Buffer(core::shared_ptr<const Device>  device,
                                core::shared_ptr<Command_Pool>  commandPool,
@@ -258,6 +264,11 @@ Command_Buffer::~Command_Buffer()
     m_commandPool->getHandle(),
     1u, 
     &m_handle);
+}
+
+core::shared_ptr<const Device> Command_Buffer::getDevice() const
+{
+  return m_device;
 }
 
 }

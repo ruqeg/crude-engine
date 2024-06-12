@@ -7,7 +7,6 @@ export module crude.graphics.command_buffer;
 import crude.core.std_containers_stack;
 import crude.graphics.vulkan_object;
 export import crude.graphics.image_memory_barrier;
-export import crude.graphics.buffer;
 export import crude.core.std_containers_heap;
 
 export namespace crude::graphics
@@ -19,13 +18,14 @@ class Image;
 class Render_Pass;
 class Framebuffer;
 class Pipeline;
+class Buffer;
 class Descriptor_Set;
 class Model_Buffer;
 
+// !TODO remove this???
 struct Vertex_Buffer_Bind
 {
-  Vertex_Buffer_Bind(core::shared_ptr<Buffer> buffer, VkDeviceSize offset)
-    : buffer(buffer), offset(offset) {}
+  Vertex_Buffer_Bind(core::shared_ptr<Buffer> buffer, VkDeviceSize offset);
   core::shared_ptr<Buffer>  buffer;
   VkDeviceSize              offset;
 };
@@ -86,6 +86,8 @@ public:
   void endRenderPass();
   // !TODO void begin(VkCommandBufferUsageFlags flags with VkCommandBufferInheritanceInfo);
   ~Command_Buffer();
+public:
+  core::shared_ptr<const Device> getDevice() const;
 private:
   const core::shared_ptr<const Device>  m_device;
   const core::shared_ptr<Command_Pool>  m_commandPool;
