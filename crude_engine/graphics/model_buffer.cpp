@@ -37,8 +37,8 @@ Model_Buffer::Model_Buffer(core::shared_ptr<Command_Buffer> commandBuffer,
   }
 
   Vertex_Buffer s(commandBuffer, core::span<const scene::Vertex_GPU>(modelGpuVertices));
-  m_vertexBuffer = core::allocateShared<Vertex_Buffer>(commandBuffer, modelGpuVertices);
-  m_indexBuffer = core::allocateShared<Index_Buffer>(commandBuffer, modelGpuIndices, scene::Index_Triangle_GPU::getType());
+  //m_vertexBuffer = core::allocateShared<Vertex_Buffer>(commandBuffer, modelGpuVertices);
+  //m_indexBuffer = core::allocateShared<Index_Buffer>(commandBuffer, modelGpuIndices, scene::Index_Triangle_GPU::getType());
 }
 
 }

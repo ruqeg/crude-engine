@@ -8,6 +8,8 @@ import crude.core.optional;
 import crude.core.std_containers_stack;
 import crude.core.std_containers_heap;
 import crude.graphics.vulkan_object;
+import crude.graphics.command_pool;
+import crude.graphics.device;
 
 export namespace crude::graphics
 {
@@ -36,7 +38,8 @@ private:
 class Queue : public Vulkan_Object<VkQueue>
 {
 public:
-  explicit Queue(core::uint32 familyIndex, core::uint32 index);
+  explicit Queue(VkQueueFlagBits flags, core::uint32 familyIndex, core::uint32 index);
+  ~Queue() = default;
   bool sumbit(const core::span<core::shared_ptr<Command_Buffer>>&  commandBuffers,
               const core::span<VkPipelineStageFlags>&              waitStageMasks = {},
               const core::span<core::shared_ptr<Semaphore>>&       waitSemaphores = {},
@@ -46,10 +49,13 @@ public:
                                const core::span<core::uint32>&                  imageIndices,
                                const core::span<core::shared_ptr<Semaphore>>&   waitSemaphores = {});
   void waitIdle();
-  ~Queue() = default;
+  VkQueueFlagBits getFlag() const { return m_flags; }
+  core::uint32 getFamilyIndex() const { return m_familyIndex; }
+  core::uint32 getIndex() const { return m_index; }
 private:
-  const core::uint32  m_familyIndex;
-  const core::uint32  m_index;
+  const VkQueueFlagBits  m_flags;
+  const core::uint32     m_familyIndex;
+  const core::uint32     m_index;
 };
 
 }

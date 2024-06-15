@@ -8,20 +8,10 @@ import crude.graphics.physical_device;
 import crude.graphics.vulkan_utils;
 import crude.core.std_containers_heap;
 import crude.core.algorithms;
+import crude.core.logger;
 
 namespace crude::graphics
 {
-
-Device_Queue_Create_Info::Device_Queue_Create_Info(core::uint32                      queueFamilyIndex,
-                                                   const core::span<core::float32>&  queuePriorities)
-{
-  this->sType             = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-  this->pQueuePriorities  = queuePriorities.data();
-  this->queueCount        = queuePriorities.size();
-  this->pNext             = nullptr;
-  this->flags             = 0u;
-  this->queueFamilyIndex  = queueFamilyIndex;
-}
 
 Device::Device(core::shared_ptr<const Physical_Device>      physicalDevice,
                const core::span<Device_Queue_Create_Info>&  queueDescriptors,
@@ -58,11 +48,28 @@ core::shared_ptr<const Physical_Device> Device::getPhysicalDevice() const
   return m_physicalDevice;
 }
   
-core::shared_ptr<Queue> Device::getQueue(core::uint32 queueFamilyIndex, core::uint32 queueIndex) const
+core::Optional<core::shared_ptr<Queue>> Device::getQueue(VkQueueFlagBits flags, core::uint32 queueIndex) const
 {
-  core::shared_ptr<Queue> queue = core::allocateShared<Queue>(queueFamilyIndex, queueIndex);
-  vkGetDeviceQueue(m_handle, queueFamilyIndex, queueIndex, &queue->getHandle());
+  const Device_Queue_Create_Info queueDescription(m_physicalDevice, flags, {});
+  core::shared_ptr<Queue> queue = core::allocateShared<Queue>(flags, queueDescription.queueFamilyIndex, queueIndex);
+  vkGetDeviceQueue(m_handle, queueDescription.queueFamilyIndex, queueIndex, &queue->getHandle());
+  if (queue->getHandle() == VK_NULL_HANDLE)
+  {
+    core::log(core::Debug::Channel::Graphics, "Failed Device::getQueue");
+    return core::nullopt;
+  }
   return queue;
+}
+
+core::Optional<core::shared_ptr<Queue>> Device::getQueueByFamily(core::uint32 queueFamilyIndex, core::uint32 queueIndex) const
+{
+  for (auto flag : { VK_QUEUE_GRAPHICS_BIT, VK_QUEUE_COMPUTE_BIT, VK_QUEUE_TRANSFER_BIT })
+  {
+    auto queue = getQueue(flag, queueIndex);
+    if (queue.hasValue() && queue->getFamilyIndex() == queueFamilyIndex)
+      return queue;
+  }
+  return core::nullopt;
 }
 
 void Device::updateDescriptorSets(const core::span<const Write_Descriptor_Set>&  descriptorWrites,

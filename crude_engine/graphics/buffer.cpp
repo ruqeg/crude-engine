@@ -2,9 +2,13 @@
 
 module crude.graphics.buffer;
 
+import crude.graphics.vulkan_utils;
 import crude.graphics.device;
 import crude.graphics.staging_buffer;
-import crude.graphics.vulkan_utils;
+import crude.graphics.device_memory;
+import crude.graphics.queue;
+import crude.graphics.command_pool;
+import crude.core.logger;
 
 namespace crude::graphics
 {
@@ -50,6 +54,38 @@ Buffer::Buffer(core::shared_ptr<const Device>  device,
 
   core::shared_ptr<Device_Memory> memory = core::allocateShared<Device_Memory>(m_device, getMemoryRequirements(), memoryFlags);
   bindMemory(memory);
+}
+
+void Buffer::stagedUpload(core::shared_ptr<Command_Buffer> commandBuffer, const void* data, VkDeviceSize size) noexcept
+{
+  core::shared_ptr<Staging_Buffer> stagingBuffer = core::allocateShared<Staging_Buffer>(m_device, data, size);
+  commandBuffer->begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+  copyTransfer(commandBuffer, stagingBuffer);
+  commandBuffer->end();
+
+  core::shared_ptr<Command_Pool> commandPool = commandBuffer->getCommandPool();
+  core::shared_ptr<Queue> queue = commandPool->getDevice()->getQueueByFamily(commandPool->getQueueFamilyIndex()).valueOr(nullptr);
+  if (queue == nullptr)
+  {
+    core::logError(
+      core::Debug::Channel::Graphics,
+      "Failed to find an queue for commandBuffer in Buffer::stagedUpload. Family index: %i", 
+      commandPool->getQueueFamilyIndex());
+  }
+
+  // !TODO
+  queue->sumbit(core::span(&commandBuffer, 1u));
+  queue->waitIdle();
+}
+
+void Buffer::copyHost(const void* data, VkDeviceSize size) noexcept
+{
+  core::Optional<void*> mappedData = m_memory->map();
+  if (mappedData.hasValue())
+  {
+    std::memcpy(mappedData.value(), data, size);
+    m_memory->unmap();
+  }
 }
 
 Buffer::~Buffer()

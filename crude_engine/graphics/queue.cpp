@@ -13,8 +13,9 @@ import crude.core.std_containers_heap;
 namespace crude::graphics
 {
 
-Queue::Queue(core::uint32 familyIndex, core::uint32 index)
+Queue::Queue(VkQueueFlagBits flags, core::uint32 familyIndex, core::uint32 index)
   :
+  m_flags(flags),
   m_familyIndex(familyIndex),
   m_index(index)
 {}

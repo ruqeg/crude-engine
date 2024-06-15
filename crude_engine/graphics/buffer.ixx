@@ -16,7 +16,6 @@ export namespace crude::graphics
 {
 
 class Device;
-class Command_Buffer;
 class Device_Memory;
 class Staging_Buffer;
 
@@ -34,16 +33,19 @@ public:
                   core::span<core::uint32>        queueFamilyIndices);
   ~Buffer();
 public:
+  template<class T>
+  void stagedUpload(core::shared_ptr<Command_Buffer> commandBuffer, core::span<const T> data) noexcept;
+  template<class T>
+  void copyHost(core::span<const T> data) noexcept;
+public:
   void copyTransfer(core::shared_ptr<Command_Buffer>        commandBuffer, 
                     core::shared_ptr<const Staging_Buffer>  srcBuffer,
                     VkDeviceSize                            srcOffset = 0,
                     VkDeviceSize                            dstOffset = 0,
                     VkDeviceSize                            size = VK_WHOLE_SIZE);
-  template<class T>
-  void stagedUpload(core::shared_ptr<Command_Buffer> commandBuffer, core::span<const T> data);
   void bindMemory(core::shared_ptr<Device_Memory> memory, VkDeviceSize offset = 0);
-  template<class T>
-  void copyHost(core::span<const T> srcData) noexcept;
+  void stagedUpload(core::shared_ptr<Command_Buffer> commandBuffer, const void* data, VkDeviceSize size) noexcept;
+  void copyHost(const void* data, VkDeviceSize size) noexcept;
   VkMemoryRequirements getMemoryRequirements() const;
 private:
   explicit Buffer(core::shared_ptr<const Device>  device,
@@ -58,23 +60,15 @@ protected:
 };
 
 template<class T>
-void Buffer::stagedUpload(core::shared_ptr<Command_Buffer> commandBuffer, core::span<const T> data)
+void Buffer::stagedUpload(core::shared_ptr<Command_Buffer> commandBuffer, core::span<const T> data) noexcept
 {
-  core::shared_ptr<Staging_Buffer> stagingBuffer = core::allocateShared<Staging_Buffer>(m_device, data);
-  commandBuffer->begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
-  copyTransfer(commandBuffer, stagingBuffer);
-  commandBuffer->end();
+  stagedUpload(commandBuffer, data.data(), data.size_bytes());
 }
 
 template<class T>
-void Buffer::copyHost(core::span<const T> srcData) noexcept
+void Buffer::copyHost(core::span<const T> data) noexcept
 {
-  core::Optional<void*> mappedData = m_memory->map();
-  if (mappedData.hasValue())
-  {
-    std::memcpy(mappedData.value(), srcData.data(), srcData.size_bytes());
-    m_memory->unmap();
-  }
+  copyHost(data.data(), data.size_bytes());
 }
 
 }

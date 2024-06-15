@@ -472,7 +472,7 @@ void Renderer::initializeModelBuffer()
   scene::Model_Geometry modelGeometry;
   modelGeometry.setRanges(core::span(&range, 1u));
   modelGeometry.setMeshes(core::span(&mesh, 1u));
-  m_modelBuffer = core::allocateShared<graphics::Model_Buffer>(m_transferQueue, m_transferCommandPool, modelGeometry);
+  //m_modelBuffer = core::allocateShared<graphics::Model_Buffer>(m_transferQueue, m_transferCommandPool, modelGeometry);
 }
 
 void Renderer::initializeUniformBuffers()
@@ -603,16 +603,11 @@ void Renderer::initializeLogicDevice(core::shared_ptr<const Physical_Device> phy
 
   core::array<Device_Queue_Create_Info, 2> deviceQueueCreateInfos =
   {
-    Device_Queue_Create_Info(queueIndices.graphicsFamily.value(), queuePriorities),
-    Device_Queue_Create_Info(queueIndices.presentFamily.value(), queuePriorities),
-    //Device_Queue_Create_Info(queueIndices.transferFamily.value(), queuePriorities)
+    Device_Queue_Create_Info(physicalDevice, VK_QUEUE_GRAPHICS_BIT, queuePriorities),
+    Device_Queue_Create_Info(physicalDevice, m_surface, queuePriorities),
   };
 
   m_device = core::allocateShared<Device>(physicalDevice, deviceQueueCreateInfos, deviceFeatures, deviceEnabledExtensions, instanceEnabledLayers);
-
-  m_graphicsQueue = m_device->getQueue(queueIndices.graphicsFamily.value(), 0u);
-  m_presentQueue = m_device->getQueue(queueIndices.presentFamily.value(), 0u);
-  m_transferQueue = m_graphicsQueue; // m_device->getQueue(queueIndices.transferFamily.value(), 0u);
 }
 
 VkSurfaceFormatKHR Renderer::chooseSwapSurfaceFormat(const crude::core::vector<VkSurfaceFormatKHR>& availableFormats)

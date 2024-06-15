@@ -88,6 +88,7 @@ public:
   ~Command_Buffer();
 public:
   core::shared_ptr<const Device> getDevice() const;
+  core::shared_ptr<Command_Pool> getCommandPool();
 private:
   const core::shared_ptr<const Device>  m_device;
   const core::shared_ptr<Command_Pool>  m_commandPool;

@@ -195,8 +195,8 @@ void Command_Buffer::bindVertexBuffers(core::uint32 firstBinding, const core::sp
 void Command_Buffer::bindModelBuffer(core::shared_ptr<Model_Buffer> modelBuffer, core::uint32 vertexBinding)
 {
   // !!!!!TODO
-  bindVertexBuffer(modelBuffer->m_vertexBuffer->getBuffer(), vertexBinding);
-  bindIndexBuffer(modelBuffer->m_indexBuffer->getBuffer(), scene::Index_Triangle_GPU::getType());
+  //bindVertexBuffer(modelBuffer->m_vertexBuffer->getBuffer(), vertexBinding);
+  //bindIndexBuffer(modelBuffer->m_indexBuffer->getBuffer(), scene::Index_Triangle_GPU::getType());
 }
 
 void Command_Buffer::bindVertexBuffer(core::shared_ptr<Buffer> vertexBuffer, core::uint32 firstBinding, VkDeviceSize offset)
@@ -269,6 +269,11 @@ Command_Buffer::~Command_Buffer()
 core::shared_ptr<const Device> Command_Buffer::getDevice() const
 {
   return m_device;
+}
+
+core::shared_ptr<Command_Pool> Command_Buffer::getCommandPool()
+{
+  return m_commandPool;
 }
 
 }

@@ -12,7 +12,8 @@ Command_Pool::Command_Pool(core::shared_ptr<const Device>  device,
                            VkCommandPoolCreateFlags        flags,
                            core::uint32                    queueFamilyIndex)
   :
-  m_device(device)
+  m_device(device),
+  m_queueFamilyIndex(queueFamilyIndex)
 {
   VkCommandPoolCreateInfo vkCreateInfo;
   vkCreateInfo.sType             = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
