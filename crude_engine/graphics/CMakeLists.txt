@@ -1,5 +1,6 @@
 target_sources(crude_engine
     PRIVATE
+    flush.cpp
     device_queue_create_info.cpp
     model_buffer.cpp
     renderer.cpp
@@ -52,6 +53,7 @@ target_sources(crude_engine
 target_sources(crude_engine
     PUBLIC
     FILE_SET cxx_modules_graphics TYPE CXX_MODULES FILES
+    flush.ixx
     device_queue_create_info.ixx
     staging_buffer.ixx
     vertex_buffer.ixx

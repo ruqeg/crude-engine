@@ -92,11 +92,11 @@ private:
 private:
   static constexpr core::uint32 cFramesCount = 2u;
 private:
-  core::shared_ptr<Instance>                            m_instance;
-  core::shared_ptr<Device>                              m_device;
   core::shared_ptr<Queue>                               m_graphicsQueue;
   core::shared_ptr<Queue>                               m_presentQueue;
   core::shared_ptr<Queue>                               m_transferQueue;
+  core::shared_ptr<Instance>                            m_instance;
+  core::shared_ptr<Device>                              m_device;
   core::shared_ptr<Surface>                             m_surface;
   core::shared_ptr<Swap_Chain>                          m_swapchain; 
   core::vector<core::shared_ptr<Swap_Chain_Image>>      m_swapchainImages;

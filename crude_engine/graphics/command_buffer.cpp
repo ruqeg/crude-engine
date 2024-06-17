@@ -5,13 +5,15 @@ module crude.graphics.command_buffer;
 
 import crude.graphics.command_pool;
 import crude.graphics.device;
-import crude.graphics.buffer;
 import crude.graphics.image;
 import crude.graphics.render_pass;
 import crude.graphics.framebuffer;
 import crude.graphics.pipeline;
 import crude.graphics.pipeline_layout;
+import crude.graphics.buffer;
 import crude.graphics.model_buffer;
+import crude.graphics.vertex_buffer;
+import crude.graphics.index_buffer;
 import crude.graphics.descriptor_set;
 import crude.graphics.vulkan_utils;
 import crude.core.std_containers_heap;
@@ -21,16 +23,9 @@ import crude.core.assert;
 namespace crude::graphics
 {
 
-Vertex_Buffer_Bind::Vertex_Buffer_Bind(core::shared_ptr<Buffer> buffer, VkDeviceSize offset)
-  : 
-  buffer(buffer), offset(offset) 
-{}
-
-Command_Buffer::Command_Buffer(core::shared_ptr<const Device>  device,
-                               core::shared_ptr<Command_Pool>  commandPool,
+Command_Buffer::Command_Buffer(core::shared_ptr<Command_Pool>  commandPool,
                                VkCommandBufferLevel            level)
   :
-  m_device(device),
   m_commandPool(commandPool)
 {
   VkCommandBufferAllocateInfo vkAllocateInfo{};
@@ -41,7 +36,7 @@ Command_Buffer::Command_Buffer(core::shared_ptr<const Device>  device,
   vkAllocateInfo.commandBufferCount  = 1u;
 
 
-  VkResult result = vkAllocateCommandBuffers(m_device->getHandle(), &vkAllocateInfo, &m_handle);
+  VkResult result = vkAllocateCommandBuffers(getDevice()->getHandle(), &vkAllocateInfo, &m_handle);
   vulkanHandleResult(result, "failed to allocate command buffer");
 }
 
@@ -179,34 +174,21 @@ void Command_Buffer::setScissor(core::span<VkRect2D> scissors)
     scissors.data());
 }
 
-void Command_Buffer::bindVertexBuffers(core::uint32 firstBinding, const core::span<Vertex_Buffer_Bind>& vertexBuffersBind)
+// !TODO should i move this fun?
+void Command_Buffer::bindModelBuffer(core::uint32 firstBinding, core::shared_ptr<Model_Buffer> modelBuffer)
 {
-  core::vector<VkBuffer> vkBuffers(vertexBuffersBind.size());
-  core::vector<VkDeviceSize> vkOffsets(vertexBuffersBind.size());
-  for (core::uint32 i = 0; i < vertexBuffersBind.size(); ++i)
-  {
-    vkBuffers[i] = vertexBuffersBind[i].buffer->getHandle();
-    vkOffsets[i] = vertexBuffersBind[i].offset;
-  }
-
-  vkCmdBindVertexBuffers(m_handle, firstBinding, vertexBuffersBind.size(), vkBuffers.data(), vkOffsets.data());
+  bindVertexBuffer(firstBinding, modelBuffer->getVertexBuffer());
+  bindIndexBuffer(modelBuffer->getIndexBuffer());
 }
 
-void Command_Buffer::bindModelBuffer(core::shared_ptr<Model_Buffer> modelBuffer, core::uint32 vertexBinding)
-{
-  // !!!!!TODO
-  //bindVertexBuffer(modelBuffer->m_vertexBuffer->getBuffer(), vertexBinding);
-  //bindIndexBuffer(modelBuffer->m_indexBuffer->getBuffer(), scene::Index_Triangle_GPU::getType());
-}
-
-void Command_Buffer::bindVertexBuffer(core::shared_ptr<Buffer> vertexBuffer, core::uint32 firstBinding, VkDeviceSize offset)
+void Command_Buffer::bindVertexBuffer(core::uint32 firstBinding, core::shared_ptr<Buffer> vertexBuffer, VkDeviceSize offset)
 {
   vkCmdBindVertexBuffers(m_handle, firstBinding, 1u, &vertexBuffer->getHandle(), &offset);
 }
 
-void Command_Buffer::bindIndexBuffer(core::shared_ptr<Buffer> indexBuffer, VkIndexType indexType, VkDeviceSize offset)
+void Command_Buffer::bindIndexBuffer(core::shared_ptr<Index_Buffer> indexBuffer, VkDeviceSize offset)
 {
-  vkCmdBindIndexBuffer(m_handle, indexBuffer->getHandle(), offset, indexType);
+  vkCmdBindIndexBuffer(m_handle, indexBuffer->getHandle(), offset, indexBuffer->getIndexType());
 }
 
 void Command_Buffer::copyBuffer(core::shared_ptr<const Buffer>  srcBuffer, 
@@ -260,7 +242,7 @@ void Command_Buffer::endRenderPass()
 Command_Buffer::~Command_Buffer()
 {
   vkFreeCommandBuffers(
-    m_device->getHandle(),
+    getDevice()->getHandle(),
     m_commandPool->getHandle(),
     1u, 
     &m_handle);
@@ -268,7 +250,7 @@ Command_Buffer::~Command_Buffer()
 
 core::shared_ptr<const Device> Command_Buffer::getDevice() const
 {
-  return m_device;
+  return m_commandPool->getDevice();
 }
 
 core::shared_ptr<Command_Pool> Command_Buffer::getCommandPool()

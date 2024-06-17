@@ -20,22 +20,15 @@ class Framebuffer;
 class Pipeline;
 class Buffer;
 class Descriptor_Set;
+class Index_Buffer;
 class Model_Buffer;
-
-// !TODO remove this???
-struct Vertex_Buffer_Bind
-{
-  Vertex_Buffer_Bind(core::shared_ptr<Buffer> buffer, VkDeviceSize offset);
-  core::shared_ptr<Buffer>  buffer;
-  VkDeviceSize              offset;
-};
 
 class Command_Buffer : public Vulkan_Object<VkCommandBuffer>
 {
 public:
-  explicit Command_Buffer(core::shared_ptr<const Device>  device,
-                          core::shared_ptr<Command_Pool>  commandPool,
+  explicit Command_Buffer(core::shared_ptr<Command_Pool>  commandPool,
                           VkCommandBufferLevel            level);
+  ~Command_Buffer();
 
   bool begin(VkCommandBufferUsageFlags flags = 0u);
 
@@ -63,18 +56,13 @@ public:
 
   void setScissor(core::span<VkRect2D> scissors);
   
-  void bindModelBuffer(core::shared_ptr<Model_Buffer> modelBuffer, core::uint32 vertexBinding);
-  void bindVertexBuffers(core::uint32 firstBinding, const core::span<Vertex_Buffer_Bind>& vertexBuffersBind);
-  void bindVertexBuffer(core::shared_ptr<Buffer> vertexBuffer, core::uint32 firstBinding, VkDeviceSize offset = 0u);
-  void bindIndexBuffer(core::shared_ptr<Buffer> indexBuffer, VkIndexType indexType, VkDeviceSize offset = 0u);
+  void bindModelBuffer(core::uint32 firstBinding, core::shared_ptr<Model_Buffer> modelBuffer);
+  void bindVertexBuffer(core::uint32 firstBinding, core::shared_ptr<Buffer> vertexBuffer, VkDeviceSize offset = 0u);
+  void bindIndexBuffer(core::shared_ptr<Index_Buffer> indexBuffer, VkDeviceSize offset = 0u);
 
   void copyBuffer(core::shared_ptr<const Buffer>  srcBuffer, 
                   core::shared_ptr<Buffer>        dstBuffer, 
                   const VkBufferCopy&             copyRegion);
-
-  // !TODO
-  //template<core::size_t N>
-  //void bindVertexBuffers(core::uint32 firstBinding, const core::array<Vertex_Buffer_Bind, N>& vertexBuffersBind);
 
   void bindDescriptorSets(core::shared_ptr<Pipeline>                    pipeline,
                           core::span<core::shared_ptr<Descriptor_Set>>  descriptorSets,
@@ -84,13 +72,9 @@ public:
   void drawIndexed(core::uint32 indexCount, core::uint32 instanceCount, core::uint32 firstIndex = 0u, core::int32 vertexOffset = 0u, core::uint32 firstInstance = 0u);
 
   void endRenderPass();
-  // !TODO void begin(VkCommandBufferUsageFlags flags with VkCommandBufferInheritanceInfo);
-  ~Command_Buffer();
-public:
   core::shared_ptr<const Device> getDevice() const;
   core::shared_ptr<Command_Pool> getCommandPool();
 private:
-  const core::shared_ptr<const Device>  m_device;
   const core::shared_ptr<Command_Pool>  m_commandPool;
   bool                                  m_withinRenderPass = false;
   bool                                  m_recording = false;

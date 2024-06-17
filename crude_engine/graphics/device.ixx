@@ -30,7 +30,7 @@ public:
   ~Device();
   core::shared_ptr<const Physical_Device> getPhysicalDevice() const;
   core::Optional<core::shared_ptr<Queue>> getQueue(VkQueueFlagBits flags, core::uint32 queueIndex) const;
-  core::Optional<core::shared_ptr<Queue>> getQueueByFamily(core::uint32 queueFamilyIndex, core::uint32 queueIndex = 0u) const;
+  core::Optional<core::shared_ptr<Queue>> getQueueByFamily(core::uint32 queueFamilyIndex, core::uint32 queueIndex) const;
   // !TODO VkCopyDescriptorSet or replace Write_Descriptor_Set back to VkWriteDescriptorSet
   void updateDescriptorSets(const core::span<const Write_Descriptor_Set>&  descriptorWrites,
                             const core::span<const VkCopyDescriptorSet>&   descriptorCopies);

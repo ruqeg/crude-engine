@@ -2,6 +2,8 @@
 
 module crude.graphics.model_buffer;
 
+import crude.graphics.index_buffer;
+import crude.graphics.vertex_buffer;
 import crude.graphics.command_buffer;
 import crude.graphics.device;
 import crude.graphics.fence;
@@ -36,9 +38,18 @@ Model_Buffer::Model_Buffer(core::shared_ptr<Command_Buffer> commandBuffer,
     }
   }
 
-  Vertex_Buffer s(commandBuffer, core::span<const scene::Vertex_GPU>(modelGpuVertices));
-  //m_vertexBuffer = core::allocateShared<Vertex_Buffer>(commandBuffer, modelGpuVertices);
-  //m_indexBuffer = core::allocateShared<Index_Buffer>(commandBuffer, modelGpuIndices, scene::Index_Triangle_GPU::getType());
+  m_vertexBuffer = core::allocateShared<Vertex_Buffer>(commandBuffer, modelGpuVertices);
+  m_indexBuffer = core::allocateShared<Index_Buffer>(commandBuffer, scene::Index_Triangle_GPU::getType(), modelGpuIndices);
+}
+
+core::shared_ptr<Vertex_Buffer> Model_Buffer::getVertexBuffer()
+{
+  return m_vertexBuffer;
+}
+
+core::shared_ptr<Index_Buffer> Model_Buffer::getIndexBuffer()
+{
+  return m_indexBuffer;
 }
 
 }

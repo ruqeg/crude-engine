@@ -303,7 +303,7 @@ void Renderer::recordCommandBuffer(core::shared_ptr<Command_Buffer> commandBuffe
   commandBuffer->setScissor(core::span(&scissor, 1u));
 
   // or swap
-  commandBuffer->bindModelBuffer(m_modelBuffer, 0u);
+  commandBuffer->bindModelBuffer(0u, m_modelBuffer);
 
 
   updateUniformBuffer(m_currentFrame);
@@ -432,7 +432,7 @@ void Renderer::initializeDepthImage()
   m_depthImageDeviceMemory = core::allocateShared<Device_Memory>(m_device, memRequirements.size, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
   m_depthImageDeviceMemory->bind(*m_depthImage);
 
-  auto commandBuffer = core::allocateShared<Command_Buffer>(m_device, m_transferCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+  auto commandBuffer = core::allocateShared<Command_Buffer>(m_transferCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
   commandBuffer->begin();
 
   core::array<Image_Memory_Barrier, 1u> barriers = 
@@ -472,7 +472,8 @@ void Renderer::initializeModelBuffer()
   scene::Model_Geometry modelGeometry;
   modelGeometry.setRanges(core::span(&range, 1u));
   modelGeometry.setMeshes(core::span(&mesh, 1u));
-  //m_modelBuffer = core::allocateShared<graphics::Model_Buffer>(m_transferQueue, m_transferCommandPool, modelGeometry);
+  core::shared_ptr<graphics::Command_Buffer> commandBuffer = core::allocateShared<graphics::Command_Buffer>(m_transferCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+  m_modelBuffer = core::allocateShared<graphics::Model_Buffer>(commandBuffer, modelGeometry);
 }
 
 void Renderer::initializeUniformBuffers()
@@ -520,7 +521,7 @@ void Renderer::initializeCommandBuffers()
 {
   for (core::uint32 i = 0; i < cFramesCount; ++i)
   {
-    m_graphicsCommandBuffers[i] = core::allocateShared<Command_Buffer>(m_device, m_graphicsCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+    m_graphicsCommandBuffers[i] = core::allocateShared<Command_Buffer>(m_graphicsCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
   }
 }
 
@@ -601,13 +602,16 @@ void Renderer::initializeLogicDevice(core::shared_ptr<const Physical_Device> phy
 
   float queuePriorities[] = { 1.f };
 
-  core::array<Device_Queue_Create_Info, 2> deviceQueueCreateInfos =
+  core::array<Device_Queue_Create_Info, 2u> queueInfos =
   {
     Device_Queue_Create_Info(physicalDevice, VK_QUEUE_GRAPHICS_BIT, queuePriorities),
     Device_Queue_Create_Info(physicalDevice, m_surface, queuePriorities),
   };
 
-  m_device = core::allocateShared<Device>(physicalDevice, deviceQueueCreateInfos, deviceFeatures, deviceEnabledExtensions, instanceEnabledLayers);
+  m_device = core::allocateShared<Device>(physicalDevice, queueInfos, deviceFeatures, deviceEnabledExtensions, instanceEnabledLayers);
+  m_graphicsQueue = m_device->getQueueByFamily(queueInfos[0].queueFamilyIndex, 0u).valueOr(nullptr);
+  m_presentQueue = m_device->getQueueByFamily(queueInfos[1].queueFamilyIndex, 0u).valueOr(nullptr);
+  m_transferQueue = m_graphicsQueue;
 }
 
 VkSurfaceFormatKHR Renderer::chooseSwapSurfaceFormat(const crude::core::vector<VkSurfaceFormatKHR>& availableFormats)
