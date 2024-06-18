@@ -17,7 +17,7 @@ Write_Descriptor_Set::Write_Descriptor_Set(core::shared_ptr<Descriptor_Set>  des
   this->pNext             = nullptr;
   this->dstSet            = m_descriptorSet->getHandle();
   this->dstBinding        = uniformbufferDesc.binding;
-  this->dstArrayElement   = 1u;
+  this->dstArrayElement   = 0u;
   this->descriptorCount   = uniformbufferDesc.descriptorCount;
   this->descriptorType    = uniformbufferDesc.descriptorType;
   this->pImageInfo        = nullptr;

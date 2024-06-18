@@ -47,6 +47,7 @@ public:
   void stagedUpload(core::shared_ptr<Command_Buffer> commandBuffer, const void* data, VkDeviceSize size) noexcept;
   void copyHost(const void* data, VkDeviceSize size) noexcept;
   VkMemoryRequirements getMemoryRequirements() const;
+  VkDeviceSize getSize() const;
 private:
   explicit Buffer(core::shared_ptr<const Device>  device,
                   VkDeviceSize                    size,
@@ -57,6 +58,7 @@ private:
 protected:
   core::shared_ptr<const Device>   m_device;
   core::shared_ptr<Device_Memory>  m_memory;
+  VkDeviceSize                     m_size;
 };
 
 template<class T>

@@ -38,7 +38,8 @@ Buffer::Buffer(core::shared_ptr<const Device>  device,
                VkSharingMode                   sharingMode,
                core::span<core::uint32>        queueFamilyIndices)
   :
-  m_device(device)
+  m_device(device),
+  m_size(size)
 {
   VkBufferCreateInfo vkCreateInfo{};
   vkCreateInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -87,7 +88,7 @@ void Buffer::copyTransfer(core::shared_ptr<Command_Buffer>        commandBuffer,
                           VkDeviceSize                            dstOffset,
                           VkDeviceSize                            size)
 {
-  const VkDeviceSize wholeSize = std::min(getMemoryRequirements().size, srcBuffer->getMemoryRequirements().size);
+  const VkDeviceSize wholeSize = std::min(m_size, srcBuffer->getSize());
   if (VK_WHOLE_SIZE != size)
   {
     size = std::min(size, wholeSize);
@@ -113,4 +114,10 @@ VkMemoryRequirements Buffer::getMemoryRequirements() const
   vkGetBufferMemoryRequirements(m_device->getHandle(), m_handle, &memRequirements);
   return memRequirements;
 }
+
+VkDeviceSize Buffer::getSize() const
+{
+  return m_size;
+}
+
 }
