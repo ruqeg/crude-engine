@@ -33,6 +33,25 @@ Device_Queue_Create_Info::Device_Queue_Create_Info(core::shared_ptr<const Physic
   this->pQueuePriorities = queuePriorities.data();
 }
 
+bool Device_Queue_Create_Info::operator==(const Device_Queue_Create_Info& other)
+{
+  if (this->queueFamilyIndex != other.queueFamilyIndex || this->queueCount != other.queueCount)
+    return false;
+
+  for (core::uint32 i = 0; i < this->queueCount; ++i)
+  {
+    if (this->pQueuePriorities[i] != other.pQueuePriorities[i])
+      return false;
+  }
+    
+  return true;
+}
+
+bool Device_Queue_Create_Info::operator!=(const Device_Queue_Create_Info& other)
+{
+  return !operator==(other);
+}
+
 core::uint32 Device_Queue_Create_Info::chooseFamilyIndex(VkQueueFlagBits queueType, const core::vector<VkQueueFamilyProperties>& queueFamilyProperties) const
 {
   core::uint32 queueFamilyIndex = 0;

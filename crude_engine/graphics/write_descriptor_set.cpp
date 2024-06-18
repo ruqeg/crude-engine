@@ -7,31 +7,24 @@ import crude.graphics.descriptor_set;
 namespace crude::graphics
 {
 
-Write_Descriptor_Set::Write_Descriptor_Set(core::shared_ptr<Descriptor_Set>               descriptorSet,
-                                           core::uint32                                   binding,
-                                           core::uint32                                   arrayElement,
-                                           core::uint32                                   descriptorCount,
-                                           VkDescriptorType                               descriptorType,
-                                           const core::Optional<Descriptor_Image_Info>&   imageInfo,
-                                           const core::Optional<Descriptor_Buffer_Info>&  bufferInfo)
+Write_Descriptor_Set::Write_Descriptor_Set(core::shared_ptr<Descriptor_Set>  descriptorSet, 
+                                           Uniform_Buffer_Descriptor         uniformbufferDesc)
   :
   m_descriptorSet(descriptorSet),
-  m_imageInfo(imageInfo),
-  m_bufferInfo(bufferInfo)
+  m_bufferInfo(uniformbufferDesc.m_descriptoBuferInfo)
 {
   this->sType             = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
   this->pNext             = nullptr;
   this->dstSet            = m_descriptorSet->getHandle();
-  this->dstBinding        = binding;
-  this->dstArrayElement   = arrayElement;
-  this->descriptorCount   = descriptorCount;
-  this->descriptorType    = descriptorType;
-  //!===============
-  //! TODO fix unsafe
-  this->pImageInfo        = m_imageInfo.hasValue() ? (&m_imageInfo.value()) : nullptr;
-  this->pBufferInfo       = m_bufferInfo.hasValue() ? (&m_bufferInfo.value()) : nullptr;
-  //!===============
+  this->dstBinding        = uniformbufferDesc.binding;
+  this->dstArrayElement   = 1u;
+  this->descriptorCount   = uniformbufferDesc.descriptorCount;
+  this->descriptorType    = uniformbufferDesc.descriptorType;
+  this->pImageInfo        = nullptr;
+  this->pBufferInfo       = &m_bufferInfo;
   this->pTexelBufferView  = nullptr;
 }
+
+
 
 }

@@ -23,6 +23,9 @@ public:
   explicit Device_Queue_Create_Info(core::shared_ptr<const Physical_Device>  physicalDevice,
                                     core::shared_ptr<const Surface>          surface,
                                     const core::span<core::float32>&         queuePriorities);
+
+  bool operator==(const Device_Queue_Create_Info& other);
+  bool operator!=(const Device_Queue_Create_Info& other);
 private:
   core::uint32 chooseFamilyIndex(VkQueueFlagBits queueType, const core::vector<VkQueueFamilyProperties>& queueFamilyProperties) const;
   core::uint32 chooseFamilyIndex(core::shared_ptr<const Physical_Device>       physicalDevice,

@@ -1,5 +1,7 @@
 target_sources(crude_engine
     PRIVATE
+    buffer_descriptor.cpp
+    uniform_buffer.cpp
     flush.cpp
     device_queue_create_info.cpp
     model_buffer.cpp
@@ -13,7 +15,6 @@ target_sources(crude_engine
     debug_utils_messenger.cpp
     depth_stencil_state_create_info.cpp
     descriptor_image_info.cpp
-    descriptor_buffer_info.cpp
     shader_module.cpp
     shader_stage_create_info.cpp
     subpass_dependency.cpp
@@ -53,6 +54,10 @@ target_sources(crude_engine
 target_sources(crude_engine
     PUBLIC
     FILE_SET cxx_modules_graphics TYPE CXX_MODULES FILES
+    descriptor_pool_size.ixx
+    buffer_descriptor.ixx
+    descriptor_set_layout_binding.ixx
+    uniform_buffer.ixx
     flush.ixx
     device_queue_create_info.ixx
     staging_buffer.ixx
@@ -68,7 +73,6 @@ target_sources(crude_engine
     command_pool.ixx
     debug_utils_messenger.ixx
     depth_stencil_state_create_info.ixx
-    descriptor_buffer_info.ixx
     descriptor_image_info.ixx
     descriptor_pool.ixx
     descriptor_set.ixx

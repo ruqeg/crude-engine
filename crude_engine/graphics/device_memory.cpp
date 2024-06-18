@@ -86,6 +86,14 @@ core::Optional<void*> Device_Memory::map(VkDeviceSize offset, VkDeviceSize size,
   return dst;
 }
 
+void* Device_Memory::mapUnsafe(VkDeviceSize offset, VkDeviceSize size, VkMemoryMapFlags flags)
+{
+  void* dst;
+  VkResult result = vkMapMemory(m_device->getHandle(), m_handle, offset, size, flags, &dst);
+  if (result != VK_SUCCESS) nullptr;
+  return dst;
+}
+
 void Device_Memory::unmap()
 {
   vkUnmapMemory(m_device->getHandle(), m_handle);

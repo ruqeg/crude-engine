@@ -1,5 +1,6 @@
 #include <vulkan/vulkan.hpp>
 #include <cstring>
+#include <algorithm>
 
 module crude.graphics.renderer;
 
@@ -25,21 +26,14 @@ constexpr core::array<scene::Vertex_CPU, 4u> vertices = {
     scene::Index_Triangle_CPU{2u, 3u, 0u}
 };
 
-struct Uniform_Buffer_Object
-{
-  math::Float4x4 model;
-  math::Float4x4 view;
-  math::Float4x4 proj;
-};
-
-
 constexpr core::array<const char*, 1> deviceEnabledExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
 constexpr core::array<const char*, 1> instanceEnabledLayers = { "VK_LAYER_KHRONOS_validation" };
 
 Renderer::Renderer(core::shared_ptr<system::SDL_Window_Container> windowContainer)
   :
   m_windowContainer(windowContainer),
-  m_currentFrame(0u)
+  m_currentFrame(0u),
+  m_uniformBufferDesc{Uniform_Buffer_Descriptor(0u, VK_SHADER_STAGE_VERTEX_BIT), Uniform_Buffer_Descriptor(0u, VK_SHADER_STAGE_VERTEX_BIT)}
 {
   initializeInstance();
   initializeSurface();
@@ -253,12 +247,12 @@ void Renderer::initalizeDescriptorSet()
 {
   core::array<Descriptor_Set_Layout_Binding, 1u> layoutBindings =
   {
-    Descriptor_Set_Layout_Binding(0u, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1u, VK_SHADER_STAGE_VERTEX_BIT)
+    m_uniformBufferDesc[0]
   };
 
   core::array<Descriptor_Pool_Size, 1u> poolSizes =
   {
-    Descriptor_Pool_Size(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, cFramesCount)
+    Uniform_Buffer_Pool_Size(cFramesCount)
   };
 
   auto descriptorPool = core::allocateShared<Descriptor_Pool>(m_device, poolSizes);
@@ -326,17 +320,12 @@ void Renderer::updateUniformBuffer(core::uint32 currentImage)
   const core::float32 aspect = m_swapchain->getExtent().width / (core::float32)m_swapchain->getExtent().height;
   m_camera.calculateViewToClipMatrix(math::CPI4, aspect, 0.1f, 10.0f);
   m_camera.calculateWorldToViewMatrix();
-  
-  math::storeFloat4x4(ubo.model, math::smatrix::translation(0.0, 0.0, 0.0));
-  math::storeFloat4x4(ubo.view, m_camera.getWorldToViewMatrix());
-  math::storeFloat4x4(ubo.proj, m_camera.getViewToClipMatrix());
-  
-  auto data = m_uniformBufferMemory[currentImage]->map();
-  if (data.hasValue())
-  {
-    std::memcpy(data.value(), &ubo, sizeof(ubo));
-  }
-  m_uniformBufferMemory[currentImage]->unmap();
+
+  Uniform_Buffer_Object* data = m_uniformBuffer[currentImage]->mapUnsafe();
+  math::storeFloat4x4(data->model, math::smatrix::translation(0.0, 0.0, 0.0));
+  math::storeFloat4x4(data->view, m_camera.getWorldToViewMatrix());
+  math::storeFloat4x4(data->proj, m_camera.getViewToClipMatrix());
+  m_uniformBuffer[currentImage]->unmap();
 }
 
 void Renderer::initalizeGraphicsPipeline()
@@ -478,43 +467,20 @@ void Renderer::initializeModelBuffer()
 
 void Renderer::initializeUniformBuffers()
 {
-  /*VkDeviceSize bufferSize = sizeof(Uniform_Buffer_Object);
-
-  auto stagingBuffer = core::allocateShared<Buffer>(m_device, bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
-  auto memRequirements = stagingBuffer->getMemoryRequirements();
-  auto staggingBufferMemory = core::allocateShared<Device_Memory>(m_device, memRequirements.size, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-  staggingBufferMemory->bind(*stagingBuffer);
-  auto data = staggingBufferMemory->map();
-  if (data.hasValue())
-  {
-    std::memcpy(data.value(), indices.data(), bufferSize);
-    staggingBufferMemory->unmap();
-  }
-
   for (core::uint32 i = 0; i < cFramesCount; ++i)
   {
-    m_uniformBuffer[i] = core::allocateShared<Buffer>(m_device, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
-    memRequirements = m_uniformBuffer[i]->getMemoryRequirements();
-    m_uniformBufferMemory[i] = core::allocateShared<Device_Memory>(m_device, memRequirements.size, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-    m_uniformBufferMemory[i]->bind(*m_uniformBuffer[i]);
-
-    auto commandBuffer = core::allocateShared<Command_Buffer>(m_device, m_transferCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
-    commandBuffer->begin();
-    commandBuffer->copyBuffer(stagingBuffer, m_uniformBuffer[i], bufferSize);
-    commandBuffer->end();
-    m_transferQueue->sumbit(core::span(&commandBuffer, 1u));
-    m_transferQueue->waitIdle();
+    m_uniformBuffer[i] = core::allocateShared<Uniform_Buffer<Uniform_Buffer_Object>>(m_device);
+    m_uniformBufferDesc[i].update(m_uniformBuffer[i]);
   }
 
   for (core::uint32 i = 0; i < cFramesCount; i++)
   {
-    const Descriptor_Buffer_Info bufferInfo(m_uniformBuffer[i], sizeof(Uniform_Buffer_Object));
     const core::array<Write_Descriptor_Set, 1> descriptorWrites =
     {
-      Write_Descriptor_Set(m_descriptorSets[i], 0u, 0u, 1u, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, {}, bufferInfo)
+      Write_Descriptor_Set(m_descriptorSets[i], m_uniformBufferDesc[i])
     };
     m_device->updateDescriptorSets(descriptorWrites, {});
-  }*/
+  }
 }
 
 void Renderer::initializeCommandBuffers()
@@ -602,13 +568,15 @@ void Renderer::initializeLogicDevice(core::shared_ptr<const Physical_Device> phy
 
   float queuePriorities[] = { 1.f };
 
-  core::array<Device_Queue_Create_Info, 2u> queueInfos =
+  core::vector<Device_Queue_Create_Info> queueInfos =
   {
     Device_Queue_Create_Info(physicalDevice, VK_QUEUE_GRAPHICS_BIT, queuePriorities),
     Device_Queue_Create_Info(physicalDevice, m_surface, queuePriorities),
   };
 
-  m_device = core::allocateShared<Device>(physicalDevice, queueInfos, deviceFeatures, deviceEnabledExtensions, instanceEnabledLayers);
+  auto uQueueInfos = std::unique(queueInfos.begin(), queueInfos.end());
+
+  m_device = core::allocateShared<Device>(physicalDevice, core::span(queueInfos.begin(), uQueueInfos), deviceFeatures, deviceEnabledExtensions, instanceEnabledLayers);
   m_graphicsQueue = m_device->getQueueByFamily(queueInfos[0].queueFamilyIndex, 0u).valueOr(nullptr);
   m_presentQueue = m_device->getQueueByFamily(queueInfos[1].queueFamilyIndex, 0u).valueOr(nullptr);
   m_transferQueue = m_graphicsQueue;

@@ -11,6 +11,8 @@ import crude.core.std_containers_heap;
 export namespace crude::graphics
 {
 
+// !TODO
+
 class Descriptor_Image_Info : private VkDescriptorImageInfo
 {
 public:

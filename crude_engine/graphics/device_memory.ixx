@@ -35,6 +35,7 @@ public:
   void bind(Image& image, VkDeviceSize offset = 0u);
   void bind(Buffer& buffer, VkDeviceSize offset = 0u);
   core::Optional<void*> map(VkDeviceSize offset = 0u, VkDeviceSize size = VK_WHOLE_SIZE, VkMemoryMapFlags flags = 0);
+  void* mapUnsafe(VkDeviceSize offset = 0u, VkDeviceSize size = VK_WHOLE_SIZE, VkMemoryMapFlags flags = 0);
   void unmap();
 private:
   void initalize(VkDeviceSize allocationSize, core::uint32 memoryTypeIndex);

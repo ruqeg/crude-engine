@@ -4,28 +4,15 @@ module;
 
 export module crude.graphics.descriptor_set_layout;
 
-import crude.core.alias;
-import crude.core.std_containers_heap;
-import crude.core.std_containers_stack;
+export import crude.graphics.descriptor_set_layout_binding;
+export import crude.core.std_containers_heap;
+export import crude.core.std_containers_stack;
 import crude.graphics.vulkan_object;
 
 export namespace crude::graphics
 {
 
 class Device;
-
-// !TODO
-struct Descriptor_Set_Layout_Binding final : public VkDescriptorSetLayoutBinding
-{
-  Descriptor_Set_Layout_Binding(core::uint32 binding, VkDescriptorType descriptorType, core::uint32 descriptorCount, VkShaderStageFlags stageFlags)
-  {
-    this->binding             = binding;
-    this->descriptorType      = descriptorType;
-    this->descriptorCount     = descriptorCount;
-    this->stageFlags          = stageFlags;
-    this->pImmutableSamplers  = nullptr;
-  }
-};
 
 class Descriptor_Set_Layout : public Vulkan_Object<VkDescriptorSetLayout>
 {

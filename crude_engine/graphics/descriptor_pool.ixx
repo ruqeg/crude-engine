@@ -4,23 +4,15 @@ module;
 
 export module crude.graphics.descriptor_pool;
 
-import crude.core.std_containers_stack;
-import crude.core.std_containers_heap;
+export import crude.core.std_containers_stack;
+export import crude.core.std_containers_heap;
+export import crude.graphics.descriptor_pool_size;
 import crude.graphics.vulkan_object;
 
 export namespace crude::graphics
 {
 
 class Device;
-
-struct Descriptor_Pool_Size final : public VkDescriptorPoolSize
-{
-  Descriptor_Pool_Size(VkDescriptorType type, core::uint32 descriptorCount)
-  {
-    this->type = type;
-    this->descriptorCount = descriptorCount;
-  }
-};
 
 class Descriptor_Pool : public Vulkan_Object<VkDescriptorPool>
 {
