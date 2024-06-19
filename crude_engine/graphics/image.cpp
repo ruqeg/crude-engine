@@ -2,7 +2,10 @@
 
 module crude.graphics.image;
 
+import crude.graphics.device_memory;
+import crude.graphics.command_buffer;
 import crude.graphics.device;
+import crude.graphics.flush;
 import crude.graphics.vulkan_utils;
 
 namespace crude::graphics
@@ -15,38 +18,33 @@ Image::Image(core::shared_ptr<const Device>  device,
              VkImageUsageFlags               usage,
              VkImageType                     type)
   :
-  m_device(device)
-{
-  m_handle      = handle;
-  m_format      = format;
-  m_extent      = extent;
-  m_usage       = usage;
-  m_type        = type;
-  m_layout      = VK_IMAGE_LAYOUT_UNDEFINED;
-}
+  m_device(device),
+  m_format(format),
+  m_usage(usage),
+  m_extent(extent),
+  m_type(type),
+  m_layout(VK_IMAGE_LAYOUT_UNDEFINED)
+{}
 
 Image::Image(core::shared_ptr<const Device>  device,
-             VkImageCreateFlags              flags,
+             VkImageType                     type,
              VkFormat                        format,
-             const VkExtent2D&               extent,
+             const VkExtent3D&               extent,
              core::uint32                    mipLevels,
              core::uint32                    arrayLayers,
              VkSampleCountFlagBits           samples,
-             VkImageTiling                   tiling,
+             VkImageCreateFlags              flags,
              VkImageUsageFlags               usage,
-             VkSharingMode                   sharingMode,
-             VkImageLayout                   initialLayout)
+             VkImageTiling                   tiling,
+             VkSharingMode                   sharingMode)
   :
-  m_device(device)
+  m_device(device),
+  m_format(format),
+  m_usage(usage),
+  m_extent(extent),
+  m_type(type),
+  m_layout(VK_IMAGE_LAYOUT_UNDEFINED)
 {
-  m_format         = format;
-  m_usage          = usage;
-  m_extent.width   = extent.width;
-  m_extent.height  = extent.height;
-  m_extent.depth   = 1u;
-  m_type           = VK_IMAGE_TYPE_2D;
-  m_layout         = initialLayout;
-
   VkImageCreateInfo vkImageInfo{};
   vkImageInfo.sType                  = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
   vkImageInfo.pNext                  = nullptr;
@@ -66,7 +64,20 @@ Image::Image(core::shared_ptr<const Device>  device,
   vkImageInfo.initialLayout          = m_layout;
 
   VkResult result = vkCreateImage(m_device->getHandle(), &vkImageInfo, getPVkAllocationCallbacks(), &m_handle);
-  vulkanHandleResult(result, "failed to create 2d image");
+  vulkanHandleResult(result, "Failed to create image");
+
+  VkMemoryPropertyFlags memoryFlags;
+  if (tiling == VK_IMAGE_TILING_LINEAR)
+  {
+    memoryFlags = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+  }
+  else
+  {
+    memoryFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+  }
+
+  core::shared_ptr<Device_Memory> memory = core::allocateShared<Device_Memory>(m_device, getMemoryRequirements(), memoryFlags);
+  bindMemory(memory);
 }
   
 Image::~Image()
@@ -75,6 +86,49 @@ Image::~Image()
   {
     vkDestroyImage(m_device->getHandle(), m_handle, getPVkAllocationCallbacks());
   }
+}
+
+void Image::layoutTransition(core::shared_ptr<Command_Buffer> commandBufferm VkImageLayout newLayout)
+{
+  VkPipelineStageFlags srcStageMask = 0;
+  VkPipelineStageFlags dstStageMask = 0;
+
+  switch (m_layout)
+  {
+  case VK_IMAGE_LAYOUT_UNDEFINED:
+    srcStageMask = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+    break;
+  default:
+    return;
+  }
+
+  switch (newLayout)
+  {
+  case VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL:
+    srcStageMask = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
+    break;
+  default:
+    return;
+  }
+
+  core::shared_ptr<Image> self = core::shared_ptr<Image>(this, [](Image*) {});
+  const Image_Memory_Barrier memoryBarrier(self, newLayout, Image_Subresource_Range(self));
+  commandBuffer->barrier(srcStageMask, dstStageMask, memoryBarrier);
+}
+
+void Image::layoutTransitionUpload(core::shared_ptr<Command_Buffer> commandBuffer, VkImageLayout newLayout)
+{
+  commandBuffer->begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+  layoutTransition(newLayout, commandBuffer);
+  commandBuffer->end();
+  flush(commandBuffer);
+}
+
+void Image::bindMemory(core::shared_ptr<Device_Memory> memory)
+{
+  core::shared_ptr<Image> self = core::shared_ptr<Image>(this, [](Image*) {});
+  memory->bind(self);
+  m_memory = memory;
 }
 
 void Image::setLayout(VkImageLayout layout)
@@ -102,6 +156,11 @@ VkMemoryRequirements Image::getMemoryRequirements() const
   VkMemoryRequirements memRequirements;
   vkGetImageMemoryRequirements(m_device->getHandle(), m_handle, &memRequirements);
   return memRequirements;
+}
+
+core::shared_ptr<const Device> Image::getDevice() const
+{
+  return m_device;
 }
 
 }

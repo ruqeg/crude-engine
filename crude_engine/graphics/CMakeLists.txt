@@ -1,5 +1,6 @@
 target_sources(crude_engine
     PRIVATE
+    image_2d.cpp
     buffer_descriptor.cpp
     uniform_buffer.cpp
     flush.cpp
@@ -54,6 +55,8 @@ target_sources(crude_engine
 target_sources(crude_engine
     PUBLIC
     FILE_SET cxx_modules_graphics TYPE CXX_MODULES FILES
+    image_attachment.ixx
+    image_2d.ixx
     descriptor_pool_size.ixx
     buffer_descriptor.ixx
     descriptor_set_layout_binding.ixx

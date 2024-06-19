@@ -68,14 +68,14 @@ void Device_Memory::initalize(VkDeviceSize allocationSize, core::uint32 memoryTy
   vulkanHandleResult(result, "failed to allocate memory");
 }
 
-void Device_Memory::bind(Image& image, VkDeviceSize offset)
+void Device_Memory::bind(core::shared_ptr<Buffer> buffer, VkDeviceSize offset)
 {
-  vkBindImageMemory(m_device->getHandle(), image.getHandle(), m_handle, offset);
+  vkBindBufferMemory(m_device->getHandle(), buffer->getHandle(), m_handle, offset);
 }
 
-void Device_Memory::bind(Buffer& buffer, VkDeviceSize offset)
+void Device_Memory::bind(core::shared_ptr<Image> image, VkDeviceSize offset)
 {
-  vkBindBufferMemory(m_device->getHandle(), buffer.getHandle(), m_handle, offset);
+  vkBindImageMemory(m_device->getHandle(), image->getHandle(), m_handle, offset);
 }
 
 core::Optional<void*> Device_Memory::map(VkDeviceSize offset, VkDeviceSize size, VkMemoryMapFlags flags)
@@ -97,6 +97,11 @@ void* Device_Memory::mapUnsafe(VkDeviceSize offset, VkDeviceSize size, VkMemoryM
 void Device_Memory::unmap()
 {
   vkUnmapMemory(m_device->getHandle(), m_handle);
+}
+
+core::shared_ptr<const Device> Device_Memory::getDevice() const
+{
+  return m_device;
 }
 
 Device_Memory::~Device_Memory()

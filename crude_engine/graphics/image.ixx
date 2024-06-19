@@ -4,18 +4,19 @@ module;
 
 export module crude.graphics.image;
 
-import crude.core.std_containers_heap;
+export import crude.core.std_containers_heap;
 import crude.graphics.vulkan_object;
 
 export namespace crude::graphics
 {
 
+class Command_Buffer;
 class Device;
+class Device_Memory;
 
 class Image : public Vulkan_Object<VkImage>
 {
-public:
-  // create image from handle
+protected:
   explicit Image(core::shared_ptr<const Device>  device,
                  VkImage                         handle,
                  VkFormat                        format,
@@ -23,31 +24,36 @@ public:
                  VkImageUsageFlags               usage,
                  VkImageType                     type);
 
-  // create image 2d
   explicit Image(core::shared_ptr<const Device>  device,
-                 VkImageCreateFlags              flags,
+                 VkImageType                     type,
                  VkFormat                        format,
-                 const VkExtent2D&               extent,
+                 const VkExtent3D&               extent,
                  core::uint32                    mipLevels,
                  core::uint32                    arrayLayers,
                  VkSampleCountFlagBits           samples,
-                 VkImageTiling                   tiling,
+                 VkImageCreateFlags              flags,
                  VkImageUsageFlags               usage,
-                 VkSharingMode                   sharingMode,
-                 VkImageLayout                   initialLayout);
+                 VkImageTiling                   tiling,
+                 VkSharingMode                   sharingMode);
+public:
   ~Image();
+  void layoutTransition(core::shared_ptr<Command_Buffer> commandBuffer, VkImageLayout newLayout);
+  void layoutTransitionUpload(core::shared_ptr<Command_Buffer> commandBuffer, VkImageLayout newLayout);
+  void bindMemory(core::shared_ptr<Device_Memory> memory);
   void setLayout(VkImageLayout layout);
-  VkImageType getType() const;
-  VkFormat getFormat() const;
-  VkImageLayout getLayout() const;
+  VkImageType getType() const { return m_type; }
+  VkFormat getFormat() const { return m_format; }
+  VkImageLayout getLayout() const { return m_layout; }
   VkMemoryRequirements getMemoryRequirements() const;
+  core::shared_ptr<const Device> getDevice() const;
 protected:
-  const core::shared_ptr<const Device>  m_device;
-  VkFormat                              m_format;
-  VkExtent3D                            m_extent;
-  VkImageUsageFlags                     m_usage;
-  VkImageType                           m_type;
-  VkImageLayout                         m_layout;
+  core::shared_ptr<const Device>   m_device;
+  core::shared_ptr<Device_Memory>  m_memory;
+  VkFormat                         m_format;
+  VkExtent3D                       m_extent;
+  VkImageUsageFlags                m_usage;
+  VkImageType                      m_type;
+  VkImageLayout                    m_layout;
 };
 
 }

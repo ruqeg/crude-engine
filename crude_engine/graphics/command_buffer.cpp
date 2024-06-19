@@ -67,9 +67,9 @@ bool Command_Buffer::end()
   return result == VK_SUCCESS;
 }
 
-void Command_Buffer::barrier(VkPipelineStageFlags              srcStage, 
-                             VkPipelineStageFlags              dstStage, 
-                             core::span<Image_Memory_Barrier>  imageMemoryBarriers)
+void Command_Buffer::barrier(VkPipelineStageFlags                    srcStage, 
+                             VkPipelineStageFlags                    dstStage, 
+                             core::span<const Image_Memory_Barrier>  imageMemoryBarriers)
 {
   core::assert(imageMemoryBarriers.data());
 
@@ -77,21 +77,28 @@ void Command_Buffer::barrier(VkPipelineStageFlags              srcStage,
   core::Algorithms::copy(imageMemoryBarriers.begin(), imageMemoryBarriers.end(), pVkImageMemoryBarriers.begin());
 
   vkCmdPipelineBarrier(
-    m_handle, 
-    srcStage, 
-    dstStage, 
-    0u, 
-    0u, 
-    nullptr, 
-    0u, 
-    nullptr, 
-    pVkImageMemoryBarriers.size(),
-    pVkImageMemoryBarriers.data());
+    m_handle, srcStage, dstStage, 0u, 
+    0u, nullptr, 
+    0u, nullptr, 
+    pVkImageMemoryBarriers.size(), pVkImageMemoryBarriers.data());
 
   for (core::uint32 i = 0u; i < imageMemoryBarriers.size(); ++i)
   {
     imageMemoryBarriers[i].m_image->setLayout(imageMemoryBarriers[i].newLayout);
   }
+}
+
+void Command_Buffer::barrier(VkPipelineStageFlags         srcStage, 
+                             VkPipelineStageFlags         dstStage, 
+                             const Image_Memory_Barrier&  imageMemoryBarrier)
+{ 
+  vkCmdPipelineBarrier(
+    m_handle, srcStage, dstStage, 0u, 
+    0u, nullptr, 
+    0u,  nullptr, 
+    1u, &imageMemoryBarrier);
+
+  imageMemoryBarrier.m_image->setLayout(imageMemoryBarrier.newLayout);
 }
   
 void Command_Buffer::copyBufferToImage(core::shared_ptr<Buffer>       srcBuffer, 

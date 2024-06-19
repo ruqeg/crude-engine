@@ -401,40 +401,14 @@ void Renderer::initializeDepthImage()
 {
   VkSurfaceCapabilitiesKHR surfaceCapabilites = m_device->getPhysicalDevice()->getSurfaceCapabilitis(m_surface);
   const VkExtent2D extent = chooseSwapExtent(surfaceCapabilites);
-
   const VkFormat depthFormat = findDepthFormat();
-  m_depthImage = core::allocateShared<Image>(
-    m_device,
-    0u,
-    depthFormat,
-    extent,
-    1u,
-    1u,
-    VK_SAMPLE_COUNT_1_BIT,
-    VK_IMAGE_TILING_OPTIMAL,
-    VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-    VK_SHARING_MODE_EXCLUSIVE,
-    VK_IMAGE_LAYOUT_UNDEFINED);
-
-  VkMemoryRequirements memRequirements = m_depthImage->getMemoryRequirements();
-
-  m_depthImageDeviceMemory = core::allocateShared<Device_Memory>(m_device, memRequirements.size, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-  m_depthImageDeviceMemory->bind(*m_depthImage);
+  m_depthStencilAttachment = core::allocateShared<Depth_Stencil_Attachment>(
+    m_device, depthFormat, extent, 1u, VK_SAMPLE_COUNT_1_BIT, VK_SHARING_MODE_EXCLUSIVE);
 
   auto commandBuffer = core::allocateShared<Command_Buffer>(m_transferCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
-  commandBuffer->begin();
+  m_depthStencilAttachment->layoutTransitionUpload(commandBuffer, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
 
-  core::array<Image_Memory_Barrier, 1u> barriers = 
-  {
-    Image_Memory_Barrier(m_depthImage, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, Image_Subresource_Range(m_depthImage, 0u, 1u, 0u, 1u))
-  };
-  commandBuffer->barrier(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT, barriers);
-  commandBuffer->end();
-
-  m_graphicsQueue->sumbit(crude::core::span(&commandBuffer, 1u));
-  m_graphicsQueue->waitIdle();
-
-  m_depthImageView = core::allocateShared<Image_View>(m_device, m_depthImage, depthFormat, Image_Subresource_Range(m_depthImage));
+  /*m_depthImageView = core::allocateShared<Image_View>(m_device, m_depthImage, depthFormat, Image_Subresource_Range(m_depthImage)); */
 }
 
 void Renderer::initializeSwapchainFramebuffers()

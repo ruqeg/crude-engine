@@ -33,6 +33,7 @@ export import crude.graphics.swap_chain_image;
 export import crude.graphics.descriptor_pool;
 export import crude.graphics.descriptor_set;
 export import crude.graphics.model_buffer;
+export import crude.graphics.image_attachment;
 export import crude.graphics.uniform_buffer;
 export import crude.core.filesystem;
 export import crude.scene.camera;
@@ -115,8 +116,7 @@ private:
   core::shared_ptr<Pipeline>                            m_graphicsPipeline;
   core::shared_ptr<Command_Pool>                        m_graphicsCommandPool;
   core::shared_ptr<Command_Pool>                        m_transferCommandPool;
-  core::shared_ptr<Device_Memory>                       m_depthImageDeviceMemory;
-  core::shared_ptr<Image>                               m_depthImage;
+  core::shared_ptr<Depth_Stencil_Attachment>            m_depthStencilAttachment;
   core::shared_ptr<Image_View>                          m_depthImageView;
   core::shared_ptr<Model_Buffer>                        m_modelBuffer;
   core::array<Uniform_Buffer_Descriptor, cFramesCount>         m_uniformBufferDesc;

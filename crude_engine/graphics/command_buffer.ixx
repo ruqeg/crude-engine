@@ -34,9 +34,12 @@ public:
 
   bool end();
   
-  void barrier(VkPipelineStageFlags              srcStage, 
-               VkPipelineStageFlags              dstStage, 
-               core::span<Image_Memory_Barrier>  imageMemoryBarriers);
+  void barrier(VkPipelineStageFlags                    srcStage, 
+               VkPipelineStageFlags                    dstStage, 
+               core::span<const Image_Memory_Barrier>  imageMemoryBarriers);
+  void barrier(VkPipelineStageFlags         srcStage, 
+               VkPipelineStageFlags         dstStage, 
+               const Image_Memory_Barrier&  imageMemoryBarrier);
   
   void copyBufferToImage(core::shared_ptr<Buffer>       srcBuffer, 
                          core::shared_ptr<Image>        dstImage, 

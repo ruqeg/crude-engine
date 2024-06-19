@@ -104,7 +104,8 @@ void Buffer::copyTransfer(core::shared_ptr<Command_Buffer>        commandBuffer,
 
 void Buffer::bindMemory(core::shared_ptr<Device_Memory> memory, VkDeviceSize offset)
 {
-  memory->bind(*this);
+  core::shared_ptr<Buffer> self = core::shared_ptr<Buffer>(this, [](Buffer*) {});
+  memory->bind(self);
   m_memory = memory;
 }
 
