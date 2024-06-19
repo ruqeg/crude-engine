@@ -90,8 +90,7 @@ const core::vector<core::shared_ptr<Swap_Chain_Image>>& Swap_Chain::getSwapchain
       vkSwapchainImages[i],
       m_surfaceFormat.format,
       m_surfaceFormat.colorSpace,
-      m_extent,
-      m_imageUsage);
+      m_extent);
   }
 
   return m_swapChainImages;

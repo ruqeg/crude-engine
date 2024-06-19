@@ -33,4 +33,13 @@ Image_2D::Image_2D(core::shared_ptr<Device>  device,
     arrayLayers, samples, flags, usage, tiling, sharingMode)
 {}
 
+Image_2D::Image_2D(core::shared_ptr<Device>  device,
+                   VkImage                   handle,
+                   VkFormat                  format,
+                   const VkExtent2D&         extent)
+  :
+  Image(device, handle, VK_IMAGE_TYPE_2D, format, VkExtent3D{ extent.width, extent.height, 1 })
+{}
+
+
 }

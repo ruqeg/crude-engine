@@ -88,7 +88,7 @@ Image::~Image()
   }
 }
 
-void Image::layoutTransition(core::shared_ptr<Command_Buffer> commandBufferm VkImageLayout newLayout)
+void Image::layoutTransition(core::shared_ptr<Command_Buffer> commandBuffer, VkImageLayout newLayout)
 {
   VkPipelineStageFlags srcStageMask = 0;
   VkPipelineStageFlags dstStageMask = 0;
@@ -119,7 +119,7 @@ void Image::layoutTransition(core::shared_ptr<Command_Buffer> commandBufferm VkI
 void Image::layoutTransitionUpload(core::shared_ptr<Command_Buffer> commandBuffer, VkImageLayout newLayout)
 {
   commandBuffer->begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
-  layoutTransition(newLayout, commandBuffer);
+  layoutTransition(commandBuffer, newLayout);
   commandBuffer->end();
   flush(commandBuffer);
 }

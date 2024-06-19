@@ -194,7 +194,7 @@ void Renderer::initializeSwapchain()
   m_swapchainImagesViews.resize(m_swapchainImages.size());
   for (core::uint32 i = 0; i < m_swapchainImages.size(); ++i)
   {
-    m_swapchainImagesViews[i] = core::allocateShared<Image_View>(m_device, m_swapchainImages[i], surfaceFormat.format, Image_Subresource_Range(m_swapchainImages[i]));
+    m_swapchainImagesViews[i] = core::allocateShared<Image_View>(m_swapchainImages[i], surfaceFormat.format, Image_Subresource_Range(m_swapchainImages[i]));
   }
 }
 
@@ -408,7 +408,7 @@ void Renderer::initializeDepthImage()
   auto commandBuffer = core::allocateShared<Command_Buffer>(m_transferCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
   m_depthStencilAttachment->layoutTransitionUpload(commandBuffer, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
 
-  /*m_depthImageView = core::allocateShared<Image_View>(m_device, m_depthImage, depthFormat, Image_Subresource_Range(m_depthImage)); */
+  m_depthImageView = core::allocateShared<Image_View>(m_depthStencilAttachment, Image_Subresource_Range(m_depthStencilAttachment));
 }
 
 void Renderer::initializeSwapchainFramebuffers()

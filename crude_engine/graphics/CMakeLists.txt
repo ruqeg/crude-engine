@@ -21,7 +21,6 @@ target_sources(crude_engine
     subpass_dependency.cpp
     subpass_description.cpp
     swap_chain.cpp
-    swap_chain_image.cpp
     tessellation_state_create_info.cpp
     vertex_input_state_create_info.cpp
     viewport_state_create_info.cpp

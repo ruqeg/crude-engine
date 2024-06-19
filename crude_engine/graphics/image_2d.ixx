@@ -28,6 +28,10 @@ protected:
                     VkImageUsageFlags         usage,
                     VkImageTiling             tiling,
                     VkSharingMode             sharingMode);
+  explicit Image_2D(core::shared_ptr<Device>  device,
+                    VkImage                   handle,
+                    VkFormat                  format,
+                    const VkExtent2D&         extent);
 };
 
 }

@@ -9,14 +9,18 @@ import crude.graphics.device;
 namespace crude::graphics
 {
   
+Image_View::Image_View(core::shared_ptr<const Image>   image,
+                       const Image_Subresource_Range&  subresourceRange,
+                       const VkComponentMapping&       components)
+  :
+  Image_View(image, image->getFormat(), subresourceRange, components)
+{}
 
-Image_View::Image_View(core::shared_ptr<const Device>  device,
-                       core::shared_ptr<const Image>   image,
+Image_View::Image_View(core::shared_ptr<const Image>   image,
                        VkFormat                        format,
                        const Image_Subresource_Range&  subresourceRange,
                        const VkComponentMapping&       components)
   :
-  m_device(device),
   m_image(image)
 {
   VkImageViewCreateInfo vkCreateInfo{};
@@ -30,13 +34,13 @@ Image_View::Image_View(core::shared_ptr<const Device>  device,
   vkCreateInfo.format                           = format;
   vkCreateInfo.subresourceRange                 = subresourceRange;
 
-  VkResult result = vkCreateImageView(m_device->getHandle(), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
+  VkResult result = vkCreateImageView(m_image->getDevice()->getHandle(), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
   vulkanHandleResult(result, "failed to create image view");
 }
 
 Image_View::~Image_View()
 {
-  vkDestroyImageView(m_device->getHandle(), m_handle, getPVkAllocationCallbacks());
+  vkDestroyImageView(m_image->getDevice()->getHandle(), m_handle, getPVkAllocationCallbacks());
 }
   
 VkImageViewType Image_View::imageToViewType(VkImageType imageType)
