@@ -8,6 +8,7 @@ import crude.core.logger;
 import crude.math.fuicont;
 import crude.math.convert;
 import crude.math.matrix;
+import crude.scene.image;
 import crude.math.constants;
 
 namespace crude::graphics
@@ -44,6 +45,7 @@ Renderer::Renderer(core::shared_ptr<system::SDL_Window_Container> windowContaine
   initalizeCommandPool();
   initializeDepthImage();
   initializeSwapchainFramebuffers();
+  initializeTextureImage();
   initializeModelBuffer();
   initializeUniformBuffers();
   initializeCommandBuffers();
@@ -418,6 +420,11 @@ void Renderer::initializeSwapchainFramebuffers()
 
 void Renderer::initializeTextureImage()
 {
+  scene::Image image;
+  if (!image.load("../../crude_example/basic_triangle_examle/texture.jpg", scene::IMAGE_FORMAT_RGB_ALPHA)) 
+    return;
+  int a = 3;
+  int b = a + 3;
 }
 
 void Renderer::initializeModelBuffer()
