@@ -8,7 +8,6 @@ target_sources(crude_engine
     model_buffer.cpp
     renderer.cpp
     application.cpp
-    attachment_description.cpp
     color_blend_state_create_info.cpp
     command_buffer.cpp
     buffer.cpp

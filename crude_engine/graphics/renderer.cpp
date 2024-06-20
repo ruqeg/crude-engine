@@ -220,17 +220,19 @@ core::shared_ptr<Render_Pass> Renderer::initializeRenderPass()
   {
     Attachment_Description( // color
       m_swapchain->getSurfaceFormat().format,
+      VK_SAMPLE_COUNT_1_BIT,
+      attachment_op::clearStore,
+      attachment_op::dontCare,
       VK_IMAGE_LAYOUT_UNDEFINED,
-      VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
-      VK_ATTACHMENT_LOAD_OP_CLEAR,
-      VK_ATTACHMENT_STORE_OP_STORE),
+      VK_IMAGE_LAYOUT_PRESENT_SRC_KHR),
 
     Attachment_Description( // depth
       findDepthFormat(),
+      VK_SAMPLE_COUNT_1_BIT,
+      attachment_op::clearStore,
+      attachment_op::dontCare,
       VK_IMAGE_LAYOUT_UNDEFINED,
-      VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
-      VK_ATTACHMENT_LOAD_OP_CLEAR,
-      VK_ATTACHMENT_STORE_OP_STORE)
+      VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
   };
 
   auto renderPass = core::allocateShared<Render_Pass>(m_device, subpasses, subpassesDependencies, attachments);

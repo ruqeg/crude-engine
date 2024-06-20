@@ -19,10 +19,10 @@ class Device;
 class Render_Pass : public Vulkan_Object<VkRenderPass>
 {
 public:
-  explicit Render_Pass(core::shared_ptr<const Device>             device,
-                       const core::span<Subpass_Description>&     subpasses,
-                       const core::span<Subpass_Dependency>&      subpassesDependencies,
-                       const core::span<Attachment_Description>&  attachments);
+  explicit Render_Pass(core::shared_ptr<const Device>            device,
+                       core::span<const Subpass_Description>     subpasses,
+                       core::span<const Subpass_Dependency>      subpassesDependencies,
+                       core::span<const Attachment_Description>  attachments);
   ~Render_Pass();
 private:
   core::shared_ptr<const Device>  m_device;
