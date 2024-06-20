@@ -34,7 +34,7 @@ Pipeline::Pipeline(core::shared_ptr<const Device>                           devi
   m_basePipeline(basePipeline)
 {
   core::vector<VkPipelineShaderStageCreateInfo> vkShaderStages(shaderStages.size());
-  core::Algorithms::copy(shaderStages.begin(), shaderStages.end(), vkShaderStages.begin());
+  core::copy(shaderStages.begin(), shaderStages.end(), vkShaderStages.begin());
 
   VkGraphicsPipelineCreateInfo vkCreateInfo{};
   vkCreateInfo.sType                = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;

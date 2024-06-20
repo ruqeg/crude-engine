@@ -1,7 +1,6 @@
 target_sources(crude_engine
     PRIVATE
     assert.cpp
-    cxx_allocator_container.cpp
     filesystem.cpp
     free_rbt_allocator.cpp
     linear_allocator.cpp

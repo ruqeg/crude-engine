@@ -106,7 +106,7 @@ void Device::waitIdle()
 bool Device::waitForFences(core::span<Fence> fences, bool waitAll, core::uint64 timeout) const
 {
   core::vector<VkFence> fencesHandles(fences.size());
-  core::Algorithms::copyc(fences.begin(), fences.end(), fencesHandles.begin(), [](auto& s, auto& d) -> void {
+  core::copyc(fences.begin(), fences.end(), fencesHandles.begin(), [](auto& s, auto& d) -> void {
     *d = (s)->getHandle();
   });
 
@@ -118,7 +118,7 @@ bool Device::waitForFences(core::span<Fence> fences, bool waitAll, core::uint64 
 bool Device::resetForFences(core::span<Fence> fences) const
 {
   core::vector<VkFence> fencesHandles(fences.size());
-  core::Algorithms::copyc(fences.begin(), fences.end(), fencesHandles.begin(), [](auto& s, auto& d) -> void {
+  core::copyc(fences.begin(), fences.end(), fencesHandles.begin(), [](auto& s, auto& d) -> void {
     *d = (s)->getHandle();
   });
 

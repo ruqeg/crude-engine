@@ -54,6 +54,7 @@ target_sources(crude_engine
 target_sources(crude_engine
     PUBLIC
     FILE_SET cxx_modules_graphics TYPE CXX_MODULES FILES
+    attachment_load_store_op.ixx
     image_attachment.ixx
     image_2d.ixx
     descriptor_pool_size.ixx

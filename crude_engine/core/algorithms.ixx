@@ -1,25 +1,17 @@
 module;
 
+#include <cstring>
+
 export module crude.core.algorithms;
+
+export import crude.core.memory_manager;
+export import crude.core.alias;
 
 export namespace crude::core
 {
 
-class Algorithms
-{
-public:
-  template<class Forward_Iterator, class T>
-  static void fill(Forward_Iterator first, Forward_Iterator last, const T& value);
-
-  template<class Input_Iterator, class Output_Iterator>
-  static Output_Iterator copy(Input_Iterator first, Input_Iterator last, Output_Iterator dFirst);
-
-  template<class Input_Iterator, class Output_Iterator, class Function>
-  static Output_Iterator copyc(Input_Iterator first, Input_Iterator last, Output_Iterator dFirst, const Function& func);
-};
-
 template<class Forward_Iterator, class T>
-void Algorithms::fill(Forward_Iterator first, Forward_Iterator last, const T& value)
+void fill(Forward_Iterator first, Forward_Iterator last, const T& value) noexcept
 {
   while (first != last)
   {
@@ -29,7 +21,7 @@ void Algorithms::fill(Forward_Iterator first, Forward_Iterator last, const T& va
 }
 
 template<class Input_Iterator, class Output_Iterator>
-Output_Iterator Algorithms::copy(Input_Iterator first, Input_Iterator last, Output_Iterator dFirst)
+Output_Iterator copy(Input_Iterator first, Input_Iterator last, Output_Iterator dFirst) noexcept
 {
   while (first != last)
   {
@@ -40,7 +32,7 @@ Output_Iterator Algorithms::copy(Input_Iterator first, Input_Iterator last, Outp
 }
 
 template<class Input_Iterator, class Output_Iterator, class Function>
-Output_Iterator Algorithms::copyc(Input_Iterator first, Input_Iterator last, Output_Iterator dFirst, const Function& func)
+Output_Iterator copyc(Input_Iterator first, Input_Iterator last, Output_Iterator dFirst, const Function& func) noexcept
 {
   while (first != last)
   {
@@ -48,6 +40,21 @@ Output_Iterator Algorithms::copyc(Input_Iterator first, Input_Iterator last, Out
     ++dFirst; ++first;
   }
   return dFirst;
+}
+
+template<class T>
+T* cxxDefaultAllocateCopy(const T* src, core::size_t size) noexcept
+{
+  T* dst = nullptr;
+  if (src && size)
+  {
+    dst = core::defaultCxxAllocate<T>(size);
+    if (dst)
+    {
+      std::memcpy(dst, src, sizeof(T) * size);
+    }
+  }
+  return dst;
 }
 
 }

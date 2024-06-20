@@ -24,7 +24,7 @@ Framebuffer::Framebuffer(core::shared_ptr<const Device>                     devi
   m_renderPass(renderPass)
 {
   core::vector<VkImageView> attachmentsHandles(m_attachments.size());
-  core::Algorithms::copyc(m_attachments.begin(), m_attachments.end(), attachmentsHandles.begin(), [](auto& src, auto& dst) -> void {
+  core::copyc(m_attachments.begin(), m_attachments.end(), attachmentsHandles.begin(), [](auto& src, auto& dst) -> void {
     *dst = (*src)->getHandle();
   });
 

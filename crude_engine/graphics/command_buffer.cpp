@@ -74,7 +74,7 @@ void Command_Buffer::barrier(VkPipelineStageFlags                    srcStage,
   core::assert(imageMemoryBarriers.data());
 
   core::vector<VkImageMemoryBarrier> pVkImageMemoryBarriers(imageMemoryBarriers.size());
-  core::Algorithms::copy(imageMemoryBarriers.begin(), imageMemoryBarriers.end(), pVkImageMemoryBarriers.begin());
+  core::copy(imageMemoryBarriers.begin(), imageMemoryBarriers.end(), pVkImageMemoryBarriers.begin());
 
   vkCmdPipelineBarrier(
     m_handle, srcStage, dstStage, 0u, 
@@ -212,7 +212,7 @@ void Command_Buffer::bindDescriptorSets(core::shared_ptr<Pipeline>              
   constexpr core::uint32 offset = 0u;
 
   core::vector<VkDescriptorSet> descriptorSetsHandles(descriptorSets.size());
-  core::Algorithms::copyc(descriptorSets.begin(), descriptorSets.end(), descriptorSetsHandles.begin(), [](auto& src, auto& dst) -> void {
+  core::copyc(descriptorSets.begin(), descriptorSets.end(), descriptorSetsHandles.begin(), [](auto& src, auto& dst) -> void {
     *dst = (*src)->getHandle();
   });
 

@@ -200,15 +200,9 @@ void Renderer::initializeSwapchain()
 
 core::shared_ptr<Render_Pass> Renderer::initializeRenderPass()
 {
-  core::array<Attachment_Reference, 1u> colorAttachmentsRef = 
-  { 
-    Attachment_Reference(0u, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL) 
-  };
-  Attachment_Reference depthAttachmentRef(1u, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
-
   core::array<Subpass_Description, 1u> subpasses = 
   {
-    Subpass_Description(VK_PIPELINE_BIND_POINT_GRAPHICS, {}, colorAttachmentsRef, &depthAttachmentRef, {})
+    Subpass_Description(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
   };
 
   core::array<Subpass_Dependency, 1u> subpassesDependencies = 
@@ -296,9 +290,7 @@ void Renderer::recordCommandBuffer(core::shared_ptr<Command_Buffer> commandBuffe
   scissor.extent = m_swapchain->getExtent();
   commandBuffer->setScissor(core::span(&scissor, 1u));
 
-  // or swap
   commandBuffer->bindModelBuffer(0u, m_modelBuffer);
-
 
   updateUniformBuffer(m_currentFrame);
   commandBuffer->bindDescriptorSets(m_graphicsPipeline, core::span(&m_descriptorSets[m_currentFrame], 1u), {});
@@ -535,8 +527,6 @@ bool Renderer::checkSurfaceSupport(core::shared_ptr<const Physical_Device> physi
 
 void Renderer::initializeLogicDevice(core::shared_ptr<const Physical_Device> physicalDevice)
 {
-  const Queue_Family_Indices queueIndices = findDeviceQueueFamilies(physicalDevice);
-
   VkPhysicalDeviceFeatures deviceFeatures{};
   deviceFeatures.samplerAnisotropy = VK_TRUE;
 

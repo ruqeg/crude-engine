@@ -33,4 +33,28 @@ private:
   std::shared_ptr<Aligned_Allocator>   m_defaultAlignedAllocator;
 };
 
+template<class T, typename... Args>
+[[nodiscard]] T* defaultCxxAllocate(Args&&... args) noexcept
+{
+  return Memory_Manager::getDefaultAllocator()->cxxAllocate<T>(std::forward<Args>(args)...);
+}
+
+template<class T, typename... Args>
+[[nodiscard]] T* defaultCxxAllocate(size_t n, Args&&... args) noexcept
+{
+  return Memory_Manager::getDefaultAllocator()->cxxAllocate<T>(n, std::forward<Args>(args)...);
+}
+
+template<class T>
+void defaultCxxDeallocate(T* ptr) noexcept
+{
+  return Memory_Manager::getDefaultAllocator()->cxxDeallocate<T>(ptr);
+}
+
+template<class T>
+void defaultCxxDeallocate(size_t n, T* ptr) noexcept
+{
+  return Memory_Manager::getDefaultAllocator()->cxxDeallocate<T>(n, ptr);
+}
+
 }

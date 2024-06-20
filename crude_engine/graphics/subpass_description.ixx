@@ -13,25 +13,19 @@ export namespace crude::graphics
 
 class Device;
 
-struct Attachment_Reference : public VkAttachmentReference
+class Subpass_Description final : public VkSubpassDescription
 {
-  Attachment_Reference(core::uint32 attachment, VkImageLayout layout)
-  {
-    this->attachment = attachment;
-    this->layout = layout;
-  }
-};
-
-// ! sizeof(Subpass_Description) == sizeof(VkSubpassDescription)
-// for render_pass.cpp
-struct Subpass_Description final : public VkSubpassDescription
-{
-  explicit Subpass_Description(VkPipelineBindPoint                                pipelineBindPoint,
-                               const core::span<Attachment_Reference>&            inputAttachments,
-                               const core::span<Attachment_Reference>&            colorAttachments,
-                               //!TODO const Array_Unsafe<Attachment_Reference>&  resolveAttachments,
-                               const Attachment_Reference*                        depthStencilAttachment,
-                               const core::span<core::uint32>&                    preserveAttachments);
+public:
+  Subpass_Description() noexcept;
+  ~Subpass_Description() noexcept;
+  Subpass_Description(Subpass_Description& other) noexcept;
+  Subpass_Description(Subpass_Description&& other) noexcept;
+  Subpass_Description& operator=(Subpass_Description& other) noexcept;
+  Subpass_Description& operator=(Subpass_Description&& other) noexcept;
+public:
+  explicit Subpass_Description(VkImageLayout colorLayout, VkImageLayout depthStencilLayout) noexcept;
+private:
+  explicit Subpass_Description(VkPipelineBindPoint pipelineBindPoint) noexcept;
 };
 
 }

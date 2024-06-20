@@ -20,7 +20,7 @@ Pipeline_Layout::Pipeline_Layout(core::shared_ptr<const Device>                 
   m_pushConstantRanges(pushConstantRanges)
 {
   core::vector<VkDescriptorSetLayout> vkDescriptorSetLayoutHandles(m_setLayouts.size());
-  core::Algorithms::copyc(m_setLayouts.begin(), m_setLayouts.end(), vkDescriptorSetLayoutHandles.begin(), [](auto& src, auto& dst) -> void {
+  core::copyc(m_setLayouts.begin(), m_setLayouts.end(), vkDescriptorSetLayoutHandles.begin(), [](auto& src, auto& dst) -> void {
     *dst = (*src)->getHandle();
   });
 

@@ -9,10 +9,9 @@ import crude.core.alias;
 export namespace crude::graphics
 {
 
-// ! sizeof(Subpass_Dependency) == sizeof(VkSubpassDependency)
-// for render_pass.cpp
-struct Subpass_Dependency final : public VkSubpassDependency
+class Subpass_Dependency final : public VkSubpassDependency
 {
+public:
   explicit Subpass_Dependency(core::uint32          srcSubpass,
                               core::uint32          dstSubpass,
                               VkPipelineStageFlags  srcStageMask,

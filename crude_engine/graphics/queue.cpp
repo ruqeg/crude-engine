@@ -32,17 +32,17 @@ bool Queue::sumbit(const core::span<core::shared_ptr<Command_Buffer>>&  commandB
   }
 
   core::vector<VkCommandBuffer> commandBuffersHandles(commandBuffers.size());
-  core::Algorithms::copyc(commandBuffers.begin(), commandBuffers.end(), commandBuffersHandles.begin(), [](auto& src, auto& dst) -> void {
+  core::copyc(commandBuffers.begin(), commandBuffers.end(), commandBuffersHandles.begin(), [](auto& src, auto& dst) -> void {
     *dst = (*src)->getHandle();
   });
 
   core::vector<VkSemaphore> waitSemaphoreHandles(waitSemaphores.size());
-  core::Algorithms::copyc(waitSemaphores.begin(), waitSemaphores.end(), waitSemaphoreHandles.begin(), [](auto& src, auto& dst) -> void {
+  core::copyc(waitSemaphores.begin(), waitSemaphores.end(), waitSemaphoreHandles.begin(), [](auto& src, auto& dst) -> void {
     *dst = (*src)->getHandle();
     });
 
   core::vector<VkSemaphore> signalSemaphoreHandles(signalSemaphores.size());
-  core::Algorithms::copyc(signalSemaphores.begin(), signalSemaphores.end(), signalSemaphoreHandles.begin(), [](auto& src, auto& dst) -> void {
+  core::copyc(signalSemaphores.begin(), signalSemaphores.end(), signalSemaphoreHandles.begin(), [](auto& src, auto& dst) -> void {
     *dst = (*src)->getHandle();
     });
 
@@ -66,12 +66,12 @@ Queue_Present_Result Queue::present(const core::span<core::shared_ptr<Swap_Chain
                                     const core::span<core::shared_ptr<Semaphore>>&   waitSemaphores)
 {
   core::vector<VkSemaphore> waitSemaphoreHandles(waitSemaphores.size());
-  core::Algorithms::copyc(waitSemaphores.begin(), waitSemaphores.end(), waitSemaphoreHandles.begin(), [](auto& src, auto& dst) -> void {
+  core::copyc(waitSemaphores.begin(), waitSemaphores.end(), waitSemaphoreHandles.begin(), [](auto& src, auto& dst) -> void {
     *dst = (*src)->getHandle();
     });
 
   core::vector<VkSwapchainKHR> swapchainHandles(swapchains.size());
-  core::Algorithms::copyc(swapchains.begin(), swapchains.end(), swapchainHandles.begin(), [](auto& src, auto& dst) -> void {
+  core::copyc(swapchains.begin(), swapchains.end(), swapchainHandles.begin(), [](auto& src, auto& dst) -> void {
     *dst = (*src)->getHandle();
     });
 
