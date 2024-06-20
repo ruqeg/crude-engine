@@ -13,18 +13,19 @@ namespace crude::graphics
 
 Image::Image(core::shared_ptr<const Device>  device,
              VkImage                         handle,
+             VkImageType                     type,
              VkFormat                        format,
-             VkExtent3D                      extent,
-             VkImageUsageFlags               usage,
-             VkImageType                     type)
+             VkExtent3D                      extent)
   :
   m_device(device),
   m_format(format),
-  m_usage(usage),
+  m_usage(0),
   m_extent(extent),
   m_type(type),
   m_layout(VK_IMAGE_LAYOUT_UNDEFINED)
-{}
+{
+  m_handle = handle;
+}
 
 Image::Image(core::shared_ptr<const Device>  device,
              VkImageType                     type,
@@ -105,7 +106,7 @@ void Image::layoutTransition(core::shared_ptr<Command_Buffer> commandBuffer, VkI
   switch (newLayout)
   {
   case VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL:
-    srcStageMask = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
+    dstStageMask = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
     break;
   default:
     return;

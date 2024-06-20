@@ -19,10 +19,9 @@ class Image : public Vulkan_Object<VkImage>
 protected:
   explicit Image(core::shared_ptr<const Device>  device,
                  VkImage                         handle,
+                 VkImageType                     type,
                  VkFormat                        format,
-                 VkExtent3D                      extent,
-                 VkImageUsageFlags               usage,
-                 VkImageType                     type);
+                 VkExtent3D                      extent);
 
   explicit Image(core::shared_ptr<const Device>  device,
                  VkImageType                     type,

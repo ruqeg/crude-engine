@@ -91,7 +91,7 @@ void Command_Buffer::barrier(VkPipelineStageFlags                    srcStage,
 void Command_Buffer::barrier(VkPipelineStageFlags         srcStage, 
                              VkPipelineStageFlags         dstStage, 
                              const Image_Memory_Barrier&  imageMemoryBarrier)
-{ 
+{
   vkCmdPipelineBarrier(
     m_handle, srcStage, dstStage, 0u, 
     0u, nullptr, 

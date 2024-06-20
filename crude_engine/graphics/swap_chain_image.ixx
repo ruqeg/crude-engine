@@ -23,7 +23,7 @@ public:
                             VkExtent2D                      extent)
     :
     m_colorSpace(colorSpace),
-    Image_2D(device, handle, format, VkExtent3D{ extent.width, extent.height, 1u })
+    Image_2D(device, handle, format, extent)
   {}
   ~Swap_Chain_Image()
   {
