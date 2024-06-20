@@ -20,7 +20,21 @@ public:
                                            VkStencilOpState  front,
                                            VkStencilOpState  back,
                                            core::float32     minDepthBounds,
-                                           core::float32     maxDepthBounds);
+                                           core::float32     maxDepthBounds)
+  {
+    this->sType                  = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+    this->flags                  = 0u;
+    this->pNext                  = nullptr;
+    this->depthTestEnable        = depthTestEnable;
+    this->depthWriteEnable       = depthWriteEnable;
+    this->depthCompareOp         = depthCompareOp;
+    this->depthBoundsTestEnable  = depthBoundsTestEnable;
+    this->stencilTestEnable      = stencilTestEnable;
+    this->front                  = front;
+    this->back                   = back;
+    this->minDepthBounds         = minDepthBounds;
+    this->maxDepthBounds         = maxDepthBounds;
+  }
 };
 
 }

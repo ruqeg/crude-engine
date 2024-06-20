@@ -7,38 +7,26 @@ target_sources(crude_engine
     device_queue_create_info.cpp
     model_buffer.cpp
     renderer.cpp
-    application.cpp
-    color_blend_state_create_info.cpp
     command_buffer.cpp
     buffer.cpp
     command_pool.cpp
     debug_utils_messenger.cpp
-    depth_stencil_state_create_info.cpp
-    descriptor_image_info.cpp
     shader_module.cpp
     shader_stage_create_info.cpp
     subpass_dependency.cpp
     subpass_description.cpp
     swap_chain.cpp
-    tessellation_state_create_info.cpp
-    vertex_input_state_create_info.cpp
-    viewport_state_create_info.cpp
     vulkan_allocator.cpp
     write_descriptor_set.cpp
-    input_assembly_state_create_info.cpp
     instance.cpp
-    multisample_state_create_info.cpp
     physical_device.cpp
     pipeline.cpp
     pipeline_layout.cpp
     queue.cpp
-    rasterization_state_create_info.cpp
     render_pass.cpp
     sampler.cpp
     semaphore.cpp
-    dynamic_state_create_info.cpp
     fence.cpp
-    format.cpp
     framebuffer.cpp
     image.cpp
     image_memory_barrier.cpp

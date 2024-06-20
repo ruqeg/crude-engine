@@ -416,6 +416,10 @@ void Renderer::initializeSwapchainFramebuffers()
   }
 }
 
+void Renderer::initializeTextureImage()
+{
+}
+
 void Renderer::initializeModelBuffer()
 {
   scene::Mesh_Range range;

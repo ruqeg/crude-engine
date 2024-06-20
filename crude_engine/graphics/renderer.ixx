@@ -79,6 +79,7 @@ private:
   void initalizeCommandPool();
   void initializeDepthImage();
   void initializeSwapchainFramebuffers();
+  void initializeTextureImage();
   void initializeModelBuffer();
   void initializeUniformBuffers();
   void initializeCommandBuffers();

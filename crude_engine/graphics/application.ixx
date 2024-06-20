@@ -15,7 +15,17 @@ struct Application final : public VkApplicationInfo
                        core::uint32  applicationVersion = VK_MAKE_VERSION(1, 0, 0),
                        const char*   pEngineName        = "default engine name",
                        core::uint32  engineVersion      = VK_MAKE_VERSION(1, 0, 0),
-                       core::uint32  apiVersion         = VK_API_VERSION_1_0);
+                       core::uint32  apiVersion         = VK_API_VERSION_1_0)
+  {
+    this->sType              = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+    this->pNext              = nullptr;
+
+    this->pApplicationName   = pApplicationName;
+    this->applicationVersion = applicationVersion;
+    this->pEngineName        = pEngineName;
+    this->engineVersion      = engineVersion;
+    this->apiVersion         = apiVersion;
+  }
 };
 
 }
