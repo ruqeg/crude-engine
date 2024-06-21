@@ -17,8 +17,8 @@ struct Attachment_Load_Store_OP
 
 namespace attachment_op
 {
-constexpr Attachment_Load_Store_OP clearStore{ VK_ATTACHMENT_LOAD_OP_CLEAR, VK_ATTACHMENT_STORE_OP_STORE };
-constexpr Attachment_Load_Store_OP dontCare{ VK_ATTACHMENT_LOAD_OP_DONT_CARE, VK_ATTACHMENT_STORE_OP_DONT_CARE };
+constexpr Attachment_Load_Store_OP gClearStore{ VK_ATTACHMENT_LOAD_OP_CLEAR, VK_ATTACHMENT_STORE_OP_STORE };
+constexpr Attachment_Load_Store_OP gDontCare{ VK_ATTACHMENT_LOAD_OP_DONT_CARE, VK_ATTACHMENT_STORE_OP_DONT_CARE };
 }
 
 }

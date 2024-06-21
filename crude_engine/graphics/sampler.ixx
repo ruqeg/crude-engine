@@ -4,7 +4,8 @@ module;
 
 export module crude.graphics.sampler;
 
-import crude.core.std_containers_heap;
+export import crude.core.std_containers_heap;
+export import crude.graphics.sampler_state;
 import crude.graphics.vulkan_object;
 
 export namespace crude::graphics
@@ -16,21 +17,7 @@ class Sampler : public Vulkan_Object<VkSampler>
 {
 public:
   explicit Sampler(core::shared_ptr<const Device>  device,
-                   VkFilter                        magFilter,
-                   VkFilter                        minFilter,
-                   VkSamplerMipmapMode             mipmapMode,
-                   VkSamplerAddressMode            addressModeU,
-                   VkSamplerAddressMode            addressModeV,
-                   VkSamplerAddressMode            addressModeW,
-                   core::float32                   mipLodBias,
-                   VkBool32                        anisotropyEnable,
-                   core::float32                   maxAnisotropy,
-                   VkBool32                        compareEnable,
-                   VkCompareOp                     compareOp,
-                   core::float32                   minLod,
-                   core::float32                   maxLod,
-                   VkBorderColor                   borderColor,
-                   VkBool32                        unnormalizedCoordinates);
+                   const Sampler_State&            samplerState);
   ~Sampler();
 private:
   core::shared_ptr<const Device>  m_device;

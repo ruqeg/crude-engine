@@ -15,10 +15,10 @@ namespace crude::graphics
 {
 
 constexpr core::array<scene::Vertex_CPU, 4u> vertices = {
-    scene::Vertex_CPU{math::Float3{-0.5f, -0.5f, 0.0f}, math::Float3{1.0f, 0.0f, 0.0f}, math::Float2{}, math::Float3{}, math::Float3{}, math::Float3{}},
-    scene::Vertex_CPU{math::Float3{0.5f, -0.5f, 0.0f}, math::Float3{0.0f, 1.0f, 0.0f}, math::Float2{}, math::Float3{}, math::Float3{}, math::Float3{}},
-    scene::Vertex_CPU{math::Float3{0.5f, 0.5f, 0.0f}, math::Float3{0.0f, 0.0f, 1.0f}, math::Float2{}, math::Float3{}, math::Float3{}, math::Float3{}},
-    scene::Vertex_CPU{math::Float3{-0.5f, 0.5f, 0.0f}, math::Float3{1.0f, 1.0f, 0.0f}, math::Float2{}, math::Float3{}, math::Float3{}, math::Float3{}}
+    scene::Vertex_CPU{math::Float3{-0.5f, -0.5f, 0.0f}, math::Float3{1.0f, 0.0f, 0.0f}, math::Float2{1.0f, 0.0f}, math::Float3{}, math::Float3{}, math::Float3{}},
+    scene::Vertex_CPU{math::Float3{0.5f, -0.5f, 0.0f}, math::Float3{0.0f, 1.0f, 0.0f}, math::Float2{0.0f, 0.0f}, math::Float3{}, math::Float3{}, math::Float3{}},
+    scene::Vertex_CPU{math::Float3{0.5f, 0.5f, 0.0f}, math::Float3{0.0f, 0.0f, 1.0f}, math::Float2{0.0f, 1.0f}, math::Float3{}, math::Float3{}, math::Float3{}},
+    scene::Vertex_CPU{math::Float3{-0.5f, 0.5f, 0.0f}, math::Float3{1.0f, 1.0f, 0.0f}, math::Float2{1.0f, 1.0f}, math::Float3{}, math::Float3{}, math::Float3{}}
 };
 
  core::array<scene::Index_Triangle_CPU, 2> indices = 
@@ -34,7 +34,8 @@ Renderer::Renderer(core::shared_ptr<system::SDL_Window_Container> windowContaine
   :
   m_windowContainer(windowContainer),
   m_currentFrame(0u),
-  m_uniformBufferDesc{Uniform_Buffer_Descriptor(0u, VK_SHADER_STAGE_VERTEX_BIT), Uniform_Buffer_Descriptor(0u, VK_SHADER_STAGE_VERTEX_BIT)}
+  m_uniformBufferDesc{Uniform_Buffer_Descriptor(0u, VK_SHADER_STAGE_VERTEX_BIT), Uniform_Buffer_Descriptor(0u, VK_SHADER_STAGE_VERTEX_BIT)},
+  m_textureSamplerDesc{Combined_Image_Sampler_Descriptor(1u, VK_SHADER_STAGE_FRAGMENT_BIT), Combined_Image_Sampler_Descriptor(1u, VK_SHADER_STAGE_FRAGMENT_BIT)}
 {
   initializeInstance();
   initializeSurface();
@@ -46,6 +47,7 @@ Renderer::Renderer(core::shared_ptr<system::SDL_Window_Container> windowContaine
   initializeDepthImage();
   initializeSwapchainFramebuffers();
   initializeTextureImage();
+  initializeSampler();
   initializeModelBuffer();
   initializeUniformBuffers();
   initializeCommandBuffers();
@@ -223,16 +225,16 @@ core::shared_ptr<Render_Pass> Renderer::initializeRenderPass()
     Attachment_Description( // color
       m_swapchain->getSurfaceFormat().format,
       VK_SAMPLE_COUNT_1_BIT,
-      attachment_op::clearStore,
-      attachment_op::dontCare,
+      attachment_op::gClearStore,
+      attachment_op::gDontCare,
       VK_IMAGE_LAYOUT_UNDEFINED,
       VK_IMAGE_LAYOUT_PRESENT_SRC_KHR),
 
     Attachment_Description( // depth
       findDepthFormat(),
       VK_SAMPLE_COUNT_1_BIT,
-      attachment_op::clearStore,
-      attachment_op::dontCare,
+      attachment_op::gClearStore,
+      attachment_op::gDontCare,
       VK_IMAGE_LAYOUT_UNDEFINED,
       VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
   };
@@ -243,14 +245,16 @@ core::shared_ptr<Render_Pass> Renderer::initializeRenderPass()
 
 void Renderer::initalizeDescriptorSet()
 {
-  core::array<Descriptor_Set_Layout_Binding, 1u> layoutBindings =
+  core::array<Descriptor_Set_Layout_Binding, 2u> layoutBindings =
   {
-    m_uniformBufferDesc[0]
+    m_uniformBufferDesc[0],
+    m_textureSamplerDesc[0]
   };
 
-  core::array<Descriptor_Pool_Size, 1u> poolSizes =
+  core::array<Descriptor_Pool_Size, 2u> poolSizes =
   {
-    Uniform_Buffer_Pool_Size(cFramesCount)
+    Uniform_Buffer_Pool_Size(cFramesCount),
+    Combined_Image_Sampler_Pool_Size(cFramesCount)
   };
 
   auto descriptorPool = core::allocateShared<Descriptor_Pool>(m_device, poolSizes);
@@ -434,6 +438,12 @@ void Renderer::initializeTextureImage()
     VK_FORMAT_R8G8B8A8_SRGB, 
     Image::Mip_Data(extent, image.getTexelsSpan()),
     VK_SHARING_MODE_EXCLUSIVE);
+  m_textureView = core::allocateShared<Image_View>(m_texture, Image_Subresource_Range(m_texture));
+}
+
+void Renderer::initializeSampler()
+{
+  m_sampler = core::allocateShared<Sampler>(m_device, csamlper_state::gMagMinMipNearestRepeat);
 }
 
 void Renderer::initializeModelBuffer()
@@ -460,12 +470,16 @@ void Renderer::initializeUniformBuffers()
     m_uniformBuffer[i] = core::allocateShared<Uniform_Buffer<Uniform_Buffer_Object>>(m_device);
     m_uniformBufferDesc[i].update(m_uniformBuffer[i]);
   }
-
+  for (core::uint32 i = 0; i < cFramesCount; ++i)
+  {
+    m_textureSamplerDesc[i].update(m_textureView, m_sampler);
+  }
   for (core::uint32 i = 0; i < cFramesCount; i++)
   {
-    const core::array<Write_Descriptor_Set, 1> descriptorWrites =
+    const core::array<Write_Descriptor_Set, 2> descriptorWrites =
     {
-      Write_Descriptor_Set(m_descriptorSets[i], m_uniformBufferDesc[i])
+      Write_Descriptor_Set(m_descriptorSets[i], m_uniformBufferDesc[i]),
+      Write_Descriptor_Set(m_descriptorSets[i], m_textureSamplerDesc[i])
     };
     m_device->updateDescriptorSets(descriptorWrites, {});
   }

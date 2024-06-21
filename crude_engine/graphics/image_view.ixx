@@ -25,6 +25,7 @@ public:
                       const Image_Subresource_Range&  subresourceRange,
                       const VkComponentMapping&       components = {});
   ~Image_View();
+  core::shared_ptr<const Image> getImage() const;
 private:
   VkImageViewType imageToViewType(VkImageType imageType);
 private:

@@ -1,5 +1,6 @@
 target_sources(crude_engine
     PRIVATE
+    image_descriptor.cpp
     image_2d.cpp
     buffer_descriptor.cpp
     uniform_buffer.cpp
@@ -41,6 +42,8 @@ target_sources(crude_engine
 target_sources(crude_engine
     PUBLIC
     FILE_SET cxx_modules_graphics TYPE CXX_MODULES FILES
+    image_descriptor.ixx
+    sampler_state.ixx
     attachment_load_store_op.ixx
     image_attachment.ixx
     image_2d.ixx

@@ -25,6 +25,24 @@ Write_Descriptor_Set::Write_Descriptor_Set(core::shared_ptr<Descriptor_Set>  des
   this->pTexelBufferView  = nullptr;
 }
 
+Write_Descriptor_Set::Write_Descriptor_Set(core::shared_ptr<Descriptor_Set>   descriptorSet,
+                                           Combined_Image_Sampler_Descriptor  samplerDesc)
+  :
+  m_descriptorSet(descriptorSet),
+  m_imageInfo(samplerDesc.m_descriptorImageInfo)
+{
+  this->sType             = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+  this->pNext             = nullptr;
+  this->dstSet            = m_descriptorSet->getHandle();
+  this->dstBinding        = samplerDesc.binding;
+  this->dstArrayElement   = 0u;
+  this->descriptorCount   = samplerDesc.descriptorCount;
+  this->descriptorType    = samplerDesc.descriptorType;
+  this->pImageInfo        = &m_imageInfo;
+  this->pBufferInfo       = nullptr;
+  this->pTexelBufferView  = nullptr;
+}
+
 
 
 }

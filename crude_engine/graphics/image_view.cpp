@@ -42,6 +42,11 @@ Image_View::~Image_View()
 {
   vkDestroyImageView(m_image->getDevice()->getHandle(), m_handle, getPVkAllocationCallbacks());
 }
+
+core::shared_ptr<const Image> Image_View::getImage() const
+{
+    return m_image;
+}
   
 VkImageViewType Image_View::imageToViewType(VkImageType imageType)
 {

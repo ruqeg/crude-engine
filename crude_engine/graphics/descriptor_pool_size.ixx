@@ -27,4 +27,12 @@ public:
   {}
 };
 
+class Combined_Image_Sampler_Pool_Size : public Descriptor_Pool_Size
+{
+public:
+  Combined_Image_Sampler_Pool_Size(core::uint32 descriptorCount)
+    : Descriptor_Pool_Size(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, descriptorCount)
+  {}
+};
+
 }
