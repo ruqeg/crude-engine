@@ -117,6 +117,7 @@ private:
   core::shared_ptr<Pipeline>                            m_graphicsPipeline;
   core::shared_ptr<Command_Pool>                        m_graphicsCommandPool;
   core::shared_ptr<Command_Pool>                        m_transferCommandPool;
+  core::shared_ptr<Image_2D>                            m_texture;
   core::shared_ptr<Depth_Stencil_Attachment>            m_depthStencilAttachment;
   core::shared_ptr<Image_View>                          m_depthImageView;
   core::shared_ptr<Model_Buffer>                        m_modelBuffer;

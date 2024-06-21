@@ -101,7 +101,7 @@ void Command_Buffer::barrier(VkPipelineStageFlags         srcStage,
   imageMemoryBarrier.m_image->setLayout(imageMemoryBarrier.newLayout);
 }
   
-void Command_Buffer::copyBufferToImage(core::shared_ptr<Buffer>       srcBuffer, 
+void Command_Buffer::copyBufferToImage(core::shared_ptr<const Buffer> srcBuffer,
                                        core::shared_ptr<Image>        dstImage, 
                                        core::span<VkBufferImageCopy>  regions)
 {
@@ -110,12 +110,18 @@ void Command_Buffer::copyBufferToImage(core::shared_ptr<Buffer>       srcBuffer,
   core::assert(regions.data());
 
   vkCmdCopyBufferToImage(
-    m_handle, 
-    srcBuffer->getHandle(),
-    dstImage->getHandle(),
-    dstImage->getLayout(), 
-    regions.size(),
-    regions.data());
+    m_handle, srcBuffer->getHandle(), dstImage->getHandle(), dstImage->getLayout(), 
+    regions.size(), regions.data());
+}
+
+
+void Command_Buffer::copyBufferToImage(core::shared_ptr<const Buffer>  srcBuffer,
+                                       core::shared_ptr<Image>         dstImage, 
+                                       const VkBufferImageCopy&        region)
+{
+  vkCmdCopyBufferToImage(
+    m_handle, srcBuffer->getHandle(), dstImage->getHandle(), dstImage->getLayout(), 
+    1u, &region);
 }
 
 bool Command_Buffer::reset(VkCommandBufferResetFlags flags)

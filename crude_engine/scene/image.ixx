@@ -5,6 +5,7 @@ module;
 
 export module crude.scene.image;
 
+export import crude.core.std_containers_stack;
 export import crude.core.std_containers_heap;
 import crude.core.logger;
 
@@ -25,25 +26,26 @@ class Image
 public:
   bool load(const char* path, Image_Format format) noexcept
   {
-    stbi_uc* pixels = stbi_load(path, &m_width, &m_height, &m_channels, format);
-    if (pixels == nullptr)
+    stbi_uc* texels = stbi_load(path, &m_width, &m_height, &m_channels, format);
+    if (texels == nullptr)
     {
       core::logError(core::Debug::Channel::FileIO, "Failed to load texture image \"%s\"!", path);
       return false;
     }
-    m_pixels = core::shared_ptr<core::byte>(pixels, [](core::byte* pixels) {
-      stbi_image_free(pixels);
+    m_texels = core::shared_ptr<core::byte>(texels, [](core::byte* texels) {
+      stbi_image_free(texels);
     });
     return true;
   }
 public:
-  core::shared_ptr<const core::byte> getPixel() const noexcept{ return m_pixels; };
+  core::span<const core::byte> getTexelsSpan() const noexcept { return core::span(getTexels().get(), getSizeBytes()); };
+  core::shared_ptr<const core::byte> getTexels() const noexcept { return m_texels; };
   core::int64 getSizeBytes() const noexcept { return 4 * m_width * m_height; }
   core::int64 getWidth() const noexcept { return m_width; }
   core::int64 getHeight() const noexcept { return m_height; }
   core::int64 getChannel() const noexcept { return m_channels; }
 private:
-  core::shared_ptr<core::byte>  m_pixels;
+  core::shared_ptr<core::byte>  m_texels;
   core::int32                   m_width;
   core::int32                   m_height;
   core::int32                   m_channels;

@@ -41,9 +41,12 @@ public:
                VkPipelineStageFlags         dstStage, 
                const Image_Memory_Barrier&  imageMemoryBarrier);
   
-  void copyBufferToImage(core::shared_ptr<Buffer>       srcBuffer, 
-                         core::shared_ptr<Image>        dstImage, 
-                         core::span<VkBufferImageCopy>  regions);
+  void copyBufferToImage(core::shared_ptr<const Buffer>  srcBuffer,
+                         core::shared_ptr<Image>         dstImage, 
+                         core::span<VkBufferImageCopy>   regions);
+  void copyBufferToImage(core::shared_ptr<const Buffer>  srcBuffer,
+                         core::shared_ptr<Image>         dstImage, 
+                         const VkBufferImageCopy&        region);
   
   bool reset(VkCommandBufferResetFlags flags = VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
 

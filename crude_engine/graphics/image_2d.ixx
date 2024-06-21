@@ -13,10 +13,14 @@ class Image_2D : public Image
 {
 public:
   explicit Image_2D(core::shared_ptr<const Device>  device,
-                    VkFormat                       format,
-                    const VkExtent3D&              extent,
-                    core::uint32                   mipLevels,
-                    VkSharingMode                  sharingMode);
+                    VkFormat                        format,
+                    const VkExtent3D&               extent,
+                    core::uint32                    mipLevels,
+                    VkSharingMode                   sharingMode);
+  explicit Image_2D(core::shared_ptr<Command_Buffer>  commandBuffer,
+                    VkFormat                          format,
+                    const Mip_Data&                   mipData,
+                    VkSharingMode                     sharingMode);
 protected:
   explicit Image_2D(core::shared_ptr<const Device>  device,
                     VkFormat                        format,

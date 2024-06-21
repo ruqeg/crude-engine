@@ -421,10 +421,19 @@ void Renderer::initializeSwapchainFramebuffers()
 void Renderer::initializeTextureImage()
 {
   scene::Image image;
-  if (!image.load("../../crude_example/basic_triangle_examle/texture.jpg", scene::IMAGE_FORMAT_RGB_ALPHA)) 
+  if (!image.load("../../crude_example/basic_triangle_examle/texture.jpg", scene::IMAGE_FORMAT_RGB_ALPHA))
     return;
-  int a = 3;
-  int b = a + 3;
+
+  auto commandBuffer = core::allocateShared<Command_Buffer>(m_transferCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+  VkExtent3D extent;
+  extent.width = image.getWidth();
+  extent.height = image.getHeight();
+  extent.depth = 1u;
+  m_texture = core::allocateShared<Image_2D>(
+    commandBuffer, 
+    VK_FORMAT_R8G8B8A8_SRGB, 
+    Image::Mip_Data(extent, image.getTexelsSpan()),
+    VK_SHARING_MODE_EXCLUSIVE);
 }
 
 void Renderer::initializeModelBuffer()

@@ -14,11 +14,12 @@ class Image;
 class Image_Subresource_Range : public VkImageSubresourceRange
 {
 public:
+  explicit Image_Subresource_Range(core::shared_ptr<Image>  image);
   explicit Image_Subresource_Range(core::shared_ptr<Image>  image,
-                                   core::uint32             baseMipLevel   = 0u,
-                                   core::uint32             levelCount     = VK_REMAINING_MIP_LEVELS,
-                                   core::uint32             baseArrayLayer = 0u,
-                                   core::uint32             layerCount     = VK_REMAINING_ARRAY_LAYERS);
+                                   core::uint32             baseMipLevel,
+                                   core::uint32             levelCount,
+                                   core::uint32             baseArrayLayer,
+                                   core::uint32             layerCount);
 };
 
 }

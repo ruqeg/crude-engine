@@ -2,9 +2,11 @@
 
 module crude.graphics.image_2d;
 
+import crude.graphics.command_buffer;
 
 namespace crude::graphics
 {
+
 Image_2D::Image_2D(core::shared_ptr<const Device>  device,
                    VkFormat                        format,
                    const VkExtent3D&               extent,
@@ -17,6 +19,16 @@ Image_2D::Image_2D(core::shared_ptr<const Device>  device,
     VK_IMAGE_TILING_OPTIMAL,
     sharingMode)
 {}
+
+Image_2D::Image_2D(core::shared_ptr<Command_Buffer>  commandBuffer,
+                   VkFormat                          format,
+                   const Mip_Data&                   mipData,
+                   VkSharingMode                     sharingMode)
+  :
+  Image_2D(commandBuffer->getDevice(), format, mipData.extent, 1u, sharingMode)
+{
+  stagedUpload(commandBuffer, mipData, 0u, 1u, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
+}
 
 Image_2D::Image_2D(core::shared_ptr<const Device>  device,
                    VkFormat                        format,

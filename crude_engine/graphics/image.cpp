@@ -3,6 +3,7 @@
 module crude.graphics.image;
 
 import crude.graphics.device_memory;
+import crude.graphics.staging_buffer;
 import crude.graphics.command_buffer;
 import crude.graphics.device;
 import crude.graphics.flush;
@@ -22,7 +23,9 @@ Image::Image(core::shared_ptr<const Device>  device,
   m_usage(0),
   m_extent(extent),
   m_type(type),
-  m_layout(VK_IMAGE_LAYOUT_UNDEFINED)
+  m_layout(VK_IMAGE_LAYOUT_UNDEFINED),
+  m_mipLevels(1u),
+  m_arrayLayers(1u)
 {
   m_handle = handle;
 }
@@ -44,7 +47,9 @@ Image::Image(core::shared_ptr<const Device>  device,
   m_usage(usage),
   m_extent(extent),
   m_type(type),
-  m_layout(VK_IMAGE_LAYOUT_UNDEFINED)
+  m_layout(VK_IMAGE_LAYOUT_UNDEFINED),
+  m_mipLevels(mipLevels),
+  m_arrayLayers(arrayLayers)
 {
   VkImageCreateInfo vkImageInfo{};
   vkImageInfo.sType                  = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -130,6 +135,53 @@ void Image::bindMemory(core::shared_ptr<Device_Memory> memory)
   core::shared_ptr<Image> self = core::shared_ptr<Image>(this, [](Image*) {});
   memory->bind(self);
   m_memory = memory;
+}
+
+void Image::stagedUpload(core::shared_ptr<Command_Buffer>  commandBuffer, 
+                         const Mip_Data&                   mipMap,
+                         core::uint32                      mipLevel,
+                         core::uint32                      arrayLayer,
+                         VkImageLayout                     dstLayout,
+                         VkPipelineStageFlags              dstStageMask)
+{
+  core::shared_ptr<Staging_Buffer> stagingBuffer = core::allocateShared<Staging_Buffer>(m_device, mipMap.texels);
+  commandBuffer->begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+  copyMip(commandBuffer, stagingBuffer, {}, mipLevel, arrayLayer, dstLayout, dstStageMask);
+  commandBuffer->end();
+  flush(commandBuffer);
+}
+
+void Image::copyMip(core::shared_ptr<Command_Buffer>        commandBuffer,
+                    core::shared_ptr<const Staging_Buffer>  srcBuffer,
+                    const Copy_Layout&                      bufferLayout,
+                    core::uint32                            mipLevel,
+                    core::uint32                            arrayLayer,
+                    VkImageLayout                           dstLayout,
+                    VkPipelineStageFlags                    dstStageMask)
+{
+  // !TODO
+  core::shared_ptr<Image> self = core::shared_ptr<Image>(this, [](Image*) {});
+  const Image_Subresource_Range imageRange(self);
+
+  VkBufferImageCopy region;
+  region.bufferOffset                     = bufferLayout.offset;
+  region.bufferRowLength                  = bufferLayout.rowLength;
+  region.bufferImageHeight                = bufferLayout.imageHeight;
+
+  region.imageSubresource.aspectMask      = imageRange.aspectMask;
+  region.imageSubresource.mipLevel        = mipLevel;
+  region.imageSubresource.baseArrayLayer  = 0u;
+  region.imageSubresource.layerCount      = arrayLayer;
+
+  region.imageOffset                      = {0, 0, 0};
+  region.imageExtent                      = m_extent;
+
+
+  const Image_Memory_Barrier transferDst(self, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, imageRange);
+  commandBuffer->barrier(VK_PIPELINE_STAGE_HOST_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, transferDst);
+  commandBuffer->copyBufferToImage(srcBuffer, self, region);
+  const Image_Memory_Barrier shaderRead(self, dstLayout, imageRange);
+  commandBuffer->barrier(VK_PIPELINE_STAGE_TRANSFER_BIT, dstStageMask, shaderRead);
 }
 
 void Image::setLayout(VkImageLayout layout)
