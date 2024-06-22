@@ -25,6 +25,7 @@ void Engine::mainLoop()
     core::float64 elapsed;
     if (m_timer.frameElasped(elapsed))
     {
+      core::logInfo(core::Debug::Channel::All, "fps: %i\n", (int)(1.0 / elapsed));
       update(elapsed);
       render();
     }

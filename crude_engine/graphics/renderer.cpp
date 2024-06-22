@@ -14,17 +14,24 @@ import crude.math.constants;
 namespace crude::graphics
 {
 
-constexpr core::array<scene::Vertex_CPU, 4u> vertices = {
-    scene::Vertex_CPU{math::Float3{-0.5f, -0.5f, 0.0f}, math::Float3{1.0f, 0.0f, 0.0f}, math::Float2{1.0f, 0.0f}, math::Float3{}, math::Float3{}, math::Float3{}},
-    scene::Vertex_CPU{math::Float3{0.5f, -0.5f, 0.0f}, math::Float3{0.0f, 1.0f, 0.0f}, math::Float2{0.0f, 0.0f}, math::Float3{}, math::Float3{}, math::Float3{}},
-    scene::Vertex_CPU{math::Float3{0.5f, 0.5f, 0.0f}, math::Float3{0.0f, 0.0f, 1.0f}, math::Float2{0.0f, 1.0f}, math::Float3{}, math::Float3{}, math::Float3{}},
-    scene::Vertex_CPU{math::Float3{-0.5f, 0.5f, 0.0f}, math::Float3{1.0f, 1.0f, 0.0f}, math::Float2{1.0f, 1.0f}, math::Float3{}, math::Float3{}, math::Float3{}}
+constexpr core::array<scene::Vertex_CPU, 8u> vertices = {
+  scene::Vertex_CPU{math::Float3{-0.5f, -0.5f, 0.0f}, math::Float3{1.0f, 0.0f, 0.0f}, math::Float2{1.0f, 0.0f}, math::Float3{}, math::Float3{}, math::Float3{}},
+  scene::Vertex_CPU{math::Float3{0.5f, -0.5f, 0.0f}, math::Float3{0.0f, 1.0f, 0.0f}, math::Float2{0.0f, 0.0f}, math::Float3{}, math::Float3{}, math::Float3{}},
+  scene::Vertex_CPU{math::Float3{0.5f, 0.5f, 0.0f}, math::Float3{0.0f, 0.0f, 1.0f}, math::Float2{0.0f, 1.0f}, math::Float3{}, math::Float3{}, math::Float3{}},
+  scene::Vertex_CPU{math::Float3{-0.5f, 0.5f, 0.0f}, math::Float3{1.0f, 1.0f, 0.0f}, math::Float2{1.0f, 1.0f}, math::Float3{}, math::Float3{}, math::Float3{}},
+  
+  scene::Vertex_CPU{math::Float3{-0.5f, -0.5f, -0.5f}, math::Float3{1.0f, 0.0f, 0.0f}, math::Float2{1.0f, 0.0f}, math::Float3{}, math::Float3{}, math::Float3{}},
+  scene::Vertex_CPU{math::Float3{0.5f, -0.5f, -0.5f}, math::Float3{0.0f, 1.0f, 0.0f}, math::Float2{0.0f, 0.0f}, math::Float3{}, math::Float3{}, math::Float3{}},
+  scene::Vertex_CPU{math::Float3{0.5f, 0.5f, -0.5f}, math::Float3{0.0f, 0.0f, 1.0f}, math::Float2{0.0f, 1.0f}, math::Float3{}, math::Float3{}, math::Float3{}},
+  scene::Vertex_CPU{math::Float3{-0.5f, 0.5f, -0.5f}, math::Float3{1.0f, 1.0f, 0.0f}, math::Float2{1.0f, 1.0f}, math::Float3{}, math::Float3{}, math::Float3{}}
 };
 
- core::array<scene::Index_Triangle_CPU, 2> indices = 
+core::array<scene::Index_Triangle_CPU, 4> indices = 
 {
-    scene::Index_Triangle_CPU{0u, 1u, 2u},
-    scene::Index_Triangle_CPU{2u, 3u, 0u}
+  scene::Index_Triangle_CPU{0u, 1u, 2u},
+  scene::Index_Triangle_CPU{2u, 3u, 0u},
+  scene::Index_Triangle_CPU{4u, 5u, 6u}, 
+  scene::Index_Triangle_CPU{6u, 7u, 4u}
 };
 
 constexpr core::array<const char*, 1> deviceEnabledExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
