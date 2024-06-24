@@ -3,6 +3,8 @@ module;
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
+#include <cmath>
+
 export module crude.scene.image;
 
 export import crude.core.std_containers_stack;
@@ -44,6 +46,7 @@ public:
   core::int64 getWidth() const noexcept { return m_width; }
   core::int64 getHeight() const noexcept { return m_height; }
   core::int64 getChannel() const noexcept { return m_channels; }
+  core::int64 calculateMaximumMipLevelsCount() const noexcept { return std::floor(std::log2(std::max(m_width, m_height))) + 1; }
 private:
   core::shared_ptr<core::byte>  m_texels;
   core::int32                   m_width;

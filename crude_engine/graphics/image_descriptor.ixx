@@ -16,7 +16,7 @@ class Sampler;
 class Image_Descriptor : public Descriptor_Set_Layout_Binding
 {
 public:
-  void update(core::shared_ptr<const Image_View> imageView, core::shared_ptr<const Sampler> sampler) noexcept;
+  bool update(core::shared_ptr<const Image_View> imageView, core::shared_ptr<const Sampler> sampler) noexcept;
 protected:
   explicit Image_Descriptor(VkDescriptorType descriptorType, core::uint32 binding, VkShaderStageFlags stageFlags) noexcept;
 protected:

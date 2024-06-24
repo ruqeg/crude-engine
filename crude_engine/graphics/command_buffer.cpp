@@ -67,27 +67,6 @@ bool Command_Buffer::end()
   return result == VK_SUCCESS;
 }
 
-void Command_Buffer::barrier(VkPipelineStageFlags                    srcStage, 
-                             VkPipelineStageFlags                    dstStage, 
-                             core::span<const Image_Memory_Barrier>  imageMemoryBarriers)
-{
-  core::assert(imageMemoryBarriers.data());
-
-  core::vector<VkImageMemoryBarrier> pVkImageMemoryBarriers(imageMemoryBarriers.size());
-  core::copy(imageMemoryBarriers.begin(), imageMemoryBarriers.end(), pVkImageMemoryBarriers.begin());
-
-  vkCmdPipelineBarrier(
-    m_handle, srcStage, dstStage, 0u, 
-    0u, nullptr, 
-    0u, nullptr, 
-    pVkImageMemoryBarriers.size(), pVkImageMemoryBarriers.data());
-
-  for (core::uint32 i = 0u; i < imageMemoryBarriers.size(); ++i)
-  {
-    imageMemoryBarriers[i].m_image->setLayout(imageMemoryBarriers[i].newLayout);
-  }
-}
-
 void Command_Buffer::barrier(VkPipelineStageFlags         srcStage, 
                              VkPipelineStageFlags         dstStage, 
                              const Image_Memory_Barrier&  imageMemoryBarrier)
@@ -97,30 +76,33 @@ void Command_Buffer::barrier(VkPipelineStageFlags         srcStage,
     0u, nullptr, 
     0u,  nullptr, 
     1u, &imageMemoryBarrier);
-
-  imageMemoryBarrier.m_image->setLayout(imageMemoryBarrier.newLayout);
-}
   
-void Command_Buffer::copyBufferToImage(core::shared_ptr<const Buffer> srcBuffer,
-                                       core::shared_ptr<Image>        dstImage, 
-                                       core::span<VkBufferImageCopy>  regions)
-{
-  core::assert(srcBuffer.get());
-  core::assert(dstImage.get());
-  core::assert(regions.data());
-
-  vkCmdCopyBufferToImage(
-    m_handle, srcBuffer->getHandle(), dstImage->getHandle(), dstImage->getLayout(), 
-    regions.size(), regions.data());
+  const VkImageSubresourceRange& range = imageMemoryBarrier.subresourceRange;
+  for (core::uint32 mipLevel = range.baseMipLevel; mipLevel < range.baseMipLevel + range.levelCount; ++mipLevel)
+  {
+    imageMemoryBarrier.m_image->setMipLayout(mipLevel, imageMemoryBarrier.newLayout);
+  }
 }
 
+void Command_Buffer::blitImage(core::shared_ptr<Image>  srcImage,
+                               core::shared_ptr<Image>  dstImage, 
+                               const VkImageBlit&       blitRegion, 
+                               VkFilter                 filter)
+{
+  vkCmdBlitImage(
+    m_handle,
+    srcImage->getHandle(), srcImage->getMipLayout(blitRegion.srcSubresource.mipLevel),
+    dstImage->getHandle(), dstImage->getMipLayout(blitRegion.dstSubresource.mipLevel),
+    1, &blitRegion,
+    filter);
+}
 
 void Command_Buffer::copyBufferToImage(core::shared_ptr<const Buffer>  srcBuffer,
                                        core::shared_ptr<Image>         dstImage, 
                                        const VkBufferImageCopy&        region)
 {
   vkCmdCopyBufferToImage(
-    m_handle, srcBuffer->getHandle(), dstImage->getHandle(), dstImage->getLayout(), 
+    m_handle, srcBuffer->getHandle(), dstImage->getHandle(), dstImage->getMipLayout(region.imageSubresource.mipLevel),
     1u, &region);
 }
 

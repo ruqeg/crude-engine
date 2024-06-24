@@ -23,9 +23,9 @@ Image::Image(core::shared_ptr<const Device>  device,
   m_usage(0),
   m_extent(extent),
   m_type(type),
-  m_layout(VK_IMAGE_LAYOUT_UNDEFINED),
-  m_mipLevels(1u),
-  m_arrayLayers(1u)
+  m_layouts(1u, VK_IMAGE_LAYOUT_UNDEFINED),
+  m_mipLevelsCount(1u),
+  m_arrayLayersCount(1u)
 {
   m_handle = handle;
 }
@@ -34,8 +34,8 @@ Image::Image(core::shared_ptr<const Device>  device,
              VkImageType                     type,
              VkFormat                        format,
              const VkExtent3D&               extent,
-             core::uint32                    mipLevels,
-             core::uint32                    arrayLayers,
+             core::uint32                    mipLevelsCount,
+             core::uint32                    arrayLayersCount,
              VkSampleCountFlagBits           samples,
              VkImageCreateFlags              flags,
              VkImageUsageFlags               usage,
@@ -47,9 +47,9 @@ Image::Image(core::shared_ptr<const Device>  device,
   m_usage(usage),
   m_extent(extent),
   m_type(type),
-  m_layout(VK_IMAGE_LAYOUT_UNDEFINED),
-  m_mipLevels(mipLevels),
-  m_arrayLayers(arrayLayers)
+  m_layouts(mipLevelsCount, VK_IMAGE_LAYOUT_UNDEFINED),
+  m_mipLevelsCount(mipLevelsCount),
+  m_arrayLayersCount(arrayLayersCount)
 {
   VkImageCreateInfo vkImageInfo{};
   vkImageInfo.sType                  = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -61,13 +61,13 @@ Image::Image(core::shared_ptr<const Device>  device,
   vkImageInfo.imageType              = m_type;
   vkImageInfo.format                 = m_format;
   vkImageInfo.extent                 = m_extent;
-  vkImageInfo.mipLevels              = mipLevels;
-  vkImageInfo.arrayLayers            = arrayLayers;
+  vkImageInfo.mipLevels              = mipLevelsCount;
+  vkImageInfo.arrayLayers            = arrayLayersCount;
   vkImageInfo.samples                = samples;
   vkImageInfo.tiling                 = tiling;
   vkImageInfo.usage                  = m_usage;
   vkImageInfo.sharingMode            = sharingMode;
-  vkImageInfo.initialLayout          = m_layout;
+  vkImageInfo.initialLayout          = m_layouts.front();
 
   VkResult result = vkCreateImage(m_device->getHandle(), &vkImageInfo, getPVkAllocationCallbacks(), &m_handle);
   vulkanHandleResult(result, "Failed to create image");
@@ -183,11 +183,6 @@ void Image::copyMip(core::shared_ptr<Command_Buffer>        commandBuffer,
   const Image_Memory_Barrier shaderRead(self, dstLayout, imageRange);
   commandBuffer->barrier(VK_PIPELINE_STAGE_TRANSFER_BIT, dstStageMask, shaderRead);
 }
-
-void Image::setLayout(VkImageLayout layout)
-{
-  m_layout = layout;
-}
   
 VkImageType Image::getType() const
 {
@@ -197,11 +192,6 @@ VkImageType Image::getType() const
 VkFormat Image::getFormat() const
 {
   return m_format;
-}
-
-VkImageLayout Image::getLayout() const
-{
-  return m_layout;
 }
 
 VkMemoryRequirements Image::getMemoryRequirements() const
@@ -214,6 +204,25 @@ VkMemoryRequirements Image::getMemoryRequirements() const
 core::shared_ptr<const Device> Image::getDevice() const
 {
   return m_device;
+}
+
+VkExtent3D Image::calculateMipExtent(core::uint32 mipLevel) const
+{
+  // !TODO
+  VkExtent3D mipExtent = { calculateMipWidth(mipLevel), calculateMipHeight(mipLevel), m_extent.depth};
+  return mipExtent;
+}
+
+core::uint32 Image::calculateMipWidth(core::uint32 mipLevel) const
+{
+  // !TODO
+  return m_extent.width > 1 ? m_extent.width / static_cast<core::float32>(1 << mipLevel) : 1;
+}
+
+core::uint32 Image::calculateMipHeight(core::uint32 mipLevel) const
+{
+  // !TODO
+  return m_extent.height > 1 ? m_extent.height / static_cast<core::float32>(1 << mipLevel) : 1;
 }
 
 }

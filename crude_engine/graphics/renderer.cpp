@@ -10,6 +10,7 @@ import crude.math.convert;
 import crude.math.matrix;
 import crude.scene.image;
 import crude.math.constants;
+import crude.graphics.generate_mipmaps;
 
 namespace crude::graphics
 {
@@ -444,7 +445,11 @@ void Renderer::initializeTextureImage()
     commandBuffer, 
     VK_FORMAT_R8G8B8A8_SRGB, 
     Image::Mip_Data(extent, image.getTexelsSpan()),
+    image.calculateMaximumMipLevelsCount(),
     VK_SHARING_MODE_EXCLUSIVE);
+  commandBuffer->begin();
+  generateMipmaps(commandBuffer, m_texture, VK_FILTER_LINEAR);
+  commandBuffer->end();
   m_textureView = core::allocateShared<Image_View>(m_texture, Image_Subresource_Range(m_texture));
 }
 

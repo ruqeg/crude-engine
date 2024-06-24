@@ -10,7 +10,7 @@ namespace crude::graphics
 
 Image_Subresource_Range::Image_Subresource_Range(core::shared_ptr<Image> image)
   :
-  Image_Subresource_Range(image, 0u, image->getMipLevels(), 0u, image->getArrayLayers())
+  Image_Subresource_Range(image, 0u, image->getMipLevelsCount(), 0u, image->getArrayLayersCount())
 {}
 
 Image_Subresource_Range::Image_Subresource_Range(core::shared_ptr<Image>  image,

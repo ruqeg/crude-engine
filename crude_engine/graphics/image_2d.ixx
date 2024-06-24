@@ -15,18 +15,23 @@ public:
   explicit Image_2D(core::shared_ptr<const Device>  device,
                     VkFormat                        format,
                     const VkExtent3D&               extent,
-                    core::uint32                    mipLevels,
+                    core::uint32                    mipLevelsCount,
                     VkSharingMode                   sharingMode);
   explicit Image_2D(core::shared_ptr<Command_Buffer>  commandBuffer,
                     VkFormat                          format,
                     const Mip_Data&                   mipData,
                     VkSharingMode                     sharingMode);
+  explicit Image_2D(core::shared_ptr<Command_Buffer>  commandBuffer,
+                    VkFormat                          format,
+                    const Mip_Data&                   mipData,
+                    core::uint32                      mipLevelsCount,
+                    VkSharingMode                     sharingMode);
 protected:
   explicit Image_2D(core::shared_ptr<const Device>  device,
                     VkFormat                        format,
                     const VkExtent2D&               extent,
-                    core::uint32                    mipLevels,
-                    core::uint32                    arrayLayers,
+                    core::uint32                    mipLevelsCount,
+                    core::uint32                    arrayLayersCount,
                     VkSampleCountFlagBits           samples,
                     VkImageCreateFlags              flags,
                     VkImageUsageFlags               usage,

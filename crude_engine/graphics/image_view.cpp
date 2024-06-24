@@ -21,7 +21,8 @@ Image_View::Image_View(core::shared_ptr<const Image>   image,
                        const Image_Subresource_Range&  subresourceRange,
                        const VkComponentMapping&       components)
   :
-  m_image(image)
+  m_image(image),
+  m_subresourceRange(subresourceRange)
 {
   VkImageViewCreateInfo vkCreateInfo{};
   vkCreateInfo.sType                            = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -32,7 +33,7 @@ Image_View::Image_View(core::shared_ptr<const Image>   image,
   vkCreateInfo.image                            = m_image->getHandle();
   vkCreateInfo.components                       = components;
   vkCreateInfo.format                           = format;
-  vkCreateInfo.subresourceRange                 = subresourceRange;
+  vkCreateInfo.subresourceRange                 = m_subresourceRange;
 
   VkResult result = vkCreateImageView(m_image->getDevice()->getHandle(), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
   vulkanHandleResult(result, "failed to create image view");
@@ -45,7 +46,7 @@ Image_View::~Image_View()
 
 core::shared_ptr<const Image> Image_View::getImage() const
 {
-    return m_image;
+  return m_image;
 }
   
 VkImageViewType Image_View::imageToViewType(VkImageType imageType)

@@ -15,11 +15,11 @@ public:
   explicit Depth_Stencil_Attachment(core::shared_ptr<Device>  device,
                                     VkFormat                  depthStencilFormat,
                                     const VkExtent2D&         extent,
-                                    core::uint32              mipLevels,
+                                    core::uint32              mipLevelsCount,
                                     VkSampleCountFlagBits     samples,
                                     VkSharingMode             sharingMode)
     :
-    Image_2D(device, depthStencilFormat, extent, mipLevels, 
+    Image_2D(device, depthStencilFormat, extent, mipLevelsCount,
       1u, samples, 0u, 
       VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_IMAGE_TILING_OPTIMAL, sharingMode)
   {}

@@ -4,9 +4,9 @@ module;
 
 export module crude.graphics.image_view;
 
-import crude.core.std_containers_heap;
+export import crude.core.std_containers_heap;
+export import crude.graphics.image_subresource_range;
 import crude.graphics.vulkan_object;
-import crude.graphics.image_subresource_range;
 
 export namespace crude::graphics
 {
@@ -26,10 +26,12 @@ public:
                       const VkComponentMapping&       components = {});
   ~Image_View();
   core::shared_ptr<const Image> getImage() const;
+  const Image_Subresource_Range& getSubresourceRange() const { return m_subresourceRange; }
 private:
   VkImageViewType imageToViewType(VkImageType imageType);
 private:
   core::shared_ptr<const Image>   m_image;
+  const Image_Subresource_Range   m_subresourceRange;
 };
 
 }

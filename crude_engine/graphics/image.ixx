@@ -32,8 +32,8 @@ protected:
                  VkImageType                     type,
                  VkFormat                        format,
                  const VkExtent3D&               extent,
-                 core::uint32                    mipLevels,
-                 core::uint32                    arrayLayers,
+                 core::uint32                    mipLevelsCount,
+                 core::uint32                    arrayLayersCount,
                  VkSampleCountFlagBits           samples,
                  VkImageCreateFlags              flags,
                  VkImageUsageFlags               usage,
@@ -41,8 +41,8 @@ protected:
                  VkSharingMode                   sharingMode);
 public:
   ~Image();
-  void layoutTransition(core::shared_ptr<Command_Buffer> commandBuffer, VkImageLayout newLayout);
-  void layoutTransitionUpload(core::shared_ptr<Command_Buffer> commandBuffer, VkImageLayout newLayout);
+  void layoutTransitionMip(core::shared_ptr<Command_Buffer> commandBuffer, core::uint32 mipLevel, VkImageLayout newLayout);
+  void layoutTransitionMipUpload(core::shared_ptr<Command_Buffer> commandBuffer, core::uint32 mipLevel, VkImageLayout newLayout);
   void bindMemory(core::shared_ptr<Device_Memory> memory);
   void copyMip(core::shared_ptr<Command_Buffer>        commandBuffer,
                core::shared_ptr<const Staging_Buffer>  srcBuffer,
@@ -59,14 +59,22 @@ public:
                     core::uint32                      arrayLayer,
                     VkImageLayout                     dstLayout,
                     VkPipelineStageFlags              dstStageMask);
-  void setLayout(VkImageLayout layout);
+  void setMipLayout(core::uint32 mipLevel, VkImageLayout layout) { m_layouts[mipLevel] = layout; }
+  VkImageLayout getMipLayout(core::uint32 mipLevel) const { return m_layouts[mipLevel]; }
   VkImageType getType() const { return m_type; }
   VkFormat getFormat() const { return m_format; }
-  VkImageLayout getLayout() const { return m_layout; }
-  core::uint32 getMipLevels() const { return m_mipLevels; }
-  core::uint32 getArrayLayers() const { return m_arrayLayers; }
+  core::uint32 getMipLevelsCount() const { return m_mipLevelsCount; }
+  core::uint32 getArrayLayersCount() const { return m_arrayLayersCount; }
+  const VkExtent3D& getExtent() const { return m_extent; }
+  core::uint32 getWidth() const { return m_extent.width; }
+  core::uint32 getHeight() const { return m_extent.height; }
+  core::uint32 getDepth() const { return m_extent.depth; }
+  VkImageUsageFlags getUsage() const { return m_usage; }
   VkMemoryRequirements getMemoryRequirements() const;
   core::shared_ptr<const Device> getDevice() const;
+  VkExtent3D calculateMipExtent(core::uint32 mipLevel) const;
+  core::uint32 calculateMipWidth(core::uint32 mipLevel) const;
+  core::uint32 calculateMipHeight(core::uint32 mipLevel) const;
 protected:
   core::shared_ptr<const Device>   m_device;
   core::shared_ptr<Device_Memory>  m_memory;
@@ -74,9 +82,9 @@ protected:
   VkExtent3D                       m_extent;
   VkImageUsageFlags                m_usage;
   VkImageType                      m_type;
-  VkImageLayout                    m_layout;
-  core::uint32                     m_mipLevels;
-  core::uint32                     m_arrayLayers;
+  core::vector<VkImageLayout>      m_layouts;
+  core::uint32                     m_mipLevelsCount;
+  core::uint32                     m_arrayLayersCount;
 };
 
 struct Image::Copy_Layout

@@ -34,16 +34,15 @@ public:
 
   bool end();
   
-  void barrier(VkPipelineStageFlags                    srcStage, 
-               VkPipelineStageFlags                    dstStage, 
-               core::span<const Image_Memory_Barrier>  imageMemoryBarriers);
   void barrier(VkPipelineStageFlags         srcStage, 
                VkPipelineStageFlags         dstStage, 
                const Image_Memory_Barrier&  imageMemoryBarrier);
   
-  void copyBufferToImage(core::shared_ptr<const Buffer>  srcBuffer,
-                         core::shared_ptr<Image>         dstImage, 
-                         core::span<VkBufferImageCopy>   regions);
+  void blitImage(core::shared_ptr<Image>  srcImage,
+                 core::shared_ptr<Image>  dstImage, 
+                 const VkImageBlit&       blitRegion, 
+                 VkFilter                 filter);
+
   void copyBufferToImage(core::shared_ptr<const Buffer>  srcBuffer,
                          core::shared_ptr<Image>         dstImage, 
                          const VkBufferImageCopy&        region);
