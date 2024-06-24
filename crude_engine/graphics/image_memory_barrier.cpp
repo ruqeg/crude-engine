@@ -17,10 +17,17 @@ Image_Memory_Barrier::Image_Memory_Barrier(core::shared_ptr<Image>  image,
   :
   m_image(image)
 {
-
+  const VkImageLayout baseLayout = image->getMipLayout(subresourceRange.baseMipLevel);
+  for (core::uint32 mipLevel = subresourceRange.baseMipLevel + 1; mipLevel < subresourceRange.baseMipLevel + subresourceRange.levelCount; ++mipLevel)
+  {
+    if (image->getMipLayout(mipLevel) != baseLayout)
+    {
+      core::logError(core::Debug::Channel::Graphics, "Mips have different image layout");
+    }
+  }
   this->sType                = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
   this->pNext                = nullptr;
-  this->oldLayout            = image->getLayout();
+  this->oldLayout            = image->getMipLayout(subresourceRange.baseMipLevel);
   this->newLayout            = newLayout;
   this->srcAccessMask        = 0u;
   this->dstAccessMask        = 0u;

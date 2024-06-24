@@ -13,7 +13,7 @@ import crude.core.assert;
 export namespace crude::graphics
 {
 
-bool generateMipmaps(core::shared_ptr<Command_Buffer> commandBuffer, core::shared_ptr<Image> image, VkFilter filter)
+bool generateMipmaps(core::shared_ptr<Command_Buffer> commandBuffer, core::shared_ptr<Image> image, VkFilter filter, VkImageLayout layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VkPipelineStageFlags stage = VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT)
 {
   core::assert(image.get());
   core::assert(commandBuffer.get());
@@ -26,6 +26,10 @@ bool generateMipmaps(core::shared_ptr<Command_Buffer> commandBuffer, core::share
 
   core::int32 prevMipWidth = image->getWidth();
   core::int32 prevMipHeight = image->getHeight();
+
+  const Image_Subresource_Range firstMipRange(image, 0u, 1u, 0u, image->getArrayLayersCount());
+  commandBuffer->barrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT,
+    Image_Memory_Barrier(image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, firstMipRange));
 
   for (core::uint32 mipLevel = 1; mipLevel < image->getMipLevelsCount(); mipLevel++)
   {
@@ -47,7 +51,7 @@ bool generateMipmaps(core::shared_ptr<Command_Buffer> commandBuffer, core::share
     blitRegion.dstSubresource.layerCount      = 1;
 
     const Image_Subresource_Range nextMipRange(image, mipLevel, 1, 0u, image->getArrayLayersCount());
-    commandBuffer->barrier(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT,
+    commandBuffer->barrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT,
       Image_Memory_Barrier(image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, nextMipRange));
 
     commandBuffer->blitImage(image, image, blitRegion, filter);
@@ -59,9 +63,8 @@ bool generateMipmaps(core::shared_ptr<Command_Buffer> commandBuffer, core::share
     prevMipHeight = nextMipHeight;
   }
 
-  const Image_Subresource_Range blitMipsRange(image, 1u, image->getMipLevelsCount() - 1, 0u, image->getArrayLayersCount());
-  commandBuffer->barrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT,
-    Image_Memory_Barrier(image, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, blitMipsRange));
+  const Image_Subresource_Range allRange(image);
+  commandBuffer->barrier(VK_PIPELINE_STAGE_TRANSFER_BIT, stage, Image_Memory_Barrier(image, layout, allRange));
   
   return true;
 }

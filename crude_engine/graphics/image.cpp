@@ -94,12 +94,12 @@ Image::~Image()
   }
 }
 
-void Image::layoutTransition(core::shared_ptr<Command_Buffer> commandBuffer, VkImageLayout newLayout)
+void Image::transitionMipLayout(core::shared_ptr<Command_Buffer> commandBuffer, core::uint32 mipLevel, VkImageLayout newLayout)
 {
   VkPipelineStageFlags srcStageMask = 0;
   VkPipelineStageFlags dstStageMask = 0;
 
-  switch (m_layout)
+  switch (getMipLayout(mipLevel))
   {
   case VK_IMAGE_LAYOUT_UNDEFINED:
     srcStageMask = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
@@ -118,14 +118,14 @@ void Image::layoutTransition(core::shared_ptr<Command_Buffer> commandBuffer, VkI
   }
 
   core::shared_ptr<Image> self = core::shared_ptr<Image>(this, [](Image*) {});
-  const Image_Memory_Barrier memoryBarrier(self, newLayout, Image_Subresource_Range(self));
+  const Image_Memory_Barrier memoryBarrier(self, newLayout, Image_Subresource_Range(self, mipLevel, 1u, 0u, m_arrayLayersCount));
   commandBuffer->barrier(srcStageMask, dstStageMask, memoryBarrier);
 }
 
-void Image::layoutTransitionUpload(core::shared_ptr<Command_Buffer> commandBuffer, VkImageLayout newLayout)
+void Image::transitionMipLayoutUpload(core::shared_ptr<Command_Buffer> commandBuffer, core::uint32 mipLevel, VkImageLayout newLayout)
 {
   commandBuffer->begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
-  layoutTransition(commandBuffer, newLayout);
+  transitionMipLayout(commandBuffer, mipLevel, newLayout);
   commandBuffer->end();
   flush(commandBuffer);
 }
@@ -137,27 +137,39 @@ void Image::bindMemory(core::shared_ptr<Device_Memory> memory)
   m_memory = memory;
 }
 
-void Image::stagedUpload(core::shared_ptr<Command_Buffer>  commandBuffer, 
-                         const Mip_Data&                   mipMap,
-                         core::uint32                      mipLevel,
-                         core::uint32                      arrayLayer,
-                         VkImageLayout                     dstLayout,
-                         VkPipelineStageFlags              dstStageMask)
+void Image::stagedUpload(core::shared_ptr<Command_Buffer>  commandBuffer,
+                            const Mip_Data&                   mipMap,
+                            core::uint32                      mipLevel,
+                            core::uint32                      arrayLayer,
+                            VkImageLayout                     dstLayout,
+                            VkPipelineStageFlags              dstStageMask)
 {
   core::shared_ptr<Staging_Buffer> stagingBuffer = core::allocateShared<Staging_Buffer>(m_device, mipMap.texels);
   commandBuffer->begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
-  copyMip(commandBuffer, stagingBuffer, {}, mipLevel, arrayLayer, dstLayout, dstStageMask);
+  copyMipFromBuffer(commandBuffer, stagingBuffer, {}, mipLevel, arrayLayer, dstLayout, dstStageMask);
   commandBuffer->end();
   flush(commandBuffer);
 }
 
-void Image::copyMip(core::shared_ptr<Command_Buffer>        commandBuffer,
-                    core::shared_ptr<const Staging_Buffer>  srcBuffer,
-                    const Copy_Layout&                      bufferLayout,
-                    core::uint32                            mipLevel,
-                    core::uint32                            arrayLayer,
-                    VkImageLayout                           dstLayout,
-                    VkPipelineStageFlags                    dstStageMask)
+void Image::setMipLayout(core::uint32 mipLevel, VkImageLayout layout)
+{
+  // !TODO
+  m_layouts[mipLevel] = layout;
+}
+
+VkImageLayout Image::getMipLayout(core::uint32 mipLevel) const
+{
+  // !TODO
+  return m_layouts[mipLevel];
+}
+
+void Image::copyMipFromBuffer(core::shared_ptr<Command_Buffer>        commandBuffer,
+                              core::shared_ptr<const Staging_Buffer>  srcBuffer,
+                              const Copy_Layout&                      bufferLayout,
+                              core::uint32                            mipLevel,
+                              core::uint32                            arrayLayer,
+                              VkImageLayout                           dstLayout,
+                              VkPipelineStageFlags                    dstStageMask)
 {
   // !TODO
   core::shared_ptr<Image> self = core::shared_ptr<Image>(this, [](Image*) {});

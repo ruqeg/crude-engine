@@ -41,26 +41,25 @@ protected:
                  VkSharingMode                   sharingMode);
 public:
   ~Image();
-  void layoutTransitionMip(core::shared_ptr<Command_Buffer> commandBuffer, core::uint32 mipLevel, VkImageLayout newLayout);
-  void layoutTransitionMipUpload(core::shared_ptr<Command_Buffer> commandBuffer, core::uint32 mipLevel, VkImageLayout newLayout);
+  void transitionMipLayout(core::shared_ptr<Command_Buffer> commandBuffer, core::uint32 mipLevel, VkImageLayout newLayout);
+  void transitionMipLayoutUpload(core::shared_ptr<Command_Buffer> commandBuffer, core::uint32 mipLevel, VkImageLayout newLayout);
   void bindMemory(core::shared_ptr<Device_Memory> memory);
-  void copyMip(core::shared_ptr<Command_Buffer>        commandBuffer,
-               core::shared_ptr<const Staging_Buffer>  srcBuffer,
-               const Copy_Layout&                      bufferLayout,
-               core::uint32                            mipLevel,
-               core::uint32                            arrayLayer,
-               VkImageLayout                           dstLayout,
-               VkPipelineStageFlags                    dstStageMask);
-
+  void copyMipFromBuffer(core::shared_ptr<Command_Buffer>        commandBuffer,
+                         core::shared_ptr<const Staging_Buffer>  srcBuffer,
+                         const Copy_Layout&                      bufferLayout,
+                         core::uint32                            mipLevel,
+                         core::uint32                            arrayLayer,
+                         VkImageLayout                           dstLayout,
+                         VkPipelineStageFlags                    dstStageMask);
 public:
-  void stagedUpload(core::shared_ptr<Command_Buffer>  commandBuffer, 
+  void stagedUpload(core::shared_ptr<Command_Buffer>  commandBuffer,
                     const Mip_Data&                   mipMap,
                     core::uint32                      mipLevel,
                     core::uint32                      arrayLayer,
                     VkImageLayout                     dstLayout,
                     VkPipelineStageFlags              dstStageMask);
-  void setMipLayout(core::uint32 mipLevel, VkImageLayout layout) { m_layouts[mipLevel] = layout; }
-  VkImageLayout getMipLayout(core::uint32 mipLevel) const { return m_layouts[mipLevel]; }
+  void setMipLayout(core::uint32 mipLevel, VkImageLayout layout);
+  VkImageLayout getMipLayout(core::uint32 mipLevel) const;
   VkImageType getType() const { return m_type; }
   VkFormat getFormat() const { return m_format; }
   core::uint32 getMipLevelsCount() const { return m_mipLevelsCount; }

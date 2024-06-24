@@ -11,6 +11,7 @@ import crude.math.matrix;
 import crude.scene.image;
 import crude.math.constants;
 import crude.graphics.generate_mipmaps;
+import crude.graphics.flush;
 
 namespace crude::graphics
 {
@@ -414,7 +415,7 @@ void Renderer::initializeDepthImage()
     m_device, depthFormat, extent, 1u, VK_SAMPLE_COUNT_1_BIT, VK_SHARING_MODE_EXCLUSIVE);
 
   auto commandBuffer = core::allocateShared<Command_Buffer>(m_transferCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
-  m_depthStencilAttachment->layoutTransitionUpload(commandBuffer, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
+  m_depthStencilAttachment->transitionMipLayoutUpload(commandBuffer, 0u, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
 
   m_depthImageView = core::allocateShared<Image_View>(m_depthStencilAttachment, Image_Subresource_Range(m_depthStencilAttachment));
 }
@@ -450,12 +451,13 @@ void Renderer::initializeTextureImage()
   commandBuffer->begin();
   generateMipmaps(commandBuffer, m_texture, VK_FILTER_LINEAR);
   commandBuffer->end();
+  flush(commandBuffer);
   m_textureView = core::allocateShared<Image_View>(m_texture, Image_Subresource_Range(m_texture));
 }
 
 void Renderer::initializeSampler()
 {
-  m_sampler = core::allocateShared<Sampler>(m_device, csamlper_state::gMagMinMipNearestRepeat);
+  m_sampler = core::allocateShared<Sampler>(m_device, csamlper_state::gMagMinMipLinearRepeat);
 }
 
 void Renderer::initializeModelBuffer()
