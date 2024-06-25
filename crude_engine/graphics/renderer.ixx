@@ -99,7 +99,6 @@ private:
   core::shared_ptr<Render_Pass> initializeRenderPass();
   void recordCommandBuffer(core::shared_ptr<Command_Buffer> commandBuffer, core::uint32 imageIndex);
   void updateUniformBuffer(core::uint32 currentImage);
-  VkSampleCountFlagBits getMaxUsableSampleCount();
 private:
   static constexpr core::uint32 cFramesCount = 2u;
 private:

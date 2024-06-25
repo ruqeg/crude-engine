@@ -22,6 +22,7 @@ Device_Memory::Device_Memory(core::shared_ptr<const Device>  device,
 
   VkPhysicalDeviceMemoryProperties memProperties = m_device->getPhysicalDevice()->getMemoryProperties();
 
+  // !TODO
   memoryTypeIndex = -1;
   for (core::uint32 i = 0u; i < memProperties.memoryTypeCount; i++)
   {
@@ -33,7 +34,7 @@ Device_Memory::Device_Memory(core::shared_ptr<const Device>  device,
 
   if (memoryTypeIndex == -1)
   {
-    vulkanHandleError("failed to find depth memory type");
+    vulkanHandleError("failed to find device memory type");
   }
 
   initalize(allocationSize, memoryTypeIndex);

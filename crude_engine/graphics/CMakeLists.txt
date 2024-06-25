@@ -44,6 +44,7 @@ target_sources(crude_engine
 target_sources(crude_engine
     PUBLIC
     FILE_SET cxx_modules_graphics TYPE CXX_MODULES FILES
+    surface_capabilities_khr.ixx
     physical_device_properties.ixx
     format_helper.ixx
     format_properties.ixx

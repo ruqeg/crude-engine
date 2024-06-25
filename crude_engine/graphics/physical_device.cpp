@@ -142,11 +142,11 @@ Format_Properties Physical_Device::getFormatProperties(Format format) const
   return Format_Properties(properties);
 }
   
-VkPhysicalDeviceProperties Physical_Device::getProperties() const
+Physical_Device_Properties Physical_Device::getProperties() const
 {
   VkPhysicalDeviceProperties properties;
   vkGetPhysicalDeviceProperties(m_handle, &properties);
-  return properties;
+  return Physical_Device_Properties(properties);
 }
 
 VkPhysicalDeviceFeatures Physical_Device::getFeatures() const
