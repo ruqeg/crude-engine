@@ -176,8 +176,8 @@ void Renderer::initializeSwapchain()
 {
   VkSurfaceCapabilitiesKHR surfaceCapabilites = m_device->getPhysicalDevice()->getSurfaceCapabilitis(m_surface);
   const VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(m_device->getPhysicalDevice()->getSurfaceFormats(m_surface));
-  const VkPresentModeKHR presentMode = chooseSwapPresentMode(m_device->getPhysicalDevice()->getSurfacePresentModes(m_surface));
-  const VkExtent2D extent = chooseSwapExtent(surfaceCapabilites);
+  const VkPresentModeKHR presentMode = m_device->getPhysicalDevice()->findSurfacePresentMode(VK_PRESENT_MODE_MAILBOX_KHR);
+  const VkExtent2D extent = surfaceCapabilites.calculateSurfaceExtentInPixels({ m_windowContainer.getWidth(), m_windowContainer.getHeight()});
 
   core::uint32 imageCount = surfaceCapabilites.minImageCount + 1u;
   if (surfaceCapabilites.maxImageCount > 0u && imageCount > surfaceCapabilites.maxImageCount)
@@ -596,45 +596,6 @@ void Renderer::initializeLogicDevice(core::shared_ptr<const Physical_Device> phy
   m_graphicsQueue = m_device->getQueueByFamily(queueInfos[0].queueFamilyIndex, 0u).valueOr(nullptr);
   m_presentQueue = m_device->getQueueByFamily(queueInfos[1].queueFamilyIndex, 0u).valueOr(nullptr);
   m_transferQueue = m_graphicsQueue;
-}
-
-VkSurfaceFormatKHR Renderer::chooseSwapSurfaceFormat(const crude::core::vector<VkSurfaceFormatKHR>& availableFormats)
-{
-  for (const auto& availableFormat : availableFormats)
-  {
-    if (availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
-      return availableFormat;
-  }
-
-  return availableFormats[0];
-}
-
-VkPresentModeKHR Renderer::chooseSwapPresentMode(const crude::core::vector<VkPresentModeKHR>& availablePresentModes)
-{
-  for (const auto& availablePresentMode : availablePresentModes) 
-  {
-    if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR)
-      return availablePresentMode;
-  }
-
-  return VK_PRESENT_MODE_FIFO_KHR;
-}
-
-VkExtent2D Renderer::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities)
-{
-  if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max())
-    return capabilities.currentExtent;
-
-  VkExtent2D actualExtent = 
-  {
-    static_cast<uint32_t>(m_windowContainer->getWidth()),
-    static_cast<uint32_t>(m_windowContainer->getHeight())
-  };
-
-  actualExtent.width = std::clamp(actualExtent.width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width);
-  actualExtent.height = std::clamp(actualExtent.height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height);
-
-  return actualExtent;
 }
 
 core::vector<char> Renderer::readFile(const char* filename)

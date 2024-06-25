@@ -92,9 +92,6 @@ private:
   core::shared_ptr<Physical_Device> pickPhysicalDevice();
   Queue_Family_Indices findDeviceQueueFamilies(core::shared_ptr<const Physical_Device> physicalDevice);
   void initializeLogicDevice(core::shared_ptr<const Physical_Device> physicalDevice);
-  VkSurfaceFormatKHR chooseSwapSurfaceFormat(const crude::core::vector<VkSurfaceFormatKHR>& availableFormats);
-  VkPresentModeKHR chooseSwapPresentMode(const crude::core::vector<VkPresentModeKHR>& availablePresentModes);
-  VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
   core::vector<char> readFile(const char* filename);
   core::shared_ptr<Render_Pass> initializeRenderPass();
   void recordCommandBuffer(core::shared_ptr<Command_Buffer> commandBuffer, core::uint32 imageIndex);

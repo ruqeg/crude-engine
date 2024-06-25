@@ -28,14 +28,14 @@ bool Physical_Device::checkSurfaceSupport(core::shared_ptr<const Surface> surfac
   return !getSurfaceFormats(surface).empty() && !getSurfacePresentModes(surface).empty();
 }
   
-VkSurfaceCapabilitiesKHR Physical_Device::getSurfaceCapabilitis(core::shared_ptr<const Surface> surface) const 
+Surface_Capabilities_KHR Physical_Device::getSurfaceCapabilitis(core::shared_ptr<const Surface> surface) const
 {
   VkSurfaceCapabilitiesKHR capabilities;
   vkGetPhysicalDeviceSurfaceCapabilitiesKHR(
     m_handle, 
     surface->getHandle(),
     &capabilities);
-  return capabilities;
+  return Surface_Capabilities_KHR(capabilities);
 }
    
 core::vector<VkSurfaceFormatKHR> Physical_Device::getSurfaceFormats(core::shared_ptr<const Surface> surface) const
@@ -61,6 +61,24 @@ core::vector<VkSurfaceFormatKHR> Physical_Device::getSurfaceFormats(core::shared
   return formats;
 }
 
+VkSurfaceFormatKHR Physical_Device::findSurfaceFormat(core::shared_ptr<const Surface> surface, VkFormat format, VkColorSpaceKHR colorSpace) const const
+{
+  core::vector<VkSurfaceFormatKHR> availableFormats = getSurfaceFormats(surface);
+  if (availableFormats.size() < 1)
+  {
+    core::logError(core::Debug::Channel::Graphics, "Can't find surface format");
+    return {};
+  }
+
+  for (const auto& availableFormat : availableFormats)
+  {
+    if (availableFormat.format == format && availableFormat.colorSpace == colorSpace)
+      return availableFormat;
+  }
+
+  return availableFormats[0];
+}
+
 core::vector<VkPresentModeKHR> Physical_Device::getSurfacePresentModes(core::shared_ptr<const Surface> surface) const
 {
   core::uint32 presentModeCount;
@@ -83,6 +101,17 @@ core::vector<VkPresentModeKHR> Physical_Device::getSurfacePresentModes(core::sha
     presentModes.data());
 
   return presentModes;
+}
+
+VkPresentModeKHR Physical_Device::findSurfacePresentMode(core::shared_ptr<const Surface> surface, VkPresentModeKHR presentMode) const
+{
+  core::vector<VkPresentModeKHR> availablePresentModes = getSurfacePresentModes(surface);
+  for (VkPresentModeKHR availablePresentMode : availablePresentModes)
+  {
+    if (availablePresentMode == presentMode)
+      return availablePresentMode;
+  }
+  return VK_PRESENT_MODE_FIFO_KHR;
 }
 
 core::vector<VkQueueFamilyProperties> Physical_Device::getQueueFamilyProperties() const
