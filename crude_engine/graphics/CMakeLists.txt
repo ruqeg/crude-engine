@@ -44,7 +44,9 @@ target_sources(crude_engine
 target_sources(crude_engine
     PUBLIC
     FILE_SET cxx_modules_graphics TYPE CXX_MODULES FILES
+    physical_device_properties.ixx
     format_helper.ixx
+    format_properties.ixx
     generate_mipmaps.ixx
     image_descriptor.ixx
     sampler_state.ixx

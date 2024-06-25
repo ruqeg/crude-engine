@@ -135,21 +135,11 @@ bool Physical_Device::checkExtensionSupport(core::span<const char* const> extens
   return requiredExtensions.empty();
 }
   
-VkFormatProperties Physical_Device::getFormatProperties(Format format) const
+Format_Properties Physical_Device::getFormatProperties(Format format) const
 {
   VkFormatProperties properties;
   vkGetPhysicalDeviceFormatProperties(m_handle, format, &properties);
-  return properties;
-}
-
-bool Physical_Device::checkSupportFormat(Format format, VkImageTiling tiling, VkFormatFeatureFlags features) const
-{
-  VkFormatProperties props = getFormatProperties(format);
-  if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features)
-    return true;
-  else if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features)
-    return true;
-  return false;
+  return Format_Properties(properties);
 }
   
 VkPhysicalDeviceProperties Physical_Device::getProperties() const

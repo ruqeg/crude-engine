@@ -4,9 +4,10 @@ module;
 
 export module crude.graphics.format_helper;
 
-export import crude.core.std_containers_heap;
-export import crude.core.std_containers_stack;
+export import crude.graphics.format_properties;
 export import crude.graphics.format;
+export import crude.core.std_containers_stack;
+export import crude.core.std_containers_heap;
 
 export namespace crude::graphics
 {
@@ -19,11 +20,7 @@ constexpr core::array<Format, 2> gDepthStencilCandidates{ VK_FORMAT_D32_SFLOAT_S
 
 class Physical_Device;
 
-Format findDepthFormat(core::shared_ptr<const Physical_Device> physicalDevice, core::span<const Format> candidates = depth_formats::gDepthStencilCandidates) noexcept;
-
-Format findSupportedFormat(core::shared_ptr<const Physical_Device>  physicalDevice,
-                           core::span<const Format>                 candidates, 
-                           VkImageTiling                            tiling, 
-                           VkFormatFeatureFlags                     features) noexcept;
+Format findDepthFormatSupportedByDevice(core::shared_ptr<const Physical_Device> physicalDevice, core::span<const Format> candidates = depth_formats::gDepthStencilCandidates) noexcept;
+Format findFormatSupportedByDevice(core::shared_ptr<const Physical_Device> physicalDevice, core::span<const Format> candidates, VkImageTiling tiling, VkFormatFeatureFlags features) noexcept;
 
 }

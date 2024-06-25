@@ -10,8 +10,8 @@ import crude.math.convert;
 import crude.math.matrix;
 import crude.scene.image;
 import crude.math.constants;
-import crude.graphics.generate_mipmaps;
 import crude.graphics.format_helper;
+import crude.graphics.generate_mipmaps;
 import crude.graphics.flush;
 
 namespace crude::graphics
@@ -446,7 +446,7 @@ void Renderer::initializeDepthImage()
 {
   VkSurfaceCapabilitiesKHR surfaceCapabilites = m_device->getPhysicalDevice()->getSurfaceCapabilitis(m_surface);
   const VkExtent2D extent = chooseSwapExtent(surfaceCapabilites);
-  const VkFormat depthFormat = findDepthFormat(m_device->getPhysicalDevice(), depth_formats::gDepthStencilCandidates);
+  const VkFormat depthFormat = findDepthFormatSupportedByDevice(m_device->getPhysicalDevice());
   m_depthStencilAttachment = core::allocateShared<Depth_Stencil_Attachment>(
     m_device, depthFormat, extent, 1u, 
     getMaxUsableSampleCount(), VK_SHARING_MODE_EXCLUSIVE);

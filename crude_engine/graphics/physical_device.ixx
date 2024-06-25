@@ -7,6 +7,7 @@ export module crude.graphics.physical_device;
 export import crude.core.std_containers_stack;
 export import crude.core.std_containers_heap;
 export import crude.graphics.format;
+export import crude.graphics.format_properties;
 import crude.graphics.vulkan_object;
 
 export namespace crude::graphics
@@ -26,8 +27,7 @@ public:
   core::vector<VkQueueFamilyProperties> getQueueFamilyProperties() const;
   core::vector<VkExtensionProperties> getExtensionProperties() const;
   bool checkExtensionSupport(core::span<const char* const> extensions) const;
-  VkFormatProperties getFormatProperties(Format format) const;
-  bool checkFormatSupport(Format format, VkImageTiling tiling, VkFormatFeatureFlags features) const;
+  Format_Properties getFormatProperties(Format format) const;
   VkPhysicalDeviceProperties getProperties() const;
   VkPhysicalDeviceFeatures getFeatures() const;
   VkPhysicalDeviceMemoryProperties getMemoryProperties() const;
