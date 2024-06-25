@@ -25,4 +25,20 @@ public:
   {}
 };
 
+class Color_Attachment : public Image_2D
+{
+public:
+  explicit Color_Attachment(core::shared_ptr<Device>  device,
+                            VkFormat                  format,
+                            const VkExtent2D&         extent,
+                            core::uint32              mipLevelsCount,
+                            VkSampleCountFlagBits     samples,
+                            VkSharingMode             sharingMode)
+    :
+    Image_2D(device, format, extent, mipLevelsCount,
+      1u, samples, 0u, 
+      VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VK_IMAGE_TILING_OPTIMAL, sharingMode)
+  {}
+};
+
 }

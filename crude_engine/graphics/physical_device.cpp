@@ -11,8 +11,8 @@ Physical_Device::Physical_Device(VkPhysicalDevice vkPhysicalDevice)
 {
   m_handle = vkPhysicalDevice;
 }
-  
-bool Physical_Device::getSupportSurface(core::shared_ptr<const Surface> surface, core::uint32 queueFamilyIndex) const
+
+bool Physical_Device::checkPresentSupport(core::shared_ptr<const Surface> surface, core::uint32 queueFamilyIndex) const
 {
   VkBool32 presentSupport = false;
   vkGetPhysicalDeviceSurfaceSupportKHR(
@@ -21,6 +21,11 @@ bool Physical_Device::getSupportSurface(core::shared_ptr<const Surface> surface,
     surface->getHandle(),
     &presentSupport);
   return presentSupport;
+}
+  
+bool Physical_Device::checkSurfaceSupport(core::shared_ptr<const Surface> surface) const
+{
+  return !getSurfaceFormats(surface).empty() && !getSurfacePresentModes(surface).empty();
 }
   
 VkSurfaceCapabilitiesKHR Physical_Device::getSurfaceCapabilitis(core::shared_ptr<const Surface> surface) const 
@@ -116,12 +121,35 @@ core::vector<VkExtensionProperties> Physical_Device::getExtensionProperties() co
   
   return extensions;
 }
+
+bool Physical_Device::checkExtensionSupport(core::span<const char* const> extensions) const
+{
+  core::vector<VkExtensionProperties> availableExtensions = getExtensionProperties();
+
+  // !TODO
+  core::set<std::string> requiredExtensions(extensions.begin(), extensions.end());
+  for (const auto& extension : availableExtensions)
+  {
+    requiredExtensions.erase(extension.extensionName);
+  }
+  return requiredExtensions.empty();
+}
   
-VkFormatProperties Physical_Device::getFormatProperties(VkFormat format) const
+VkFormatProperties Physical_Device::getFormatProperties(Format format) const
 {
   VkFormatProperties properties;
   vkGetPhysicalDeviceFormatProperties(m_handle, format, &properties);
   return properties;
+}
+
+bool Physical_Device::checkSupportFormat(Format format, VkImageTiling tiling, VkFormatFeatureFlags features) const
+{
+  VkFormatProperties props = getFormatProperties(format);
+  if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features)
+    return true;
+  else if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features)
+    return true;
+  return false;
 }
   
 VkPhysicalDeviceProperties Physical_Device::getProperties() const

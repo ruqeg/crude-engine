@@ -10,7 +10,7 @@ export namespace crude::graphics
 class Format
 {
 public:
-  explicit Format(VkFormat format) 
+  constexpr Format(VkFormat format) noexcept 
     : m_format(format) {}
   bool depth() const
   {
@@ -27,6 +27,7 @@ public:
         || m_format == VK_FORMAT_D24_UNORM_S8_UINT 
         || m_format == VK_FORMAT_D16_UNORM_S8_UINT;
   }
+  constexpr operator VkFormat() const noexcept { return m_format; }
 private:
   VkFormat m_format;
 };

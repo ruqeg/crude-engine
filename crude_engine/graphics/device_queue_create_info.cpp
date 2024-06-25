@@ -86,7 +86,7 @@ core::uint32 Device_Queue_Create_Info::chooseFamilyIndex(core::shared_ptr<const 
   core::uint32 queueFamilyIndex = 0;
   for (auto const& property : queueFamilyProperties)
   {
-    if (physicalDevice->getSupportSurface(surface, queueFamilyIndex))
+    if (physicalDevice->checkPresentSupport(surface, queueFamilyIndex))
     {
       return queueFamilyIndex;
     }

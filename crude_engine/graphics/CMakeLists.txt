@@ -1,5 +1,7 @@
 target_sources(crude_engine
     PRIVATE
+    format_helper.cpp
+    attachment_description.cpp
     image_descriptor.cpp
     image_2d.cpp
     buffer_descriptor.cpp
@@ -42,6 +44,7 @@ target_sources(crude_engine
 target_sources(crude_engine
     PUBLIC
     FILE_SET cxx_modules_graphics TYPE CXX_MODULES FILES
+    format_helper.ixx
     generate_mipmaps.ixx
     image_descriptor.ixx
     sampler_state.ixx

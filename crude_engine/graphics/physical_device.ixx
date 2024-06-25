@@ -4,7 +4,9 @@ module;
 
 export module crude.graphics.physical_device;
 
-import crude.core.std_containers_heap;
+export import crude.core.std_containers_stack;
+export import crude.core.std_containers_heap;
+export import crude.graphics.format;
 import crude.graphics.vulkan_object;
 
 export namespace crude::graphics
@@ -16,13 +18,16 @@ class Physical_Device : public Vulkan_Object<VkPhysicalDevice>
 {
 public:
   explicit Physical_Device(VkPhysicalDevice vkPhysicalDevice);
-  bool getSupportSurface(core::shared_ptr<const Surface> surface, core::uint32 queueFamilyIndex) const;
+  bool checkPresentSupport(core::shared_ptr<const Surface> surface, core::uint32 queueFamilyIndex) const;
+  bool checkSurfaceSupport(core::shared_ptr<const Surface> surface) const;
   VkSurfaceCapabilitiesKHR getSurfaceCapabilitis(core::shared_ptr<const Surface> surface) const;
   core::vector<VkSurfaceFormatKHR> getSurfaceFormats(core::shared_ptr<const Surface> surface) const;
   core::vector<VkPresentModeKHR> getSurfacePresentModes(core::shared_ptr<const Surface> surface) const;
   core::vector<VkQueueFamilyProperties> getQueueFamilyProperties() const;
   core::vector<VkExtensionProperties> getExtensionProperties() const;
-  VkFormatProperties getFormatProperties(VkFormat format) const;
+  bool checkExtensionSupport(core::span<const char* const> extensions) const;
+  VkFormatProperties getFormatProperties(Format format) const;
+  bool checkFormatSupport(Format format, VkImageTiling tiling, VkFormatFeatureFlags features) const;
   VkPhysicalDeviceProperties getProperties() const;
   VkPhysicalDeviceFeatures getFeatures() const;
   VkPhysicalDeviceMemoryProperties getMemoryProperties() const;

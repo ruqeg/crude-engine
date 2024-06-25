@@ -79,6 +79,7 @@ private:
   void initalizeDescriptorSet();
   void initalizeGraphicsPipeline();
   void initalizeCommandPool();
+  void initializeColorResources();
   void initializeDepthImage();
   void initializeSwapchainFramebuffers();
   void initializeTextureImage();
@@ -90,18 +91,15 @@ private:
 private:
   core::shared_ptr<Physical_Device> pickPhysicalDevice();
   Queue_Family_Indices findDeviceQueueFamilies(core::shared_ptr<const Physical_Device> physicalDevice);
-  bool checkDeviceExtensionSupport(core::shared_ptr<const Physical_Device> physicalDevice);
-  bool checkSurfaceSupport(core::shared_ptr<const Physical_Device> physicalDevice, core::shared_ptr<Surface> surface);
   void initializeLogicDevice(core::shared_ptr<const Physical_Device> physicalDevice);
   VkSurfaceFormatKHR chooseSwapSurfaceFormat(const crude::core::vector<VkSurfaceFormatKHR>& availableFormats);
   VkPresentModeKHR chooseSwapPresentMode(const crude::core::vector<VkPresentModeKHR>& availablePresentModes);
   VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
-  VkFormat findDepthFormat();
-  VkFormat findSupportedFormat(const core::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
   core::vector<char> readFile(const char* filename);
   core::shared_ptr<Render_Pass> initializeRenderPass();
   void recordCommandBuffer(core::shared_ptr<Command_Buffer> commandBuffer, core::uint32 imageIndex);
   void updateUniformBuffer(core::uint32 currentImage);
+  VkSampleCountFlagBits getMaxUsableSampleCount();
 private:
   static constexpr core::uint32 cFramesCount = 2u;
 private:
@@ -126,6 +124,8 @@ private:
   core::shared_ptr<Depth_Stencil_Attachment>            m_depthStencilAttachment;
   core::shared_ptr<Image_View>                          m_depthImageView;
   core::shared_ptr<Model_Buffer>                        m_modelBuffer;
+  core::shared_ptr<Color_Attachment>                    m_colorAttachment;
+  core::shared_ptr<Image_View>                          m_colorAttachmentView;
   core::array<Uniform_Buffer_Descriptor, cFramesCount>         m_uniformBufferDesc;
   core::array<Combined_Image_Sampler_Descriptor, cFramesCount> m_textureSamplerDesc;
   core::array<core::shared_ptr<Descriptor_Set>, cFramesCount>  m_descriptorSets;

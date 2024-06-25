@@ -11,6 +11,7 @@ import crude.math.matrix;
 import crude.scene.image;
 import crude.math.constants;
 import crude.graphics.generate_mipmaps;
+import crude.graphics.format_helper;
 import crude.graphics.flush;
 
 namespace crude::graphics
@@ -53,6 +54,7 @@ Renderer::Renderer(core::shared_ptr<system::SDL_Window_Container> windowContaine
   initalizeDescriptorSet();
   initalizeGraphicsPipeline();
   initalizeCommandPool();
+  initializeColorResources();
   initializeDepthImage();
   initializeSwapchainFramebuffers();
   initializeTextureImage();
@@ -229,8 +231,16 @@ core::shared_ptr<Render_Pass> Renderer::initializeRenderPass()
       0u)
   };
 
-  core::array<Attachment_Description, 2> attachments =
+  core::array<Attachment_Description, 3> attachments =
   {
+    Attachment_Description( // color
+      m_swapchain->getSurfaceFormat().format,
+      getMaxUsableSampleCount(),
+      attachment_op::gClearStore,
+      attachment_op::gDontCare,
+      VK_IMAGE_LAYOUT_UNDEFINED,
+      VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL),
+
     Attachment_Description( // color
       m_swapchain->getSurfaceFormat().format,
       VK_SAMPLE_COUNT_1_BIT,
@@ -240,8 +250,8 @@ core::shared_ptr<Render_Pass> Renderer::initializeRenderPass()
       VK_IMAGE_LAYOUT_PRESENT_SRC_KHR),
 
     Attachment_Description( // depth
-      findDepthFormat(),
-      VK_SAMPLE_COUNT_1_BIT,
+      m_depthStencilAttachment->getFormat(),
+      getMaxUsableSampleCount(),
       attachment_op::gClearStore,
       attachment_op::gDontCare,
       VK_IMAGE_LAYOUT_UNDEFINED,
@@ -337,6 +347,22 @@ void Renderer::updateUniformBuffer(core::uint32 currentImage)
   m_uniformBuffer[currentImage]->unmap();
 }
 
+VkSampleCountFlagBits Renderer::getMaxUsableSampleCount()
+{
+  VkPhysicalDeviceProperties physicalDeviceProperties;
+  vkGetPhysicalDeviceProperties(m_device->getPhysicalDevice()->getHandle(), &physicalDeviceProperties);
+  
+  VkSampleCountFlags counts = physicalDeviceProperties.limits.framebufferColorSampleCounts & physicalDeviceProperties.limits.framebufferDepthSampleCounts;
+  if (counts & VK_SAMPLE_COUNT_64_BIT) { return VK_SAMPLE_COUNT_64_BIT; }
+  if (counts & VK_SAMPLE_COUNT_32_BIT) { return VK_SAMPLE_COUNT_32_BIT; }
+  if (counts & VK_SAMPLE_COUNT_16_BIT) { return VK_SAMPLE_COUNT_16_BIT; }
+  if (counts & VK_SAMPLE_COUNT_8_BIT) { return VK_SAMPLE_COUNT_8_BIT; }
+  if (counts & VK_SAMPLE_COUNT_4_BIT) { return VK_SAMPLE_COUNT_4_BIT; }
+  if (counts & VK_SAMPLE_COUNT_2_BIT) { return VK_SAMPLE_COUNT_2_BIT; }
+  
+  return VK_SAMPLE_COUNT_1_BIT;
+}
+
 void Renderer::initalizeGraphicsPipeline()
 {
   const char* vertShaderPathA = "../../crude_example/basic_triangle_examle/shader.vert.spv";
@@ -406,13 +432,24 @@ void Renderer::initalizeCommandPool()
   m_transferCommandPool = m_graphicsCommandPool; // = core::allocateShared<Command_Pool>(m_device, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, queueIndices.transferFamily.value());
 }
 
+void Renderer::initializeColorResources()
+{
+  VkSurfaceCapabilitiesKHR surfaceCapabilites = m_device->getPhysicalDevice()->getSurfaceCapabilitis(m_surface);
+  const VkExtent2D extent = chooseSwapExtent(surfaceCapabilites);
+  m_colorAttachment = core::allocateShared<Color_Attachment>(
+    m_device, m_swapchainImages.front()->getFormat(), extent,
+    1u, getMaxUsableSampleCount(), VK_SHARING_MODE_EXCLUSIVE);
+  m_colorAttachmentView = core::allocateShared<Image_View>(m_colorAttachment, Image_Subresource_Range(m_colorAttachment));
+}
+
 void Renderer::initializeDepthImage()
 {
   VkSurfaceCapabilitiesKHR surfaceCapabilites = m_device->getPhysicalDevice()->getSurfaceCapabilitis(m_surface);
   const VkExtent2D extent = chooseSwapExtent(surfaceCapabilites);
-  const VkFormat depthFormat = findDepthFormat();
+  const VkFormat depthFormat = findDepthFormat(m_device->getPhysicalDevice(), depth_formats::gDepthStencilCandidates);
   m_depthStencilAttachment = core::allocateShared<Depth_Stencil_Attachment>(
-    m_device, depthFormat, extent, 1u, VK_SAMPLE_COUNT_1_BIT, VK_SHARING_MODE_EXCLUSIVE);
+    m_device, depthFormat, extent, 1u, 
+    getMaxUsableSampleCount(), VK_SHARING_MODE_EXCLUSIVE);
 
   auto commandBuffer = core::allocateShared<Command_Buffer>(m_transferCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
   m_depthStencilAttachment->transitionMipLayoutUpload(commandBuffer, 0u, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
@@ -523,8 +560,8 @@ core::shared_ptr<Physical_Device> Renderer::pickPhysicalDevice()
   for (auto& physicalDevice : physicalDevices)
   {
     const Queue_Family_Indices queueIndices = findDeviceQueueFamilies(physicalDevice);
-    const bool extensionsSupported = checkDeviceExtensionSupport(physicalDevice);
-    const bool swapChainAdequate = checkSurfaceSupport(physicalDevice, m_surface);
+    const bool extensionsSupported = physicalDevice->checkExtensionSupport(core::array<const char*, 1>{ VK_KHR_SWAPCHAIN_EXTENSION_NAME });
+    const bool swapChainAdequate = physicalDevice->checkSurfaceSupport(m_surface);
     const auto& supportedFeatures = physicalDevice->getFeatures();
 
     if (queueIndices.isComplete() && extensionsSupported && swapChainAdequate && supportedFeatures.samplerAnisotropy)
@@ -548,32 +585,13 @@ Renderer::Queue_Family_Indices Renderer::findDeviceQueueFamilies(core::shared_pt
     //else if (queueProperties[i].queueFlags & VK_QUEUE_TRANSFER_BIT)
     //  indices.transferFamily = i;
   
-    if (physicalDevice->getSupportSurface(m_surface, i))
+    if (physicalDevice->checkPresentSupport(m_surface, i))
       indices.presentFamily = i;
   }
 
   return indices;
 }
 
-bool Renderer::checkDeviceExtensionSupport(core::shared_ptr<const Physical_Device> physicalDevice)
-{
-  static const core::vector<const char*> deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
-  
-  const auto& availableExtensions = physicalDevice->getExtensionProperties();
-  core::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
-  
-  for (const auto& extension : availableExtensions)
-  {
-    requiredExtensions.erase(extension.extensionName);
-  }
-  
-  return requiredExtensions.empty();
-}
-
-bool Renderer::checkSurfaceSupport(core::shared_ptr<const Physical_Device> physicalDevice, core::shared_ptr<Surface> surface)
-{
-  return !physicalDevice->getSurfaceFormats(surface).empty() && !physicalDevice->getSurfacePresentModes(surface).empty();
-}
 
 void Renderer::initializeLogicDevice(core::shared_ptr<const Physical_Device> physicalDevice)
 {
@@ -633,30 +651,6 @@ VkExtent2D Renderer::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabiliti
   actualExtent.height = std::clamp(actualExtent.height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height);
 
   return actualExtent;
-}
-
-VkFormat Renderer::findDepthFormat()
-{
-  return findSupportedFormat(
-    { VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT },
-    VK_IMAGE_TILING_OPTIMAL,
-    VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
-}
-
-VkFormat Renderer::findSupportedFormat(const core::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features)
-{
-  for (VkFormat format : candidates)
-  {
-    VkFormatProperties props = m_device->getPhysicalDevice()->getFormatProperties(format);
-    
-    if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features)
-      return format;
-    else if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features)
-      return format;
-  }
-
-  core::logError(core::Debug::Channel::Graphics, "Failed to find supported format!");
-  return VK_FORMAT_UNDEFINED;
 }
 
 core::vector<char> Renderer::readFile(const char* filename)
