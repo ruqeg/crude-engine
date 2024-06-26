@@ -69,6 +69,7 @@ public:
   core::uint32 getHeight() const { return m_extent.height; }
   core::uint32 getDepth() const { return m_extent.depth; }
   VkImageUsageFlags getUsage() const { return m_usage; }
+  VkSampleCountFlagBits getSampleCount() const { return m_samples; }
   VkMemoryRequirements getMemoryRequirements() const;
   core::shared_ptr<const Device> getDevice() const;
   VkExtent3D calculateMipExtent(core::uint32 mipLevel) const;
@@ -77,6 +78,7 @@ public:
 protected:
   core::shared_ptr<const Device>   m_device;
   core::shared_ptr<Device_Memory>  m_memory;
+  VkSampleCountFlagBits            m_samples;
   VkFormat                         m_format;
   VkExtent3D                       m_extent;
   VkImageUsageFlags                m_usage;

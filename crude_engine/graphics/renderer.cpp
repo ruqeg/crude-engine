@@ -52,10 +52,10 @@ Renderer::Renderer(core::shared_ptr<system::SDL_Window_Container> windowContaine
   initializeDevice();
   initializeSwapchain();
   initalizeDescriptorSet();
-  initalizeGraphicsPipeline();
   initalizeCommandPool();
   initializeColorResources();
   initializeDepthImage();
+  initalizeGraphicsPipeline();
   initializeSwapchainFramebuffers();
   initializeTextureImage();
   initializeSampler();
@@ -195,12 +195,11 @@ void Renderer::initializeSwapchain()
     VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
     imageCount,
     1u,
-    VK_SHARING_MODE_CONCURRENT,
     queueFamilyIndices,
     surfaceCapabilites.getCurrentTransform(),
     VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
     presentMode,
-    VK_TRUE,
+    true,
     0u,
     nullptr);
 
@@ -216,7 +215,10 @@ core::shared_ptr<Render_Pass> Renderer::initializeRenderPass()
 {
   core::array<Subpass_Description, 1u> subpasses = 
   {
-    Subpass_Description(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
+    Subpass_Description(
+      VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, 
+      VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+      VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL)
   };
 
   core::array<Subpass_Dependency, 1u> subpassesDependencies = 
@@ -232,29 +234,9 @@ core::shared_ptr<Render_Pass> Renderer::initializeRenderPass()
 
   core::array<Attachment_Description, 3> attachments =
   {
-    Attachment_Description( // color
-      m_swapchain->getSurfaceFormat().format,
-      m_device->getPhysicalDevice()->getProperties().getMaximumUsableSampleCount(),
-      attachment_op::gClearStore,
-      attachment_op::gDontCare,
-      VK_IMAGE_LAYOUT_UNDEFINED,
-      VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL),
-
-    Attachment_Description( // color
-      m_swapchain->getSurfaceFormat().format,
-      VK_SAMPLE_COUNT_1_BIT,
-      attachment_op::gClearStore,
-      attachment_op::gDontCare,
-      VK_IMAGE_LAYOUT_UNDEFINED,
-      VK_IMAGE_LAYOUT_PRESENT_SRC_KHR),
-
-    Attachment_Description( // depth
-      m_depthStencilAttachment->getFormat(),
-      m_device->getPhysicalDevice()->getProperties().getMaximumUsableSampleCount(),
-      attachment_op::gClearStore,
-      attachment_op::gDontCare,
-      VK_IMAGE_LAYOUT_UNDEFINED,
-      VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
+    Color_Attachment_Description(m_colorAttachment),
+    Depth_Attachment_Description(m_depthStencilAttachment),
+    Swapchain_Attachment_Description(m_swapchain, attachment_op::gDontCare)
   };
 
   auto renderPass = core::allocateShared<Render_Pass>(m_device, subpasses, subpassesDependencies, attachments);
@@ -365,11 +347,11 @@ void Renderer::initalizeGraphicsPipeline()
   };
 
   auto vertexInputStateInfo = Vertex_Input_State_Create_Info(core::span(&scene::Vertex_GPU::getBindingDescription(), 1u), scene::Vertex_GPU::getAttributeDescriptions());
-  auto inputAssembly = Input_Assembly_State_Create_Info(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FALSE);
+  auto inputAssembly = Input_Assembly_State_Create_Info(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, false);
   auto viewportState = Viewport_State_Create_Info(1u, 1u);
-  auto rasterizer = Rasterization_State_Create_Info(VK_FALSE, VK_FALSE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_BACK_BIT, VK_FRONT_FACE_CLOCKWISE, VK_FALSE, 0.0f, 0.0f, 0.0f, 1.f);
-  auto multisampling = Multisample_State_Create_Info(VK_SAMPLE_COUNT_1_BIT, VK_FALSE, 1.0f, VK_FALSE, VK_FALSE);
-  auto depthStencil = Depth_Stencil_State_Create_Info(VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS, VK_FALSE, VK_FALSE, {}, {}, 0.0f, 1.0f);
+  auto rasterizer = Rasterization_State_Create_Info(false, false, VK_POLYGON_MODE_FILL, VK_CULL_MODE_BACK_BIT, VK_FRONT_FACE_CLOCKWISE, false, 0.0f, 0.0f, 0.0f, 1.f);
+  auto multisampling = Multisample_State_Create_Info(m_device->getPhysicalDevice()->getProperties().getMaximumUsableSampleCount(), true, 2.0f, false, false);
+  auto depthStencil = Depth_Stencil_State_Create_Info(true, true, VK_COMPARE_OP_LESS, false, false, {}, {}, 0.0f, 1.0f);
 
   core::array<Pipeline_Color_Blend_Attachment_State, 1u> colorBlendAttachments =
   {
@@ -384,7 +366,7 @@ void Renderer::initalizeGraphicsPipeline()
       VK_BLEND_OP_ADD)
   };
 
-  auto colorBlending = Color_Blend_State_Create_Info(colorBlendAttachments, { 0.f, 0.f, 0.f, 0.f }, VK_FALSE, VK_LOGIC_OP_COPY);
+  auto colorBlending = Color_Blend_State_Create_Info(colorBlendAttachments, { 0.f, 0.f, 0.f, 0.f }, false, VK_LOGIC_OP_COPY);
 
   core::array<VkDynamicState, 2u> dynamicStates = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
   auto dynamicState = Dynamic_State_Create_Info(dynamicStates);
@@ -417,22 +399,18 @@ void Renderer::initalizeCommandPool()
 }
 
 void Renderer::initializeColorResources()
-{/*
-  VkSurfaceCapabilitiesKHR surfaceCapabilites = m_device->getPhysicalDevice()->getSurfaceCapabilitis(m_surface);
-  const VkExtent2D extent = chooseSwapExtent(surfaceCapabilites);
+{
   m_colorAttachment = core::allocateShared<Color_Attachment>(
-    m_device, m_swapchainImages.front()->getFormat(), extent,
-    1u, m_device->getPhysicalDevice()->getProperties().getMaximumUsableSampleCount(), VK_SHARING_MODE_EXCLUSIVE);
-  m_colorAttachmentView = core::allocateShared<Image_View>(m_colorAttachment, Image_Subresource_Range(m_colorAttachment));*/
+    m_device, m_swapchainImages.front()->getFormat(), m_swapchain->getExtent(), 1u, 
+    m_device->getPhysicalDevice()->getProperties().getMaximumUsableSampleCount(), VK_SHARING_MODE_EXCLUSIVE);
+  m_colorAttachmentView = core::allocateShared<Image_View>(m_colorAttachment, Image_Subresource_Range(m_colorAttachment));
 }
 
 void Renderer::initializeDepthImage()
 {
-  Surface_Capabilities_KHR surfaceCapabilites = m_device->getPhysicalDevice()->getSurfaceCapabilitis(m_surface);
-  const VkExtent2D extent = surfaceCapabilites.calculateSurfaceExtentInPixels({ m_windowContainer->getWidth(), m_windowContainer->getHeight() });
-  const VkFormat depthFormat = findDepthFormatSupportedByDevice(m_device->getPhysicalDevice());
+  const VkFormat depthFormat = findDepthFormatSupportedByDevice(m_device->getPhysicalDevice(), depth_formats::gDepthStencilCandidates);
   m_depthStencilAttachment = core::allocateShared<Depth_Stencil_Attachment>(
-    m_device, depthFormat, extent, 1u, 
+    m_device, depthFormat, m_swapchain->getExtent(), 1u,
     m_device->getPhysicalDevice()->getProperties().getMaximumUsableSampleCount(), VK_SHARING_MODE_EXCLUSIVE);
 
   auto commandBuffer = core::allocateShared<Command_Buffer>(m_transferCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
@@ -446,9 +424,8 @@ void Renderer::initializeSwapchainFramebuffers()
   m_swapchainFramebuffers.resize(m_swapchainImagesViews.size());
   for (core::uint32 i = 0; i < m_swapchainFramebuffers.size(); ++i)
   {
-    core::vector<core::shared_ptr<Image_View>> attachments = { m_swapchainImagesViews[i], m_depthImageView };
-
-    m_swapchainFramebuffers[i] = core::allocateShared<Framebuffer>(m_device, m_graphicsPipeline->getRenderPass(), attachments, m_swapchain->getExtent().width, m_swapchain->getExtent().height, 1u);
+    core::vector<core::shared_ptr<Image_View>> attachments = { m_colorAttachmentView, m_depthImageView, m_swapchainImagesViews[i] };
+    m_swapchainFramebuffers[i] = core::allocateShared<Framebuffer>(m_device, m_graphicsPipeline->getRenderPass(), attachments, m_swapchain->getExtent(), 1u);
   }
 }
 
@@ -570,6 +547,7 @@ void Renderer::initializeLogicDevice(core::shared_ptr<const Physical_Device> phy
 {
   VkPhysicalDeviceFeatures deviceFeatures{};
   deviceFeatures.samplerAnisotropy = VK_TRUE;
+  deviceFeatures.sampleRateShading = VK_TRUE;
 
   core::array<Device_Queue_Descriptor, 2> queueInfos =
   {
@@ -586,7 +564,8 @@ void Renderer::initializeLogicDevice(core::shared_ptr<const Physical_Device> phy
     if (it->getDenotation() == DEVICE_QUEUE_DENOTATION_PRESENT_BITS)
       m_presentQueue = m_device->getQueueByFamily(it->queueFamilyIndex, 0u).valueOr(nullptr);
   }
-  m_transferQueue = m_graphicsQueue;
+  if (!m_presentQueue) m_presentQueue = m_graphicsQueue;
+  if (!m_transferQueue) m_presentQueue = m_graphicsQueue;
 }
 
 }

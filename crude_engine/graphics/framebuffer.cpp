@@ -11,6 +11,13 @@ import crude.core.algorithms;
 namespace crude::graphics
 {
 
+Framebuffer::Framebuffer(core::shared_ptr<const Device>                     device,
+                         core::shared_ptr<Render_Pass>                      renderPass,
+                         const core::vector<core::shared_ptr<Image_View>>&  attachments,
+                         const VkExtent2D&                                  extent,
+                         core::uint32                                       layers)
+  : Framebuffer(device, renderPass, attachments, extent.width, extent.height, layers)
+{}
 
 Framebuffer::Framebuffer(core::shared_ptr<const Device>                     device,
                          core::shared_ptr<Render_Pass>                      renderPass,

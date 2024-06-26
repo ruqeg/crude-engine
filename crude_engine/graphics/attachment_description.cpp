@@ -3,6 +3,7 @@
 module crude.graphics.attachment_description;
 
 import crude.graphics.swap_chain;
+import crude.graphics.image_attachment;
 
 namespace crude::graphics
 {
@@ -25,27 +26,39 @@ Attachment_Description::Attachment_Description(VkFormat                  format,
   this->finalLayout = finalLayout;
 }
 
-Swapchain_Attachment_Description::Swapchain_Attachment_Description(core::shared_ptr<Swap_Chain> swapchain)
+Color_Attachment_Description::Color_Attachment_Description(core::shared_ptr<Color_Attachment>  attachment,
+                                                           Attachment_Load_Store_OP            colorOp,
+                                                           Attachment_Load_Store_OP            stenicilOp)
   :
   Attachment_Description(
-    swapchain->getSurfaceFormat().format,
-    VK_SAMPLE_COUNT_1_BIT,
-    attachment_op::gClearStore,
-    attachment_op::gDontCare,
+    attachment->getFormat(),
+    attachment->getSampleCount(),
+    colorOp,
+    stenicilOp,
     VK_IMAGE_LAYOUT_UNDEFINED,
-    VK_IMAGE_LAYOUT_PRESENT_SRC_KHR)
+    VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL)
 {}
 
-
-Depth_Attachment_Description::Depth_Attachment_Description(Format format, VkSampleCountFlagBits samples)
+Depth_Attachment_Description::Depth_Attachment_Description(core::shared_ptr<Depth_Stencil_Attachment> attachment)
   :
   Attachment_Description(
-    format,
-    samples,
+    attachment->getFormat(),
+    attachment->getSampleCount(),
     attachment_op::gClearStore,
     attachment_op::gDontCare,
     VK_IMAGE_LAYOUT_UNDEFINED,
     VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
+{}
+
+Swapchain_Attachment_Description::Swapchain_Attachment_Description(core::shared_ptr<Swap_Chain> swapchain, Attachment_Load_Store_OP colorOp)
+  :
+  Attachment_Description(
+    swapchain->getSurfaceFormat().format,
+    VK_SAMPLE_COUNT_1_BIT,
+    colorOp,
+    attachment_op::gDontCare,
+    VK_IMAGE_LAYOUT_UNDEFINED,
+    VK_IMAGE_LAYOUT_PRESENT_SRC_KHR)
 {}
 
 }

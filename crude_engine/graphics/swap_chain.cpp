@@ -19,8 +19,25 @@ Swap_Chain::Swap_Chain(core::shared_ptr<const Device>   device,
                        VkImageUsageFlags                imageUsage,
                        core::uint32                     minImageCount,
                        core::uint32                     imageArrayLayers,
-                       VkSharingMode                    imageSharingMode,
-                       const core::span<core::uint32>&  queueFamilyIndices,
+                       VkSurfaceTransformFlagBitsKHR    preTransform,
+                       VkCompositeAlphaFlagBitsKHR      compositeAlpha,
+                       VkPresentModeKHR                 presentMode,
+                       VkBool32                         clipped,
+                       VkSwapchainCreateFlagsKHR        flags,
+                       core::shared_ptr<Swap_Chain>     oldSwapchain)
+  :
+  Swap_Chain(device, surface, surfaceFormat, extent, imageUsage, minImageCount, imageArrayLayers, {},
+    preTransform, compositeAlpha, presentMode, clipped, flags, oldSwapchain) 
+{}
+
+Swap_Chain::Swap_Chain(core::shared_ptr<const Device>   device,
+                       core::shared_ptr<const Surface>  surface,
+                       const VkSurfaceFormatKHR&        surfaceFormat,
+                       const VkExtent2D&                extent,
+                       VkImageUsageFlags                imageUsage,
+                       core::uint32                     minImageCount,
+                       core::uint32                     imageArrayLayers,
+                       core::span<const core::uint32>   queueFamilyIndices,
                        VkSurfaceTransformFlagBitsKHR    preTransform,
                        VkCompositeAlphaFlagBitsKHR      compositeAlpha,
                        VkPresentModeKHR                 presentMode,
@@ -34,8 +51,9 @@ Swap_Chain::Swap_Chain(core::shared_ptr<const Device>   device,
   m_surfaceFormat(surfaceFormat),
   m_extent(extent)
 {
-  core::vector<core::uint32> uniqueQueueFamilyIndices;
-  std::unique_copy(queueFamilyIndices.begin(), queueFamilyIndices.end(), uniqueQueueFamilyIndices.begin());
+  // !TODO
+  core::vector<core::uint32> uniqueQueueFamilyIndices(queueFamilyIndices.begin(), queueFamilyIndices.end());
+  uniqueQueueFamilyIndices.erase(std::unique(uniqueQueueFamilyIndices.begin(), uniqueQueueFamilyIndices.end()), uniqueQueueFamilyIndices.end());
 
   VkSwapchainCreateInfoKHR vkCreateInfo{};
   vkCreateInfo.sType                  = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
@@ -49,7 +67,7 @@ Swap_Chain::Swap_Chain(core::shared_ptr<const Device>   device,
   vkCreateInfo.imageExtent            = extent;
   vkCreateInfo.imageArrayLayers       = imageArrayLayers;
   vkCreateInfo.imageUsage             = imageUsage;
-  vkCreateInfo.imageSharingMode       = imageSharingMode;
+  vkCreateInfo.imageSharingMode       = uniqueQueueFamilyIndices.size() > 1 ? VK_SHARING_MODE_CONCURRENT : VK_SHARING_MODE_EXCLUSIVE;
   vkCreateInfo.queueFamilyIndexCount  = static_cast<core::uint32>(uniqueQueueFamilyIndices.size());
   vkCreateInfo.pQueueFamilyIndices    = uniqueQueueFamilyIndices.data();
   vkCreateInfo.preTransform           = preTransform;

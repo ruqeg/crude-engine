@@ -24,6 +24,8 @@ public:
   Subpass_Description& operator=(Subpass_Description&& other) noexcept;
 public:
   explicit Subpass_Description(VkImageLayout colorLayout, VkImageLayout depthStencilLayout) noexcept;
+  explicit Subpass_Description(core::span<const VkImageLayout> colorLayouts, VkImageLayout depthStencilLayout) noexcept;
+  explicit Subpass_Description(VkImageLayout colorLayout, VkImageLayout depthStencilLayout, VkImageLayout resolveLayout) noexcept;
 private:
   explicit Subpass_Description(VkPipelineBindPoint pipelineBindPoint) noexcept;
 };

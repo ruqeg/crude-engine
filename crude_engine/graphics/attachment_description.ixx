@@ -12,6 +12,8 @@ export namespace crude::graphics
 {
 
 class Swap_Chain;
+class Depth_Stencil_Attachment;
+class Color_Attachment;
 
 class Attachment_Description : public VkAttachmentDescription
 {
@@ -24,16 +26,25 @@ public:
                                   VkImageLayout             finalLayout);
 };
 
+class Color_Attachment_Description : public Attachment_Description
+{
+public:
+  explicit Color_Attachment_Description(core::shared_ptr<Color_Attachment>  attachment,
+                                        Attachment_Load_Store_OP            colorOp = attachment_op::gClearStore,
+                                        Attachment_Load_Store_OP            stenicilOp = attachment_op::gDontCare);
+};
+
 class Depth_Attachment_Description : public Attachment_Description
 {
 public:
-  explicit Depth_Attachment_Description(Format format, VkSampleCountFlagBits samples);
+  explicit Depth_Attachment_Description(core::shared_ptr<Depth_Stencil_Attachment> attachment);
 };
 
 class Swapchain_Attachment_Description : public Attachment_Description
 {
 public:
-  explicit Swapchain_Attachment_Description(core::shared_ptr<Swap_Chain> swapchain);
+  explicit Swapchain_Attachment_Description(core::shared_ptr<Swap_Chain>  swapchain,
+                                            Attachment_Load_Store_OP      colorOp);
 };
 
 }

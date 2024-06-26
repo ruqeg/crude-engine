@@ -20,9 +20,11 @@ Device::Device(core::shared_ptr<const Physical_Device>     physicalDevice,
                core::span<const char* const>               enabledExtensions,
                core::span<const char* const>               enabledLayers)
   :
-  m_physicalDevice(physicalDevice)
+  m_physicalDevice(physicalDevice),
+  m_queueDescriptors(queueDescriptors.begin(), queueDescriptors.end())
 {
-  std::unique_copy(queueDescriptors.begin(), queueDescriptors.end(), m_queueDescriptors.begin());
+  // !TODO
+  m_queueDescriptors.erase(std::unique(m_queueDescriptors.begin(), m_queueDescriptors.end()), m_queueDescriptors.end());
   core::vector<VkDeviceQueueCreateInfo> queueDescriptorsData(m_queueDescriptors.begin(), m_queueDescriptors.end());
 
   VkDeviceCreateInfo vkDeviceCreateInfo{};

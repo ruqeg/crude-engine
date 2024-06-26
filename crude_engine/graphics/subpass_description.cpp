@@ -124,7 +124,7 @@ Subpass_Description::Subpass_Description(VkPipelineBindPoint pipelineBindPoint) 
   this->pPreserveAttachments    = nullptr;
 }
 
-Subpass_Description::Subpass_Description(VkImageLayout colorLayout, VkImageLayout depthStencilLayout) noexcept
+Subpass_Description::Subpass_Description(VkImageLayout colorLayout, VkImageLayout depthStencilLayout, VkImageLayout resolveLayout) noexcept
   : Subpass_Description(VK_PIPELINE_BIND_POINT_GRAPHICS)
 {
   if (colorLayout != VK_IMAGE_LAYOUT_UNDEFINED)
@@ -137,6 +137,42 @@ Subpass_Description::Subpass_Description(VkImageLayout colorLayout, VkImageLayou
     }
     this->pColorAttachments = colorReference;
     this->colorAttachmentCount = 1;
+  }
+
+  VkAttachmentReference* depthStencilReference = core::defaultCxxAllocate<VkAttachmentReference>();
+  if (depthStencilReference)
+  {
+    depthStencilReference->attachment = 1;
+    depthStencilReference->layout = depthStencilLayout;
+  }
+  this->pDepthStencilAttachment = depthStencilReference;
+
+
+  VkAttachmentReference* resolveReference = core::defaultCxxAllocate<VkAttachmentReference>();
+  if (resolveReference)
+  {
+    resolveReference->attachment = 2;
+    resolveReference->layout = resolveLayout;
+  }
+  this->pResolveAttachments = resolveReference;
+}
+
+Subpass_Description::Subpass_Description(core::span<const VkImageLayout> colorLayouts, VkImageLayout depthStencilLayout) noexcept
+  : Subpass_Description(VK_PIPELINE_BIND_POINT_GRAPHICS)
+{
+  if (!colorLayouts.empty())
+  {
+    VkAttachmentReference* colorReferences = core::defaultCxxAllocate<VkAttachmentReference>(colorLayouts.size());
+    if (colorReferences)
+    {
+      for (auto layout : colorLayouts)
+      {
+        colorReferences[this->colorAttachmentCount].attachment = this->colorAttachmentCount;
+        colorReferences[this->colorAttachmentCount].layout = layout;
+        ++this->colorAttachmentCount;
+      }
+    }
+    this->pColorAttachments = colorReferences;
   }
 
   VkAttachmentReference* depthStencilReference = core::defaultCxxAllocate<VkAttachmentReference>();

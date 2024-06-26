@@ -25,7 +25,8 @@ Image::Image(core::shared_ptr<const Device>  device,
   m_type(type),
   m_layouts(1u, VK_IMAGE_LAYOUT_UNDEFINED),
   m_mipLevelsCount(1u),
-  m_arrayLayersCount(1u)
+  m_arrayLayersCount(1u),
+  m_samples(VK_SAMPLE_COUNT_1_BIT)
 {
   m_handle = handle;
 }
@@ -49,7 +50,8 @@ Image::Image(core::shared_ptr<const Device>  device,
   m_type(type),
   m_layouts(mipLevelsCount, VK_IMAGE_LAYOUT_UNDEFINED),
   m_mipLevelsCount(mipLevelsCount),
-  m_arrayLayersCount(arrayLayersCount)
+  m_arrayLayersCount(arrayLayersCount),
+  m_samples(samples)
 {
   VkImageCreateInfo vkImageInfo{};
   vkImageInfo.sType                  = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
