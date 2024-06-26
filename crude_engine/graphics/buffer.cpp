@@ -14,47 +14,24 @@ import crude.core.logger;
 namespace crude::graphics
 {
 
-Buffer::Buffer(core::shared_ptr<const Device>  device,
-               VkDeviceSize                    size,
-               VkBufferUsageFlags              usage,
-               VkMemoryPropertyFlags           memoryFlags)
-  :
-  Buffer(device, size, usage, memoryFlags, VK_SHARING_MODE_EXCLUSIVE, {})
-{}
-
-Buffer::Buffer(core::shared_ptr<const Device>  device,
-               VkDeviceSize                    size,
-               VkBufferUsageFlags              usage,
-               VkMemoryPropertyFlags           memoryFlags,
-               core::span<core::uint32>        queueFamilyIndices)
-  :
-  Buffer(device, size, usage, memoryFlags, VK_SHARING_MODE_CONCURRENT, queueFamilyIndices)
-{}
-
-Buffer::Buffer(core::shared_ptr<const Device>  device,
-               VkDeviceSize                    size,
-               VkBufferUsageFlags              usage,
-               VkMemoryPropertyFlags           memoryFlags,
-               VkSharingMode                   sharingMode,
-               core::span<core::uint32>        queueFamilyIndices)
-  :
-  m_device(device),
-  m_size(size)
+Buffer::Buffer(const Initialize& info)
+  : m_device(info.device)
+  , m_size(info.size)
 {
   VkBufferCreateInfo vkCreateInfo{};
-  vkCreateInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-  vkCreateInfo.pNext = nullptr;
-  vkCreateInfo.flags = 0u;
-  vkCreateInfo.size = size;
-  vkCreateInfo.usage = usage;
-  vkCreateInfo.sharingMode = sharingMode;
-  vkCreateInfo.queueFamilyIndexCount = queueFamilyIndices.size();
-  vkCreateInfo.pQueueFamilyIndices = queueFamilyIndices.data();
+  vkCreateInfo.sType                  = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+  vkCreateInfo.pNext                  = nullptr;
+  vkCreateInfo.flags                  = 0u;
+  vkCreateInfo.size                   = info.size;
+  vkCreateInfo.usage                  = info.usage;
+  vkCreateInfo.sharingMode            = info.queueFamilyIndices.size() > 1 ? VK_SHARING_MODE_CONCURRENT : VK_SHARING_MODE_EXCLUSIVE;
+  vkCreateInfo.queueFamilyIndexCount  = info.queueFamilyIndices.size();
+  vkCreateInfo.pQueueFamilyIndices    = info.queueFamilyIndices.data();
 
   VkResult result = vkCreateBuffer(m_device->getHandle(), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
   vulkanHandleResult(result, "failed to create buffer");
 
-  core::shared_ptr<Device_Memory> memory = core::allocateShared<Device_Memory>(m_device, getMemoryRequirements(), memoryFlags);
+  core::shared_ptr<Device_Memory> memory = core::allocateShared<Device_Memory>(m_device, getMemoryRequirements(), info.memoryFlags);
   bindMemory(memory);
 }
 

@@ -18,36 +18,36 @@ class Color_Attachment;
 class Attachment_Description : public VkAttachmentDescription
 {
 public:
-  struct Initialize_Info;
+  struct Initialize;
 public:
-  explicit Attachment_Description(const Initialize_Info& info);
+  explicit Attachment_Description(const Initialize& info);
 };
 
 class Color_Attachment_Description : public Attachment_Description
 {
 public:
-  struct Initialize_Info;
+  struct Initialize;
 public:
-  explicit Color_Attachment_Description(const Initialize_Info& info);
+  explicit Color_Attachment_Description(const Initialize& info);
 };
 
 class Depth_Attachment_Description : public Attachment_Description
 {
 public:
-  struct Initialize_Info;
+  struct Initialize;
 public:
-  explicit Depth_Attachment_Description(const Initialize_Info& info);
+  explicit Depth_Attachment_Description(const Initialize& info);
 };
 
 class Swapchain_Attachment_Description : public Attachment_Description
 {
 public:
-  struct Initialize_Info;
+  struct Initialize;
 public:
-  explicit Swapchain_Attachment_Description(const Initialize_Info& info);
+  explicit Swapchain_Attachment_Description(const Initialize& info);
 };
 
-struct Attachment_Description::Initialize_Info
+struct Attachment_Description::Initialize
 {
   VkFormat                  format;
   VkSampleCountFlagBits     samples;
@@ -57,19 +57,19 @@ struct Attachment_Description::Initialize_Info
   VkImageLayout             finalLayout;
 };
 
-struct Color_Attachment_Description::Initialize_Info
+struct Color_Attachment_Description::Initialize
 {
   core::shared_ptr<Color_Attachment>  attachment;
   Attachment_Load_Store_OP            colorOp = attachment_op::gClearStore;
   Attachment_Load_Store_OP            stenicilOp = attachment_op::gDontCare;
 };
 
-struct Depth_Attachment_Description::Initialize_Info
+struct Depth_Attachment_Description::Initialize
 {
   core::shared_ptr<Depth_Stencil_Attachment> attachment;
 };
 
-struct Swapchain_Attachment_Description::Initialize_Info
+struct Swapchain_Attachment_Description::Initialize
 {
   core::shared_ptr<Swap_Chain>  swapchain;
   Attachment_Load_Store_OP      colorOp;

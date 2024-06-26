@@ -19,6 +19,8 @@ class Staging_Buffer;
 class Image : public Vulkan_Object<VkImage>
 {
 public:
+  struct Initialize_Unique;
+  struct Initialize_Handle;
   struct Mip;
   struct Mip_Data;
   struct Copy_Layout;

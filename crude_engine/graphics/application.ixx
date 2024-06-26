@@ -12,7 +12,7 @@ export namespace crude::graphics
 struct Application final : public VkApplicationInfo
 {
 public:
-  struct Initialize_Info
+  struct Initialize
   {
     const char*   pApplicationName   = "default application name";
     core::uint32  applicationVersion = VK_MAKE_VERSION(1, 0, 0);
@@ -21,7 +21,7 @@ public:
     core::uint32  apiVersion         = VK_API_VERSION_1_0;
   };
 public:
-  explicit Application(const Initialize_Info& info)
+  explicit Application(const Initialize& info)
   {
     this->sType              = VK_STRUCTURE_TYPE_APPLICATION_INFO;
     this->pNext              = nullptr;

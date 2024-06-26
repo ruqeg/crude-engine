@@ -21,7 +21,7 @@ public:
 #ifdef VK_EXT_debug_utils
                     PFN_vkDebugUtilsMessengerCallbackEXT   debugUtilsCallback,
 #endif // VK_EXT_debug_utils
-                     const Application&                    application        = Application(Application::Initialize_Info()),
+                     const Application&                    application        = Application(Application::Initialize()),
                      const core::span<const char* const>&  enabledExtensions  = {},
                      const core::span<const char* const>&  enabledLayers      = {},
                      VkInstanceCreateFlags                 flags              = 0u);

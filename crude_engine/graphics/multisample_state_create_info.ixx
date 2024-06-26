@@ -15,22 +15,27 @@ export namespace crude::graphics
 class Multisample_State_Create_Info : public VkPipelineMultisampleStateCreateInfo
 {
 public:
-  explicit Multisample_State_Create_Info(VkSampleCountFlagBits  rasterizationSamples,
-                                         VkBool32               sampleShadingEnable,
-                                         float                  minSampleShading,
-                                         // !TODO const VkSampleMask*  pSampleMask,
-                                         VkBool32               alphaToCoverageEnable,
-                                         VkBool32               alphaToOneEnable)
+  struct Initialize
+  {
+    VkSampleCountFlagBits  rasterizationSamples;
+    VkBool32               sampleShadingEnable;
+    float                  minSampleShading;
+    // !TODO const VkSampleMask*  pSampleMask;
+    VkBool32               alphaToCoverageEnable;
+    VkBool32               alphaToOneEnable;
+  };
+public:
+  explicit Multisample_State_Create_Info(const Initialize& info)
   {
     this->sType                  = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
     this->flags                  = 0u;
     this->pNext                  = nullptr;
-    this->rasterizationSamples   = rasterizationSamples;
-    this->sampleShadingEnable    = sampleShadingEnable;
-    this->minSampleShading       = minSampleShading;
+    this->rasterizationSamples   = info.rasterizationSamples;
+    this->sampleShadingEnable    = info.sampleShadingEnable;
+    this->minSampleShading       = info.minSampleShading;
     this->pSampleMask            = nullptr;
-    this->alphaToCoverageEnable  = alphaToCoverageEnable;
-    this->alphaToOneEnable       = alphaToOneEnable;
+    this->alphaToCoverageEnable  = info.alphaToCoverageEnable;
+    this->alphaToOneEnable       = info.alphaToOneEnable;
   }
 };
 }

@@ -149,24 +149,16 @@ void Command_Buffer::bindPipeline(core::shared_ptr<Pipeline> pipeline)
     pipeline->getHandle());
 }
 
-void Command_Buffer::setViewport(core::span<VkViewport> viewports)
+void Command_Buffer::setViewport(const Viewport& viewport)
 {
   constexpr core::uint32 offset = 0u;
-  vkCmdSetViewport(
-    m_handle,
-    offset,
-    viewports.size(),
-    viewports.data());
+  vkCmdSetViewport(m_handle, offset, 1u, &viewport);
 }
 
-void Command_Buffer::setScissor(core::span<VkRect2D> scissors)
+void Command_Buffer::setScissor(const Scissor& scissor)
 {
   constexpr core::uint32 offset = 0u;
-  vkCmdSetScissor(
-    m_handle,
-    offset,
-    scissors.size(),
-    scissors.data());
+  vkCmdSetScissor(m_handle, offset, 1u, &scissor);
 }
 
 // !TODO should i move this fun?

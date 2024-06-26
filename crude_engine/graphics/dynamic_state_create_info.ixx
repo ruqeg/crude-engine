@@ -12,7 +12,7 @@ export namespace crude::graphics
 class Dynamic_State_Create_Info : public VkPipelineDynamicStateCreateInfo
 {
 public:
-  explicit Dynamic_State_Create_Info(const core::span<VkDynamicState>& dynamicStates)
+  explicit Dynamic_State_Create_Info(core::span<const VkDynamicState> dynamicStates)
   {
     this->sType             = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
     this->pNext             = nullptr;

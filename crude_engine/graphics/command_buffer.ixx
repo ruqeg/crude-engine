@@ -8,6 +8,8 @@ import crude.core.std_containers_stack;
 import crude.graphics.vulkan_object;
 export import crude.graphics.image_memory_barrier;
 export import crude.core.std_containers_heap;
+export import crude.graphics.scissor;
+export import crude.graphics.viewport;
 
 export namespace crude::graphics
 {
@@ -57,9 +59,9 @@ public:
 
   void bindPipeline(core::shared_ptr<Pipeline> pipeline);
 
-  void setViewport(core::span<VkViewport> viewports);
+  void setViewport(const Viewport& viewport);
 
-  void setScissor(core::span<VkRect2D> scissors);
+  void setScissor(const Scissor& scissor);
   
   void bindModelBuffer(core::uint32 firstBinding, core::shared_ptr<Model_Buffer> modelBuffer);
   void bindVertexBuffer(core::uint32 firstBinding, core::shared_ptr<Buffer> vertexBuffer, VkDeviceSize offset = 0u);

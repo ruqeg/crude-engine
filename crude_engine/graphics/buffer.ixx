@@ -22,15 +22,9 @@ class Staging_Buffer;
 class Buffer : public Vulkan_Object<VkBuffer>
 {
 public:
-  explicit Buffer(core::shared_ptr<const Device>  device,
-                  VkDeviceSize                    size,
-                  VkBufferUsageFlags              usage,
-                  VkMemoryPropertyFlags           memoryFlags);
-  explicit Buffer(core::shared_ptr<const Device>  device,
-                  VkDeviceSize                    size,
-                  VkBufferUsageFlags              usage,
-                  VkMemoryPropertyFlags           memoryFlags,
-                  core::span<core::uint32>        queueFamilyIndices);
+  struct Initialize;
+public:
+  explicit Buffer(const Initialize& info);
   ~Buffer();
 public:
   template<class T>
@@ -38,7 +32,7 @@ public:
   template<class T>
   void copyHost(core::span<const T> data) noexcept;
 public:
-  void copyTransfer(core::shared_ptr<Command_Buffer>        commandBuffer, 
+  void copyTransfer(core::shared_ptr<Command_Buffer>        commandBuffer,
                     core::shared_ptr<const Staging_Buffer>  srcBuffer,
                     VkDeviceSize                            srcOffset = 0,
                     VkDeviceSize                            dstOffset = 0,
@@ -48,13 +42,6 @@ public:
   void copyHost(const void* data, VkDeviceSize size) noexcept;
   VkMemoryRequirements getMemoryRequirements() const;
   VkDeviceSize getSize() const;
-private:
-  explicit Buffer(core::shared_ptr<const Device>  device,
-                  VkDeviceSize                    size,
-                  VkBufferUsageFlags              usage,
-                  VkMemoryPropertyFlags           memoryFlags,
-                  VkSharingMode                   sharingMode,
-                  core::span<core::uint32>        queueFamilyIndices);
 protected:
   core::shared_ptr<const Device>   m_device;
   core::shared_ptr<Device_Memory>  m_memory;
@@ -72,5 +59,14 @@ void Buffer::copyHost(core::span<const T> data) noexcept
 {
   copyHost(data.data(), data.size_bytes());
 }
+
+struct Buffer::Initialize
+{
+  core::shared_ptr<const Device>  device;
+  VkDeviceSize                    size;
+  VkBufferUsageFlags              usage;
+  VkMemoryPropertyFlags           memoryFlags;
+  core::span<const core::uint32>  queueFamilyIndices = {};
+};
 
 }

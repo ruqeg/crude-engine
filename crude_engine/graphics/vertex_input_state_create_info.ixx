@@ -12,16 +12,21 @@ export namespace crude::graphics
 class Vertex_Input_State_Create_Info : public VkPipelineVertexInputStateCreateInfo
 {
 public:
-  explicit Vertex_Input_State_Create_Info(const core::span<const VkVertexInputBindingDescription>&    bindingDescriptions,
-                                          const core::span<const VkVertexInputAttributeDescription>&  attributeDescriptions)
+  struct Initialize
+  {
+    core::span<const VkVertexInputBindingDescription>   bindings;
+    core::span<const VkVertexInputAttributeDescription> attributes;
+  };
+public:
+  explicit Vertex_Input_State_Create_Info(const Initialize& info)
   {
     this->sType                           = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
     this->pNext                           = nullptr;
     this->flags                           = 0u;
-    this->vertexAttributeDescriptionCount = attributeDescriptions.size();
-    this->pVertexAttributeDescriptions    = attributeDescriptions.data();
-    this->vertexBindingDescriptionCount   = bindingDescriptions.size();
-    this->pVertexBindingDescriptions      = bindingDescriptions.data();
+    this->vertexAttributeDescriptionCount = info.attributes.size();
+    this->pVertexAttributeDescriptions    = info.attributes.data();
+    this->vertexBindingDescriptionCount   = info.bindings.size();
+    this->pVertexBindingDescriptions      = info.bindings.data();
   }
 };
 

@@ -44,7 +44,10 @@ Renderer::Renderer(core::shared_ptr<system::SDL_Window_Container> windowContaine
   :
   m_windowContainer(windowContainer),
   m_currentFrame(0u),
-  m_uniformBufferDesc{Uniform_Buffer_Descriptor(0u, VK_SHADER_STAGE_VERTEX_BIT), Uniform_Buffer_Descriptor(0u, VK_SHADER_STAGE_VERTEX_BIT)},
+  m_uniformBufferDesc{ 
+    Uniform_Buffer_Descriptor(0u, VK_SHADER_STAGE_VERTEX_BIT),
+    Uniform_Buffer_Descriptor(0u, VK_SHADER_STAGE_VERTEX_BIT)
+  },
   m_textureSamplerDesc{Combined_Image_Sampler_Descriptor(1u, VK_SHADER_STAGE_FRAGMENT_BIT), Combined_Image_Sampler_Descriptor(1u, VK_SHADER_STAGE_FRAGMENT_BIT)}
 {
   initializeInstance();
@@ -293,19 +296,15 @@ void Renderer::recordCommandBuffer(core::shared_ptr<Command_Buffer> commandBuffe
 
   commandBuffer->bindPipeline(m_graphicsPipeline);
 
-  VkViewport viewport{};
-  viewport.x = 0.0f;
-  viewport.y = 0.0f;
-  viewport.width = static_cast<float>(m_swapchain->getExtent().width);
-  viewport.height = static_cast<float>(m_swapchain->getExtent().height);
-  viewport.minDepth = 0.0f;
-  viewport.maxDepth = 1.0f;
-  commandBuffer->setViewport(core::span(&viewport, 1u));
+  commandBuffer->setViewport(Viewport({
+    .x = 0.0f, .y = 0.0f,
+    .width = static_cast<core::float32>(m_swapchain->getExtent().width),
+    .height = static_cast<core::float32>(m_swapchain->getExtent().height),
+    .minDepth = 0.0f, .maxDepth = 1.0f }));
 
-  VkRect2D scissor{};
-  scissor.offset = { 0, 0 };
-  scissor.extent = m_swapchain->getExtent();
-  commandBuffer->setScissor(core::span(&scissor, 1u));
+  commandBuffer->setScissor(Scissor({
+    .offset = { 0, 0 },
+    .extent = m_swapchain->getExtent() }));
 
   commandBuffer->bindModelBuffer(0u, m_modelBuffer);
 
@@ -355,33 +354,71 @@ void Renderer::initalizeGraphicsPipeline()
     Shader_Stage_Create_Info(VK_SHADER_STAGE_FRAGMENT_BIT, fragShaderModule, "main"),
   };
 
-  auto vertexInputStateInfo = Vertex_Input_State_Create_Info(core::span(&scene::Vertex_GPU::getBindingDescription(), 1u), scene::Vertex_GPU::getAttributeDescriptions());
-  auto inputAssembly = Input_Assembly_State_Create_Info(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, false);
-  auto viewportState = Viewport_State_Create_Info(1u, 1u);
-  auto rasterizer = Rasterization_State_Create_Info(false, false, VK_POLYGON_MODE_FILL, VK_CULL_MODE_BACK_BIT, VK_FRONT_FACE_CLOCKWISE, false, 0.0f, 0.0f, 0.0f, 1.f);
-  auto multisampling = Multisample_State_Create_Info(m_device->getPhysicalDevice()->getProperties().getMaximumUsableSampleCount(), true, 2.0f, false, false);
-  auto depthStencil = Depth_Stencil_State_Create_Info(true, true, VK_COMPARE_OP_LESS, false, false, {}, {}, 0.0f, 1.0f);
+  Vertex_Input_State_Create_Info vertexInputStateInfo({
+    .bindings = core::span(&scene::Vertex_GPU::getBindingDescription(), 1u),
+    .attributes = scene::Vertex_GPU::getAttributeDescriptions()});
+  
+  Tessellation_State_Create_Info tesselationInfo(3u);
 
-  core::array<Pipeline_Color_Blend_Attachment_State, 1u> colorBlendAttachments =
-  {
-    Pipeline_Color_Blend_Attachment_State(
-      VK_FALSE,
-      VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT,
-      VK_BLEND_FACTOR_ONE,
-      VK_BLEND_FACTOR_ZERO,
-      VK_BLEND_OP_ADD,
-      VK_BLEND_FACTOR_ONE,
-      VK_BLEND_FACTOR_ZERO,
-      VK_BLEND_OP_ADD)
+  Input_Assembly_State_Create_Info inputAssembly({
+    .topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
+    .primitiveRestartEnable = false });
+
+  Viewport_State_Create_Info viewportState(1u, 1u);
+
+  Rasterization_State_Create_Info rasterizer({
+    .depthClampEnable = false,
+    .rasterizerDiscardEnable = false,
+    .polygonMode = VK_POLYGON_MODE_FILL,
+    .cullMode = VK_CULL_MODE_BACK_BIT,
+    .frontFace = VK_FRONT_FACE_CLOCKWISE,
+    .depthBiasEnable = false,
+    .depthBiasConstantFactor = 0.0f,
+    .depthBiasClamp = 0.0f,
+    .depthBiasSlopeFactor = 0.0f,
+    .lineWidth = 1.f});
+
+  Multisample_State_Create_Info multisampling({
+    .rasterizationSamples = m_device->getPhysicalDevice()->getProperties().getMaximumUsableSampleCount(),
+    .sampleShadingEnable = true,
+    .minSampleShading = 2.0f,
+    .alphaToCoverageEnable = false,
+    .alphaToOneEnable = false});
+
+  Depth_Stencil_State_Create_Info depthStencil({
+    .depthTestEnable = true,
+    .depthWriteEnable = true,
+    .depthCompareOp = VK_COMPARE_OP_LESS,
+    .depthBoundsTestEnable = false,
+    .stencilTestEnable = false,
+    .front = {},
+    .back = {},
+    .minDepthBounds = 0.0f,
+    .maxDepthBounds = 1.0f});
+
+  core::array<Pipeline_Color_Blend_Attachment_State, 1u> colorBlendAttachments = {
+    Pipeline_Color_Blend_Attachment_State({
+      .blendEnable = VK_FALSE,
+      .colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT,
+      .srcColorBlendFactor = VK_BLEND_FACTOR_ONE,
+      .dstColorBlendFactor = VK_BLEND_FACTOR_ZERO,
+      .colorBlendOp = VK_BLEND_OP_ADD,
+      .srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE,
+      .dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO,
+      .alphaBlendOp = VK_BLEND_OP_ADD })
   };
 
-  auto colorBlending = Color_Blend_State_Create_Info(colorBlendAttachments, { 0.f, 0.f, 0.f, 0.f }, false, VK_LOGIC_OP_COPY);
-
-  core::array<VkDynamicState, 2u> dynamicStates = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
-  auto dynamicState = Dynamic_State_Create_Info(dynamicStates);
-  core::vector<core::shared_ptr<const Descriptor_Set_Layout>> descriptorSetLayouts = { m_descriptorSets[0]->getSetLayout() };
-
-  auto m_pipelineLayout = core::allocateShared<Pipeline_Layout>(m_device, descriptorSetLayouts);
+  Color_Blend_State_Create_Info colorBlending({
+    .attachments = colorBlendAttachments, 
+    .blendConstants = { 0.f, 0.f, 0.f, 0.f }, 
+    .logicOpEnable = false, 
+    .logicOp = VK_LOGIC_OP_COPY });
+  
+  Dynamic_State_Create_Info dynamicState(core::array<VkDynamicState, 2>{
+    VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR
+  });
+  
+  core::shared_ptr<Pipeline_Layout> m_pipelineLayout = core::allocateShared<Pipeline_Layout>(m_device, core::vector<core::shared_ptr<const Descriptor_Set_Layout>>{ m_descriptorSets[0]->getSetLayout() });
 
   m_graphicsPipeline = core::allocateShared<Pipeline>(
     m_device,
@@ -390,7 +427,7 @@ void Renderer::initalizeGraphicsPipeline()
     nullptr,
     shaderStagesInfo,
     vertexInputStateInfo,
-    Tessellation_State_Create_Info(3u),
+    tesselationInfo,
     inputAssembly,
     viewportState,
     rasterizer,

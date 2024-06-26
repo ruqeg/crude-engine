@@ -18,8 +18,8 @@ class Pipeline_Layout : public Vulkan_Object<VkPipelineLayout>
 {
 public:
   explicit Pipeline_Layout(core::shared_ptr<const Device>                                      device,
-                           const core::vector<core::shared_ptr<const Descriptor_Set_Layout>>&  descriptorSetLayouts,
-                           const core::vector<VkPushConstantRange>&                            pushConstantRanges = {});
+                  const core::vector<core::shared_ptr<const Descriptor_Set_Layout>>&  descriptorSetLayouts,
+                  const core::vector<VkPushConstantRange>&                            pushConstantRanges = {});
   ~Pipeline_Layout();
 private:
   core::vector<core::shared_ptr<const Descriptor_Set_Layout>>  m_setLayouts;

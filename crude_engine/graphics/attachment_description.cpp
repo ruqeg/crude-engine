@@ -8,7 +8,7 @@ import crude.graphics.image_attachment;
 namespace crude::graphics
 {
 
-Attachment_Description::Attachment_Description(const Initialize_Info& info)
+Attachment_Description::Attachment_Description(const Initialize& info)
 {
   this->flags          = 0u;
   this->format         = info.format;
@@ -21,7 +21,7 @@ Attachment_Description::Attachment_Description(const Initialize_Info& info)
   this->finalLayout    = info.finalLayout;
 }
 
-Color_Attachment_Description::Color_Attachment_Description(const Initialize_Info& info)
+Color_Attachment_Description::Color_Attachment_Description(const Initialize& info)
   : Attachment_Description({
     .format        = info.attachment->getFormat(),
     .samples       = info.attachment->getSampleCount(),
@@ -32,7 +32,7 @@ Color_Attachment_Description::Color_Attachment_Description(const Initialize_Info
     })
 {}
 
-Depth_Attachment_Description::Depth_Attachment_Description(const Initialize_Info& info)
+Depth_Attachment_Description::Depth_Attachment_Description(const Initialize& info)
   : Attachment_Description({
     .format        = info.attachment->getFormat(),
     .samples       = info.attachment->getSampleCount(),
@@ -43,7 +43,7 @@ Depth_Attachment_Description::Depth_Attachment_Description(const Initialize_Info
     })
 {}
 
-Swapchain_Attachment_Description::Swapchain_Attachment_Description(const Initialize_Info& info)
+Swapchain_Attachment_Description::Swapchain_Attachment_Description(const Initialize& info)
   : Attachment_Description({
     .format        = info.swapchain->getSurfaceFormat().format,
     .samples       = VK_SAMPLE_COUNT_1_BIT,
