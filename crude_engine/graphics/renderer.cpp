@@ -148,7 +148,12 @@ void Renderer::initializeInstance()
    };
 
   // Initialize instance
-  const Application application("crude_example", VK_MAKE_VERSION(1, 0, 0), "crude_engine", VK_MAKE_VERSION(1, 0, 0));
+  const Application application({
+    .pApplicationName   = "crude_example", 
+    .applicationVersion = VK_MAKE_VERSION(1, 0, 0), 
+    .pEngineName        = "crude_engine", 
+    .engineVersion      = VK_MAKE_VERSION(1, 0, 0),
+    .apiVersion         = VK_API_VERSION_1_0});
 
   m_instance = core::allocateShared<Instance>(debugCallback, application, enabledExtensions, instanceEnabledLayers);
 
@@ -234,9 +239,13 @@ core::shared_ptr<Render_Pass> Renderer::initializeRenderPass()
 
   core::array<Attachment_Description, 3> attachments =
   {
-    Color_Attachment_Description(m_colorAttachment),
-    Depth_Attachment_Description(m_depthStencilAttachment),
-    Swapchain_Attachment_Description(m_swapchain, attachment_op::gDontCare)
+    Color_Attachment_Description({
+      .attachment = m_colorAttachment}),
+    Depth_Attachment_Description({
+      .attachment = m_depthStencilAttachment }),
+    Swapchain_Attachment_Description({ 
+      .swapchain = m_swapchain, 
+      .colorOp = attachment_op::gDontCare })
   };
 
   auto renderPass = core::allocateShared<Render_Pass>(m_device, subpasses, subpassesDependencies, attachments);

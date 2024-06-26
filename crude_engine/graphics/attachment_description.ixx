@@ -18,33 +18,61 @@ class Color_Attachment;
 class Attachment_Description : public VkAttachmentDescription
 {
 public:
-  explicit Attachment_Description(VkFormat                  format,
-                                  VkSampleCountFlagBits     samples,
-                                  Attachment_Load_Store_OP  colorOp,
-                                  Attachment_Load_Store_OP  stenicilOp,
-                                  VkImageLayout             initialLayout,
-                                  VkImageLayout             finalLayout);
+  struct Initialize_Info;
+public:
+  explicit Attachment_Description(const Initialize_Info& info);
 };
 
 class Color_Attachment_Description : public Attachment_Description
 {
 public:
-  explicit Color_Attachment_Description(core::shared_ptr<Color_Attachment>  attachment,
-                                        Attachment_Load_Store_OP            colorOp = attachment_op::gClearStore,
-                                        Attachment_Load_Store_OP            stenicilOp = attachment_op::gDontCare);
+  struct Initialize_Info;
+public:
+  explicit Color_Attachment_Description(const Initialize_Info& info);
 };
 
 class Depth_Attachment_Description : public Attachment_Description
 {
 public:
-  explicit Depth_Attachment_Description(core::shared_ptr<Depth_Stencil_Attachment> attachment);
+  struct Initialize_Info;
+public:
+  explicit Depth_Attachment_Description(const Initialize_Info& info);
 };
 
 class Swapchain_Attachment_Description : public Attachment_Description
 {
 public:
-  explicit Swapchain_Attachment_Description(core::shared_ptr<Swap_Chain>  swapchain,
-                                            Attachment_Load_Store_OP      colorOp);
+  struct Initialize_Info;
+public:
+  explicit Swapchain_Attachment_Description(const Initialize_Info& info);
+};
+
+struct Attachment_Description::Initialize_Info
+{
+  VkFormat                  format;
+  VkSampleCountFlagBits     samples;
+  Attachment_Load_Store_OP  colorOp;
+  Attachment_Load_Store_OP  stenicilOp;
+  VkImageLayout             initialLayout;
+  VkImageLayout             finalLayout;
+};
+
+struct Color_Attachment_Description::Initialize_Info
+{
+  core::shared_ptr<Color_Attachment>  attachment;
+  Attachment_Load_Store_OP            colorOp = attachment_op::gClearStore;
+  Attachment_Load_Store_OP            stenicilOp = attachment_op::gDontCare;
+};
+
+struct Depth_Attachment_Description::Initialize_Info
+{
+  core::shared_ptr<Depth_Stencil_Attachment> attachment;
+};
+
+struct Swapchain_Attachment_Description::Initialize_Info
+{
+  core::shared_ptr<Swap_Chain>  swapchain;
+  Attachment_Load_Store_OP      colorOp;
 };
 
 }

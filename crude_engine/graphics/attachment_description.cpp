@@ -8,57 +8,50 @@ import crude.graphics.image_attachment;
 namespace crude::graphics
 {
 
-Attachment_Description::Attachment_Description(VkFormat                  format,
-                                               VkSampleCountFlagBits     samples,
-                                               Attachment_Load_Store_OP  colorOp,
-                                               Attachment_Load_Store_OP  stenicilOp,
-                                               VkImageLayout             initialLayout,
-                                               VkImageLayout             finalLayout)
+Attachment_Description::Attachment_Description(const Initialize_Info& info)
 {
-  this->flags = 0u;
-  this->format = format;
-  this->samples = samples;
-  this->loadOp = colorOp.load;
-  this->storeOp = colorOp.store;
-  this->stencilLoadOp = stenicilOp.load;
-  this->stencilStoreOp = stenicilOp.store;
-  this->initialLayout = initialLayout;
-  this->finalLayout = finalLayout;
+  this->flags          = 0u;
+  this->format         = info.format;
+  this->samples        = info.samples;
+  this->loadOp         = info.colorOp.load;
+  this->storeOp        = info.colorOp.store;
+  this->stencilLoadOp  = info.stenicilOp.load;
+  this->stencilStoreOp = info.stenicilOp.store;
+  this->initialLayout  = info.initialLayout;
+  this->finalLayout    = info.finalLayout;
 }
 
-Color_Attachment_Description::Color_Attachment_Description(core::shared_ptr<Color_Attachment>  attachment,
-                                                           Attachment_Load_Store_OP            colorOp,
-                                                           Attachment_Load_Store_OP            stenicilOp)
-  :
-  Attachment_Description(
-    attachment->getFormat(),
-    attachment->getSampleCount(),
-    colorOp,
-    stenicilOp,
-    VK_IMAGE_LAYOUT_UNDEFINED,
-    VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL)
+Color_Attachment_Description::Color_Attachment_Description(const Initialize_Info& info)
+  : Attachment_Description({
+    .format        = info.attachment->getFormat(),
+    .samples       = info.attachment->getSampleCount(),
+    .colorOp       = info.colorOp,
+    .stenicilOp    = info.stenicilOp,
+    .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+    .finalLayout   = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+    })
 {}
 
-Depth_Attachment_Description::Depth_Attachment_Description(core::shared_ptr<Depth_Stencil_Attachment> attachment)
-  :
-  Attachment_Description(
-    attachment->getFormat(),
-    attachment->getSampleCount(),
-    attachment_op::gClearStore,
-    attachment_op::gDontCare,
-    VK_IMAGE_LAYOUT_UNDEFINED,
-    VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
+Depth_Attachment_Description::Depth_Attachment_Description(const Initialize_Info& info)
+  : Attachment_Description({
+    .format        = info.attachment->getFormat(),
+    .samples       = info.attachment->getSampleCount(),
+    .colorOp       = attachment_op::gClearStore,
+    .stenicilOp    = attachment_op::gDontCare,
+    .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+    .finalLayout   = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL
+    })
 {}
 
-Swapchain_Attachment_Description::Swapchain_Attachment_Description(core::shared_ptr<Swap_Chain> swapchain, Attachment_Load_Store_OP colorOp)
-  :
-  Attachment_Description(
-    swapchain->getSurfaceFormat().format,
-    VK_SAMPLE_COUNT_1_BIT,
-    colorOp,
-    attachment_op::gDontCare,
-    VK_IMAGE_LAYOUT_UNDEFINED,
-    VK_IMAGE_LAYOUT_PRESENT_SRC_KHR)
+Swapchain_Attachment_Description::Swapchain_Attachment_Description(const Initialize_Info& info)
+  : Attachment_Description({
+    .format        = info.swapchain->getSurfaceFormat().format,
+    .samples       = VK_SAMPLE_COUNT_1_BIT,
+    .colorOp       = info.colorOp,
+    .stenicilOp    = attachment_op::gDontCare,
+    .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+    .finalLayout   = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
+    })
 {}
 
 }
