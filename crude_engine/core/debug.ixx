@@ -7,7 +7,11 @@ import crude.core.alias;
 export namespace crude::core
 {
 
-constexpr bool gDebug = _DEBUG;
+#ifdef _DEBUG
+constexpr bool gDebug = true;
+#else
+constexpr bool gDebug = false;
+#endif
 
 class Debug
 {

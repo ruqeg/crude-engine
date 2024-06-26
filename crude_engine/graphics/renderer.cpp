@@ -414,16 +414,17 @@ void Renderer::initalizeGraphicsPipeline()
     .logicOpEnable = false, 
     .logicOp = VK_LOGIC_OP_COPY });
   
-  Dynamic_State_Create_Info dynamicState(core::array<VkDynamicState, 2>{
+  core::array<VkDynamicState, 2> dynamicStates = {
     VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR
-  });
+  };
+  Dynamic_State_Create_Info dynamicStateInfo(dynamicStates);
   
-  core::shared_ptr<Pipeline_Layout> m_pipelineLayout = core::allocateShared<Pipeline_Layout>(m_device, core::vector<core::shared_ptr<const Descriptor_Set_Layout>>{ m_descriptorSets[0]->getSetLayout() });
+  core::shared_ptr<Pipeline_Layout> pipelineLayout = core::allocateShared<Pipeline_Layout>(m_device, core::vector<core::shared_ptr<const Descriptor_Set_Layout>>{ m_descriptorSets[0]->getSetLayout() });
 
   m_graphicsPipeline = core::allocateShared<Pipeline>(
     m_device,
     initializeRenderPass(),
-    m_pipelineLayout,
+    pipelineLayout,
     nullptr,
     shaderStagesInfo,
     vertexInputStateInfo,
@@ -434,7 +435,7 @@ void Renderer::initalizeGraphicsPipeline()
     multisampling,
     depthStencil,
     colorBlending,
-    dynamicState,
+    dynamicStateInfo,
     0u);
 }
 
