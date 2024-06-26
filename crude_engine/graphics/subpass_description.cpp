@@ -123,8 +123,7 @@ Subpass_Description::Subpass_Description(VkPipelineBindPoint pipelineBindPoint) 
   this->preserveAttachmentCount = 0;
   this->pPreserveAttachments    = nullptr;
 }
-
-Subpass_Description::Subpass_Description(VkImageLayout colorLayout, VkImageLayout depthStencilLayout, VkImageLayout resolveLayout) noexcept
+Subpass_Description::Subpass_Description(VkImageLayout colorLayout, VkImageLayout depthStencilLayout) noexcept
   : Subpass_Description(VK_PIPELINE_BIND_POINT_GRAPHICS)
 {
   if (colorLayout != VK_IMAGE_LAYOUT_UNDEFINED)
@@ -146,8 +145,11 @@ Subpass_Description::Subpass_Description(VkImageLayout colorLayout, VkImageLayou
     depthStencilReference->layout = depthStencilLayout;
   }
   this->pDepthStencilAttachment = depthStencilReference;
+}
 
-
+Subpass_Description::Subpass_Description(VkImageLayout colorLayout, VkImageLayout depthStencilLayout, VkImageLayout resolveLayout) noexcept
+  : Subpass_Description(colorLayout, depthStencilLayout)
+{
   VkAttachmentReference* resolveReference = core::defaultCxxAllocate<VkAttachmentReference>();
   if (resolveReference)
   {
