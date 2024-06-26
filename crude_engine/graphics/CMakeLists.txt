@@ -7,7 +7,7 @@ target_sources(crude_engine
     buffer_descriptor.cpp
     uniform_buffer.cpp
     flush.cpp
-    device_queue_create_info.cpp
+    device_queue_descriptor.cpp
     model_buffer.cpp
     renderer.cpp
     command_buffer.cpp
@@ -59,7 +59,7 @@ target_sources(crude_engine
     descriptor_set_layout_binding.ixx
     uniform_buffer.ixx
     flush.ixx
-    device_queue_create_info.ixx
+    device_queue_descriptor.ixx
     staging_buffer.ixx
     vertex_buffer.ixx
     index_buffer.ixx

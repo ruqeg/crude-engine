@@ -1,6 +1,6 @@
 #include <vulkan/vulkan.hpp>
 
-module crude.graphics.device_queue_create_info;
+module crude.graphics.device_queue_descriptor;
 
 import crude.graphics.surface;
 import crude.graphics.physical_device;
@@ -9,9 +9,11 @@ import crude.core.logger;
 namespace crude::graphics
 {
 
-Device_Queue_Create_Info::Device_Queue_Create_Info(core::shared_ptr<const Physical_Device>  physicalDevice,
-                                                   VkQueueFlagBits                          queueType,
-                                                   const core::span<core::float32>&         queuePriorities)
+Device_Queue_Descriptor::Device_Queue_Descriptor(core::shared_ptr<const Physical_Device>  physicalDevice,
+                                                 VkQueueFlagBits                          queueType,
+                                                 core::span<const core::float32>          queuePriorities)
+  :
+  m_queueDenotation(queueFlagBitsToDenotation(queueType))
 {
   this->sType            = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
   this->pNext            = nullptr;
@@ -21,9 +23,11 @@ Device_Queue_Create_Info::Device_Queue_Create_Info(core::shared_ptr<const Physic
   this->pQueuePriorities = queuePriorities.data();
 }
 
-Device_Queue_Create_Info::Device_Queue_Create_Info(core::shared_ptr<const Physical_Device>  physicalDevice, 
-                                                   core::shared_ptr<const Surface>          surface, 
-                                                   const core::span<core::float32>&         queuePriorities)
+Device_Queue_Descriptor::Device_Queue_Descriptor(core::shared_ptr<const Physical_Device>  physicalDevice,
+                                                 core::shared_ptr<const Surface>          surface, 
+                                                 core::span<const core::float32>          queuePriorities)
+  :
+  m_queueDenotation(DEVICE_QUEUE_DENOTATION_PRESENT_BITS)
 {
   this->sType            = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
   this->pNext            = nullptr;
@@ -33,7 +37,7 @@ Device_Queue_Create_Info::Device_Queue_Create_Info(core::shared_ptr<const Physic
   this->pQueuePriorities = queuePriorities.data();
 }
 
-bool Device_Queue_Create_Info::operator==(const Device_Queue_Create_Info& other)
+bool Device_Queue_Descriptor::operator==(const Device_Queue_Descriptor& other) const
 {
   if (this->queueFamilyIndex != other.queueFamilyIndex || this->queueCount != other.queueCount)
     return false;
@@ -47,12 +51,12 @@ bool Device_Queue_Create_Info::operator==(const Device_Queue_Create_Info& other)
   return true;
 }
 
-bool Device_Queue_Create_Info::operator!=(const Device_Queue_Create_Info& other)
+bool Device_Queue_Descriptor::operator!=(const Device_Queue_Descriptor& other) const
 {
   return !operator==(other);
 }
 
-core::uint32 Device_Queue_Create_Info::chooseFamilyIndex(VkQueueFlagBits queueType, const core::vector<VkQueueFamilyProperties>& queueFamilyProperties) const
+core::uint32 Device_Queue_Descriptor::chooseFamilyIndex(VkQueueFlagBits queueType, const core::vector<VkQueueFamilyProperties>& queueFamilyProperties) const
 {
   core::uint32 queueFamilyIndex = 0;
   if (queueType == VK_QUEUE_TRANSFER_BIT)
@@ -79,9 +83,9 @@ core::uint32 Device_Queue_Create_Info::chooseFamilyIndex(VkQueueFlagBits queueTy
   return 0u;
 }
 
-core::uint32 Device_Queue_Create_Info::chooseFamilyIndex(core::shared_ptr<const Physical_Device>       physicalDevice,
-                                                         core::shared_ptr<const Surface>               surface, 
-                                                         const core::vector<VkQueueFamilyProperties>&  queueFamilyProperties) const
+core::uint32 Device_Queue_Descriptor::chooseFamilyIndex(core::shared_ptr<const Physical_Device>       physicalDevice,
+                                                        core::shared_ptr<const Surface>               surface, 
+                                                        const core::vector<VkQueueFamilyProperties>&  queueFamilyProperties) const
 {
   core::uint32 queueFamilyIndex = 0;
   for (auto const& property : queueFamilyProperties)
@@ -94,6 +98,18 @@ core::uint32 Device_Queue_Create_Info::chooseFamilyIndex(core::shared_ptr<const 
   }
   core::logError(core::Debug::Channel::Graphics, "Failed to choose family index of surface queue");
   return 0;
+}
+
+Device_Queue_Denotation_Flag_Bits queueFlagBitsToDenotation(VkQueueFlagBits flag)
+{
+  switch (flag)
+  {
+  case VK_QUEUE_GRAPHICS_BIT: return DEVICE_QUEUE_DENOTATION_GRAPHICS_BITS;
+  case VK_QUEUE_TRANSFER_BIT: return DEVICE_QUEUE_DENOTATION_TRANSFER_BITS;
+  default:
+    core::logError(core::Debug::Channel::Graphics, "Unknown flag for Device_Queue_Info::queueFlagToDenotation!");
+  }
+  return DEVICE_QUEUE_DENOTATION_MAX_BITS;
 }
 
 }

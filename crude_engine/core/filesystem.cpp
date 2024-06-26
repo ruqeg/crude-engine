@@ -11,18 +11,19 @@
 
 module crude.core.filesystem;
 
+import crude.core.logger;
+
 namespace crude::core
 {
 
-Filesystem& Filesystem::getInstance()
-{
-  Filesystem instance;
-  return instance;
-}
-
-Filesystem::Result Filesystem::read(const char* filename, span<char>& buffer)
+Filesystem_Result readFile(const char* filename, span<char>& buffer)
 {
   FILE *file = fopen(filename, "rb");
+  if (file == nullptr)
+  {
+    core::logError(core::Debug::Channel::FileIO, "Failed to open file %s!", filename);
+    return FILESYSTEM_RESULT_FAILED_OPEN;
+  }
   fseek(file, 0, SEEK_END);
   size_t fileSize = ftell(file);
   fseek(file, 0, SEEK_SET);
@@ -30,19 +31,25 @@ Filesystem::Result Filesystem::read(const char* filename, span<char>& buffer)
   if (buffer.size() < fileSize + 1)
   {
     fclose(file);
-    return RESULT_OUT_OF_RANGE;
+    core::logError(core::Debug::Channel::FileIO, "Failed to read file %s! Out of range!", filename);
+    return FILESYSTEM_RESULT_OUT_OF_RANGE;
   }
 
   fread(buffer.data(), fileSize, 1, file);
   buffer[fileSize] = 0;
   fclose(file);
 
-  return RESULT_SUCCESS;
+  return FILESYSTEM_RESULT_SUCCESS;
 }
 
-Filesystem::Result Filesystem::read(const char* filename, vector<char>& buffer)
+Filesystem_Result readFile(const char* filename, vector<char>& buffer)
 {
   FILE* file = fopen(filename, "rb");
+  if (file == nullptr)
+  {
+    core::logError(core::Debug::Channel::FileIO, "Failed to open file %s!", filename);
+    return FILESYSTEM_RESULT_FAILED_OPEN;
+  }
   fseek(file, 0, SEEK_END);
   size_t fileSize = ftell(file);
   fseek(file, 0, SEEK_SET);
@@ -56,15 +63,16 @@ Filesystem::Result Filesystem::read(const char* filename, vector<char>& buffer)
   buffer[fileSize] = 0;
   fclose(file);
 
-  return RESULT_SUCCESS;
+  return FILESYSTEM_RESULT_SUCCESS;
 }
 
-bool Filesystem::fileAccess(const char* filename)
+bool checkFileAccess(const char* filename)
 {
   return (_access(filename, F_OK) == 0);
 }
 
-constexpr char Filesystem::separator() {
+constexpr char getFileSeparator() 
+{
 #ifdef _WIN32
   return '\\';
 #else

@@ -17,6 +17,9 @@ public:
   Surface_Capabilities_KHR() = default;
   explicit Surface_Capabilities_KHR(VkSurfaceCapabilitiesKHR capabilities) noexcept : m_capabilities(capabilities) {}
 public:
+  core::uint32 getMinImageCount() const { return  m_capabilities.minImageCount; }
+  core::uint32 getMaxImageCount() const { return  m_capabilities.maxImageCount; }
+  const VkSurfaceTransformFlagBitsKHR& getCurrentTransform() const { return m_capabilities.currentTransform; }
   VkExtent2D calculateSurfaceExtentInPixels(VkExtent2D actualExtentInPixels)
   {
     if (m_capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max())

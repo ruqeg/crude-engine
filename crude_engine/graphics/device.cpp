@@ -1,4 +1,5 @@
 #include <vulkan/vulkan.hpp>
+#include <algorithm>
 
 module crude.graphics.device;
 
@@ -13,21 +14,23 @@ import crude.core.logger;
 namespace crude::graphics
 {
 
-Device::Device(core::shared_ptr<const Physical_Device>      physicalDevice,
-               const core::span<Device_Queue_Create_Info>&  queueDescriptors,
-               const VkPhysicalDeviceFeatures&              enabledFeatures,
-               core::span<const char* const>                enabledExtensions,
-               core::span<const char* const>                enabledLayers)
+Device::Device(core::shared_ptr<const Physical_Device>     physicalDevice,
+               core::span<const Device_Queue_Descriptor>   queueDescriptors,
+               const VkPhysicalDeviceFeatures&             enabledFeatures,
+               core::span<const char* const>               enabledExtensions,
+               core::span<const char* const>               enabledLayers)
   :
   m_physicalDevice(physicalDevice)
 {
+  std::unique_copy(queueDescriptors.begin(), queueDescriptors.end(), m_queueDescriptors.begin());
+  core::vector<VkDeviceQueueCreateInfo> queueDescriptorsData(m_queueDescriptors.begin(), m_queueDescriptors.end());
+
   VkDeviceCreateInfo vkDeviceCreateInfo{};
   vkDeviceCreateInfo.sType                    = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
   vkDeviceCreateInfo.pNext                    = nullptr;
   vkDeviceCreateInfo.flags                    = 0u;
-
-  vkDeviceCreateInfo.queueCreateInfoCount     = queueDescriptors.size();
-  vkDeviceCreateInfo.pQueueCreateInfos        = queueDescriptors.data();
+  vkDeviceCreateInfo.queueCreateInfoCount     = queueDescriptorsData.size();
+  vkDeviceCreateInfo.pQueueCreateInfos        = queueDescriptorsData.data();
   vkDeviceCreateInfo.pEnabledFeatures         = &enabledFeatures;
   vkDeviceCreateInfo.enabledExtensionCount    = enabledExtensions.size();
   vkDeviceCreateInfo.ppEnabledExtensionNames  = enabledExtensions.data();
@@ -48,9 +51,10 @@ core::shared_ptr<const Physical_Device> Device::getPhysicalDevice() const
   return m_physicalDevice;
 }
   
-core::Optional<core::shared_ptr<Queue>> Device::getQueue(VkQueueFlagBits flags, core::uint32 queueIndex) const
+core::Optional<core::shared_ptr<Queue>> Device::getQueueByFlag(VkQueueFlagBits flags, core::uint32 queueIndex) const
 {
-  const Device_Queue_Create_Info queueDescription(m_physicalDevice, flags, {});
+  // !TODO
+  const Device_Queue_Descriptor queueDescription(m_physicalDevice, flags, {});
   core::shared_ptr<Queue> queue = core::allocateShared<Queue>(flags, queueDescription.queueFamilyIndex, queueIndex);
   vkGetDeviceQueue(m_handle, queueDescription.queueFamilyIndex, queueIndex, &queue->getHandle());
   if (queue->getHandle() == VK_NULL_HANDLE)
@@ -63,9 +67,10 @@ core::Optional<core::shared_ptr<Queue>> Device::getQueue(VkQueueFlagBits flags, 
 
 core::Optional<core::shared_ptr<Queue>> Device::getQueueByFamily(core::uint32 queueFamilyIndex, core::uint32 queueIndex) const
 {
+  // !TODO
   for (auto flag : { VK_QUEUE_GRAPHICS_BIT, VK_QUEUE_COMPUTE_BIT, VK_QUEUE_TRANSFER_BIT })
   {
-    auto queue = getQueue(flag, queueIndex);
+    auto queue = getQueueByFlag(flag, queueIndex);
     if (queue.hasValue() && queue->getFamilyIndex() == queueFamilyIndex)
       return queue;
   }
@@ -76,19 +81,7 @@ void Device::updateDescriptorSets(const core::span<const Write_Descriptor_Set>& 
                                   const core::span<const VkCopyDescriptorSet>&   descriptorCopies)
 {
   core::vector<VkWriteDescriptorSet> vkDescriptorWrites(descriptorWrites.size());
-
-
-  //!TODO WTF???
-  auto first = descriptorWrites.begin();
-  auto last = descriptorWrites.end();
-  core::vector<VkWriteDescriptorSet>::iterator dFirst = vkDescriptorWrites.begin();
-  //Algorithms::copy(first, last, dFirst);
-
-  while (first != last)
-  {
-    *dFirst = *first;
-    ++dFirst; ++first;
-  }
+  core::copy(descriptorWrites.begin(), descriptorWrites.end(), vkDescriptorWrites.begin());
 
   vkUpdateDescriptorSets(
     m_handle, 
@@ -125,6 +118,11 @@ bool Device::resetForFences(core::span<Fence> fences) const
   const VkResult result = vkResetFences(m_handle, fencesHandles.size(), fencesHandles.data());
   vulkanHandleResult(result, "failed to reset fences");
   return result != VK_ERROR_OUT_OF_DEVICE_MEMORY;
+}
+
+const core::vector<Device_Queue_Descriptor>& Device::getQueueDescriptors() const
+{
+  return m_queueDescriptors;
 }
 
 }

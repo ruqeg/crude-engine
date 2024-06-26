@@ -174,19 +174,18 @@ void Renderer::initializeDevice()
 
 void Renderer::initializeSwapchain()
 {
-  VkSurfaceCapabilitiesKHR surfaceCapabilites = m_device->getPhysicalDevice()->getSurfaceCapabilitis(m_surface);
-  const VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(m_device->getPhysicalDevice()->getSurfaceFormats(m_surface));
-  const VkPresentModeKHR presentMode = m_device->getPhysicalDevice()->findSurfacePresentMode(VK_PRESENT_MODE_MAILBOX_KHR);
-  const VkExtent2D extent = surfaceCapabilites.calculateSurfaceExtentInPixels({ m_windowContainer.getWidth(), m_windowContainer.getHeight()});
+  Surface_Capabilities_KHR surfaceCapabilites = m_device->getPhysicalDevice()->getSurfaceCapabilitis(m_surface);
+  const VkSurfaceFormatKHR surfaceFormat = m_device->getPhysicalDevice()->findSurfaceFormat(m_surface, VK_FORMAT_B8G8R8A8_SRGB, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR);
+  const VkPresentModeKHR presentMode = m_device->getPhysicalDevice()->findSurfacePresentMode(m_surface, VK_PRESENT_MODE_MAILBOX_KHR);
+  const VkExtent2D extent = surfaceCapabilites.calculateSurfaceExtentInPixels({ m_windowContainer->getWidth(), m_windowContainer->getHeight()});
 
-  core::uint32 imageCount = surfaceCapabilites.minImageCount + 1u;
-  if (surfaceCapabilites.maxImageCount > 0u && imageCount > surfaceCapabilites.maxImageCount)
+  core::uint32 imageCount = surfaceCapabilites.getMinImageCount() + 1u;
+  if (surfaceCapabilites.getMinImageCount() > 0u && imageCount > surfaceCapabilites.getMaxImageCount())
   {
-    imageCount = surfaceCapabilites.maxImageCount;
+    imageCount = surfaceCapabilites.getMaxImageCount();
   }
 
-  const Queue_Family_Indices queueIndices = findDeviceQueueFamilies(m_device->getPhysicalDevice());
-  core::vector<core::uint32> queueFamilyIndices = { queueIndices.graphicsFamily.value(), queueIndices.presentFamily.value() };
+  core::vector<core::uint32> queueFamilyIndices = { m_graphicsQueue->getFamilyIndex(), m_presentQueue->getFamilyIndex() };
 
   m_swapchain = core::allocateShared<Swap_Chain>(
     m_device,
@@ -198,7 +197,7 @@ void Renderer::initializeSwapchain()
     1u,
     VK_SHARING_MODE_CONCURRENT,
     queueFamilyIndices,
-    surfaceCapabilites.currentTransform,
+    surfaceCapabilites.getCurrentTransform(),
     VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
     presentMode,
     VK_TRUE,
@@ -352,8 +351,10 @@ void Renderer::initalizeGraphicsPipeline()
   const char* vertShaderPathA = "../../crude_example/basic_triangle_examle/shader.vert.spv";
   const char* fragShaderPathA = "../../crude_example/basic_triangle_examle/shader.frag.spv";
 
-  const auto vertShaderCode = readFile(vertShaderPathA);
-  const auto fragShaderCode = readFile(fragShaderPathA);
+  core::vector<char> vertShaderCode;
+  core::vector<char> fragShaderCode;
+  core::readFile(vertShaderPathA, vertShaderCode);
+  core::readFile(fragShaderPathA, fragShaderCode);
   auto vertShaderModule = core::allocateShared<Shader_Module>(m_device, vertShaderCode);
   auto fragShaderModule = core::allocateShared<Shader_Module>(m_device, fragShaderCode);
 
@@ -411,25 +412,24 @@ void Renderer::initalizeGraphicsPipeline()
 
 void Renderer::initalizeCommandPool()
 {
-  const Queue_Family_Indices queueIndices = findDeviceQueueFamilies(m_device->getPhysicalDevice());
-  m_graphicsCommandPool = core::allocateShared<Command_Pool>(m_device, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, queueIndices.graphicsFamily.value());
+  m_graphicsCommandPool = core::allocateShared<Command_Pool>(m_device, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, m_graphicsQueue->getFamilyIndex());
   m_transferCommandPool = m_graphicsCommandPool; // = core::allocateShared<Command_Pool>(m_device, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, queueIndices.transferFamily.value());
 }
 
 void Renderer::initializeColorResources()
-{
+{/*
   VkSurfaceCapabilitiesKHR surfaceCapabilites = m_device->getPhysicalDevice()->getSurfaceCapabilitis(m_surface);
   const VkExtent2D extent = chooseSwapExtent(surfaceCapabilites);
   m_colorAttachment = core::allocateShared<Color_Attachment>(
     m_device, m_swapchainImages.front()->getFormat(), extent,
     1u, m_device->getPhysicalDevice()->getProperties().getMaximumUsableSampleCount(), VK_SHARING_MODE_EXCLUSIVE);
-  m_colorAttachmentView = core::allocateShared<Image_View>(m_colorAttachment, Image_Subresource_Range(m_colorAttachment));
+  m_colorAttachmentView = core::allocateShared<Image_View>(m_colorAttachment, Image_Subresource_Range(m_colorAttachment));*/
 }
 
 void Renderer::initializeDepthImage()
 {
-  VkSurfaceCapabilitiesKHR surfaceCapabilites = m_device->getPhysicalDevice()->getSurfaceCapabilitis(m_surface);
-  const VkExtent2D extent = chooseSwapExtent(surfaceCapabilites);
+  Surface_Capabilities_KHR surfaceCapabilites = m_device->getPhysicalDevice()->getSurfaceCapabilitis(m_surface);
+  const VkExtent2D extent = surfaceCapabilites.calculateSurfaceExtentInPixels({ m_windowContainer->getWidth(), m_windowContainer->getHeight() });
   const VkFormat depthFormat = findDepthFormatSupportedByDevice(m_device->getPhysicalDevice());
   m_depthStencilAttachment = core::allocateShared<Depth_Stencil_Attachment>(
     m_device, depthFormat, extent, 1u, 
@@ -543,12 +543,21 @@ core::shared_ptr<Physical_Device> Renderer::pickPhysicalDevice()
   auto physicalDevices = m_instance->getPhysicalDevices();
   for (auto& physicalDevice : physicalDevices)
   {
-    const Queue_Family_Indices queueIndices = findDeviceQueueFamilies(physicalDevice);
+    bool supportGraphics = false;
+    bool supportPresent = false;
+
+    // !TODO
+    for (core::uint32 i = 0; i < physicalDevice->getQueueFamilyProperties().size(); ++i)
+    {
+      if (physicalDevice->getQueueFamilyProperties()[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) supportGraphics = true;
+      if (physicalDevice->checkPresentSupport(m_surface, i)) supportPresent = true;
+    }
+
     const bool extensionsSupported = physicalDevice->checkExtensionSupport(core::array<const char*, 1>{ VK_KHR_SWAPCHAIN_EXTENSION_NAME });
     const bool swapChainAdequate = physicalDevice->checkSurfaceSupport(m_surface);
     const auto& supportedFeatures = physicalDevice->getFeatures();
 
-    if (queueIndices.isComplete() && extensionsSupported && swapChainAdequate && supportedFeatures.samplerAnisotropy)
+    if (supportGraphics && supportPresent && extensionsSupported && swapChainAdequate && supportedFeatures.samplerAnisotropy)
     {
       core::logInfo(core::Debug::Channel::Graphics, "Selected physical device %s %i", physicalDevice->getProperties().getDeviceName(), physicalDevice->getProperties().getDeviceType());
       return physicalDevice;
@@ -557,61 +566,27 @@ core::shared_ptr<Physical_Device> Renderer::pickPhysicalDevice()
   return nullptr;
 }
 
-Renderer::Queue_Family_Indices Renderer::findDeviceQueueFamilies(core::shared_ptr<const Physical_Device> physicalDevice)
-{
-  Queue_Family_Indices indices;
-  
-  const auto& queueProperties = physicalDevice->getQueueFamilyProperties();
-  for (core::uint32 i = 0; i < queueProperties.size(); ++i)
-  {
-    if (queueProperties[i].queueFlags & VK_QUEUE_GRAPHICS_BIT)
-      indices.graphicsFamily = i;
-    //else if (queueProperties[i].queueFlags & VK_QUEUE_TRANSFER_BIT)
-    //  indices.transferFamily = i;
-  
-    if (physicalDevice->checkPresentSupport(m_surface, i))
-      indices.presentFamily = i;
-  }
-
-  return indices;
-}
-
-
 void Renderer::initializeLogicDevice(core::shared_ptr<const Physical_Device> physicalDevice)
 {
   VkPhysicalDeviceFeatures deviceFeatures{};
   deviceFeatures.samplerAnisotropy = VK_TRUE;
 
-  float queuePriorities[] = { 1.f };
-
-  core::vector<Device_Queue_Create_Info> queueInfos =
+  core::array<Device_Queue_Descriptor, 2> queueInfos =
   {
-    Device_Queue_Create_Info(physicalDevice, VK_QUEUE_GRAPHICS_BIT, queuePriorities),
-    Device_Queue_Create_Info(physicalDevice, m_surface, queuePriorities),
+    Device_Queue_Descriptor(physicalDevice, VK_QUEUE_GRAPHICS_BIT),
+    Device_Queue_Descriptor(physicalDevice, m_surface),
   };
 
-  auto uQueueInfos = std::unique(queueInfos.begin(), queueInfos.end());
+  m_device = core::allocateShared<Device>(physicalDevice, queueInfos, deviceFeatures, deviceEnabledExtensions, instanceEnabledLayers);
 
-  m_device = core::allocateShared<Device>(physicalDevice, core::span(queueInfos.begin(), uQueueInfos), deviceFeatures, deviceEnabledExtensions, instanceEnabledLayers);
-  m_graphicsQueue = m_device->getQueueByFamily(queueInfos[0].queueFamilyIndex, 0u).valueOr(nullptr);
-  m_presentQueue = m_device->getQueueByFamily(queueInfos[1].queueFamilyIndex, 0u).valueOr(nullptr);
+  for (auto it = m_device->getQueueDescriptors().begin(); it != m_device->getQueueDescriptors().end(); ++it)
+  {
+    if (it->getDenotation() == DEVICE_QUEUE_DENOTATION_GRAPHICS_BITS)
+      m_graphicsQueue = m_device->getQueueByFamily(it->queueFamilyIndex, 0u).valueOr(nullptr);
+    if (it->getDenotation() == DEVICE_QUEUE_DENOTATION_PRESENT_BITS)
+      m_presentQueue = m_device->getQueueByFamily(it->queueFamilyIndex, 0u).valueOr(nullptr);
+  }
   m_transferQueue = m_graphicsQueue;
-}
-
-core::vector<char> Renderer::readFile(const char* filename)
-{
-  if (!core::Filesystem::getInstance().fileAccess(filename))
-  {
-    core::logError(core::Debug::Channel::Graphics, "Failed to access file %s!", filename);
-  }
-
-  core::vector<char> buffer;
-  if (core::Filesystem::getInstance().read(filename, buffer) != core::Filesystem::RESULT_SUCCESS)
-  {
-    core::logError(core::Debug::Channel::Graphics, "Failed to read file %s!", filename);
-  }
-
-  return buffer;
 }
 
 }

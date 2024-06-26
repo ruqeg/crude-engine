@@ -53,18 +53,6 @@ struct Uniform_Buffer_Object
 // !TODO :D
 class Renderer
 {
-private:
-  struct Queue_Family_Indices
-  {
-    core::Optional<core::uint32> graphicsFamily;
-    core::Optional<core::uint32> presentFamily;
-    core::Optional<core::uint32> transferFamily;
-
-    bool isComplete() const
-    {
-      return graphicsFamily.hasValue() && presentFamily.hasValue(); //&& transferFamily.hasValue();
-    }
-  };
 public:
   Renderer(core::shared_ptr<system::SDL_Window_Container> windowContainer);
   ~Renderer();
@@ -90,9 +78,7 @@ private:
   void initializeSyncObjects();
 private:
   core::shared_ptr<Physical_Device> pickPhysicalDevice();
-  Queue_Family_Indices findDeviceQueueFamilies(core::shared_ptr<const Physical_Device> physicalDevice);
   void initializeLogicDevice(core::shared_ptr<const Physical_Device> physicalDevice);
-  core::vector<char> readFile(const char* filename);
   core::shared_ptr<Render_Pass> initializeRenderPass();
   void recordCommandBuffer(core::shared_ptr<Command_Buffer> commandBuffer, core::uint32 imageIndex);
   void updateUniformBuffer(core::uint32 currentImage);

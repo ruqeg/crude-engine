@@ -2,6 +2,7 @@
 
 module crude.graphics.physical_device;
 
+import crude.core.logger;
 import crude.graphics.surface;
 
 namespace crude::graphics

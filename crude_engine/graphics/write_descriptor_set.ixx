@@ -12,7 +12,7 @@ export namespace crude::graphics
 
 class Descriptor_Set;
 
-class Write_Descriptor_Set : private VkWriteDescriptorSet
+class Write_Descriptor_Set : public VkWriteDescriptorSet
 {
 public:
   explicit Write_Descriptor_Set(core::shared_ptr<Descriptor_Set>  descriptorSet,
@@ -27,8 +27,6 @@ private:
   VkDescriptorBufferInfo            m_bufferInfo;
   VkDescriptorImageInfo             m_imageInfo;
   };
-
-  friend class Device;
 };
 
 }
