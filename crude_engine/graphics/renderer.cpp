@@ -14,6 +14,9 @@ import crude.math.constants;
 import crude.graphics.format_helper;
 import crude.graphics.generate_mipmaps;
 import crude.graphics.flush;
+import crude.graphics.vertex_gpu;
+import crude.graphics.index_gpu;
+import crude.scene.world;
 
 namespace crude::graphics
 {
@@ -41,15 +44,14 @@ core::array<scene::Index_Triangle_CPU, 4> indices =
 constexpr core::array<const char*, 1> deviceEnabledExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
 constexpr core::array<const char*, 1> instanceEnabledLayers = { "VK_LAYER_KHRONOS_validation" };
 
-Renderer::Renderer(core::shared_ptr<system::SDL_Window_Container> windowContainer)
-  :
-  m_windowContainer(windowContainer),
-  m_currentFrame(0u),
-  m_uniformBufferDesc{ 
-    Uniform_Buffer_Descriptor(0u, VK_SHADER_STAGE_VERTEX_BIT),
-    Uniform_Buffer_Descriptor(0u, VK_SHADER_STAGE_VERTEX_BIT)
-  },
-  m_textureSamplerDesc{Combined_Image_Sampler_Descriptor(1u, VK_SHADER_STAGE_FRAGMENT_BIT), Combined_Image_Sampler_Descriptor(1u, VK_SHADER_STAGE_FRAGMENT_BIT)}
+Renderer::Renderer(core::shared_ptr<system::SDL_Window_Container> windowContainer, core::shared_ptr<scene::World> world)
+  : m_windowContainer(windowContainer)
+  , m_currentFrame(0u)
+  , m_uniformBufferDesc{ 
+      Uniform_Buffer_Descriptor(0u, VK_SHADER_STAGE_VERTEX_BIT),
+      Uniform_Buffer_Descriptor(0u, VK_SHADER_STAGE_VERTEX_BIT)}
+  , m_textureSamplerDesc{Combined_Image_Sampler_Descriptor(1u, VK_SHADER_STAGE_FRAGMENT_BIT), Combined_Image_Sampler_Descriptor(1u, VK_SHADER_STAGE_FRAGMENT_BIT)}
+  , m_world(world)
 {
   initializeInstance();
   initializeSurface();
@@ -324,12 +326,8 @@ void Renderer::recordCommandBuffer(core::shared_ptr<Command_Buffer> commandBuffe
 
 void Renderer::updateUniformBuffer(core::uint32 currentImage)
 {
-  const core::float32 aspect = m_swapchain->getExtent().width / (core::float32)m_swapchain->getExtent().height;
-  m_camera.calculateViewToClipMatrix(math::CPI4, aspect, 0.1f, 10.0f);
-  m_camera.calculateWorldToViewMatrix();
-
-  scene::Camera_GPU* data = m_uniformBuffer[currentImage]->mapUnsafe();
-  *data = static_cast<scene::Camera_GPU>(m_camera);
+  Camera_GPU* data = m_uniformBuffer[currentImage]->mapUnsafe();
+  *data = Camera_GPU(m_world->getCamera());
   m_uniformBuffer[currentImage]->unmap();
 }
 
@@ -352,8 +350,8 @@ void Renderer::initalizeGraphicsPipeline()
   };
 
   Vertex_Input_State_Create_Info vertexInputStateInfo({
-    .bindings = core::span(&scene::Vertex_GPU::getBindingDescription(), 1u),
-    .attributes = scene::Vertex_GPU::getAttributeDescriptions()});
+    .bindings = core::span(&Vertex_GPU::getBindingDescription(), 1u),
+    .attributes = Vertex_GPU::getAttributeDescriptions()});
   
   Tessellation_State_Create_Info tesselationInfo(3u);
 
@@ -520,7 +518,7 @@ void Renderer::initializeUniformBuffers()
 {
   for (core::uint32 i = 0; i < cFramesCount; ++i)
   {
-    m_uniformBuffer[i] = core::allocateShared<Uniform_Buffer<scene::Camera_GPU>>(m_device);
+    m_uniformBuffer[i] = core::allocateShared<Uniform_Buffer<Camera_GPU>>(m_device);
     m_uniformBufferDesc[i].update(m_uniformBuffer[i]);
   }
   for (core::uint32 i = 0; i < cFramesCount; ++i)

@@ -5,9 +5,10 @@ target_sources(crude_engine
 target_sources(crude_engine
     PUBLIC
     FILE_SET cxx_modules_scene TYPE CXX_MODULES FILES
+    world.ixx
     image.ixx
     camera.ixx
-    index.ixx
-    vertex.ixx
+    index_cpu.ixx
+    vertex_cpu.ixx
     mesh.ixx
     model_geometry.ixx)

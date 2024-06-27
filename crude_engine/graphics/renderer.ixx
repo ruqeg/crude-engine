@@ -38,20 +38,25 @@ export import crude.graphics.model_buffer;
 export import crude.graphics.image_attachment;
 export import crude.graphics.uniform_buffer;
 export import crude.core.filesystem;
-export import crude.scene.camera;
+export import crude.graphics.camera_gpu;
+
+export namespace crude::scene
+{
+
+class World;
+
+}
 
 export namespace crude::graphics
 {
 
-// !TODO :D
 class Renderer
 {
 public:
-  Renderer(core::shared_ptr<system::SDL_Window_Container> windowContainer);
+  Renderer(core::shared_ptr<system::SDL_Window_Container> windowContainer, core::shared_ptr<scene::World> world);
   ~Renderer();
 public:
   void drawFrame();
-  scene::Camera& getCamera() { return m_camera; }
 private:
   void initializeInstance();
   void initializeSurface();
@@ -78,6 +83,7 @@ private:
 private:
   static constexpr core::uint32 cFramesCount = 2u;
 private:
+  core::shared_ptr<scene::World>                        m_world;
   core::shared_ptr<Queue>                               m_graphicsQueue;
   core::shared_ptr<Queue>                               m_presentQueue;
   core::shared_ptr<Queue>                               m_transferQueue;
@@ -104,13 +110,12 @@ private:
   core::array<Uniform_Buffer_Descriptor, cFramesCount>         m_uniformBufferDesc;
   core::array<Combined_Image_Sampler_Descriptor, cFramesCount> m_textureSamplerDesc;
   core::array<core::shared_ptr<Descriptor_Set>, cFramesCount>  m_descriptorSets;
-  core::array<core::shared_ptr<Uniform_Buffer<scene::Camera_GPU>>, cFramesCount>  m_uniformBuffer;
+  core::array<core::shared_ptr<Uniform_Buffer<Camera_GPU>>, cFramesCount>  m_uniformBuffer;
   core::array<core::shared_ptr<Command_Buffer>, cFramesCount>   m_graphicsCommandBuffers;
   core::array<core::shared_ptr<Semaphore>, cFramesCount>        m_imageAvailableSemaphores;
   core::array<core::shared_ptr<Semaphore>, cFramesCount>        m_renderFinishedSemaphores;
   core::array<core::shared_ptr<Fence>, cFramesCount>            m_inFlightFences;
   core::uint32                                                  m_currentFrame;
-  scene::Camera                                                 m_camera;
 };
 
 }

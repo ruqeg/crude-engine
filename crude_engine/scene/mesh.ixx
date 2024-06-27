@@ -2,8 +2,8 @@ module;
 
 export module crude.scene.mesh;
 
-export import crude.scene.vertex;
-export import crude.scene.index;
+export import crude.scene.vertex_cpu;
+export import crude.scene.index_cpu;
 export import crude.core.std_containers_heap;
 export import crude.core.std_containers_stack;
 

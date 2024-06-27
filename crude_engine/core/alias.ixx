@@ -24,8 +24,9 @@ using uint64 = uint64_t;
 using float32 = float;
 using float64 = double;
 
-using char8  = char;
-using char16 = wchar_t;
+using char8  = char8_t;
+using char16 = char16_t;
+using char32 = char32_t;
 
 using bool8  = int8;
 using bool16 = int16;

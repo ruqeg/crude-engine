@@ -5,19 +5,10 @@ export module crude.scene.camera;
 export import crude.core.alias;
 export import crude.math.matrix;
 export import crude.math.fuicont;
+export import crude.core.std_containers_heap;
 
 export namespace crude::scene
 {
-
-struct Camera_GPU
-{
-  math::Float4x4  worldToClip;
-  math::Float4x4  worldToView;
-  math::Float4x4  viewToClip;
-  math::Float4x4  clipToView;
-  math::Float4x4  viewToWorld;
-  math::Float4x4  clipToWorld;
-};
 
 class Camera
 {
@@ -36,6 +27,8 @@ public:
   void setRotation(core::float32 x, core::float32 y, core::float32 z);
   void addRotation(const math::Vector& addedRotation);
   void addRotation(core::float32 x, core::float32 y, core::float32 z);
+  void setName(const core::u8string& name) { m_name = name; }
+  const core::u8string& getName() const { return m_name; }
 public:
   const math::Matrix& getWorldToClipMatrix() const { return m_worldToClipMatrix; }
   const math::Matrix& getClipToWorldMatrix() const { return m_clipToWorldMatrix; }
@@ -59,8 +52,6 @@ public:
   core::float32 getFovRadians() const { return m_fovRadians; }
   core::float32 getNearZ() const { return m_nearZ;  }
   core::float32 getFarZ() const { return m_farZ; }
-public:
-  explicit operator Camera_GPU();
 private:
   math::Vector m_positionVector;
   math::Vector m_rotationVector;
@@ -82,6 +73,8 @@ private:
   math::Float4x4 m_viewToWorldFloat4x4;
   math::Float4x4 m_viewToClipFloat4x4;
   math::Float4x4 m_clipToViewFloat4x4;
+private:
+  core::u8string m_name;
 private:
   core::float32 m_fovRadians;
   core::float32 m_nearZ;

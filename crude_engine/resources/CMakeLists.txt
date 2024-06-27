@@ -5,5 +5,5 @@
 target_sources(crude_engine
     PUBLIC
     FILE_SET cxx_modules_resources TYPE CXX_MODULES FILES
-    model_loader.ixx
+    world_loader.ixx
     image_loader.ixx)

@@ -27,6 +27,7 @@ public:
   
   core::uint32 getWidth() const;
   core::uint32 getHeight() const;
+  core::float32 getAspect() const;
 
 private:
   std::shared_ptr<SDL_Window> m_window;

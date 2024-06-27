@@ -44,6 +44,9 @@ target_sources(crude_engine
 target_sources(crude_engine
     PUBLIC
     FILE_SET cxx_modules_graphics TYPE CXX_MODULES FILES
+    vertex_gpu.ixx
+    index_gpu.ixx
+    camera_gpu.ixx
     push_constant_range.ixx
     scissor.ixx
     viewport.ixx

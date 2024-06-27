@@ -1,16 +1,19 @@
 module crude.engine;
 
 import crude.core.logger;
+import crude.math.constants;
 
 namespace crude
 {
 
 Engine::Engine(core::shared_ptr<system::SDL_Window_Container> windowContainer)
-  :
-  m_renderer(windowContainer)
 {
+  scene::Camera camera;
+  camera.calculateViewToClipMatrix(math::CPI4, windowContainer->getAspect(), 0.1f, 10.0f);
+  camera.setPosition(0, 0, -2);
+  m_world = core::allocateShared<scene::World>(core::vector{ camera });
+  m_renderer = core::allocateShared<graphics::Renderer>(windowContainer, m_world);
   m_timer.setFrameRate(60);
-  m_renderer.getCamera().setPosition(0.0, 0.0, -5.0);
 }
 
 void Engine::mainLoop()
@@ -37,27 +40,27 @@ void Engine::update(core::float64 elapsed)
   // !TODO :D
   if (m_ioManager.getKeyboardEH().keyIsPressed(system::Scancode::SDL_SCANCODE_W))
   {
-    m_renderer.getCamera().addPosition(math::svector::scale(m_renderer.getCamera().getForwardVector(), 7 * elapsed));
+    m_world->getCamera().addPosition(math::svector::scale(m_world->getCamera().getForwardVector(), 7 * elapsed));
   }
   if (m_ioManager.getKeyboardEH().keyIsPressed(system::Scancode::SDL_SCANCODE_S))
   {
-    m_renderer.getCamera().addPosition(math::svector::scale(m_renderer.getCamera().getForwardVector(), -7 * elapsed));
+    m_world->getCamera().addPosition(math::svector::scale(m_world->getCamera().getForwardVector(), -7 * elapsed));
   }
   if (m_ioManager.getKeyboardEH().keyIsPressed(system::Scancode::SDL_SCANCODE_A))
   {
-    m_renderer.getCamera().addPosition(math::svector::scale(m_renderer.getCamera().getRightVector(), -7 * elapsed));
+    m_world->getCamera().addPosition(math::svector::scale(m_world->getCamera().getRightVector(), -7 * elapsed));
   }
   if (m_ioManager.getKeyboardEH().keyIsPressed(system::Scancode::SDL_SCANCODE_D))
   {
-    m_renderer.getCamera().addPosition(math::svector::scale(m_renderer.getCamera().getRightVector(), 7 * elapsed));
+    m_world->getCamera().addPosition(math::svector::scale(m_world->getCamera().getRightVector(), 7 * elapsed));
   }
   if (m_ioManager.getKeyboardEH().keyIsPressed(system::Scancode::SDL_SCANCODE_E))
   {
-    m_renderer.getCamera().addPosition(math::svector::scale(m_renderer.getCamera().getTopVector(), -7 * elapsed));
+    m_world->getCamera().addPosition(math::svector::scale(m_world->getCamera().getTopVector(), -7 * elapsed));
   }
   if (m_ioManager.getKeyboardEH().keyIsPressed(system::Scancode::SDL_SCANCODE_Q))
   {
-    m_renderer.getCamera().addPosition(math::svector::scale(m_renderer.getCamera().getTopVector(), 7 * elapsed));
+    m_world->getCamera().addPosition(math::svector::scale(m_world->getCamera().getTopVector(), 7 * elapsed));
   }
   while (!m_ioManager.getMouseEH().eventBufferIsEmpty())
   {
@@ -66,18 +69,19 @@ void Engine::update(core::float64 elapsed)
     {
       if (m_ioManager.getMouseEH().isRightDown())
       {
-        m_renderer.getCamera().addRotation(
+        m_world->getCamera().addRotation(
           -0.15 * me.getPositionRelY() * elapsed,
           0.15 * me.getPositionRelX() * elapsed,
           0.f);
       }
     }
   }
+  m_world->getCamera().calculateWorldToViewMatrix();
 }
 
 void Engine::render()
 {
-  m_renderer.drawFrame();
+  m_renderer->drawFrame();
 }
 
 void Engine::initialize(const Engine_Config& config)

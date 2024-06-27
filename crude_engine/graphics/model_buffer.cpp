@@ -7,6 +7,8 @@ import crude.graphics.vertex_buffer;
 import crude.graphics.command_buffer;
 import crude.graphics.device;
 import crude.graphics.fence;
+import crude.graphics.vertex_gpu;
+import crude.graphics.index_gpu;
 
 namespace crude::graphics
 {
@@ -22,24 +24,24 @@ Model_Buffer::Model_Buffer(core::shared_ptr<Command_Buffer> commandBuffer,
     modelIndicesNum += meshRange.indexNum;
   }
 
-  core::vector<scene::Vertex_GPU> modelGpuVertices(modelVerticesNum);
-  core::vector<scene::Index_Triangle_GPU> modelGpuIndices(modelIndicesNum / 3);
+  core::vector<Vertex_GPU> modelGpuVertices(modelVerticesNum);
+  core::vector<Index_Triangle_GPU> modelGpuIndices(modelIndicesNum / 3);
   core::uint32 modelGpuVertexInx = 0u;
   core::uint32 modelGpuIndexInx = 0u;
   for (const scene::Mesh& mesh : modelGeometry.getMeshes())
   {
     for (const scene::Vertex_CPU vertexCPU : mesh.getVertices())
     {
-      modelGpuVertices[modelGpuVertexInx++] = static_cast<scene::Vertex_GPU>(vertexCPU);
+      modelGpuVertices[modelGpuVertexInx++] = Vertex_GPU(vertexCPU);
     }
     for (const scene::Index_Triangle_CPU indexCPU : mesh.getIndices())
     {
-      modelGpuIndices[modelGpuIndexInx++] = static_cast<scene::Index_Triangle_GPU>(indexCPU);
+      modelGpuIndices[modelGpuIndexInx++] = Index_Triangle_GPU(indexCPU);
     }
   }
 
   m_vertexBuffer = core::allocateShared<Vertex_Buffer>(commandBuffer, modelGpuVertices);
-  m_indexBuffer = core::allocateShared<Index_Buffer>(commandBuffer, scene::Index_Triangle_GPU::getType(), modelGpuIndices);
+  m_indexBuffer = core::allocateShared<Index_Buffer>(commandBuffer, Index_Triangle_GPU::getType(), modelGpuIndices);
 }
 
 core::shared_ptr<Vertex_Buffer> Model_Buffer::getVertexBuffer()

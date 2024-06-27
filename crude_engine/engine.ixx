@@ -8,6 +8,7 @@ export import crude.core.timer;
 export import crude.graphics.renderer;
 export import crude.network.network_system;
 export import crude.system.sdl_io_manager;
+export import crude.scene.world;
 
 export namespace crude
 {
@@ -33,9 +34,10 @@ private:
   static void initalizeSystem();
   static void initalizeNetwork();
 protected:
-  graphics::Renderer      m_renderer;
-  system::SDL_IO_Manager  m_ioManager;
-  core::Timer             m_timer;
+  core::shared_ptr<scene::World>        m_world;
+  core::shared_ptr<graphics::Renderer>  m_renderer;
+  system::SDL_IO_Manager                m_ioManager;
+  core::Timer                           m_timer;
   
 };
 

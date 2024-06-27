@@ -41,7 +41,7 @@ core::Optional<scene::Image> loadImage(const char* path, scene::Image_Format for
   if (texels == nullptr)
   {
     core::logError(core::Debug::Channel::FileIO, "Failed to load texture image \"%s\"!", path);
-    return {};
+    return core::nullopt;
   }
   
   core::shared_ptr<core::byte> texelsShared = core::shared_ptr<core::byte>(texels, [](core::byte* texels) {

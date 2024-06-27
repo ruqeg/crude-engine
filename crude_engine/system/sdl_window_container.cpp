@@ -36,6 +36,13 @@ core::uint32 SDL_Window_Container::getHeight() const
   return height;
 }
 
+core::float32 SDL_Window_Container::getAspect() const
+{
+  int width, height;
+  SDL_GetWindowSize(m_window.get(), &width, &height);
+  return static_cast<core::float32>(width) / height;
+}
+
 std::shared_ptr<SDL_Window> SDL_Window_Container::getWindow()
 {
   return m_window;

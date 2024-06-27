@@ -6,9 +6,11 @@ module;
 #include <vector>
 #include <deque>
 #include <queue>
+#include <string>
 
 export module crude.core.std_containers_heap;
 
+export import crude.core.alias;
 export import crude.core.std_allocator;
 
 export namespace crude::core
@@ -28,6 +30,10 @@ using deque = std::deque<T, Allocator>;
 
 template<class T, class Allocator = STD_Allocator<T>>
 using queue = std::queue<T, deque<T,  Allocator>>;
+
+using u8string = std::basic_string<core::char8, std::char_traits<core::char8>, STD_Allocator<core::char8>>;
+using u16string = std::basic_string<core::char16, std::char_traits<core::char16>, STD_Allocator<core::char16>>;
+using u32string = std::basic_string<core::char32, std::char_traits<core::char32>, STD_Allocator<core::char32>>;
 
 template<class T>
 using shared_ptr = std::shared_ptr<T>;
