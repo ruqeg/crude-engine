@@ -24,7 +24,7 @@ add_subdirectory(network)
 add_subdirectory(system)
 add_subdirectory(graphics)
 add_subdirectory(scene)
-add_subdirectory(utils)
+add_subdirectory(resources)
 
 source_group(core REGULAR_EXPRESSION "${CMAKE_CURRENT_SOURCE_DIR}/core/*")
 source_group(ecs REGULAR_EXPRESSION "${CMAKE_CURRENT_SOURCE_DIR}/ecs/*")
@@ -33,7 +33,7 @@ source_group(network REGULAR_EXPRESSION "${CMAKE_CURRENT_SOURCE_DIR}/network/*")
 source_group(system REGULAR_EXPRESSION "${CMAKE_CURRENT_SOURCE_DIR}/system/*")
 source_group(graphics REGULAR_EXPRESSION "${CMAKE_CURRENT_SOURCE_DIR}/graphics/*")
 source_group(scene REGULAR_EXPRESSION "${CMAKE_CURRENT_SOURCE_DIR}/scene/*")
-source_group(utils REGULAR_EXPRESSION "${CMAKE_CURRENT_SOURCE_DIR}/utils/*")
+source_group(resources REGULAR_EXPRESSION "${CMAKE_CURRENT_SOURCE_DIR}/resources/*")
 
 install(TARGETS crude_engine
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

@@ -9,6 +9,7 @@ import crude.math.fuicont;
 import crude.math.convert;
 import crude.math.matrix;
 import crude.scene.image;
+import crude.resources.image_loader;
 import crude.math.constants;
 import crude.graphics.format_helper;
 import crude.graphics.generate_mipmaps;
@@ -474,10 +475,7 @@ void Renderer::initializeSwapchainFramebuffers()
 
 void Renderer::initializeTextureImage()
 {
-  scene::Image image;
-  if (!image.load("../../crude_example/basic_triangle_examle/texture.jpg", scene::IMAGE_FORMAT_RGB_ALPHA))
-    return;
-
+  scene::Image image = resources::loadImage("../../crude_example/basic_triangle_examle/texture.jpg", scene::IMAGE_FORMAT_RGB_ALPHA).value();
   auto commandBuffer = core::allocateShared<Command_Buffer>(m_transferCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
   VkExtent3D extent;
   extent.width = image.getWidth();
