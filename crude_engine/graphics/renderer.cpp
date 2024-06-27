@@ -323,16 +323,12 @@ void Renderer::recordCommandBuffer(core::shared_ptr<Command_Buffer> commandBuffe
 
 void Renderer::updateUniformBuffer(core::uint32 currentImage)
 {
-  Uniform_Buffer_Object ubo{};
-
   const core::float32 aspect = m_swapchain->getExtent().width / (core::float32)m_swapchain->getExtent().height;
   m_camera.calculateViewToClipMatrix(math::CPI4, aspect, 0.1f, 10.0f);
   m_camera.calculateWorldToViewMatrix();
 
-  Uniform_Buffer_Object* data = m_uniformBuffer[currentImage]->mapUnsafe();
-  math::storeFloat4x4(data->model, math::smatrix::translation(0.0, 0.0, 0.0));
-  math::storeFloat4x4(data->view, m_camera.getWorldToViewMatrix());
-  math::storeFloat4x4(data->proj, m_camera.getViewToClipMatrix());
+  scene::Camera_GPU* data = m_uniformBuffer[currentImage]->mapUnsafe();
+  *data = static_cast<scene::Camera_GPU>(m_camera);
   m_uniformBuffer[currentImage]->unmap();
 }
 
@@ -526,7 +522,7 @@ void Renderer::initializeUniformBuffers()
 {
   for (core::uint32 i = 0; i < cFramesCount; ++i)
   {
-    m_uniformBuffer[i] = core::allocateShared<Uniform_Buffer<Uniform_Buffer_Object>>(m_device);
+    m_uniformBuffer[i] = core::allocateShared<Uniform_Buffer<scene::Camera_GPU>>(m_device);
     m_uniformBufferDesc[i].update(m_uniformBuffer[i]);
   }
   for (core::uint32 i = 0; i < cFramesCount; ++i)

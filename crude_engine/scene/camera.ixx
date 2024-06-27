@@ -9,6 +9,16 @@ export import crude.math.fuicont;
 export namespace crude::scene
 {
 
+struct Camera_GPU
+{
+  math::Float4x4  worldToClip;
+  math::Float4x4  worldToView;
+  math::Float4x4  viewToClip;
+  math::Float4x4  clipToView;
+  math::Float4x4  viewToWorld;
+  math::Float4x4  clipToWorld;
+};
+
 class Camera
 {
 public:
@@ -49,6 +59,8 @@ public:
   core::float32 getFovRadians() const { return m_fovRadians; }
   core::float32 getNearZ() const { return m_nearZ;  }
   core::float32 getFarZ() const { return m_farZ; }
+public:
+  explicit operator Camera_GPU();
 private:
   math::Vector m_positionVector;
   math::Vector m_rotationVector;

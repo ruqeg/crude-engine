@@ -43,13 +43,6 @@ export import crude.scene.camera;
 export namespace crude::graphics
 {
 
-struct Uniform_Buffer_Object
-{
-  math::Float4x4 model;
-  math::Float4x4 view;
-  math::Float4x4 proj;
-};
-
 // !TODO :D
 class Renderer
 {
@@ -111,7 +104,7 @@ private:
   core::array<Uniform_Buffer_Descriptor, cFramesCount>         m_uniformBufferDesc;
   core::array<Combined_Image_Sampler_Descriptor, cFramesCount> m_textureSamplerDesc;
   core::array<core::shared_ptr<Descriptor_Set>, cFramesCount>  m_descriptorSets;
-  core::array<core::shared_ptr<Uniform_Buffer<Uniform_Buffer_Object>>, cFramesCount>  m_uniformBuffer;
+  core::array<core::shared_ptr<Uniform_Buffer<scene::Camera_GPU>>, cFramesCount>  m_uniformBuffer;
   core::array<core::shared_ptr<Command_Buffer>, cFramesCount>   m_graphicsCommandBuffers;
   core::array<core::shared_ptr<Semaphore>, cFramesCount>        m_imageAvailableSemaphores;
   core::array<core::shared_ptr<Semaphore>, cFramesCount>        m_renderFinishedSemaphores;

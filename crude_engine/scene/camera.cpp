@@ -98,4 +98,14 @@ void Camera::addRotation(core::float32 x, core::float32 y, core::float32 z)
   m_rotationVector = math::loadFloat3(m_rotationFloat3);
 }
 
+Camera::operator Camera_GPU()
+{
+  Camera_GPU cameraGpu;
+  cameraGpu.worldToView = m_worldToViewFloat4x4;
+  cameraGpu.viewToClip = m_viewToClipFloat4x4;
+  cameraGpu.clipToView = m_clipToViewFloat4x4;
+  cameraGpu.viewToWorld = m_viewToWorldFloat4x4;
+  return cameraGpu;
+}
+
 }
