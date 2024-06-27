@@ -13,11 +13,10 @@ namespace crude::graphics
 
 Pipeline_Layout::Pipeline_Layout(core::shared_ptr<const Device>                                      device,
                                  const core::vector<core::shared_ptr<const Descriptor_Set_Layout>>&  descriptorSetLayouts,
-                                 const core::vector<VkPushConstantRange>&                            pushConstantRanges)
-  :
-  m_device(device),
-  m_setLayouts(descriptorSetLayouts),
-  m_pushConstantRanges(pushConstantRanges)
+                                 const core::vector<Push_Constant_Range_Base>&                       pushConstantRanges)
+  : m_device(device)
+  , m_setLayouts(descriptorSetLayouts)
+  , m_pushConstantRanges(pushConstantRanges)
 {
   core::vector<VkDescriptorSetLayout> vkDescriptorSetLayoutHandles(m_setLayouts.size());
   core::copyc(m_setLayouts.begin(), m_setLayouts.end(), vkDescriptorSetLayoutHandles.begin(), [](auto& src, auto& dst) -> void {

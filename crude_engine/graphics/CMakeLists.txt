@@ -44,6 +44,7 @@ target_sources(crude_engine
 target_sources(crude_engine
     PUBLIC
     FILE_SET cxx_modules_graphics TYPE CXX_MODULES FILES
+    push_constant_range.ixx
     scissor.ixx
     viewport.ixx
     surface_capabilities_khr.ixx
