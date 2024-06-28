@@ -8,7 +8,7 @@ import crude.graphics.vulkan_utils;
 namespace crude::graphics
 {
 
-Shader_Module::Shader_Module(core::shared_ptr<const Device> device, core::span<const char> code)
+Shader_Module::Shader_Module(core::shared_ptr<const Device> device, core::span<const Spirv_Word> code)
   :
   m_device(device)
 {
@@ -18,7 +18,7 @@ Shader_Module::Shader_Module(core::shared_ptr<const Device> device, core::span<c
   vkCreateInfo.pNext     = nullptr;
 
   vkCreateInfo.codeSize  = static_cast<core::uint32>(code.size());
-  vkCreateInfo.pCode     = reinterpret_cast<const core::uint32*>(code.data());
+  vkCreateInfo.pCode     = code.data();
 
   const VkResult result = vkCreateShaderModule(m_device->getHandle(), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
   vulkanHandleResult(result, "failed to create shader module");

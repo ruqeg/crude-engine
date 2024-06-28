@@ -51,7 +51,7 @@ bool generateMipmaps(core::shared_ptr<Command_Buffer> commandBuffer, core::share
     blitRegion.dstSubresource.layerCount      = 1;
 
     const Image_Subresource_Range nextMipRange(image, mipLevel, 1, 0u, image->getArrayLayersCount());
-    commandBuffer->barrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT,
+    commandBuffer->barrier(VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT,
       Image_Memory_Barrier(image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, nextMipRange));
 
     commandBuffer->blitImage(image, image, blitRegion, filter);

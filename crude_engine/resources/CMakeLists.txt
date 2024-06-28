@@ -1,6 +1,7 @@
 #target_sources(crude_engine
 #    PRIVATE
-#    model_loader.ixx)
+#    world_loader.cpp
+#    image_loader.cpp)
 
 target_sources(crude_engine
     PUBLIC

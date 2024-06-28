@@ -18,6 +18,7 @@ public:
   Mesh(const core::span<const Vertex_CPU>& vertices, const core::span<const Index_Triangle_CPU>& indices)
     : m_vertices(vertices.begin(), vertices.end()), m_indices(indices.begin(), indices.end()) {}
 public:
+  void setName(const core::u8string& name) { m_name = name; }
   void setVertices(const core::span<const Vertex_CPU>& vertices) { m_vertices.assign(vertices.begin(), vertices.end()); }
   void setIndices(const core::span<const Index_Triangle_CPU>& indices) { m_indices.assign(indices.begin(), indices.end()); }
   core::vector<Vertex_CPU>& getVertices() { return m_vertices; }
@@ -26,9 +27,11 @@ public:
   const core::vector<Index_Triangle_CPU>& getIndices() const { return m_indices; }
   core::uint32 getVerticesNum() const { return m_vertices.size(); }
   core::uint32 getIndicesNum() const { return m_indices.size(); }
+  const core::u8string& getName() const { return m_name; }
 private:
-  core::vector<Vertex_CPU> m_vertices;
-  core::vector<Index_Triangle_CPU> m_indices;
+  core::vector<Vertex_CPU>          m_vertices;
+  core::vector<Index_Triangle_CPU>  m_indices;
+  core::u8string                    m_name;
 };
 
 }

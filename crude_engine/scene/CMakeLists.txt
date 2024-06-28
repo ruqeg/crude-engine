@@ -1,5 +1,6 @@
 target_sources(crude_engine
     PRIVATE
+    world.cpp
     camera.cpp)
 
 target_sources(crude_engine

@@ -13,10 +13,12 @@ export namespace crude::graphics
 
 class Device;
 
+using Spirv_Word = uint32_t;
+
 class Shader_Module : public Vulkan_Object<VkShaderModule>
 {
 public:
-  explicit Shader_Module(core::shared_ptr<const Device> device, core::span<const char> code);
+  explicit Shader_Module(core::shared_ptr<const Device> device, core::span<const Spirv_Word> code);
   ~Shader_Module();
 private:
   core::shared_ptr<const Device>  m_device;

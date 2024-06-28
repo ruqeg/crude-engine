@@ -41,15 +41,15 @@ core::array<scene::Index_Triangle_CPU, 4> indices =
   scene::Index_Triangle_CPU{6u, 7u, 4u}
 };
 
-constexpr core::array<const char*, 1> deviceEnabledExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
+constexpr core::array<const char* const, 3> deviceEnabledExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_KHR_SPIRV_1_4_EXTENSION_NAME, VK_EXT_MESH_SHADER_EXTENSION_NAME };
 constexpr core::array<const char*, 1> instanceEnabledLayers = { "VK_LAYER_KHRONOS_validation" };
 
 Renderer::Renderer(core::shared_ptr<system::SDL_Window_Container> windowContainer, core::shared_ptr<scene::World> world)
   : m_windowContainer(windowContainer)
   , m_currentFrame(0u)
   , m_uniformBufferDesc{ 
-      Uniform_Buffer_Descriptor(0u, VK_SHADER_STAGE_VERTEX_BIT),
-      Uniform_Buffer_Descriptor(0u, VK_SHADER_STAGE_VERTEX_BIT)}
+      Uniform_Buffer_Descriptor(0u, VK_SHADER_STAGE_MESH_BIT_EXT),
+      Uniform_Buffer_Descriptor(0u, VK_SHADER_STAGE_MESH_BIT_EXT)}
   , m_textureSamplerDesc{Combined_Image_Sampler_Descriptor(1u, VK_SHADER_STAGE_FRAGMENT_BIT), Combined_Image_Sampler_Descriptor(1u, VK_SHADER_STAGE_FRAGMENT_BIT)}
   , m_world(world)
 {
@@ -333,20 +333,28 @@ void Renderer::updateUniformBuffer(core::uint32 currentImage)
 
 void Renderer::initalizeGraphicsPipeline()
 {
-  const char* vertShaderPathA = "../../crude_example/basic_triangle_examle/shader.vert.spv";
+  //const char* taskShaderPathA = "../../crude_example/basic_triangle_examle/shader.task.spv";
+  const char* meshShaderPathA = "../../crude_example/basic_triangle_examle/shader.mesh.spv";
   const char* fragShaderPathA = "../../crude_example/basic_triangle_examle/shader.frag.spv";
 
-  core::vector<char> vertShaderCode;
+  core::vector<char> taskShaderCode;
+  core::vector<char> meshShaderCode;
   core::vector<char> fragShaderCode;
-  core::readFile(vertShaderPathA, vertShaderCode);
+  //core::readFile(taskShaderPathA, taskShaderCode);
+  core::readFile(meshShaderPathA, meshShaderCode);
   core::readFile(fragShaderPathA, fragShaderCode);
-  auto vertShaderModule = core::allocateShared<Shader_Module>(m_device, vertShaderCode);
-  auto fragShaderModule = core::allocateShared<Shader_Module>(m_device, fragShaderCode);
+
+  //!TODO :D
+  meshShaderCode.resize(meshShaderCode.size())
+  //auto taskShaderModule = core::allocateShared<Shader_Module>(m_device, taskShaderCode);
+  core::shared_ptr<Shader_Module> meshShaderModule/* = core::allocateShared<Shader_Module>(m_device, meshShaderCode) */ ;
+  core::shared_ptr<Shader_Module> fragShaderModule/* = core::allocateShared<Shader_Module>(m_device, fragShaderCode)*/;
 
   core::array<Shader_Stage_Create_Info, 2u> shaderStagesInfo =
   {
-    Shader_Stage_Create_Info(VK_SHADER_STAGE_VERTEX_BIT, vertShaderModule, "main"),
-    Shader_Stage_Create_Info(VK_SHADER_STAGE_FRAGMENT_BIT, fragShaderModule, "main"),
+    //Task_Shader_Stage_Create_Info(taskShaderModule, "main"),
+    Mesh_Shader_Stage_Create_Info(meshShaderModule, "main"),
+    Fragment_Shader_Stage_Create_Info(fragShaderModule, "main"),
   };
 
   Vertex_Input_State_Create_Info vertexInputStateInfo({
@@ -569,7 +577,7 @@ core::shared_ptr<Physical_Device> Renderer::pickPhysicalDevice()
       if (physicalDevice->checkPresentSupport(m_surface, i)) supportPresent = true;
     }
 
-    const bool extensionsSupported = physicalDevice->checkExtensionSupport(core::array<const char*, 1>{ VK_KHR_SWAPCHAIN_EXTENSION_NAME });
+    const bool extensionsSupported = physicalDevice->checkExtensionSupport(deviceEnabledExtensions);
     const bool swapChainAdequate = physicalDevice->checkSurfaceSupport(m_surface);
     const auto& supportedFeatures = physicalDevice->getFeatures();
 

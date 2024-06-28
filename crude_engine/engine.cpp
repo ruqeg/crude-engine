@@ -2,6 +2,7 @@ module crude.engine;
 
 import crude.core.logger;
 import crude.math.constants;
+import crude.resources.world_loader;
 
 namespace crude
 {
@@ -11,6 +12,8 @@ Engine::Engine(core::shared_ptr<system::SDL_Window_Container> windowContainer)
   scene::Camera camera;
   camera.calculateViewToClipMatrix(math::CPI4, windowContainer->getAspect(), 0.1f, 10.0f);
   camera.setPosition(0, 0, -2);
+
+  //m_world = resources::loadWorld("../../crude_example/basic_triangle_examle/resources/box_textured.glb").value();
   m_world = core::allocateShared<scene::World>(core::vector{ camera });
   m_renderer = core::allocateShared<graphics::Renderer>(windowContainer, m_world);
   m_timer.setFrameRate(60);

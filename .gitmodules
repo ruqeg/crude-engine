@@ -7,3 +7,18 @@
 [submodule "extlibs/tinygltf"]
 	path = extlibs/tinygltf
 	url = https://github.com/syoyo/tinygltf.git
+[submodule "extlibs/shaderc"]
+	path = extlibs/shaderc
+	url = https://github.com/google/shaderc.git
+[submodule "extlibs/googletest"]
+	path = extlibs/googletest
+	url = https://github.com/google/googletest.git
+[submodule "extlibs/SPIRV-Tools"]
+	path = extlibs/SPIRV-Tools
+	url = https://github.com/KhronosGroup/SPIRV-Tools.git
+[submodule "extlibs/SPIRV-Headers"]
+	path = extlibs/SPIRV-Headers
+	url = https://github.com/KhronosGroup/SPIRV-Headers.git
+[submodule "extlibs/glslang"]
+	path = extlibs/glslang
+	url = https://github.com/KhronosGroup/glslang.git
