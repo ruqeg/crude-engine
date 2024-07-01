@@ -1,9 +1,9 @@
 [submodule "extlibs/doctest"]
-	path = extlibs/doctest
+	path = crude_extlibs/doctest
 	url = https://github.com/doctest/doctest.git
 [submodule "extlibs/SDL"]
-	path = extlibs/SDL
+	path = crude_extlibs/SDL
 	url = https://github.com/libsdl-org/SDL.git
 [submodule "extlibs/tinygltf"]
-	path = extlibs/tinygltf
+	path = crude_extlibs/tinygltf
 	url = https://github.com/syoyo/tinygltf.git

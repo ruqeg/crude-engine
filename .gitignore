@@ -1,6 +1,7 @@
 build/
 vsproject/crude_engine/crude_engine/
 vsproject/crude_example/crude_example/
+*.spv*
 *.swp
 
 ## Ignore Visual Studio temporary files, build results, and
