@@ -56,7 +56,7 @@ using Aligned_Storage_T = typename Aligned_Storage<Len, Align>::Type;
 template<typename T> 
 struct CPP_Type
 {
-  static size_t id()
+  static core::size_t id()
   {
     return reinterpret_cast<size_t>(&CPP_Type<T>::id);
   }

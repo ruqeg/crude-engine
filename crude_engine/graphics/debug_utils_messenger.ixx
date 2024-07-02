@@ -43,14 +43,6 @@ public:
 public:
   static const core::span<const char*> requiredExtensions();
 private:
-  void destroyDebugUtilsMessengerEXT(VkInstance instance, 
-                                     VkDebugUtilsMessengerEXT debugMessenger, 
-                                     const VkAllocationCallbacks* pAllocator);
-  VkResult createDebugUtilsMessengerEXT(VkInstance instance,
-                                        const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
-                                        const VkAllocationCallbacks* pAllocator,
-                                        VkDebugUtilsMessengerEXT* pDebugMessenger);
-private:
   core::shared_ptr<const Instance> m_instance;
 };
 

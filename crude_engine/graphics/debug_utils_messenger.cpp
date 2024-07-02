@@ -4,33 +4,11 @@ module crude.graphics.debug_utils_messenger;
 
 import crude.graphics.vulkan_utils;
 import crude.graphics.instance;
+import crude.graphics.extension;
+import crude.core.logger;
 
 namespace crude::graphics
 {
-
-VkResult Debug_Utils_Messenger::createDebugUtilsMessengerEXT(VkInstance                                 instance,
-                                                             const VkDebugUtilsMessengerCreateInfoEXT*  pCreateInfo,
-                                                             const VkAllocationCallbacks*               pAllocator,
-                                                             VkDebugUtilsMessengerEXT*                  pDebugMessenger) {
-  auto func = (PFN_vkCreateDebugUtilsMessengerEXT) vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
-  if (func != nullptr) 
-  {
-    return func(instance, pCreateInfo, pAllocator, pDebugMessenger);
-  } else
-  {
-    return VK_ERROR_EXTENSION_NOT_PRESENT;
-  }
-}
-
-void Debug_Utils_Messenger::destroyDebugUtilsMessengerEXT(VkInstance                    instance, 
-                                                          VkDebugUtilsMessengerEXT      debugMessenger, 
-                                                          const VkAllocationCallbacks*  pAllocator) {
-  auto func = (PFN_vkDestroyDebugUtilsMessengerEXT) vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
-  if (func != nullptr) 
-  {
-    func(instance, debugMessenger, pAllocator);
-  }
-}
 
 Debug_Utils_Messenger::Debug_Utils_Messenger(core::shared_ptr<const Instance>      instance,
                                              PFN_vkDebugUtilsMessengerCallbackEXT  pfnUserCallback,
@@ -51,13 +29,24 @@ Debug_Utils_Messenger::Debug_Utils_Messenger(core::shared_ptr<const Instance>   
   vkCreateInfo.pNext            = pNext;
   vkCreateInfo.flags            = flags;
 
-  const VkResult result = createDebugUtilsMessengerEXT(m_instance->getHandle(), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
+  auto vkCreateDebugUtilsMessengerEXT = getInstanceExtension<PFN_vkCreateDebugUtilsMessengerEXT>(m_instance);
+  if (!vkCreateDebugUtilsMessengerEXT)
+  {
+    core::logError(core::Debug::Channel::Graphics, "failed to create debug utils messenger");
+    return;
+  }
+  const VkResult result = vkCreateDebugUtilsMessengerEXT(m_instance->getHandle(), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
   vulkanHandleResult(result, "failed to create debug utils messenger");
 }
 
 Debug_Utils_Messenger::~Debug_Utils_Messenger()
 {
-  destroyDebugUtilsMessengerEXT(m_instance->getHandle(), m_handle, getPVkAllocationCallbacks());
+  auto vkDestroyDebugUtilsMessengerEXT = getInstanceExtension<PFN_vkDestroyDebugUtilsMessengerEXT>(m_instance);
+  
+  if (vkDestroyDebugUtilsMessengerEXT)
+  {
+    vkDestroyDebugUtilsMessengerEXT(m_instance->getHandle(), m_handle, getPVkAllocationCallbacks());
+  }
 }
 
 const core::span<const char*> Debug_Utils_Messenger::requiredExtensions()

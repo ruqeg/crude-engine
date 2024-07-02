@@ -19,6 +19,7 @@ import crude.graphics.vulkan_utils;
 import crude.core.std_containers_heap;
 import crude.core.algorithms;
 import crude.core.assert;
+import crude.graphics.extension;
 
 namespace crude::graphics
 {
@@ -219,7 +220,11 @@ void Command_Buffer::drawIndexed(core::uint32 indexCount, core::uint32 instanceC
 
 void Command_Buffer::drawMeshTasks(core::uint32 groupCountX, core::uint32 groupCountY, core::uint32 groupCountZ)
 {
-  vkCmdDrawMeshTasksEXT(m_handle, groupCountX, groupCountY, groupCountZ);
+  auto vkCmdDrawMeshTasksEXT = getDeviceExtension<PFN_vkCmdDrawMeshTasksEXT>(m_commandPool->getDevice());
+  if (vkCmdDrawMeshTasksEXT)
+  {
+    vkCmdDrawMeshTasksEXT(m_handle, groupCountX, groupCountY, groupCountZ);
+  }
 }
 
 void Command_Buffer::endRenderPass()

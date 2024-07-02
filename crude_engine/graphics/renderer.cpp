@@ -316,7 +316,7 @@ void Renderer::recordCommandBuffer(core::shared_ptr<Command_Buffer> commandBuffe
   updateUniformBuffer(m_currentFrame);
   commandBuffer->bindDescriptorSets(m_graphicsPipeline, core::span(&m_descriptorSets[m_currentFrame], 1u), {});
   
-  commandBuffer->drawMeshTasksEXT(1u, 1u, 1u);
+  commandBuffer->drawMeshTasks(1u);
   //commandBuffer->drawIndexed(3 * indices.size(), 1, 0, 0);
 
   commandBuffer->endRenderPass();

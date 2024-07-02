@@ -1,5 +1,6 @@
 target_sources(crude_engine
     PRIVATE
+    extension.cpp
     format_helper.cpp
     attachment_description.cpp
     image_descriptor.cpp
@@ -44,6 +45,7 @@ target_sources(crude_engine
 target_sources(crude_engine
     PUBLIC
     FILE_SET cxx_modules_graphics TYPE CXX_MODULES FILES
+    extension.ixx
     vertex_gpu.ixx
     index_gpu.ixx
     camera_gpu.ixx
