@@ -77,6 +77,7 @@ public:
 
   void draw(core::uint32 vertexCount, core::uint32 instanceCount = 0u, core::uint32 firstVertex = 0u, core::uint32 firstInstance = 0u);
   void drawIndexed(core::uint32 indexCount, core::uint32 instanceCount, core::uint32 firstIndex = 0u, core::int32 vertexOffset = 0u, core::uint32 firstInstance = 0u);
+  void drawMeshTasks(core::uint32 groupCountX, core::uint32 groupCountY = 1u, core::uint32 groupCountZ = 1u);
 
   void endRenderPass();
   core::shared_ptr<const Device> getDevice() const;

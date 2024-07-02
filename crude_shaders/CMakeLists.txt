@@ -18,7 +18,7 @@ COMPILE_SHADER("${CMAKE_CURRENT_SOURCE_DIR}/shader.mesh")
 
 set_target_properties(crude_shaders PROPERTIES LINKER_LANGUAGE CXX)
 
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
+target_include_directories(crude_shaders PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 install(TARGETS crude_shaders
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

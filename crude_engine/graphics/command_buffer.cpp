@@ -217,6 +217,11 @@ void Command_Buffer::drawIndexed(core::uint32 indexCount, core::uint32 instanceC
   vkCmdDrawIndexed(m_handle, indexCount, instanceCount, firstIndex, vertexOffset, firstInstance);
 }
 
+void Command_Buffer::drawMeshTasks(core::uint32 groupCountX, core::uint32 groupCountY, core::uint32 groupCountZ)
+{
+  vkCmdDrawMeshTasksEXT(m_handle, groupCountX, groupCountY, groupCountZ);
+}
+
 void Command_Buffer::endRenderPass()
 {
   if (m_withinRenderPass)

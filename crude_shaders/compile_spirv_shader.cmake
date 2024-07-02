@@ -19,7 +19,7 @@ function(COMPILE_SPIRV_SHADER SHADER_FILE)
     set(OPTIMIZE_OUTPUT "${SHADER_FILE}.spv")
     add_custom_command(
         OUTPUT ${COMPILE_OUTPUT}
-        COMMAND ${GLSLANG_EXECUTABLE} -V ${SHADER_FILE} -o ${COMPILE_OUTPUT} --target-env vulkan1.2
+        COMMAND ${GLSLANG_EXECUTABLE} -V ${SHADER_FILE} -o ${COMPILE_OUTPUT} --target-env spirv1.4
         DEPENDS ${SHADER_FILE})
     add_custom_command(
         OUTPUT ${OPTIMIZE_OUTPUT}

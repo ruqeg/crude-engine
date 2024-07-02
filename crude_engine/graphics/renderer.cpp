@@ -1,6 +1,8 @@
 #include <vulkan/vulkan.hpp>
 #include <cstring>
 #include <algorithm>
+#include <crude_shaders/shader.frag.inl>
+#include <crude_shaders/shader.mesh.inl>
 
 module crude.graphics.renderer;
 
@@ -313,8 +315,9 @@ void Renderer::recordCommandBuffer(core::shared_ptr<Command_Buffer> commandBuffe
 
   updateUniformBuffer(m_currentFrame);
   commandBuffer->bindDescriptorSets(m_graphicsPipeline, core::span(&m_descriptorSets[m_currentFrame], 1u), {});
-    
-  commandBuffer->drawIndexed(3 * indices.size(), 1, 0, 0);
+  
+  commandBuffer->drawMeshTasksEXT(1u, 1u, 1u);
+  //commandBuffer->drawIndexed(3 * indices.size(), 1, 0, 0);
 
   commandBuffer->endRenderPass();
 
@@ -333,22 +336,8 @@ void Renderer::updateUniformBuffer(core::uint32 currentImage)
 
 void Renderer::initalizeGraphicsPipeline()
 {
-  //const char* taskShaderPathA = "../../crude_example/basic_triangle_examle/shader.task.spv";
-  const char* meshShaderPathA = "../../crude_example/basic_triangle_examle/shader.mesh.spv";
-  const char* fragShaderPathA = "../../crude_example/basic_triangle_examle/shader.frag.spv";
-
-  core::vector<char> taskShaderCode;
-  core::vector<char> meshShaderCode;
-  core::vector<char> fragShaderCode;
-  //core::readFile(taskShaderPathA, taskShaderCode);
-  core::readFile(meshShaderPathA, meshShaderCode);
-  core::readFile(fragShaderPathA, fragShaderCode);
-
-  //!TODO :D
-  meshShaderCode.resize(meshShaderCode.size())
-  //auto taskShaderModule = core::allocateShared<Shader_Module>(m_device, taskShaderCode);
-  core::shared_ptr<Shader_Module> meshShaderModule/* = core::allocateShared<Shader_Module>(m_device, meshShaderCode) */ ;
-  core::shared_ptr<Shader_Module> fragShaderModule/* = core::allocateShared<Shader_Module>(m_device, fragShaderCode)*/;
+  core::shared_ptr<Shader_Module> meshShaderModule = core::allocateShared<Shader_Module>(m_device, crude::shaders::shader::mesh);
+  core::shared_ptr<Shader_Module> fragShaderModule = core::allocateShared<Shader_Module>(m_device, crude::shaders::shader::frag);
 
   core::array<Shader_Stage_Create_Info, 2u> shaderStagesInfo =
   {
