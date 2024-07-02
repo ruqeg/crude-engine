@@ -372,8 +372,8 @@ void Renderer::initalizeGraphicsPipeline()
 
   Multisample_State_Create_Info multisampling({
     .rasterizationSamples = m_device->getPhysicalDevice()->getProperties().getMaximumUsableSampleCount(),
-    .sampleShadingEnable = true,
-    .minSampleShading = 2.0f,
+    .sampleShadingEnable = VK_TRUE,
+    .minSampleShading = 0.2f,
     .alphaToCoverageEnable = false,
     .alphaToOneEnable = false});
 
@@ -584,7 +584,7 @@ void Renderer::initializeLogicDevice(core::shared_ptr<const Physical_Device> phy
   VkPhysicalDeviceFeatures deviceFeatures{};
   deviceFeatures.samplerAnisotropy = VK_TRUE;
   deviceFeatures.sampleRateShading = VK_TRUE;
-
+ 
   core::array<Device_Queue_Descriptor, 2> queueInfos =
   {
     Device_Queue_Descriptor(physicalDevice, VK_QUEUE_GRAPHICS_BIT),

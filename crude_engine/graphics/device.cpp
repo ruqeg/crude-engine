@@ -27,13 +27,24 @@ Device::Device(core::shared_ptr<const Physical_Device>     physicalDevice,
   m_queueDescriptors.erase(std::unique(m_queueDescriptors.begin(), m_queueDescriptors.end()), m_queueDescriptors.end());
   core::vector<VkDeviceQueueCreateInfo> queueDescriptorsData(m_queueDescriptors.begin(), m_queueDescriptors.end());
 
+  // !TODO
+  VkPhysicalDeviceMeshShaderFeaturesEXT deviceFeaturesMesh{};
+  deviceFeaturesMesh.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_FEATURES_EXT;
+  deviceFeaturesMesh.pNext = nullptr;
+  deviceFeaturesMesh.meshShader = true;
+
+  VkPhysicalDeviceFeatures2  deviceFeatures{};
+  deviceFeatures.sType    = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+  deviceFeatures.pNext    = &deviceFeaturesMesh;
+  deviceFeatures.features = enabledFeatures;
+
   VkDeviceCreateInfo vkDeviceCreateInfo{};
   vkDeviceCreateInfo.sType                    = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-  vkDeviceCreateInfo.pNext                    = nullptr;
+  vkDeviceCreateInfo.pNext                    = &deviceFeatures;
   vkDeviceCreateInfo.flags                    = 0u;
   vkDeviceCreateInfo.queueCreateInfoCount     = queueDescriptorsData.size();
   vkDeviceCreateInfo.pQueueCreateInfos        = queueDescriptorsData.data();
-  vkDeviceCreateInfo.pEnabledFeatures         = &enabledFeatures;
+  vkDeviceCreateInfo.pEnabledFeatures         = nullptr;
   vkDeviceCreateInfo.enabledExtensionCount    = enabledExtensions.size();
   vkDeviceCreateInfo.ppEnabledExtensionNames  = enabledExtensions.data();
   vkDeviceCreateInfo.enabledLayerCount        = enabledLayers.size();
