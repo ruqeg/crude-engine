@@ -1,8 +1,9 @@
 #version 450
 #extension GL_EXT_mesh_shader : require
 
-layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
-layout(triangles, max_vertices = 8, max_primitives = 4) out;
+layout(local_size_x=1, local_size_y=1, local_size_z=1) in;
+layout(triangles) out;
+layout(max_vertices=8, max_primitives=4) out;
 
 layout(row_major) layout(binding = 0) uniform Camera
 {
@@ -19,7 +20,6 @@ layout (location = 0) out PerVertexData
   vec3 color;
   vec2 texCoord;
 } v_out[];
-
 
 struct Vertex 
 {
@@ -53,6 +53,7 @@ uvec3 indices[] =
 
 void main()
 {
+  SetMeshOutputsEXT(8, 4);
   for (uint i = 0; i < vertices_num; ++i)
   {
     gl_MeshVerticesEXT[i].gl_Position = vec4(vertices[i].pos, 1.0) * camera.worldToView * camera.viewToClip;
