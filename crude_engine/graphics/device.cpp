@@ -32,6 +32,7 @@ Device::Device(core::shared_ptr<const Physical_Device>     physicalDevice,
   deviceFeaturesMesh.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_FEATURES_EXT;
   deviceFeaturesMesh.pNext = nullptr;
   deviceFeaturesMesh.meshShader = true;
+  deviceFeaturesMesh.taskShader = true;
 
   VkPhysicalDeviceFeatures2  deviceFeatures{};
   deviceFeatures.sType    = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;

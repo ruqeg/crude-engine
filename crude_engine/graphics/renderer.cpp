@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <crude_shaders/shader.frag.inl>
 #include <crude_shaders/shader.mesh.inl>
+#include <crude_shaders/shader.task.inl>
 
 module crude.graphics.renderer;
 
@@ -336,12 +337,13 @@ void Renderer::updateUniformBuffer(core::uint32 currentImage)
 
 void Renderer::initalizeGraphicsPipeline()
 {
+  core::shared_ptr<Shader_Module> taskShaderModule = core::allocateShared<Shader_Module>(m_device, crude::shaders::shader::task);
   core::shared_ptr<Shader_Module> meshShaderModule = core::allocateShared<Shader_Module>(m_device, crude::shaders::shader::mesh);
   core::shared_ptr<Shader_Module> fragShaderModule = core::allocateShared<Shader_Module>(m_device, crude::shaders::shader::frag);
 
-  core::array<Shader_Stage_Create_Info, 2u> shaderStagesInfo =
+  core::array<Shader_Stage_Create_Info, 3u> shaderStagesInfo =
   {
-    //Task_Shader_Stage_Create_Info(taskShaderModule, "main"),
+    Task_Shader_Stage_Create_Info(taskShaderModule, "main"),
     Mesh_Shader_Stage_Create_Info(meshShaderModule, "main"),
     Fragment_Shader_Stage_Create_Info(fragShaderModule, "main"),
   };
