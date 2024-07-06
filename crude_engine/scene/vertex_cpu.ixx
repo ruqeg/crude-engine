@@ -10,12 +10,12 @@ export namespace crude::scene
 
 struct Vertex_CPU
 {
-  math::Float3 position;
-  math::Float3 tmpcolor;
-  math::Float2 texcoord;
-  math::Float3 normal;
-  math::Float3 tangent;
-  math::Float3 bitangent;
+  math::Float3A position;
+  math::Float3A tmpcolor;
+  math::Float2A texcoord;
+  math::Float3A normal;
+  math::Float3A tangent;
+  math::Float3A bitangent;
 };
 
 }

@@ -24,23 +24,23 @@ namespace crude::graphics
 {
 
 constexpr core::array<scene::Vertex_CPU, 8u> vertices = {
-  scene::Vertex_CPU{math::Float3{-0.5f, -0.5f, 0.0f}, math::Float3{1.0f, 0.0f, 0.0f}, math::Float2{1.0f, 0.0f}, math::Float3{}, math::Float3{}, math::Float3{}},
-  scene::Vertex_CPU{math::Float3{0.5f, -0.5f, 0.0f}, math::Float3{0.0f, 1.0f, 0.0f}, math::Float2{0.0f, 0.0f}, math::Float3{}, math::Float3{}, math::Float3{}},
-  scene::Vertex_CPU{math::Float3{0.5f, 0.5f, 0.0f}, math::Float3{0.0f, 0.0f, 1.0f}, math::Float2{0.0f, 1.0f}, math::Float3{}, math::Float3{}, math::Float3{}},
-  scene::Vertex_CPU{math::Float3{-0.5f, 0.5f, 0.0f}, math::Float3{1.0f, 1.0f, 0.0f}, math::Float2{1.0f, 1.0f}, math::Float3{}, math::Float3{}, math::Float3{}},
+  scene::Vertex_CPU{math::Float3A{-0.5f, -0.5f, 0.0f}, math::Float3A{1.0f, 0.0f, 0.0f}, math::Float2A{1.0f, 0.0f}, math::Float3A{}, math::Float3A{}, math::Float3A{}},
+  scene::Vertex_CPU{math::Float3A{0.5f, -0.5f, 0.0f}, math::Float3A{0.0f, 1.0f, 0.0f}, math::Float2A{0.0f, 0.0f}, math::Float3A{}, math::Float3A{}, math::Float3A{}},
+  scene::Vertex_CPU{math::Float3A{0.5f, 0.5f, 0.0f}, math::Float3A{0.0f, 0.0f, 1.0f}, math::Float2A{0.0f, 1.0f}, math::Float3A{}, math::Float3A{}, math::Float3A{}},
+  scene::Vertex_CPU{math::Float3A{-0.5f, 0.5f, 0.0f}, math::Float3A{1.0f, 1.0f, 0.0f}, math::Float2A{1.0f, 1.0f}, math::Float3A{}, math::Float3A{}, math::Float3A{}},
   
-  scene::Vertex_CPU{math::Float3{-0.5f, -0.5f, -0.5f}, math::Float3{1.0f, 0.0f, 0.0f}, math::Float2{1.0f, 0.0f}, math::Float3{}, math::Float3{}, math::Float3{}},
-  scene::Vertex_CPU{math::Float3{0.5f, -0.5f, -0.5f}, math::Float3{0.0f, 1.0f, 0.0f}, math::Float2{0.0f, 0.0f}, math::Float3{}, math::Float3{}, math::Float3{}},
-  scene::Vertex_CPU{math::Float3{0.5f, 0.5f, -0.5f}, math::Float3{0.0f, 0.0f, 1.0f}, math::Float2{0.0f, 1.0f}, math::Float3{}, math::Float3{}, math::Float3{}},
-  scene::Vertex_CPU{math::Float3{-0.5f, 0.5f, -0.5f}, math::Float3{1.0f, 1.0f, 0.0f}, math::Float2{1.0f, 1.0f}, math::Float3{}, math::Float3{}, math::Float3{}}
+  scene::Vertex_CPU{math::Float3A{-0.5f, -0.5f, -0.5f}, math::Float3A{1.0f, 0.0f, 0.0f}, math::Float2A{1.0f, 0.0f}, math::Float3A{}, math::Float3A{}, math::Float3A{}},
+  scene::Vertex_CPU{math::Float3A{0.5f, -0.5f, -0.5f}, math::Float3A{0.0f, 1.0f, 0.0f}, math::Float2A{0.0f, 0.0f}, math::Float3A{}, math::Float3A{}, math::Float3A{}},
+  scene::Vertex_CPU{math::Float3A{0.5f, 0.5f, -0.5f}, math::Float3A{0.0f, 0.0f, 1.0f}, math::Float2A{0.0f, 1.0f}, math::Float3A{}, math::Float3A{}, math::Float3A{}},
+  scene::Vertex_CPU{math::Float3A{-0.5f, 0.5f, -0.5f}, math::Float3A{1.0f, 1.0f, 0.0f}, math::Float2A{1.0f, 1.0f}, math::Float3A{}, math::Float3A{}, math::Float3A{}}
 };
 
 core::array<core::uint32, 4> primitiveIndices =
 {
-  0u,
-  1u,
-  2u,
-  3u,
+  (0u) | (1u << 8) | (2u << 16),
+  (2u) | (3u << 8) | (0u << 16),
+  (4u) | (5u << 8) | (6u << 16),
+  (6u) | (7u << 8) | (4u << 16)
 };
 
 core::array<core::uint32, 4> indices = 
@@ -51,12 +51,16 @@ core::array<core::uint32, 4> indices =
   (6u) | (7u << 8) | (4u << 16)
 };
 
-core::array<core::uint32, 4> vertexIndices =
+core::array<core::uint32, 8> vertexIndices =
 {
-  (0u) | (1u << 8) | (2u << 16),
-  (2u) | (3u << 8) | (0u << 16),
-  (4u) | (5u << 8) | (6u << 16),
-  (6u) | (7u << 8) | (4u << 16)
+  0u,
+  1u,
+  2u,
+  3u,
+  4u,
+  5u,
+  6u,
+  7u
 };
 
 // VK_NV_PER_STAGE_DESCRIPTOR_SET_EXTENSION_NAME don't work??? T_T
