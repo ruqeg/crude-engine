@@ -35,4 +35,12 @@ public:
   {}
 };
 
+class Storage_Buffer_Pool_Size : public Descriptor_Pool_Size
+{
+public:
+  Storage_Buffer_Pool_Size(core::uint32 descriptorCount)
+    : Descriptor_Pool_Size(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, descriptorCount)
+  {}
+};
+
 }

@@ -37,8 +37,11 @@ export import crude.graphics.descriptor_set;
 export import crude.graphics.model_buffer;
 export import crude.graphics.image_attachment;
 export import crude.graphics.uniform_buffer;
+export import crude.graphics.storage_buffer;
+export import crude.scene.meshlet;
 export import crude.core.filesystem;
 export import crude.graphics.camera_gpu;
+export import crude.graphics.vertex_gpu;
 
 export namespace crude::scene
 {
@@ -72,6 +75,8 @@ private:
   void initializeSampler();
   void initializeModelBuffer();
   void initializeUniformBuffers();
+  void initializeStorageBuffers();
+  void updateDescriptorSets();
   void initializeCommandBuffers();
   void initializeSyncObjects();
 private:
@@ -107,6 +112,14 @@ private:
   core::shared_ptr<Model_Buffer>                        m_modelBuffer;
   core::shared_ptr<Color_Attachment>                    m_colorAttachment;
   core::shared_ptr<Image_View>                          m_colorAttachmentView;
+  core::shared_ptr<graphics::Storage_Buffer>            m_vertexBuffer;
+  core::shared_ptr<graphics::Storage_Buffer>            m_meshletBuffer;
+  core::shared_ptr<graphics::Storage_Buffer>            m_primitiveIndicesBuffer;
+  core::shared_ptr<graphics::Storage_Buffer>            m_vertexIndicesBuffer;
+  graphics::Storage_Buffer_Descriptor                   m_vertexBufferDescriptor;
+  graphics::Storage_Buffer_Descriptor                   m_meshletBufferDescriptor;
+  graphics::Storage_Buffer_Descriptor                   m_primitiveIndicesBufferDescriptor;
+  graphics::Storage_Buffer_Descriptor                   m_vertexIndicesBufferDescriptor;
   core::array<Uniform_Buffer_Descriptor, cFramesCount>         m_uniformBufferDesc;
   core::array<Combined_Image_Sampler_Descriptor, cFramesCount> m_textureSamplerDesc;
   core::array<core::shared_ptr<Descriptor_Set>, cFramesCount>  m_descriptorSets;

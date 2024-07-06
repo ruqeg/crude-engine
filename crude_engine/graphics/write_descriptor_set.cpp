@@ -7,42 +7,37 @@ import crude.graphics.descriptor_set;
 namespace crude::graphics
 {
 
-Write_Descriptor_Set::Write_Descriptor_Set(core::shared_ptr<Descriptor_Set>  descriptorSet, 
-                                           Uniform_Buffer_Descriptor         uniformbufferDesc)
-  :
-  m_descriptorSet(descriptorSet),
-  m_bufferInfo(uniformbufferDesc.m_descriptoBuferInfo)
+Write_Descriptor_Set::Write_Descriptor_Set(core::shared_ptr<Descriptor_Set> descriptorSet)
+  : m_descriptorSet(descriptorSet)
 {
   this->sType             = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
   this->pNext             = nullptr;
   this->dstSet            = m_descriptorSet->getHandle();
-  this->dstBinding        = uniformbufferDesc.binding;
+  this->dstBinding        = 0u;
   this->dstArrayElement   = 0u;
-  this->descriptorCount   = uniformbufferDesc.descriptorCount;
-  this->descriptorType    = uniformbufferDesc.descriptorType;
+  this->descriptorCount   = 0u;
+  this->descriptorType    = VK_DESCRIPTOR_TYPE_MAX_ENUM;
   this->pImageInfo        = nullptr;
-  this->pBufferInfo       = &m_bufferInfo;
-  this->pTexelBufferView  = nullptr;
-}
-
-Write_Descriptor_Set::Write_Descriptor_Set(core::shared_ptr<Descriptor_Set>   descriptorSet,
-                                           Combined_Image_Sampler_Descriptor  samplerDesc)
-  :
-  m_descriptorSet(descriptorSet),
-  m_imageInfo(samplerDesc.m_descriptorImageInfo)
-{
-  this->sType             = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-  this->pNext             = nullptr;
-  this->dstSet            = m_descriptorSet->getHandle();
-  this->dstBinding        = samplerDesc.binding;
-  this->dstArrayElement   = 0u;
-  this->descriptorCount   = samplerDesc.descriptorCount;
-  this->descriptorType    = samplerDesc.descriptorType;
-  this->pImageInfo        = &m_imageInfo;
   this->pBufferInfo       = nullptr;
   this->pTexelBufferView  = nullptr;
 }
 
+Buffer_Write_Descriptor_Set::Buffer_Write_Descriptor_Set(core::shared_ptr<Descriptor_Set> descriptorSet, const Buffer_Descriptor& bufferDescriptor)
+  : Write_Descriptor_Set(descriptorSet), m_bufferInfo(bufferDescriptor.m_descriptoBuferInfo)
+{
+  this->dstBinding        = bufferDescriptor.binding;
+  this->descriptorCount   = bufferDescriptor.descriptorCount;
+  this->descriptorType    = bufferDescriptor.descriptorType;
+  this->pBufferInfo       = &m_bufferInfo;
+}
 
+Image_Write_Descriptor_Set::Image_Write_Descriptor_Set(core::shared_ptr<Descriptor_Set> descriptorSet, const Image_Descriptor& imageDescriptor)
+  : Write_Descriptor_Set(descriptorSet), m_imageInfo(imageDescriptor.m_descriptorImageInfo)
+{
+  this->dstBinding        = imageDescriptor.binding;
+  this->descriptorCount   = imageDescriptor.descriptorCount;
+  this->descriptorType    = imageDescriptor.descriptorType;
+  this->pImageInfo        = &m_imageInfo;
+}
 
 }

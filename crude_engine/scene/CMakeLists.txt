@@ -6,6 +6,7 @@ target_sources(crude_engine
 target_sources(crude_engine
     PUBLIC
     FILE_SET cxx_modules_scene TYPE CXX_MODULES FILES
+    meshlet.ixx
     world.ixx
     image.ixx
     camera.ixx

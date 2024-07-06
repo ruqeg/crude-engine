@@ -1,7 +1,19 @@
 #version 450
 #extension GL_EXT_mesh_shader : require
 
-layout (local_size_x=1, local_size_y=1, local_size_z=1) in;
+const uint cShaderGroupSize = 128;
+layout (local_size_x=cShaderGroupSize, local_size_y=1, local_size_z=1) in;
+
+struct Meshlet {
+  uint vertexCount;
+  uint vertexOffset;
+  uint primitiveCount;
+  uint primitiveOffest;
+};
+
+layout(binding=1, std140) readonly buffer MeshletsSSBOIn {
+  Meshlet meshlets[];
+};
 
 void main()
 {

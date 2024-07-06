@@ -14,19 +14,26 @@ class Descriptor_Set;
 
 class Write_Descriptor_Set : public VkWriteDescriptorSet
 {
-public:
-  explicit Write_Descriptor_Set(core::shared_ptr<Descriptor_Set>  descriptorSet,
-                                Uniform_Buffer_Descriptor         uniformbufferDesc);
-  explicit Write_Descriptor_Set(core::shared_ptr<Descriptor_Set>   descriptorSet,
-                                Combined_Image_Sampler_Descriptor  samplerDesc);
-
+protected:
+  explicit Write_Descriptor_Set(core::shared_ptr<Descriptor_Set> descriptorSet);
 private:
   core::shared_ptr<Descriptor_Set>  m_descriptorSet;
-  union
-  {
-  VkDescriptorBufferInfo            m_bufferInfo;
-  VkDescriptorImageInfo             m_imageInfo;
-  };
+};
+
+class Buffer_Write_Descriptor_Set : public Write_Descriptor_Set
+{
+public:
+  explicit Buffer_Write_Descriptor_Set(core::shared_ptr<Descriptor_Set> descriptorSet, const Buffer_Descriptor& bufferDescriptor);
+private:
+  VkDescriptorBufferInfo  m_bufferInfo;
+};
+
+class Image_Write_Descriptor_Set : public Write_Descriptor_Set
+{
+public:
+  explicit Image_Write_Descriptor_Set(core::shared_ptr<Descriptor_Set> descriptorSet, const Image_Descriptor& imageDescriptor);
+private:
+  VkDescriptorImageInfo m_imageInfo;
 };
 
 }

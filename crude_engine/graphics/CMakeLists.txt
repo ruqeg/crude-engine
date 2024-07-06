@@ -45,6 +45,7 @@ target_sources(crude_engine
 target_sources(crude_engine
     PUBLIC
     FILE_SET cxx_modules_graphics TYPE CXX_MODULES FILES
+    storage_buffer.ixx
     extension.ixx
     vertex_gpu.ixx
     index_gpu.ixx
