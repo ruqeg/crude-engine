@@ -64,7 +64,8 @@ void main()
   
   if (groupThreadIndex < meshlet.vertexCount)
   {
-    const uint vertexIndex = vertexIndices[groupThreadIndex + meshlet.vertexOffset];
+    // vertexIndices ???
+    const uint vertexIndex = groupThreadIndex + meshlet.vertexOffset;
     
     gl_MeshVerticesEXT[groupThreadIndex].gl_Position = vec4(vertices[vertexIndex].position, 1.0) * camera.worldToView * camera.viewToClip;
     v_out[groupThreadIndex].color = vertices[vertexIndex].color;
@@ -75,9 +76,9 @@ void main()
   {
     const uint packedIndices = primitiveIndices[groupThreadIndex + meshlet.primitiveOffest];
     gl_PrimitiveTriangleIndicesEXT[groupThreadIndex] = uvec3(
-      packedIndices & 0xFF, 
-      (packedIndices >> 8) & 0xFF, 
-      (packedIndices >> 16) & 0xFF);
+      packedIndices & 0x3ff, 
+      (packedIndices >> 10) & 0x3ff, 
+      (packedIndices >> 20) & 0x3ff);
   }
 
   SetMeshOutputsEXT(meshlet.vertexCount, meshlet.primitiveCount);

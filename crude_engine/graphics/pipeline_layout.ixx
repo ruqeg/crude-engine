@@ -26,6 +26,7 @@ private:
   core::vector<core::shared_ptr<const Descriptor_Set_Layout>>  m_setLayouts;
   core::vector<Push_Constant_Range_Base>                       m_pushConstantRanges;
   core::shared_ptr<const Device>                               m_device;
+  friend class Command_Buffer;
 };
 
 }

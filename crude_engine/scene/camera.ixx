@@ -83,6 +83,5 @@ private:
   const math::Vector cDefaultCameraForwardVector = math::svector::set(0.0f, 0.0f, 1.0f, 0.0f);
   const math::Vector cDefaultCameraTopVector = math::svector::set(0.0f, 1.0f, 0.0f, 0.0f);
   const math::Vector cDefaultCameraRightVector = math::svector::set(1.0f, 0.0f, 0.0f, 0.0f);
-
 };
 }

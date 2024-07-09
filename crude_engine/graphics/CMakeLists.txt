@@ -9,7 +9,6 @@ target_sources(crude_engine
     uniform_buffer.cpp
     flush.cpp
     device_queue_descriptor.cpp
-    model_buffer.cpp
     renderer.cpp
     command_buffer.cpp
     buffer.cpp
@@ -45,11 +44,9 @@ target_sources(crude_engine
 target_sources(crude_engine
     PUBLIC
     FILE_SET cxx_modules_graphics TYPE CXX_MODULES FILES
+    camera_ubo.ixx
     storage_buffer.ixx
     extension.ixx
-    vertex_gpu.ixx
-    index_gpu.ixx
-    camera_gpu.ixx
     push_constant_range.ixx
     scissor.ixx
     viewport.ixx
@@ -72,7 +69,6 @@ target_sources(crude_engine
     staging_buffer.ixx
     vertex_buffer.ixx
     index_buffer.ixx
-    model_buffer.ixx
     renderer.ixx
     application.ixx
     attachment_description.ixx

@@ -11,7 +11,6 @@ import crude.graphics.framebuffer;
 import crude.graphics.pipeline;
 import crude.graphics.pipeline_layout;
 import crude.graphics.buffer;
-import crude.graphics.model_buffer;
 import crude.graphics.vertex_buffer;
 import crude.graphics.index_buffer;
 import crude.graphics.descriptor_set;
@@ -20,6 +19,7 @@ import crude.core.std_containers_heap;
 import crude.core.algorithms;
 import crude.core.assert;
 import crude.graphics.extension;
+import crude.core.logger;
 
 namespace crude::graphics
 {
@@ -162,13 +162,6 @@ void Command_Buffer::setScissor(const Scissor& scissor)
   vkCmdSetScissor(m_handle, offset, 1u, &scissor);
 }
 
-// !TODO should i move this fun?
-void Command_Buffer::bindModelBuffer(core::uint32 firstBinding, core::shared_ptr<Model_Buffer> modelBuffer)
-{
-  bindVertexBuffer(firstBinding, modelBuffer->getVertexBuffer());
-  bindIndexBuffer(modelBuffer->getIndexBuffer());
-}
-
 void Command_Buffer::bindVertexBuffer(core::uint32 firstBinding, core::shared_ptr<Buffer> vertexBuffer, VkDeviceSize offset)
 {
   vkCmdBindVertexBuffers(m_handle, firstBinding, 1u, &vertexBuffer->getHandle(), &offset);
@@ -206,6 +199,16 @@ void Command_Buffer::bindDescriptorSets(core::shared_ptr<Pipeline>              
     descriptorSetsHandles.data(),
     dynamicOffsets.size(),
     dynamicOffsets.data());
+}
+
+void Command_Buffer::pushConstantBase(core::shared_ptr<const Pipeline_Layout> layout, core::span<const core::byte> data, core::uint32 offset)
+{
+  if (layout->m_pushConstantRanges.size() < 1)
+  {
+    core::logError(core::Debug::Channel::Graphics, "Failed push constant (layout->m_pushConstantRanges.size() < 1)");
+    return;
+  }
+  vkCmdPushConstants(m_handle, layout->getHandle(), layout->m_pushConstantRanges.front().stageFlags, offset, data.size_bytes(), data.data());
 }
 
 void Command_Buffer::draw(core::uint32 vertexCount, core::uint32 instanceCount, core::uint32 firstVertex, core::uint32 firstInstance)

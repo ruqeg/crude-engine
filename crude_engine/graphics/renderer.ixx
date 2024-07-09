@@ -20,6 +20,7 @@ export import crude.graphics.render_pass;
 export import crude.graphics.pipeline;
 export import crude.graphics.shader_module;
 export import crude.graphics.pipeline_layout;
+export import crude.graphics.push_constant_range;
 export import crude.graphics.command_pool;
 export import crude.graphics.command_buffer;
 export import crude.graphics.fence;
@@ -34,14 +35,12 @@ export import crude.graphics.descriptor_pool;
 export import crude.graphics.image_descriptor;
 export import crude.graphics.sampler;
 export import crude.graphics.descriptor_set;
-export import crude.graphics.model_buffer;
 export import crude.graphics.image_attachment;
 export import crude.graphics.uniform_buffer;
 export import crude.graphics.storage_buffer;
+export import crude.graphics.camera_ubo;
 export import crude.scene.meshlet;
 export import crude.core.filesystem;
-export import crude.graphics.camera_gpu;
-export import crude.graphics.vertex_gpu;
 
 export namespace crude::scene
 {
@@ -52,6 +51,11 @@ class World;
 
 export namespace crude::graphics
 {
+
+struct Per_Mesh_UBO
+{
+  math::Float4x4 modelToWorld;
+};
 
 class Renderer
 {
@@ -73,7 +77,6 @@ private:
   void initializeSwapchainFramebuffers();
   void initializeTextureImage();
   void initializeSampler();
-  void initializeModelBuffer();
   void initializeUniformBuffers();
   void initializeStorageBuffers();
   void updateDescriptorSets();
@@ -109,7 +112,6 @@ private:
   core::shared_ptr<Sampler>                             m_sampler;
   core::shared_ptr<Depth_Stencil_Attachment>            m_depthStencilAttachment;
   core::shared_ptr<Image_View>                          m_depthImageView;
-  core::shared_ptr<Model_Buffer>                        m_modelBuffer;
   core::shared_ptr<Color_Attachment>                    m_colorAttachment;
   core::shared_ptr<Image_View>                          m_colorAttachmentView;
   core::shared_ptr<graphics::Storage_Buffer>            m_vertexBuffer;
@@ -120,10 +122,10 @@ private:
   graphics::Storage_Buffer_Descriptor                   m_meshletBufferDescriptor;
   graphics::Storage_Buffer_Descriptor                   m_primitiveIndicesBufferDescriptor;
   graphics::Storage_Buffer_Descriptor                   m_vertexIndicesBufferDescriptor;
-  core::array<Uniform_Buffer_Descriptor, cFramesCount>         m_uniformBufferDesc;
+  core::array<Uniform_Buffer_Descriptor, cFramesCount>         m_cameraUniformBufferDesc;
   core::array<Combined_Image_Sampler_Descriptor, cFramesCount> m_textureSamplerDesc;
   core::array<core::shared_ptr<Descriptor_Set>, cFramesCount>  m_descriptorSets;
-  core::array<core::shared_ptr<Uniform_Buffer<Camera_GPU>>, cFramesCount>  m_uniformBuffer;
+  core::array<core::shared_ptr<Uniform_Buffer<Camera_UBO>>, cFramesCount>  m_cameraUniformBuffer;
   core::array<core::shared_ptr<Command_Buffer>, cFramesCount>   m_graphicsCommandBuffers;
   core::array<core::shared_ptr<Semaphore>, cFramesCount>        m_imageAvailableSemaphores;
   core::array<core::shared_ptr<Semaphore>, cFramesCount>        m_renderFinishedSemaphores;

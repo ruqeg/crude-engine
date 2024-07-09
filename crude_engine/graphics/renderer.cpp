@@ -17,39 +17,10 @@ import crude.math.constants;
 import crude.graphics.format_helper;
 import crude.graphics.generate_mipmaps;
 import crude.graphics.flush;
-import crude.graphics.index_gpu;
 import crude.scene.world;
 
 namespace crude::graphics
 {
-
-constexpr core::array<scene::Vertex_CPU, 8u> vertices = {
-  scene::Vertex_CPU{math::Float3A{-0.5f, -0.5f, 0.0f}, math::Float3A{1.0f, 0.0f, 0.0f}, math::Float2A{1.0f, 0.0f}, math::Float3A{}, math::Float3A{}, math::Float3A{}},
-  scene::Vertex_CPU{math::Float3A{0.5f, -0.5f, 0.0f}, math::Float3A{0.0f, 1.0f, 0.0f}, math::Float2A{0.0f, 0.0f}, math::Float3A{}, math::Float3A{}, math::Float3A{}},
-  scene::Vertex_CPU{math::Float3A{0.5f, 0.5f, 0.0f}, math::Float3A{0.0f, 0.0f, 1.0f}, math::Float2A{0.0f, 1.0f}, math::Float3A{}, math::Float3A{}, math::Float3A{}},
-  scene::Vertex_CPU{math::Float3A{-0.5f, 0.5f, 0.0f}, math::Float3A{1.0f, 1.0f, 0.0f}, math::Float2A{1.0f, 1.0f}, math::Float3A{}, math::Float3A{}, math::Float3A{}},
-  
-  scene::Vertex_CPU{math::Float3A{-0.5f, -0.5f, -0.5f}, math::Float3A{1.0f, 0.0f, 0.0f}, math::Float2A{1.0f, 0.0f}, math::Float3A{}, math::Float3A{}, math::Float3A{}},
-  scene::Vertex_CPU{math::Float3A{0.5f, -0.5f, -0.5f}, math::Float3A{0.0f, 1.0f, 0.0f}, math::Float2A{0.0f, 0.0f}, math::Float3A{}, math::Float3A{}, math::Float3A{}},
-  scene::Vertex_CPU{math::Float3A{0.5f, 0.5f, -0.5f}, math::Float3A{0.0f, 0.0f, 1.0f}, math::Float2A{0.0f, 1.0f}, math::Float3A{}, math::Float3A{}, math::Float3A{}},
-  scene::Vertex_CPU{math::Float3A{-0.5f, 0.5f, -0.5f}, math::Float3A{1.0f, 1.0f, 0.0f}, math::Float2A{1.0f, 1.0f}, math::Float3A{}, math::Float3A{}, math::Float3A{}}
-};
-
-core::array<core::uint32, 4> primitiveIndices =
-{
-  (0u) | (1u << 8) | (2u << 16),
-  (2u) | (3u << 8) | (0u << 16),
-  (4u) | (5u << 8) | (6u << 16),
-  (6u) | (7u << 8) | (4u << 16)
-};
-
-core::array<core::uint32, 4> indices = 
-{
-  (0u) | (1u << 8) | (2u << 16),
-  (2u) | (3u << 8) | (0u << 16),
-  (4u) | (5u << 8) | (6u << 16), 
-  (6u) | (7u << 8) | (4u << 16)
-};
 
 core::array<core::uint32, 8> vertexIndices =
 {
@@ -70,7 +41,7 @@ constexpr core::array<const char*, 1> instanceEnabledLayers = { "VK_LAYER_KHRONO
 Renderer::Renderer(core::shared_ptr<system::SDL_Window_Container> windowContainer, core::shared_ptr<scene::World> world)
   : m_windowContainer(windowContainer)
   , m_currentFrame(0u)
-  , m_uniformBufferDesc{ 
+  , m_cameraUniformBufferDesc{
       Uniform_Buffer_Descriptor(0u, VK_SHADER_STAGE_MESH_BIT_EXT),
       Uniform_Buffer_Descriptor(0u, VK_SHADER_STAGE_MESH_BIT_EXT)}
   , m_meshletBufferDescriptor(1u, VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT)
@@ -92,7 +63,6 @@ Renderer::Renderer(core::shared_ptr<system::SDL_Window_Container> windowContaine
   initializeSwapchainFramebuffers();
   initializeTextureImage();
   initializeSampler();
-  initializeModelBuffer();
   initializeUniformBuffers();
   initializeStorageBuffers();
   updateDescriptorSets();
@@ -291,7 +261,7 @@ void Renderer::initalizeDescriptorSet()
 {
   core::array<Descriptor_Set_Layout_Binding, 6u> layoutBindings =
   {
-    m_uniformBufferDesc[0],
+    m_cameraUniformBufferDesc[0],
     m_textureSamplerDesc[0],
     m_vertexBufferDescriptor,
     m_meshletBufferDescriptor,
@@ -346,13 +316,13 @@ void Renderer::recordCommandBuffer(core::shared_ptr<Command_Buffer> commandBuffe
     .offset = { 0, 0 },
     .extent = m_swapchain->getExtent() }));
 
-  commandBuffer->bindModelBuffer(0u, m_modelBuffer);
-
   updateUniformBuffer(m_currentFrame);
   commandBuffer->bindDescriptorSets(m_graphicsPipeline, core::span(&m_descriptorSets[m_currentFrame], 1u), {});
   
+  Per_Mesh_UBO preMeshUBO;
+  math::storeFloat4x4(preMeshUBO.modelToWorld, math::smatrix::translation(0, 0, 5));
+  commandBuffer->pushConstant<Per_Mesh_UBO>(m_graphicsPipeline->getPipelineLayout(), preMeshUBO);
   commandBuffer->drawMeshTasks(1u);
-  //commandBuffer->drawIndexed(3 * indices.size(), 1, 0, 0);
 
   commandBuffer->endRenderPass();
 
@@ -364,9 +334,9 @@ void Renderer::recordCommandBuffer(core::shared_ptr<Command_Buffer> commandBuffe
 
 void Renderer::updateUniformBuffer(core::uint32 currentImage)
 {
-  Camera_GPU* data = m_uniformBuffer[currentImage]->mapUnsafe();
-  *data = Camera_GPU(m_world->getCamera());
-  m_uniformBuffer[currentImage]->unmap();
+  Camera_UBO* data = m_cameraUniformBuffer[currentImage]->mapUnsafe();
+  *data = Camera_UBO(*m_world->getCamera());
+  m_cameraUniformBuffer[currentImage]->unmap();
 }
 
 void Renderer::initalizeGraphicsPipeline()
@@ -447,7 +417,10 @@ void Renderer::initalizeGraphicsPipeline()
   };
   Dynamic_State_Create_Info dynamicStateInfo(dynamicStates);
   
-  core::shared_ptr<Pipeline_Layout> pipelineLayout = core::allocateShared<Pipeline_Layout>(m_device, core::vector<core::shared_ptr<const Descriptor_Set_Layout>>{ m_descriptorSets[0]->getSetLayout() });
+  core::shared_ptr<Pipeline_Layout> pipelineLayout = core::allocateShared<Pipeline_Layout>(
+    m_device, 
+    core::vector<core::shared_ptr<const Descriptor_Set_Layout>>{ m_descriptorSets[0]->getSetLayout() }, 
+    core::vector<Push_Constant_Range_Base>{ Mesh_Push_Constant_Range<Per_Mesh_UBO>() });
 
   m_graphicsPipeline = core::allocateShared<Pipeline>(
     m_device,
@@ -530,29 +503,12 @@ void Renderer::initializeSampler()
   m_sampler = core::allocateShared<Sampler>(m_device, csamlper_state::gMagMinMipLinearRepeat);
 }
 
-void Renderer::initializeModelBuffer()
-{
-  scene::Mesh_Range range;
-  range.vertexOffset = 0;
-  range.indexOffset = 0;
-  range.vertexNum = vertices.size();
-  range.indexNum = indices.size() * 3;
-  scene::Mesh mesh;
-  mesh.setVertices(vertices);
-  //mesh.setIndices(indices);
-  scene::Model_Geometry modelGeometry;
-  modelGeometry.setRanges(core::span(&range, 1u));
-  modelGeometry.setMeshes(core::span(&mesh, 1u));
-  core::shared_ptr<graphics::Command_Buffer> commandBuffer = core::allocateShared<graphics::Command_Buffer>(m_transferCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
-  m_modelBuffer = core::allocateShared<graphics::Model_Buffer>(commandBuffer, modelGeometry);
-}
-
 void Renderer::initializeUniformBuffers()
 {
   for (core::uint32 i = 0; i < cFramesCount; ++i)
   {
-    m_uniformBuffer[i] = core::allocateShared<Uniform_Buffer<Camera_GPU>>(m_device);
-    m_uniformBufferDesc[i].update(m_uniformBuffer[i]);
+    m_cameraUniformBuffer[i] = core::allocateShared<Uniform_Buffer<Camera_UBO>>(m_device);
+    m_cameraUniformBufferDesc[i].update(m_cameraUniformBuffer[i]);
   }
   for (core::uint32 i = 0; i < cFramesCount; ++i)
   {
@@ -563,16 +519,16 @@ void Renderer::initializeUniformBuffers()
 void Renderer::initializeStorageBuffers()
 {
   core::shared_ptr<graphics::Command_Buffer> commandBuffer = core::allocateShared<graphics::Command_Buffer>(m_transferCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
-  m_vertexBuffer = core::allocateShared<graphics::Storage_Buffer>(commandBuffer, core::span<const scene::Vertex_CPU>(vertices));
+  m_vertexBuffer = core::allocateShared<graphics::Storage_Buffer>(commandBuffer, core::span<const scene::Vertex>(m_world->getMesh()->getVertices()));
   m_meshletBuffer = core::allocateShared<graphics::Storage_Buffer>(commandBuffer, core::span<const scene::Meshlet>(core::array<scene::Meshlet, 1> {
     scene::Meshlet {
-      .vertexCount = vertices.size(),
+      .vertexCount = m_world->getMesh()->getVerticesCount(),
       .vertexOffset = 0,
-      .primitiveCount = primitiveIndices.size(),
+      .primitiveCount = m_world->getMesh()->getTriangleIndicesCount(),
       .primitiveOffest = 0, 
     }
   }));
-  m_primitiveIndicesBuffer = core::allocateShared<graphics::Storage_Buffer>(commandBuffer, core::span<const core::uint32>(primitiveIndices));
+  m_primitiveIndicesBuffer = core::allocateShared<graphics::Storage_Buffer>(commandBuffer, core::span<const scene::Triangle_Index>(m_world->getMesh()->getTriangleIndices()));
   m_vertexIndicesBuffer = core::allocateShared<graphics::Storage_Buffer>(commandBuffer, core::span<const core::uint32>(vertexIndices));
   
   m_vertexBufferDescriptor.update(m_vertexBuffer, m_vertexBuffer->getSize());
@@ -587,7 +543,7 @@ void Renderer::updateDescriptorSets()
   {
     const core::array<Write_Descriptor_Set, 6> descriptorWrites =
     {
-      Buffer_Write_Descriptor_Set(m_descriptorSets[i], m_uniformBufferDesc[i]),
+      Buffer_Write_Descriptor_Set(m_descriptorSets[i], m_cameraUniformBufferDesc[i]),
       Image_Write_Descriptor_Set(m_descriptorSets[i], m_textureSamplerDesc[i]),
       Buffer_Write_Descriptor_Set(m_descriptorSets[i], m_vertexBufferDescriptor),
       Buffer_Write_Descriptor_Set(m_descriptorSets[i], m_meshletBufferDescriptor),
