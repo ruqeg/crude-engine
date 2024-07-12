@@ -5,6 +5,7 @@ export module crude.scene.mesh;
 export import crude.core.std_containers_heap;
 export import crude.core.std_containers_stack;
 export import crude.math.fuicont;
+export import crude.math.matrix;
 
 export namespace crude::scene
 {
@@ -46,20 +47,28 @@ public:
   Mesh(core::span<const Vertex> vertices, core::span<const Triangle_Index> triangleIndices)
     : m_vertices(vertices.begin(), vertices.end()), m_triangleIndices(triangleIndices.begin(), triangleIndices.end()) {}
 public:
+  void setMeshToModel(math::Matrix meshToModel) { m_meshToModel = meshToModel; }
+  void setPositionClamp(math::Vector min, math::Vector max) { m_maxPosition = max; m_minPosition = min; }
   void setVertices(core::span<const Vertex> vertices) { m_vertices.assign(vertices.begin(), vertices.end()); }
   void setTriangleIndices(core::span<const Triangle_Index> triangleIndices) { m_triangleIndices.assign(triangleIndices.begin(), triangleIndices.end()); }
   void setVertices(const core::vector<Vertex>& vertices) { m_vertices = vertices; }
   void setTriangleIndices(const core::vector<Triangle_Index>& triangleIndices) { m_triangleIndices = triangleIndices; }
+  math::Vector getPositionMax() const { return m_maxPosition; }
+  math::Vector getPositionMin() const { return m_minPosition; }
   void setName(const core::u8string& name) { m_name = name; }
   const core::u8string& getName() const { return m_name; }
   const core::vector<Vertex>& getVertices() const { return m_vertices; }
   const core::vector<Triangle_Index>& getTriangleIndices() const { return m_triangleIndices; }
+  const math::Matrix& getMeshToModel() const { return m_meshToModel; }
   core::uint32 getVerticesCount() const { return m_vertices.size(); }
   core::uint32 getTriangleIndicesCount() const { return m_triangleIndices.size(); }
 private:
   core::vector<Vertex>          m_vertices;
   core::vector<Triangle_Index>  m_triangleIndices;
   core::u8string                m_name;
+  math::Matrix                  m_meshToModel;
+  math::Vector                  m_minPosition;
+  math::Vector                  m_maxPosition;
 };
 
 }

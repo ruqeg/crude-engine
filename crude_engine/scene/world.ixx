@@ -23,6 +23,7 @@ public:
 private:
   core::shared_ptr<scene::Camera>  m_camera;
   core::shared_ptr<scene::Mesh>    m_mesh;
+  math::Matrix                     m_meshToModel;
 };
 
 }

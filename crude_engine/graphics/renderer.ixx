@@ -54,7 +54,7 @@ export namespace crude::graphics
 
 struct Per_Mesh_UBO
 {
-  math::Float4x4 modelToWorld;
+  math::Float4x4 meshToModel;
 };
 
 class Renderer

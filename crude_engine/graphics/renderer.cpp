@@ -320,7 +320,7 @@ void Renderer::recordCommandBuffer(core::shared_ptr<Command_Buffer> commandBuffe
   commandBuffer->bindDescriptorSets(m_graphicsPipeline, core::span(&m_descriptorSets[m_currentFrame], 1u), {});
   
   Per_Mesh_UBO preMeshUBO;
-  math::storeFloat4x4(preMeshUBO.modelToWorld, math::smatrix::translation(0, 0, 5));
+  math::storeFloat4x4(preMeshUBO.meshToModel, m_world->getMesh()->getMeshToModel());
   commandBuffer->pushConstant<Per_Mesh_UBO>(m_graphicsPipeline->getPipelineLayout(), preMeshUBO);
   commandBuffer->drawMeshTasks(1u);
 
@@ -368,7 +368,7 @@ void Renderer::initalizeGraphicsPipeline()
     .depthClampEnable = false,
     .rasterizerDiscardEnable = false,
     .polygonMode = VK_POLYGON_MODE_FILL,
-    .cullMode = VK_CULL_MODE_BACK_BIT,
+    .cullMode = VK_CULL_MODE_NONE,
     .frontFace = VK_FRONT_FACE_CLOCKWISE,
     .depthBiasEnable = false,
     .depthBiasConstantFactor = 0.0f,
