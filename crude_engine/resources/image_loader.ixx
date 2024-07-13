@@ -43,10 +43,10 @@ core::Optional<scene::Image> loadImage(const char* path, scene::Image_Format for
     return core::nullopt;
   }
   
-  core::shared_ptr<core::byte> texelsShared = core::shared_ptr<core::byte>(texels, [](core::byte* texels) {
+  core::shared_ptr<core::byte[]> texelsShared = core::shared_ptr<core::byte[]>(texels, [](core::byte* texels) {
     stbi_image_free(texels);
   });
-  return scene::Image(texelsShared, format, width, height, channels);
+  return scene::Image(texelsShared, format, width, height);
 }
 
 }

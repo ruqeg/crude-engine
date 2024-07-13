@@ -479,17 +479,17 @@ void Renderer::initializeSwapchainFramebuffers()
 
 void Renderer::initializeTextureImage()
 {
-  scene::Image image = resources::loadImage("../../crude_example/basic_triangle_examle/texture.jpg", scene::IMAGE_FORMAT_RGB_ALPHA).value();
+  core::shared_ptr<const scene::Image> image = m_world->getTexture()->getImage();
   auto commandBuffer = core::allocateShared<Command_Buffer>(m_transferCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
   VkExtent3D extent;
-  extent.width = image.getWidth();
-  extent.height = image.getHeight();
+  extent.width = image->getWidth();
+  extent.height = image->getHeight();
   extent.depth = 1u;
   m_texture = core::allocateShared<Image_2D>(
     commandBuffer, 
     VK_FORMAT_R8G8B8A8_SRGB, 
-    Image::Mip_Data(extent, image.getTexelsSpan()),
-    image.calculateMaximumMipLevelsCount(),
+    Image::Mip_Data(extent, image->getTexelsSpan()),
+    image->calculateMaximumMipLevelsCount(),
     VK_SHARING_MODE_EXCLUSIVE);
   commandBuffer->begin();
   generateMipmaps(commandBuffer, m_texture, VK_FILTER_LINEAR);
@@ -500,7 +500,7 @@ void Renderer::initializeTextureImage()
 
 void Renderer::initializeSampler()
 {
-  m_sampler = core::allocateShared<Sampler>(m_device, csamlper_state::gMagMinMipLinearRepeat);
+  m_sampler = core::allocateShared<Sampler>(m_device, *m_world->getTexture()->getSamplerState());
 }
 
 void Renderer::initializeUniformBuffers()

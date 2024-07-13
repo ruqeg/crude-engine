@@ -33,6 +33,8 @@ math::Vector loadTinyRotation(const tinygltf::Node& node)
 export namespace crude::resources
 {
 
+// !TODO
+
 core::Optional<core::shared_ptr<scene::World>> loadWorld(const char* path) noexcept
 {
   static_assert(sizeof(char) == sizeof(core::char8));
@@ -68,11 +70,11 @@ core::Optional<core::shared_ptr<scene::World>> loadWorld(const char* path) noexc
   std::function<void(tinygltf::Node&)> loadScene; 
   loadScene = [&](tinygltf::Node& tinyNode) {
     if (tinyNode.matrix.size() != 0)
-      meshToModel =  math::smatrix::transpose(math::Matrix(
+      meshToModel =  math::Matrix(
         tinyNode.matrix[0], tinyNode.matrix[1], tinyNode.matrix[2], tinyNode.matrix[3],
         tinyNode.matrix[4], tinyNode.matrix[5], tinyNode.matrix[6], tinyNode.matrix[7],
         tinyNode.matrix[8], tinyNode.matrix[9], tinyNode.matrix[10], tinyNode.matrix[11],
-        tinyNode.matrix[12], tinyNode.matrix[13], tinyNode.matrix[14], tinyNode.matrix[15]));
+        tinyNode.matrix[12], tinyNode.matrix[13], tinyNode.matrix[14], tinyNode.matrix[15]);
 
 
 
@@ -95,7 +97,8 @@ core::Optional<core::shared_ptr<scene::World>> loadWorld(const char* path) noexc
       core::shared_ptr<scene::Mesh> mesh = core::allocateShared<scene::Mesh>();
       const tinygltf::Mesh& tinyMesh = tinyModel.meshes[tinyNode.mesh];
 
-      const tinygltf::Accessor& accessor = tinyModel.accessors[tinyMesh.primitives.front().attributes.at("POSITION")];
+      const tinygltf::Primitive primitive = tinyMesh.primitives.front();
+      const tinygltf::Accessor& accessor = tinyModel.accessors[primitive.attributes.at("POSITION")];
       const tinygltf::BufferView& bufferView = tinyModel.bufferViews[accessor.bufferView];
       const tinygltf::Buffer& buffer = tinyModel.buffers[bufferView.buffer];
 
@@ -109,24 +112,23 @@ core::Optional<core::shared_ptr<scene::World>> loadWorld(const char* path) noexc
           positions[3 + i * 6 + 0],
           positions[3 + i * 6 + 1],
           positions[3 + i * 6 + 2]);
-        core::logError(core::Debug::Channel::FileIO, "V%i = (%f, %f, %f)", i, vertices[i].position.x, vertices[i].position.y, vertices[i].position.z);
 
       }
-      /* vertices = {
-         scene::Vertex{ math::Float3A{-0.5f, -0.5f, 0.0f}, math::Float3A{1.0f, 0.0f, 0.0f}, math::Float2A{1.0f, 0.0f}, math::Float3A{}, math::Float3A{}, math::Float3A{} },
-         scene::Vertex{ math::Float3A{0.5f, -0.5f, 0.0f}, math::Float3A{0.0f, 1.0f, 0.0f}, math::Float2A{0.0f, 0.0f}, math::Float3A{}, math::Float3A{}, math::Float3A{} },
-         scene::Vertex{ math::Float3A{0.5f, 0.5f, 0.0f}, math::Float3A{0.0f, 0.0f, 1.0f}, math::Float2A{0.0f, 1.0f}, math::Float3A{}, math::Float3A{}, math::Float3A{} },
-         scene::Vertex{ math::Float3A{-0.5f, 0.5f, 0.0f}, math::Float3A{1.0f, 1.0f, 0.0f}, math::Float2A{1.0f, 1.0f}, math::Float3A{}, math::Float3A{}, math::Float3A{} },
 
-         scene::Vertex{ math::Float3A{-0.5f, -0.5f, -0.5f}, math::Float3A{1.0f, 0.0f, 0.0f}, math::Float2A{1.0f, 0.0f}, math::Float3A{}, math::Float3A{}, math::Float3A{} },
-         scene::Vertex{ math::Float3A{0.5f, -0.5f, -0.5f}, math::Float3A{0.0f, 1.0f, 0.0f}, math::Float2A{0.0f, 0.0f}, math::Float3A{}, math::Float3A{}, math::Float3A{} },
-         scene::Vertex{ math::Float3A{0.5f, 0.5f, -0.5f}, math::Float3A{0.0f, 0.0f, 1.0f}, math::Float2A{0.0f, 1.0f}, math::Float3A{}, math::Float3A{}, math::Float3A{} },
-         scene::Vertex{ math::Float3A{-0.5f, 0.5f, -0.5f}, math::Float3A{1.0f, 1.0f, 0.0f}, math::Float2A{1.0f, 1.0f}, math::Float3A{}, math::Float3A{}, math::Float3A{} }
-       };*/
+
+      const tinygltf::Accessor& uaccessor = tinyModel.accessors[primitive.attributes.at("TEXCOORD_0")];
+      const tinygltf::BufferView& ubufferView = tinyModel.bufferViews[uaccessor.bufferView];
+      const tinygltf::Buffer& ubuffer = tinyModel.buffers[ubufferView.buffer];
+      const float* uvo = reinterpret_cast<const float*>(&ubuffer.data[0] + ubufferView.byteOffset);
+      for (size_t i = 0; i < uaccessor.count; ++i)
+      {
+        vertices[i].texcoord = math::Float2A(
+          uvo[i * 2 + 0],
+          uvo[i * 2 + 1]);
+      }
+
+
       mesh->setVertices(vertices);
-
-
-
 
       const tinygltf::Accessor& accessorInd = tinyModel.accessors[tinyMesh.primitives.front().indices];
       const tinygltf::BufferView& bufferViewInd = tinyModel.bufferViews[accessorInd.bufferView];
@@ -139,23 +141,23 @@ core::Optional<core::shared_ptr<scene::World>> loadWorld(const char* path) noexc
       for (size_t i = 0; i < accessorInd.count / 3; ++i)
       {
         triangleIndices[i].set(indices[i * 3 + 0], indices[i * 3 + 1], indices[i * 3 + 2]);
-        core::logError(core::Debug::Channel::FileIO, "Triangle%i = (%i, %i, %i)", i, triangleIndices[i].geti0(), triangleIndices[i].geti1(), triangleIndices[i].geti2());
-        core::logError(core::Debug::Channel::FileIO, "P%i_0 = (%f, %f, %f)", i, vertices[triangleIndices[i].geti0()].position.x, vertices[triangleIndices[i].geti0()].position.y, vertices[triangleIndices[i].geti0()].position.z);
-        core::logError(core::Debug::Channel::FileIO, "P%i_1 = (%f, %f, %f)", i, vertices[triangleIndices[i].geti1()].position.x, vertices[triangleIndices[i].geti1()].position.y, vertices[triangleIndices[i].geti1()].position.z);
-        core::logError(core::Debug::Channel::FileIO, "P%i_2 = (%f, %f, %f)", i, vertices[triangleIndices[i].geti2()].position.x, vertices[triangleIndices[i].geti2()].position.y, vertices[triangleIndices[i].geti2()].position.z);
       }
-      /*triangleIndices.resize(4);
-      triangleIndices[0].set(0, 1, 2);
-      triangleIndices[1].set(2, 3, 0);
-      triangleIndices[2].set(4, 5, 6);
-      triangleIndices[3].set(6, 7, 4);*/
       mesh->setTriangleIndices(triangleIndices);
       mesh->setMeshToModel(meshToModel);
-      mesh->setPositionClamp(
-        math::svector::set(accessor.minValues[0], accessor.minValues[1], accessor.minValues[2], 0),
-        math::svector::set(accessor.maxValues[0], accessor.maxValues[1], accessor.maxValues[2], 0));
 
       world->setMesh(mesh);
+
+
+      const tinygltf::Material& material = tinyModel.materials[primitive.material];
+      const tinygltf::Texture& texture = tinyModel.textures[material.pbrMetallicRoughness.baseColorTexture.index];
+      const tinygltf::Image& image = tinyModel.images[texture.source];
+      core::shared_ptr<core::byte[]> imageByte = core::allocateShared<core::byte[]>(image.image.size());
+      std::memcpy(imageByte.get(), image.image.data(), static_cast<core::size_t>(image.image.size()));
+
+      core::shared_ptr<scene::Image> mimage = core::allocateShared<scene::Image>(imageByte, scene::Image_Format::IMAGE_FORMAT_RGB_ALPHA, image.width, image.height);
+      core::shared_ptr<graphics::Sampler_State> samplerState = core::allocateShared<graphics::Sampler_State>(graphics::csamlper_state::gMagMinMipLinearRepeat);
+      core::shared_ptr<scene::Texture> ttexture = core::allocateShared<scene::Texture>(mimage, samplerState);
+      world->setTexture(ttexture);
     }
 
 

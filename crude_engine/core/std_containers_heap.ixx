@@ -38,6 +38,18 @@ using u32string = std::basic_string<core::char32, std::char_traits<core::char32>
 template<class T>
 using shared_ptr = std::shared_ptr<T>;
 
+template <class T>
+shared_ptr<T> allocateShared() noexcept
+{
+  return std::allocate_shared<T>(STD_Allocator<T>());
+}
+
+template <class T, class ...Args>
+shared_ptr<T> allocateShared(Args&&... args, core::size_t n) noexcept
+{
+  return std::allocate_shared<T>(STD_Allocator<T>(), n);
+}
+
 template <class T, class ...Args>
 shared_ptr<T> allocateShared(Args&&... args) noexcept
 {
