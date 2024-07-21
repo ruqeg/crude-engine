@@ -1,8 +1,9 @@
 module;
 
+#include <directxmath/DirectXMath.h>
+
 export module crude.graphics.camera_ubo;
 
-export import crude.math.fuicont;
 export import crude.scene.camera;
 
 export namespace crude::graphics
@@ -19,12 +20,12 @@ struct Camera_UBO
     , viewToWorld(camera.getViewToWorldFloat4x4())
     , clipToWorld(camera.getClipToWorldFloat4x4())
   {}
-  math::Float4x4 worldToClip;
-  math::Float4x4 worldToView;
-  math::Float4x4 viewToClip;
-  math::Float4x4 clipToView;
-  math::Float4x4 viewToWorld;
-  math::Float4x4 clipToWorld;
+  DirectX::XMFLOAT4X4 worldToClip;
+  DirectX::XMFLOAT4X4 worldToView;
+  DirectX::XMFLOAT4X4 viewToClip;
+  DirectX::XMFLOAT4X4 clipToView;
+  DirectX::XMFLOAT4X4 viewToWorld;
+  DirectX::XMFLOAT4X4 clipToWorld;
 };
 
 }

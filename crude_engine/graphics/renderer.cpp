@@ -8,12 +8,8 @@
 module crude.graphics.renderer;
 
 import crude.core.logger;
-import crude.math.fuicont;
-import crude.math.convert;
-import crude.math.matrix;
 import crude.scene.image;
 import crude.resources.image_loader;
-import crude.math.constants;
 import crude.graphics.format_helper;
 import crude.graphics.generate_mipmaps;
 import crude.graphics.flush;
@@ -478,7 +474,7 @@ void Renderer::initializeSwapchainFramebuffers()
 
 void Renderer::initializeTextureImage()
 {
-  core::shared_ptr<const scene::Image> image = m_world->getTexture()->getImage();
+  core::shared_ptr<const scene::Image> image = m_world->getNode()->m_texturePerMeshes.front()->getImage();
   auto commandBuffer = core::allocateShared<Command_Buffer>(m_transferCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
   VkExtent3D extent;
   extent.width = image->getWidth();
@@ -499,7 +495,7 @@ void Renderer::initializeTextureImage()
 
 void Renderer::initializeSampler()
 {
-  m_sampler = core::allocateShared<Sampler>(m_device, *m_world->getTexture()->getSamplerState());
+  m_sampler = core::allocateShared<Sampler>(m_device, *m_world->getNode()->m_texturePerMeshes.front()->getSamplerState());
 }
 
 void Renderer::initializeUniformBuffers()
@@ -518,10 +514,10 @@ void Renderer::initializeUniformBuffers()
 void Renderer::initializeStorageBuffers()
 {
   core::shared_ptr<graphics::Command_Buffer> commandBuffer = core::allocateShared<graphics::Command_Buffer>(m_transferCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
-  m_vertexBuffer = core::allocateShared<graphics::Storage_Buffer>(commandBuffer, m_world->getGeometry()->m_vertices);
-  m_meshletBuffer = core::allocateShared<graphics::Storage_Buffer>(commandBuffer, m_world->getGeometry()->m_meshlets);
-  m_primitiveIndicesBuffer = core::allocateShared<graphics::Storage_Buffer>(commandBuffer, m_world->getGeometry()->m_primitiveIndices);
-  m_vertexIndicesBuffer = core::allocateShared<graphics::Storage_Buffer>(commandBuffer, m_world->getGeometry()->m_vertexIndices);
+  m_vertexBuffer = core::allocateShared<graphics::Storage_Buffer>(commandBuffer, m_world->getNode()->m_geometry->m_vertices);
+  m_meshletBuffer = core::allocateShared<graphics::Storage_Buffer>(commandBuffer, m_world->getNode()->m_geometry->m_meshlets);
+  m_primitiveIndicesBuffer = core::allocateShared<graphics::Storage_Buffer>(commandBuffer, m_world->getNode()->m_geometry->m_primitiveIndices);
+  m_vertexIndicesBuffer = core::allocateShared<graphics::Storage_Buffer>(commandBuffer, m_world->getNode()->m_geometry->m_vertexIndices);
   
   m_vertexBufferDescriptor.update(m_vertexBuffer, m_vertexBuffer->getSize());
   m_meshletBufferDescriptor.update(m_meshletBuffer, m_meshletBuffer->getSize());

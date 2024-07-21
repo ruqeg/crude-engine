@@ -1,12 +1,12 @@
 module;
 
+#include <directxmath/DirectXMath.h>
+
 export module crude.scene.mesh;
 
 export import crude.scene.image;
 export import crude.core.std_containers_heap;
 export import crude.core.std_containers_stack;
-export import crude.math.fuicont;
-export import crude.math.matrix;
 
 export namespace crude::scene
 {
@@ -21,9 +21,9 @@ struct Meshlet
 
 struct Vertex
 {
-  math::Float3A position;
-  math::Float3A normal;
-  math::Float2A texcoord;
+  DirectX::XMFLOAT3A position;
+  DirectX::XMFLOAT3A normal;
+  DirectX::XMFLOAT2A texcoord;
 };
 
 struct Mesh_Lod
@@ -83,7 +83,13 @@ struct Geometry
   core::vector<Meshlet>                 m_meshlets;
   core::vector<core::uint8>             m_primitiveIndices;
   core::vector<Mesh>                    m_meshes;
-  core::vector<math::Matrix>            m_meshToModel;
+};
+
+struct Node
+{
+  core::shared_ptr<Geometry>              m_geometry;
+  std::vector<core::shared_ptr<Texture>>  m_texturePerMeshes;
+  std::vector<DirectX::XMFLOAT4X4>        m_meshesToModel;
 };
 
 }

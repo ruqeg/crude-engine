@@ -42,7 +42,7 @@ struct Mesh
   Mesh_Lod lods[8];
 };
 
-layout(binding=0, std140, row_major) uniform CameraUBOIn
+struct Camera
 {
   mat4 worldToClip;
   mat4 worldToView;
@@ -50,25 +50,41 @@ layout(binding=0, std140, row_major) uniform CameraUBOIn
   mat4 clipToView;
   mat4 viewToWorld;
   mat4 clipToWorld;
-} camera;
+};
 
+layout(binding=0, std140, row_major) uniform Global
+{
+  Camera camera;
+};
 
-layout(binding=1) readonly buffer Meshlets
+struct MeshDraw
+{
+  vec3  position;
+  float scale;
+  vec4  orientation;
+};
+
+layout(binding=1) readonly buffer Draws
+{
+  MeshDraw meshDraws[];
+};
+
+layout(binding=2) readonly buffer Meshlets
 {
   Meshlet meshlets[];
 };
 
-layout(binding=2, std140) readonly buffer Vertices
+layout(binding=3, std140) readonly buffer Vertices
 {
   Vertex vertices[];
 };
 
-layout(binding=3) readonly buffer PrimitiveIndices
+layout(binding=4) readonly buffer PrimitiveIndices
 {
   uint8_t primitiveIndices[];
 };
 
-layout(binding=4) readonly buffer VertexIndices
+layout(binding=5) readonly buffer VertexIndices
 {
   uint vertexIndices[];
 };

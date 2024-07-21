@@ -17,7 +17,7 @@ struct Meshlet
   uint     primitiveOffest;
 };
 
-layout(binding=1) readonly buffer Meshlets {
+layout(binding=2) readonly buffer Meshlets {
   Meshlet meshlets[];
 };
 

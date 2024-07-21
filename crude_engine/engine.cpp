@@ -1,7 +1,8 @@
+#include <directxmath/DirectXMath.h>
+
 module crude.engine;
 
 import crude.core.logger;
-import crude.math.constants;
 import crude.resources.world_loader;
 
 namespace crude
@@ -10,10 +11,10 @@ namespace crude
 Engine::Engine(core::shared_ptr<system::SDL_Window_Container> windowContainer)
 {
   core::shared_ptr<scene::Camera> camera = core::allocateShared<scene::Camera>();
-  camera->calculateViewToClipMatrix(math::CPI4, windowContainer->getAspect(), 0.1f, 10.0f);
+  camera->calculateViewToClipMatrix(DirectX::XM_PIDIV4, windowContainer->getAspect(), 0.1f, 10.0f);
   camera->setPosition(0, 0, -2);
 
-  m_world = resources::loadWorld("../../crude_example/basic_triangle_examle/resources/box_textured.glb").value();
+  m_world = resources::loadWorld("../../crude_example/basic_triangle_examle/resources/helmet.glb").value();
   m_world->setCamera(camera);
   m_renderer = core::allocateShared<graphics::Renderer>(windowContainer, m_world);
   m_timer.setFrameRate(60);
@@ -44,27 +45,27 @@ void Engine::update(core::float64 elapsed)
   // !TODO :D
   if (m_ioManager.getKeyboardEH().keyIsPressed(system::Scancode::SDL_SCANCODE_W))
   {
-    camera->addPosition(math::svector::scale(camera->getForwardVector(), 7 * elapsed));
+    camera->addPosition(DirectX::XMVectorScale(camera->getForwardVector(), 7 * elapsed));
   }
   if (m_ioManager.getKeyboardEH().keyIsPressed(system::Scancode::SDL_SCANCODE_S))
   {
-    camera->addPosition(math::svector::scale(camera->getForwardVector(), -7 * elapsed));
+    camera->addPosition(DirectX::XMVectorScale(camera->getForwardVector(), -7 * elapsed));
   }
   if (m_ioManager.getKeyboardEH().keyIsPressed(system::Scancode::SDL_SCANCODE_A))
   {
-    camera->addPosition(math::svector::scale(camera->getRightVector(), -7 * elapsed));
+    camera->addPosition(DirectX::XMVectorScale(camera->getRightVector(), -7 * elapsed));
   }
   if (m_ioManager.getKeyboardEH().keyIsPressed(system::Scancode::SDL_SCANCODE_D))
   {
-    camera->addPosition(math::svector::scale(camera->getRightVector(), 7 * elapsed));
+    camera->addPosition(DirectX::XMVectorScale(camera->getRightVector(), 7 * elapsed));
   }
   if (m_ioManager.getKeyboardEH().keyIsPressed(system::Scancode::SDL_SCANCODE_E))
   {
-    camera->addPosition(math::svector::scale(camera->getTopVector(), -7 * elapsed));
+    camera->addPosition(DirectX::XMVectorScale(camera->getTopVector(), -7 * elapsed));
   }
   if (m_ioManager.getKeyboardEH().keyIsPressed(system::Scancode::SDL_SCANCODE_Q))
   {
-    camera->addPosition(math::svector::scale(camera->getTopVector(), 7 * elapsed));
+    camera->addPosition(DirectX::XMVectorScale(camera->getTopVector(), 7 * elapsed));
   }
   while (!m_ioManager.getMouseEH().eventBufferIsEmpty())
   {

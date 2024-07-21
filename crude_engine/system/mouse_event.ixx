@@ -1,18 +1,18 @@
 module;
 
-export module crude.system.mouse_event;
+#include <directxmath/DirectXMath.h>
 
-import crude.core.alias;
-import crude.math.fuicont;
+export module crude.system.mouse_event;
+export import crude.core.alias;
 
 export namespace crude::system
 {
 
-struct Mouse_Point : public math::Float2 
+struct Mouse_Point : public DirectX::XMFLOAT2
 {
   Mouse_Point() = default;
   constexpr Mouse_Point(core::float32 x, core::float32 y) noexcept 
-    : math::Float2(x, y) {}
+    : DirectX::XMFLOAT2(x, y) {}
 };
 	
 enum Mouse_Event_Type

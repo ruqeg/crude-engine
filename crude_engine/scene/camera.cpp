@@ -1,67 +1,71 @@
-module crude.scene.camera;
+#include <directxmath/DirectXMath.h>
 
-import crude.math.convert;
+module crude.scene.camera;
 
 namespace crude::scene
 {
 
 Camera::Camera()
 {
-  m_positionFloat3 = math::Float3(0.0f, 0.0f, 0.0f);
-  m_positionVector = math::loadFloat3(m_positionFloat3);
-  m_rotationFloat3 = math::Float3(0.0f, 0.0f, 0.0f);
-  m_rotationVector = math::loadFloat3(m_rotationFloat3);
+  m_positionFloat3 = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+  m_rotationFloat3 = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
   calculateWorldToViewMatrix();
 }
 
 void Camera::calculateViewToClipMatrix(core::float32 fovRadians, core::float32 aspectRatio, core::float32 nearZ, core::float32 farZ)
 {
-  m_farZ = farZ;
-  m_nearZ = nearZ;
+  m_farZ       = farZ;
+  m_nearZ      = nearZ;
   m_fovRadians = fovRadians;
-  m_viewToClipMatrix = math::smatrix::perspectiveFovLH(fovRadians, aspectRatio, nearZ, farZ);
-  m_clipToViewMatrix = math::smatrix::inverse(m_viewToClipMatrix);
-  math::storeFloat4x4(m_viewToClipFloat4x4, m_viewToClipMatrix);
-  math::storeFloat4x4(m_clipToViewFloat4x4, m_clipToViewMatrix);
+
+  DirectX::XMMATRIX viewToClipMatrix = DirectX::XMMatrixPerspectiveFovLH(fovRadians, aspectRatio, nearZ, farZ);
+  DirectX::XMMATRIX clipToViewMatrix = DirectX::XMMatrixInverse(nullptr, viewToClipMatrix);
+  DirectX::XMStoreFloat4x4(&m_viewToClipFloat4x4, viewToClipMatrix);
+  DirectX::XMStoreFloat4x4(&m_clipToViewFloat4x4, clipToViewMatrix);
 }
 
 void Camera::calculateWorldToViewMatrix()
 {
-  const math::Matrix cameraRotationMatrix = math::smatrix::rotationRollPitchYawFromVector(m_rotationVector);
-  const math::Vector cameraDirection = math::svector::transformCoord3(cDefaultCameraForwardVector, cameraRotationMatrix);
-  const math::Vector cameraTarget = math::svector::add(m_positionVector, cameraDirection);
-  const math::Vector upDir = math::svector::transformCoord3(cDefaultCameraTopVector, cameraRotationMatrix);
-  m_worldToViewMatrix = math::smatrix::lookAtLH(m_positionVector, cameraTarget, upDir);
-  m_viewToWorldMatrix = math::smatrix::inverse(m_worldToViewMatrix);
-  math::storeFloat4x4(m_worldToViewFloat4x4, m_worldToViewMatrix);
-  math::storeFloat4x4(m_viewToWorldFloat4x4, m_viewToWorldMatrix);
+  DirectX::XMVECTOR position = DirectX::XMLoadFloat3(&m_positionFloat3);
+  DirectX::XMVECTOR rotation = DirectX::XMLoadFloat3(&m_rotationFloat3);
+  DirectX::XMMATRIX cameraRotation = DirectX::XMMatrixRotationRollPitchYawFromVector(rotation);
+  DirectX::XMVECTOR cameraDirection = DirectX::XMVector3TransformCoord(cDefaultCameraForward, cameraRotation);
+  DirectX::XMVECTOR cameraTarget = DirectX::XMVectorAdd(position, cameraDirection);
+  DirectX::XMVECTOR upDir = DirectX::XMVector3TransformCoord(cDefaultCameraTop, cameraRotation);
+  DirectX::XMMATRIX worldToView = DirectX::XMMatrixLookAtLH(position, cameraTarget, upDir);
+  DirectX::XMMATRIX viewToWorld = DirectX::XMMatrixInverse(nullptr, worldToView);
+  DirectX::XMStoreFloat4x4(&m_worldToViewFloat4x4, worldToView);
+  DirectX::XMStoreFloat4x4(&m_viewToWorldFloat4x4, viewToWorld);
 
-  m_forwardVector = math::svector::transformCoord3(cDefaultCameraForwardVector, cameraRotationMatrix);
-  m_topVector = math::svector::transformCoord3(cDefaultCameraTopVector, cameraRotationMatrix);
-  m_rightVector = math::svector::transformCoord3(cDefaultCameraRightVector, cameraRotationMatrix);
+  DirectX::XMStoreFloat3(&m_forwardFloat3, DirectX::XMVector3TransformCoord(cDefaultCameraForward, cameraRotation));
+  DirectX::XMStoreFloat3(&m_topFloat3, DirectX::XMVector3TransformCoord(cDefaultCameraTop, cameraRotation));
+  DirectX::XMStoreFloat3(&m_rightFloat3, DirectX::XMVector3TransformCoord(cDefaultCameraRight, cameraRotation));
 
-  m_worldToClipMatrix = math::smatrix::multiply(m_worldToViewMatrix, m_viewToClipMatrix);
-  m_clipToWorldMatrix = math::smatrix::inverse(m_worldToClipMatrix);
-  math::storeFloat4x4(m_worldToClipFloat4x4, m_worldToClipMatrix);
-  math::storeFloat4x4(m_clipToWorldFloat4x4, m_clipToWorldMatrix);
+  DirectX::XMMATRIX worldToClip = DirectX::XMMatrixMultiply(worldToView, DirectX::XMLoadFloat4x4(&m_viewToClipFloat4x4));
+  DirectX::XMMATRIX clipToWorld = DirectX::XMMatrixInverse(nullptr, worldToClip);
+  DirectX::XMStoreFloat4x4(&m_worldToClipFloat4x4, worldToClip);
+  DirectX::XMStoreFloat4x4(&m_clipToWorldFloat4x4, clipToWorld);
 }
 
-void Camera::setPosition(const math::Vector& newPosition)
+void Camera::setPosition(DirectX::XMFLOAT3 newPosition)
 {
-  math::storeFloat3(m_positionFloat3, newPosition);
-  m_positionVector = newPosition;
+  m_positionFloat3 = newPosition;
+}
+
+void Camera::setPosition(DirectX::FXMVECTOR newPosition)
+{
+  DirectX::XMStoreFloat3(&m_positionFloat3, newPosition);
 }
 
 void Camera::setPosition(core::float32 x, core::float32 y, core::float32 z)
 {
-  m_positionFloat3 = math::Float3(x, y, z);
-  m_positionVector = math::loadFloat3(m_positionFloat3);
+  m_positionFloat3 = DirectX::XMFLOAT3(x, y, z);
 }
 
-void Camera::addPosition(const math::Vector& addedPosition)
+void Camera::addPosition(DirectX::FXMVECTOR addedPosition)
 {
-  m_positionVector = math::svector::add(m_positionVector, addedPosition);
-  math::storeFloat3(m_positionFloat3, m_positionVector);
+  DirectX::XMVECTOR position = DirectX::XMLoadFloat3(&m_positionFloat3);
+  DirectX::XMStoreFloat3(&m_positionFloat3, DirectX::XMVectorAdd(position, addedPosition));
 }
 
 void Camera::addPosition(core::float32 x, core::float32 y, core::float32 z)
@@ -69,25 +73,27 @@ void Camera::addPosition(core::float32 x, core::float32 y, core::float32 z)
   m_positionFloat3.x += x;
   m_positionFloat3.y += y;
   m_positionFloat3.z += z;
-  m_positionVector = math::loadFloat3(m_positionFloat3);
 }
 
-void Camera::setRotation(const math::Vector& newRotation)
+void Camera::setRotation(DirectX::XMFLOAT3 newRotation)
 {
-  math::storeFloat3(m_rotationFloat3, newRotation);
-  m_rotationVector = newRotation;
+  m_rotationFloat3 = newRotation;
+}
+
+void Camera::setRotation(DirectX::FXMVECTOR newRotation)
+{
+  DirectX::XMStoreFloat3(&m_rotationFloat3, newRotation);
 }
 
 void Camera::setRotation(core::float32 x, core::float32 y, core::float32 z)
 {
-  m_rotationFloat3 = math::Float3(x, y, z);
-  m_rotationVector = math::loadFloat3(m_rotationFloat3);
+  m_rotationFloat3 = DirectX::XMFLOAT3(x, y, z);
 }
 
-void Camera::addRotation(const math::Vector& addedRotation)
+void Camera::addRotation(DirectX::FXMVECTOR addedRotation)
 {
-  m_rotationVector = math::svector::add(m_rotationVector, addedRotation);
-  math::storeFloat3(m_rotationFloat3, m_rotationVector);
+  DirectX::XMVECTOR rotation = DirectX::XMLoadFloat3(&m_rotationFloat3);
+  DirectX::XMStoreFloat3(&m_rotationFloat3, DirectX::XMVectorAdd(rotation, addedRotation));
 }
 
 void Camera::addRotation(core::float32 x, core::float32 y, core::float32 z)
@@ -95,7 +101,6 @@ void Camera::addRotation(core::float32 x, core::float32 y, core::float32 z)
   m_rotationFloat3.x += x;
   m_rotationFloat3.y += y;
   m_rotationFloat3.z += z;
-  m_rotationVector = math::loadFloat3(m_rotationFloat3);
 }
 
 }

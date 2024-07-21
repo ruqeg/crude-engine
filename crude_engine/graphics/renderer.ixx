@@ -54,8 +54,14 @@ export namespace crude::graphics
 
 struct Per_Mesh_UBO
 {
-  math::Float4x4 meshToModel;
+
 };
+//struct Mesh_Draw
+//{
+//  math::Float3A position;
+//  math::Float1A scale;
+//  math::Float4A orientation;
+//};
 
 class Renderer
 {

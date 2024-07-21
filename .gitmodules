@@ -10,3 +10,9 @@
 [submodule "crude_extlibs/meshoptimizer"]
 	path = crude_extlibs/meshoptimizer
 	url = https://github.com/zeux/meshoptimizer.git
+[submodule "crude_extlibs/DirectXMath"]
+	path = crude_extlibs/DirectXMath
+	url = https://github.com/microsoft/DirectXMath.git
+[submodule "crude_extlibs/flecs"]
+	path = crude_extlibs/flecs
+	url = https://github.com/SanderMertens/flecs.git
