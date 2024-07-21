@@ -1,36 +1,49 @@
 #version 450
 #extension GL_EXT_mesh_shader : require
+#extension GL_EXT_shader_16bit_storage: require
+#extension GL_EXT_shader_8bit_storage: require
 
-const uint cShaderGroupSize = 128;
-const uint cMaxVerticesPerMeshlet = 256;
-const uint cMaxPrimitivesPerMeshlet = 256;
+const uint cMaxMeshWorkGroupSize    = 128;
+const uint cMaxVerticesPerMeshlet   = 64;
+const uint cMaxPrimitivesPerMeshlet = 124;
 
-layout(local_size_x=cShaderGroupSize, local_size_y=1, local_size_z=1) in;
+layout(local_size_x=cMaxMeshWorkGroupSize, local_size_y=1, local_size_z=1) in;
 layout(triangles) out;
 layout(max_vertices=cMaxVerticesPerMeshlet, max_primitives=cMaxPrimitivesPerMeshlet) out;
 
-struct Meshlet {
-  uint vertexCount;
-  uint vertexOffset;
-  uint primitiveCount;
-  uint primitiveOffest;
-};
-
-struct Vertex {
-  vec3 position;
-  vec3 color;
-  vec2 texCoord;
-  vec3 normal;
-  vec3 tangent;
-  vec3 bitangent;
-};
-
-layout(push_constant) uniform PerMeshPCIn
+struct Meshlet
 {
-  mat4x4 meshToModel;
-} perMesh;
+  uint8_t  vertexCount;
+  uint8_t  primitiveCount;
+  uint     vertexOffset;
+  uint     primitiveOffest;
+};
 
-layout(binding=0, std140, row_major) uniform CameraUBOIn {
+struct Vertex
+{
+  vec3 position;
+  vec3 normal;
+  vec2 texCoord;
+};
+
+struct Mesh_Lod
+{
+  uint indexOffset;
+  uint indexCount;
+  uint meshletOffset;
+  uint meshletCount;
+};
+
+struct Mesh
+{
+  uint vertexOffset;
+  uint vertexCount;
+  uint lodCount;
+  Mesh_Lod lods[8];
+};
+
+layout(binding=0, std140, row_major) uniform CameraUBOIn
+{
   mat4 worldToClip;
   mat4 worldToView;
   mat4 viewToClip;
@@ -39,19 +52,24 @@ layout(binding=0, std140, row_major) uniform CameraUBOIn {
   mat4 clipToWorld;
 } camera;
 
-layout(binding=1, std140) readonly buffer MeshletsSSBOIn {
+
+layout(binding=1) readonly buffer Meshlets
+{
   Meshlet meshlets[];
 };
 
-layout(binding=2, std140) readonly buffer VerticesSSBOIn {
+layout(binding=2, std140) readonly buffer Vertices
+{
   Vertex vertices[];
 };
 
-layout(binding=3) readonly buffer PrimitiveIndicesSSBOIn {
-  uint primitiveIndices[];
+layout(binding=3) readonly buffer PrimitiveIndices
+{
+  uint8_t primitiveIndices[];
 };
 
-layout(binding=4) readonly buffer VertexIndicesSSBOIn {
+layout(binding=4) readonly buffer VertexIndices
+{
   uint vertexIndices[];
 };
 
@@ -64,27 +82,27 @@ void main()
 {
   const uint groupIndex = gl_WorkGroupID.x;
   const uint groupThreadIndex = gl_LocalInvocationID.x;
-
-  const Meshlet meshlet = meshlets[groupIndex];
   
-  if (groupThreadIndex < meshlet.vertexCount)
+  const uint meshletIndex = groupIndex;
+
+  const uint vertexCount = uint(meshlets[meshletIndex].vertexCount);
+  const uint primitiveCount = uint(meshlets[meshletIndex].primitiveCount);
+
+  SetMeshOutputsEXT(vertexCount, primitiveCount);
+  
+  if (groupThreadIndex < vertexCount)
   {
-    // vertexIndices ???
-    const uint vertexIndex = groupThreadIndex + meshlet.vertexOffset;
+    const uint vertexOffset = uint(meshlets[meshletIndex].vertexOffset);
+    const uint vertexIndex = vertexIndices[groupThreadIndex + vertexOffset];
     
-    gl_MeshVerticesEXT[groupThreadIndex].gl_Position = vec4(vertices[vertexIndex].position, 1.0) * perMesh.meshToModel * camera.worldToView * camera.viewToClip;
-    v_out[groupThreadIndex].color = vertices[vertexIndex].color;
+    gl_MeshVerticesEXT[groupThreadIndex].gl_Position = vec4(vertices[vertexIndex].position, 1.0) /** perMesh.meshToModel*/ * camera.worldToView * camera.viewToClip;
+    v_out[groupThreadIndex].color = vec3(1.0, 1.0, 1.0);
     v_out[groupThreadIndex].texCoord = vertices[vertexIndex].texCoord;
   }
 
-  if (groupThreadIndex < meshlet.primitiveCount)
+  if (groupThreadIndex < primitiveCount)
   {
-    const uint packedIndices = primitiveIndices[groupThreadIndex + meshlet.primitiveOffest];
-    gl_PrimitiveTriangleIndicesEXT[groupThreadIndex] = uvec3(
-      packedIndices & 0x3ff, 
-      (packedIndices >> 10) & 0x3ff, 
-      (packedIndices >> 20) & 0x3ff);
+    const uint primitiveOffest = uint(3 * groupThreadIndex + meshlets[meshletIndex].primitiveOffest);
+    gl_PrimitiveTriangleIndicesEXT[groupThreadIndex] = uvec3(primitiveIndices[primitiveOffest], primitiveIndices[primitiveOffest + 1], primitiveIndices[primitiveOffest + 2]);
   }
-
-  SetMeshOutputsEXT(meshlet.vertexCount, meshlet.primitiveCount);
 }

@@ -34,8 +34,7 @@ core::array<core::uint32, 8> vertexIndices =
   7u
 };
 
-// VK_NV_PER_STAGE_DESCRIPTOR_SET_EXTENSION_NAME don't work??? T_T
-constexpr core::array<const char* const, 4> deviceEnabledExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_KHR_SPIRV_1_4_EXTENSION_NAME, VK_EXT_MESH_SHADER_EXTENSION_NAME, VK_KHR_SHADER_FLOAT_CONTROLS_EXTENSION_NAME };
+constexpr core::array<const char* const, 5> deviceEnabledExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_KHR_SPIRV_1_4_EXTENSION_NAME, VK_EXT_MESH_SHADER_EXTENSION_NAME, VK_KHR_SHADER_FLOAT_CONTROLS_EXTENSION_NAME, VK_KHR_8BIT_STORAGE_EXTENSION_NAME };
 constexpr core::array<const char*, 1> instanceEnabledLayers = { "VK_LAYER_KHRONOS_validation" };
 
 Renderer::Renderer(core::shared_ptr<system::SDL_Window_Container> windowContainer, core::shared_ptr<scene::World> world)
@@ -320,8 +319,8 @@ void Renderer::recordCommandBuffer(core::shared_ptr<Command_Buffer> commandBuffe
   commandBuffer->bindDescriptorSets(m_graphicsPipeline, core::span(&m_descriptorSets[m_currentFrame], 1u), {});
   
   Per_Mesh_UBO preMeshUBO;
-  math::storeFloat4x4(preMeshUBO.meshToModel, m_world->getMesh()->getMeshToModel());
-  commandBuffer->pushConstant<Per_Mesh_UBO>(m_graphicsPipeline->getPipelineLayout(), preMeshUBO);
+  //math::storeFloat4x4(preMeshUBO.meshToModel, m_world->getMesh()->getMeshToModel());
+  //commandBuffer->pushConstant<Per_Mesh_UBO>(m_graphicsPipeline->getPipelineLayout(), preMeshUBO);
   commandBuffer->drawMeshTasks(1u);
 
   commandBuffer->endRenderPass();
@@ -368,8 +367,8 @@ void Renderer::initalizeGraphicsPipeline()
     .depthClampEnable = false,
     .rasterizerDiscardEnable = false,
     .polygonMode = VK_POLYGON_MODE_FILL,
-    .cullMode = VK_CULL_MODE_NONE,
-    .frontFace = VK_FRONT_FACE_CLOCKWISE,
+    .cullMode = VK_CULL_MODE_BACK_BIT,
+    .frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE,
     .depthBiasEnable = false,
     .depthBiasConstantFactor = 0.0f,
     .depthBiasClamp = 0.0f,
@@ -519,17 +518,10 @@ void Renderer::initializeUniformBuffers()
 void Renderer::initializeStorageBuffers()
 {
   core::shared_ptr<graphics::Command_Buffer> commandBuffer = core::allocateShared<graphics::Command_Buffer>(m_transferCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
-  m_vertexBuffer = core::allocateShared<graphics::Storage_Buffer>(commandBuffer, core::span<const scene::Vertex>(m_world->getMesh()->getVertices()));
-  m_meshletBuffer = core::allocateShared<graphics::Storage_Buffer>(commandBuffer, core::span<const scene::Meshlet>(core::array<scene::Meshlet, 1> {
-    scene::Meshlet {
-      .vertexCount = m_world->getMesh()->getVerticesCount(),
-      .vertexOffset = 0,
-      .primitiveCount = m_world->getMesh()->getTriangleIndicesCount(),
-      .primitiveOffest = 0, 
-    }
-  }));
-  m_primitiveIndicesBuffer = core::allocateShared<graphics::Storage_Buffer>(commandBuffer, core::span<const scene::Triangle_Index>(m_world->getMesh()->getTriangleIndices()));
-  m_vertexIndicesBuffer = core::allocateShared<graphics::Storage_Buffer>(commandBuffer, core::span<const core::uint32>(vertexIndices));
+  m_vertexBuffer = core::allocateShared<graphics::Storage_Buffer>(commandBuffer, m_world->getGeometry()->m_vertices);
+  m_meshletBuffer = core::allocateShared<graphics::Storage_Buffer>(commandBuffer, m_world->getGeometry()->m_meshlets);
+  m_primitiveIndicesBuffer = core::allocateShared<graphics::Storage_Buffer>(commandBuffer, m_world->getGeometry()->m_primitiveIndices);
+  m_vertexIndicesBuffer = core::allocateShared<graphics::Storage_Buffer>(commandBuffer, m_world->getGeometry()->m_vertexIndices);
   
   m_vertexBufferDescriptor.update(m_vertexBuffer, m_vertexBuffer->getSize());
   m_meshletBufferDescriptor.update(m_meshletBuffer, m_meshletBuffer->getSize());

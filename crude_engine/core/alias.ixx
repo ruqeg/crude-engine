@@ -3,6 +3,7 @@ module;
 #include <cstdint>
 #include <cstddef>
 #include <uchar.h>
+#include <stdfloat>
 
 export module crude.core.alias;
 

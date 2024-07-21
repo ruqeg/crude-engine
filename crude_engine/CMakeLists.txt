@@ -9,7 +9,7 @@ add_library(crude_engine)
 find_package(Vulkan REQUIRED)
 
 target_include_directories(crude_engine PUBLIC ${Vulkan_INCLUDE_DIR})
-target_link_libraries(crude_engine PUBLIC tinygltf SDL3::SDL3 ${Vulkan_LIBRARY})
+target_link_libraries(crude_engine PUBLIC meshoptimizer tinygltf SDL3::SDL3 ${Vulkan_LIBRARY})
 get_target_property(CRUDE_SHADERS_INCLUDE crude_shaders INCLUDE_DIRECTORIES)
 target_include_directories(crude_engine PUBLIC ${CRUDE_SHADERS_INCLUDE})
 

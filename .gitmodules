@@ -7,3 +7,6 @@
 [submodule "extlibs/tinygltf"]
 	path = crude_extlibs/tinygltf
 	url = https://github.com/syoyo/tinygltf.git
+[submodule "crude_extlibs/meshoptimizer"]
+	path = crude_extlibs/meshoptimizer
+	url = https://github.com/zeux/meshoptimizer.git

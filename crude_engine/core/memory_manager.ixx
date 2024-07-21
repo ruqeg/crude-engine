@@ -33,6 +33,16 @@ private:
   std::shared_ptr<Aligned_Allocator>   m_defaultAlignedAllocator;
 };
 
+[[nodiscard]] void* defaultAllocate(core::size_t n) noexcept
+{
+  return Memory_Manager::getDefaultAllocator()->allocate(n);
+}
+
+[[nodiscard]] void defaultDeallocate(void* ptr) noexcept
+{
+  Memory_Manager::getDefaultAllocator()->deallocate(ptr);
+}
+
 template<class T, typename... Args>
 [[nodiscard]] T* defaultCxxAllocate(Args&&... args) noexcept
 {

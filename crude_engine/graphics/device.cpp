@@ -28,9 +28,13 @@ Device::Device(core::shared_ptr<const Physical_Device>     physicalDevice,
   core::vector<VkDeviceQueueCreateInfo> queueDescriptorsData(m_queueDescriptors.begin(), m_queueDescriptors.end());
 
   // !TODO
+  VkPhysicalDevice8BitStorageFeatures deviceFeatures8BitStorage{};
+  deviceFeatures8BitStorage.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_8BIT_STORAGE_FEATURES;
+  deviceFeatures8BitStorage.storageBuffer8BitAccess = true;
+
   VkPhysicalDeviceMeshShaderFeaturesEXT deviceFeaturesMesh{};
   deviceFeaturesMesh.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_FEATURES_EXT;
-  deviceFeaturesMesh.pNext = nullptr;
+  deviceFeaturesMesh.pNext = &deviceFeatures8BitStorage;
   deviceFeaturesMesh.meshShader = true;
   deviceFeaturesMesh.taskShader = true;
 
