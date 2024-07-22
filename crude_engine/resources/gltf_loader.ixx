@@ -9,37 +9,91 @@ module;
 #include <directxmath/DirectXMath.h>
 #undef assert
 
-export module crude.resources.world_loader;
+export module crude.resources.gltf_loader;
 
 export import crude.scene.world;
 export import crude.core.optional;
 import crude.core.logger;
 import crude.core.assert;
 
-namespace crude::resources
+export namespace crude::resources
 {
 
-DirectX::XMFLOAT3 loadTinyTranslation(const tinygltf::Node& node)
+class GLTF_Loader
+{
+public:
+  core::Optional<core::shared_ptr<scene::World>> loadWorldFromFile(const char* path);
+private:
+  DirectX::XMFLOAT3 loadTinyTranslation(const tinygltf::Node& node);
+  DirectX::XMFLOAT3 loadTinyRotation(const tinygltf::Node& node);
+  bool loadBinaryFromFile(const char* path);
+  DirectX::XMMATRIX calculateNodeToParent(const tinygltf::Node& tinyNode, DirectX::FXMMATRIX nodeToParent);
+  void loadhAttributeFromMesh(const tinygltf::Primitive&  tinyPrimitive,
+                              const char*                 attributeName,
+                              core::byte*                 data,
+                              core::uint32                byteSize,
+                              core::uint32                byteStride);
+  void loadIndicesFromMesh(const tinygltf::Primitive& tinyPrimitive,
+                           core::vector<core::uint32>& indices);
+  void calculateMeshletsFromMesh(core::shared_ptr<scene::Geometry> geometry, core::uint32 meshVertexOffset, core::vector<core::uint32> meshIndices);
+
+  bool loadMaterialFromMesh(const tinygltf::Primitive& tinyPrimitive,
+    scene::Texture& texture);
+  bool loadMeshFromNode(const tinygltf::Node& tinyNode, core::shared_ptr<scene::Node> node);
+  void loadSceneFromModel(const tinygltf::Node& tinyNode,
+    core::vector<core::shared_ptr<scene::Camera>>  cameras,
+    core::shared_ptr<scene::Node>                  node,
+    DirectX::FXMMATRIX                             parentToModel);
+private:
+  tinygltf::Model m_tinyModel;
+};
+
+core::Optional<core::shared_ptr<scene::World>> GLTF_Loader::loadWorldFromFile(const char* path)
+{
+  if (!loadBinaryFromFile(path))
+    return core::nullopt;
+
+  core::shared_ptr<scene::Node> node = core::allocateShared<scene::Node>();
+  node->m_geometry = core::allocateShared<scene::Geometry>();
+  core::vector<core::shared_ptr<scene::Camera>> cameras;
+
+  tinygltf::Scene& tinyScene = m_tinyModel.scenes[m_tinyModel.defaultScene];
+  for (core::uint32 tinyNodeIndex : tinyScene.nodes)
+  {
+    const tinygltf::Node& tinyNode = m_tinyModel.nodes[tinyNodeIndex];
+    const DirectX::XMMATRIX nodeToParent = calculateNodeToParent(tinyNode, DirectX::XMMatrixIdentity());
+    loadSceneFromModel(tinyNode, cameras, node, nodeToParent);
+  }
+
+  core::shared_ptr<scene::World> world = core::allocateShared<scene::World>();
+  world->setNode(node);
+  if (!cameras.empty())
+    world->setCamera(cameras.front());
+  return world;
+}
+
+
+DirectX::XMFLOAT3 GLTF_Loader::loadTinyTranslation(const tinygltf::Node& node)
 {
   if (node.translation.size() == 0u)
     return DirectX::XMFLOAT3();
   return DirectX::XMFLOAT3(node.translation[0], node.translation[1], node.translation[2]);
 }
 
-DirectX::XMFLOAT3 loadTinyRotation(const tinygltf::Node& node)
+DirectX::XMFLOAT3 GLTF_Loader::loadTinyRotation(const tinygltf::Node& node)
 {
   if (node.rotation.size() == 0u)
     return DirectX::XMFLOAT3();
   return DirectX::XMFLOAT3(node.rotation[0], node.rotation[1], node.rotation[2]);
 }
 
-bool loadBinaryFromFile(tinygltf::Model& tinyModel, const char* path)
+bool GLTF_Loader::loadBinaryFromFile(const char* path)
 {
   tinygltf::TinyGLTF tinyLoader;
   std::string err;
   std::string warn;
 
-  const bool loadResult = tinyLoader.LoadBinaryFromFile(&tinyModel, &err, &warn, path);
+  const bool loadResult = tinyLoader.LoadBinaryFromFile(&m_tinyModel, &err, &warn, path);
 
   if (!warn.empty())
   {
@@ -61,11 +115,11 @@ bool loadBinaryFromFile(tinygltf::Model& tinyModel, const char* path)
   return true;
 }
 
-DirectX::XMMATRIX calculateNodeToParent(const tinygltf::Node& tinyNode, DirectX::FXMMATRIX nodeToParent)
+DirectX::XMMATRIX GLTF_Loader::calculateNodeToParent(const tinygltf::Node& tinyNode, DirectX::FXMMATRIX nodeToParent)
 {
   if (tinyNode.matrix.size() == 0)
     return nodeToParent;
-  
+
   return DirectX::XMMatrixTranspose(DirectX::XMMatrixSet(
     tinyNode.matrix[0], tinyNode.matrix[1], tinyNode.matrix[2], tinyNode.matrix[3],
     tinyNode.matrix[4], tinyNode.matrix[5], tinyNode.matrix[6], tinyNode.matrix[7],
@@ -73,36 +127,19 @@ DirectX::XMMATRIX calculateNodeToParent(const tinygltf::Node& tinyNode, DirectX:
     tinyNode.matrix[12], tinyNode.matrix[13], tinyNode.matrix[14], tinyNode.matrix[15]));
 }
 
-bool loadCameraFromNode(const tinygltf::Model& tinyModel, const tinygltf::Node& tinyNode, scene::Camera& camera)
-{
-  if (tinyNode.camera == -1)
-    return false;
-
-  const tinygltf::Camera& tinyCamera = tinyModel.cameras[tinyNode.camera];
-
-  camera.setPosition(loadTinyTranslation(tinyNode));
-  camera.setRotation(loadTinyRotation(tinyNode));
-  if (tinyCamera.type == "perspective")
-  {
-    camera.calculateViewToClipMatrix(tinyCamera.perspective.yfov, tinyCamera.perspective.aspectRatio, tinyCamera.perspective.znear, tinyCamera.perspective.zfar);
-  }
-  return true;
-}
-
-void loadhAttributeFromMesh(const tinygltf::Model&     tinyModel,
-                           const tinygltf::Primitive&  tinyPrimitive, 
-                           const char*                 attributeName, 
-                           core::byte*                 data, 
-                           core::uint32                byteSize, 
-                           core::uint32                byteStride)
+void GLTF_Loader::loadhAttributeFromMesh(const tinygltf::Primitive& tinyPrimitive,
+                                         const char* attributeName,
+                                         core::byte* data,
+                                         core::uint32                byteSize,
+                                         core::uint32                byteStride)
 {
   const auto tinyAttributeIt = tinyPrimitive.attributes.find(attributeName);
   core::assert(tinyAttributeIt != tinyPrimitive.attributes.end());
 
   const core::uint32 tinyAttribute = tinyAttributeIt->second;
-  const tinygltf::Accessor& tinyAccessor = tinyModel.accessors[tinyAttribute];
-  const tinygltf::BufferView& tinyBufferView = tinyModel.bufferViews[tinyAccessor.bufferView];
-  const tinygltf::Buffer& tinyBuffer = tinyModel.buffers[tinyBufferView.buffer];
+  const tinygltf::Accessor& tinyAccessor = m_tinyModel.accessors[tinyAttribute];
+  const tinygltf::BufferView& tinyBufferView = m_tinyModel.bufferViews[tinyAccessor.bufferView];
+  const tinygltf::Buffer& tinyBuffer = m_tinyModel.buffers[tinyBufferView.buffer];
 
   const core::byte* bufferData = reinterpret_cast<const core::byte*>(&tinyBuffer.data[tinyAccessor.byteOffset + tinyBufferView.byteOffset]);
   for (core::size_t i = 0u; i < tinyAccessor.count; ++i)
@@ -112,13 +149,12 @@ void loadhAttributeFromMesh(const tinygltf::Model&     tinyModel,
     bufferData += tinyBufferView.byteStride;
   }
 }
-void loadIndicesFromMesh(const tinygltf::Model&       tinyModel,
-                         const tinygltf::Primitive&   tinyPrimitive, 
-                         core::vector<core::uint32>&  indices)
+void GLTF_Loader::loadIndicesFromMesh(const tinygltf::Primitive& tinyPrimitive,
+  core::vector<core::uint32>& indices)
 {
-  const tinygltf::Accessor& tinyAccessor = tinyModel.accessors[tinyPrimitive.indices];
-  const tinygltf::BufferView& tinyBufferView = tinyModel.bufferViews[tinyAccessor.bufferView];
-  const tinygltf::Buffer& tinyBuffer = tinyModel.buffers[tinyBufferView.buffer];
+  const tinygltf::Accessor& tinyAccessor = m_tinyModel.accessors[tinyPrimitive.indices];
+  const tinygltf::BufferView& tinyBufferView = m_tinyModel.bufferViews[tinyAccessor.bufferView];
+  const tinygltf::Buffer& tinyBuffer = m_tinyModel.buffers[tinyBufferView.buffer];
 
   const core::byte* bufferData = reinterpret_cast<const core::byte*>(&tinyBuffer.data[tinyAccessor.byteOffset + tinyBufferView.byteOffset]);
   for (core::size_t i = 0; i < tinyAccessor.count; ++i)
@@ -141,7 +177,7 @@ void loadIndicesFromMesh(const tinygltf::Model&       tinyModel,
   }
 }
 
-void calculateMeshletsFromMesh(core::shared_ptr<scene::Geometry> geometry, core::uint32 meshVertexOffset, core::vector<core::uint32> meshIndices)
+void GLTF_Loader::calculateMeshletsFromMesh(core::shared_ptr<scene::Geometry> geometry, core::uint32 meshVertexOffset, core::vector<core::uint32> meshIndices)
 {
   constexpr core::size_t maxVertices = 64u;
   constexpr core::size_t maxTriangles = 124u;
@@ -187,16 +223,15 @@ void calculateMeshletsFromMesh(core::shared_ptr<scene::Geometry> geometry, core:
   }
 }
 
-bool loadMaterialFromMesh(const tinygltf::Model&      tinyModel,
-                          const tinygltf::Primitive&  tinyPrimitive,
-                          scene::Texture&             texture)
+bool GLTF_Loader::loadMaterialFromMesh(const tinygltf::Primitive& tinyPrimitive,
+  scene::Texture& texture)
 {
   if (tinyPrimitive.material == -1)
     return false;
 
-  const tinygltf::Material& tinyMaterial = tinyModel.materials[tinyPrimitive.material];
-  const tinygltf::Texture& tinyTexture = tinyModel.textures[tinyMaterial.pbrMetallicRoughness.baseColorTexture.index];
-  const tinygltf::Image& tinyImage = tinyModel.images[tinyTexture.source];
+  const tinygltf::Material& tinyMaterial = m_tinyModel.materials[tinyPrimitive.material];
+  const tinygltf::Texture& tinyTexture = m_tinyModel.textures[tinyMaterial.pbrMetallicRoughness.baseColorTexture.index];
+  const tinygltf::Image& tinyImage = m_tinyModel.images[tinyTexture.source];
   core::shared_ptr<core::byte[]> imageByte = core::allocateShared<core::byte[]>(tinyImage.image.size());
   std::memcpy(imageByte.get(), tinyImage.image.data(), static_cast<core::size_t>(tinyImage.image.size()));
 
@@ -207,30 +242,30 @@ bool loadMaterialFromMesh(const tinygltf::Model&      tinyModel,
   return true;
 }
 
-bool loadMeshFromNode(const tinygltf::Model& tinyModel, const tinygltf::Node& tinyNode, core::shared_ptr<scene::Node> node)
+bool GLTF_Loader::loadMeshFromNode(const tinygltf::Node& tinyNode, core::shared_ptr<scene::Node> node)
 {
   if (tinyNode.mesh == -1)
     return false;
 
-  const tinygltf::Mesh& tinyMesh = tinyModel.meshes[tinyNode.mesh];
+  const tinygltf::Mesh& tinyMesh = m_tinyModel.meshes[tinyNode.mesh];
   const tinygltf::Primitive tinyPrimitive = tinyMesh.primitives.front();
 
   const core::uint32 vertexIndicestOffset = node->m_geometry->m_vertexIndices.size();
-  const core::uint32 meshletOffset        = node->m_geometry->m_meshlets.size();
-  const core::uint32 meshVerticesSize     = tinyModel.accessors[tinyPrimitive.attributes.begin()->second].count;
-  const core::uint32 vertexOffset         = node->m_geometry->m_vertices.size();
+  const core::uint32 meshletOffset = node->m_geometry->m_meshlets.size();
+  const core::uint32 meshVerticesSize = m_tinyModel.accessors[tinyPrimitive.attributes.begin()->second].count;
+  const core::uint32 vertexOffset = node->m_geometry->m_vertices.size();
   node->m_geometry->m_vertices.resize(vertexOffset + meshVerticesSize);
 
   core::vector<core::uint32> meshIndices;
-  meshIndices.resize(tinyModel.accessors[tinyPrimitive.indices].count);
+  meshIndices.resize(m_tinyModel.accessors[tinyPrimitive.indices].count);
 
-  loadhAttributeFromMesh(tinyModel, tinyPrimitive, "POSITION", reinterpret_cast<core::byte*>(&node->m_geometry->m_vertices[vertexOffset].position), sizeof(DirectX::XMFLOAT3), sizeof(scene::Vertex));
-  loadhAttributeFromMesh(tinyModel, tinyPrimitive, "TEXCOORD_0", reinterpret_cast<core::byte*>(&node->m_geometry->m_vertices[vertexOffset].texcoord), sizeof(DirectX::XMFLOAT2), sizeof(scene::Vertex));
-  loadIndicesFromMesh(tinyModel, tinyPrimitive, meshIndices);
+  loadhAttributeFromMesh(tinyPrimitive, "POSITION", reinterpret_cast<core::byte*>(&node->m_geometry->m_vertices[vertexOffset].position), sizeof(DirectX::XMFLOAT3), sizeof(scene::Vertex));
+  loadhAttributeFromMesh(tinyPrimitive, "TEXCOORD_0", reinterpret_cast<core::byte*>(&node->m_geometry->m_vertices[vertexOffset].texcoord), sizeof(DirectX::XMFLOAT2), sizeof(scene::Vertex));
+  loadIndicesFromMesh(tinyPrimitive, meshIndices);
   calculateMeshletsFromMesh(node->m_geometry, vertexOffset, meshIndices);
 
   scene::Texture texture;
-  if (loadMaterialFromMesh(tinyModel, tinyPrimitive, texture))
+  if (loadMaterialFromMesh(tinyPrimitive, texture))
   {
     node->m_texturePerMeshes.push_back(core::allocateShared<scene::Texture>(texture));
   }
@@ -252,56 +287,22 @@ bool loadMeshFromNode(const tinygltf::Model& tinyModel, const tinygltf::Node& ti
     });
 }
 
-void loadSceneFromModel(const tinygltf::Model&                         tinyModel, 
-                        const tinygltf::Node&                          tinyNode, 
-                        core::vector<core::shared_ptr<scene::Camera>>  cameras,
-                        core::shared_ptr<scene::Node>                  node,
-                        DirectX::FXMMATRIX                             parentToModel)
+void GLTF_Loader::loadSceneFromModel(const tinygltf::Node& tinyNode,
+  core::vector<core::shared_ptr<scene::Camera>>  cameras,
+  core::shared_ptr<scene::Node>                  node,
+  DirectX::FXMMATRIX                             parentToModel)
 {
   const DirectX::XMMATRIX nodeToParent = calculateNodeToParent(tinyNode, parentToModel);
   DirectX::XMFLOAT4X4 nodeToParentFloat4X4;
   DirectX::XMStoreFloat4x4(&nodeToParentFloat4X4, nodeToParent);
   node->m_geometry->m_meshesToModel.push_back(nodeToParentFloat4X4);
 
-  scene::Camera camera;
-  if (loadCameraFromNode(tinyModel, tinyNode, camera))
-    cameras.push_back(core::allocateShared<scene::Camera>(camera));
-
-  loadMeshFromNode(tinyModel, tinyNode, node);
+  loadMeshFromNode(tinyNode, node);
 
   for (core::uint32 childNode : tinyNode.children)
   {
-    loadSceneFromModel(tinyModel, tinyModel.nodes[childNode], cameras, node, nodeToParent);
+    loadSceneFromModel(m_tinyModel.nodes[childNode], cameras, node, nodeToParent);
   }
-}
-}
-
-export namespace crude::resources
-{
-
-core::Optional<core::shared_ptr<scene::World>> loadWorld(const char* path) noexcept
-{
-  tinygltf::Model tinyModel;
-  if (!loadBinaryFromFile(tinyModel, path))
-    return core::nullopt;
-
-  core::shared_ptr<scene::Node> node = core::allocateShared<scene::Node>();
-  node->m_geometry = core::allocateShared<scene::Geometry>();
-  core::vector<core::shared_ptr<scene::Camera>> cameras;
-
-  tinygltf::Scene& tinyScene = tinyModel.scenes[tinyModel.defaultScene];
-  for (core::uint32 tinyNodeIndex : tinyScene.nodes)
-  {
-    const tinygltf::Node& tinyNode = tinyModel.nodes[tinyNodeIndex];
-    const DirectX::XMMATRIX nodeToParent = calculateNodeToParent(tinyNode, DirectX::XMMatrixIdentity());
-    loadSceneFromModel(tinyModel, tinyNode, cameras, node, nodeToParent);
-  }
-
-  core::shared_ptr<scene::World> world = core::allocateShared<scene::World>();
-  world->setNode(node);
-  if (!cameras.empty())
-    world->setCamera(cameras.front());
-  return world;
 }
 
 }

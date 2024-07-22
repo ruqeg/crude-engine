@@ -3,7 +3,7 @@
 module crude.engine;
 
 import crude.core.logger;
-import crude.resources.world_loader;
+import crude.resources.gltf_loader;
 
 namespace crude
 {
@@ -13,8 +13,8 @@ Engine::Engine(core::shared_ptr<system::SDL_Window_Container> windowContainer)
   core::shared_ptr<scene::Camera> camera = core::allocateShared<scene::Camera>();
   camera->calculateViewToClipMatrix(DirectX::XM_PIDIV4, windowContainer->getAspect(), 0.1f, 10.0f);
   camera->setPosition(0, 0, -2);
-
-  m_world = resources::loadWorld("../../crude_example/basic_triangle_examle/resources/helmet.glb").value();
+  resources::GLTF_Loader gltfLoader;
+  m_world = gltfLoader.loadWorldFromFile("../../crude_example/basic_triangle_examle/resources/helmet.glb").value();
   m_world->setCamera(camera);
   m_renderer = core::allocateShared<graphics::Renderer>(windowContainer, m_world);
   m_timer.setFrameRate(60);
