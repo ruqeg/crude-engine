@@ -20,9 +20,13 @@ public:
   void setNode(core::shared_ptr<scene::Node> node) { m_node = node; }
   core::shared_ptr<const scene::Node> getNode() const { return m_node; }
   core::shared_ptr<scene::Node> getNode() { return m_node; }
+  void setGeometry(core::shared_ptr<scene::Geometry> geometry) { m_geometry = geometry; }
+  core::shared_ptr<const scene::Geometry> getGeometry() const { return m_geometry; }
+  core::shared_ptr<scene::Geometry> getGeometry() { return m_geometry; }
 private:
   core::shared_ptr<scene::Camera>    m_camera;
   core::shared_ptr<scene::Node>      m_node;
+  core::shared_ptr<scene::Geometry>  m_geometry;
 };
 
 }
