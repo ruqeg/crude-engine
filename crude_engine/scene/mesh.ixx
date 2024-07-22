@@ -78,18 +78,18 @@ private:
 
 struct Geometry
 {
-  core::vector<Vertex>                  m_vertices;
-  core::vector<core::uint32>            m_vertexIndices;
-  core::vector<Meshlet>                 m_meshlets;
-  core::vector<core::uint8>             m_primitiveIndices;
-  core::vector<Mesh>                    m_meshes;
+  core::vector<Vertex>               m_vertices;
+  core::vector<core::uint32>         m_vertexIndices;
+  core::vector<Meshlet>              m_meshlets;
+  core::vector<core::uint8>          m_primitiveIndices;
+  core::vector<Mesh>                 m_meshes;
+  core::vector<DirectX::XMFLOAT4X4>  m_meshesToModel;
 };
 
 struct Node
 {
-  core::shared_ptr<Geometry>              m_geometry;
-  std::vector<core::shared_ptr<Texture>>  m_texturePerMeshes;
-  std::vector<DirectX::XMFLOAT4X4>        m_meshesToModel;
+  core::shared_ptr<Geometry>               m_geometry;
+  core::vector<core::shared_ptr<Texture>>  m_texturePerMeshes;
 };
 
 }

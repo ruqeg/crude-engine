@@ -1,6 +1,7 @@
 module;
 
 #include <vulkan/vulkan.hpp>
+#include <directxmath/DirectXMath.h>
 
 export module crude.graphics.renderer;
 
@@ -52,16 +53,10 @@ class World;
 export namespace crude::graphics
 {
 
-struct Per_Mesh_UBO
+struct Per_Frame
 {
-
+  Camera_UBO camera;
 };
-//struct Mesh_Draw
-//{
-//  math::Float3A position;
-//  math::Float1A scale;
-//  math::Float4A orientation;
-//};
 
 class Renderer
 {
@@ -120,18 +115,20 @@ private:
   core::shared_ptr<Image_View>                          m_depthImageView;
   core::shared_ptr<Color_Attachment>                    m_colorAttachment;
   core::shared_ptr<Image_View>                          m_colorAttachmentView;
+  core::shared_ptr<graphics::Storage_Buffer>            m_drawsBuffer;
   core::shared_ptr<graphics::Storage_Buffer>            m_vertexBuffer;
   core::shared_ptr<graphics::Storage_Buffer>            m_meshletBuffer;
   core::shared_ptr<graphics::Storage_Buffer>            m_primitiveIndicesBuffer;
   core::shared_ptr<graphics::Storage_Buffer>            m_vertexIndicesBuffer;
+  graphics::Storage_Buffer_Descriptor                   m_drawsBufferDescriptor;
   graphics::Storage_Buffer_Descriptor                   m_vertexBufferDescriptor;
   graphics::Storage_Buffer_Descriptor                   m_meshletBufferDescriptor;
   graphics::Storage_Buffer_Descriptor                   m_primitiveIndicesBufferDescriptor;
   graphics::Storage_Buffer_Descriptor                   m_vertexIndicesBufferDescriptor;
-  core::array<Uniform_Buffer_Descriptor, cFramesCount>         m_cameraUniformBufferDesc;
+  core::array<Uniform_Buffer_Descriptor, cFramesCount>         m_perFrameUniformBufferDesc;
   core::array<Combined_Image_Sampler_Descriptor, cFramesCount> m_textureSamplerDesc;
   core::array<core::shared_ptr<Descriptor_Set>, cFramesCount>  m_descriptorSets;
-  core::array<core::shared_ptr<Uniform_Buffer<Camera_UBO>>, cFramesCount>  m_cameraUniformBuffer;
+  core::array<core::shared_ptr<Uniform_Buffer<Per_Frame>>, cFramesCount>  m_perFrameUniformBuffer;
   core::array<core::shared_ptr<Command_Buffer>, cFramesCount>   m_graphicsCommandBuffers;
   core::array<core::shared_ptr<Semaphore>, cFramesCount>        m_imageAvailableSemaphores;
   core::array<core::shared_ptr<Semaphore>, cFramesCount>        m_renderFinishedSemaphores;

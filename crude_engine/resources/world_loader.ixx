@@ -66,11 +66,11 @@ DirectX::XMMATRIX calculateNodeToParent(const tinygltf::Node& tinyNode, DirectX:
   if (tinyNode.matrix.size() == 0)
     return nodeToParent;
   
-  return DirectX::XMMatrixSet(
+  return DirectX::XMMatrixTranspose(DirectX::XMMatrixSet(
     tinyNode.matrix[0], tinyNode.matrix[1], tinyNode.matrix[2], tinyNode.matrix[3],
     tinyNode.matrix[4], tinyNode.matrix[5], tinyNode.matrix[6], tinyNode.matrix[7],
     tinyNode.matrix[8], tinyNode.matrix[9], tinyNode.matrix[10], tinyNode.matrix[11],
-    tinyNode.matrix[12], tinyNode.matrix[13], tinyNode.matrix[14], tinyNode.matrix[15]);
+    tinyNode.matrix[12], tinyNode.matrix[13], tinyNode.matrix[14], tinyNode.matrix[15]));
 }
 
 bool loadCameraFromNode(const tinygltf::Model& tinyModel, const tinygltf::Node& tinyNode, scene::Camera& camera)
@@ -191,7 +191,7 @@ bool loadMaterialFromMesh(const tinygltf::Model&      tinyModel,
                           const tinygltf::Primitive&  tinyPrimitive,
                           scene::Texture&             texture)
 {
-  if (tinyPrimitive.material != -1)
+  if (tinyPrimitive.material == -1)
     return false;
 
   const tinygltf::Material& tinyMaterial = tinyModel.materials[tinyPrimitive.material];
@@ -261,7 +261,7 @@ void loadSceneFromModel(const tinygltf::Model&                         tinyModel
   const DirectX::XMMATRIX nodeToParent = calculateNodeToParent(tinyNode, parentToModel);
   DirectX::XMFLOAT4X4 nodeToParentFloat4X4;
   DirectX::XMStoreFloat4x4(&nodeToParentFloat4X4, nodeToParent);
-  node->m_meshesToModel.push_back(nodeToParentFloat4X4);
+  node->m_geometry->m_meshesToModel.push_back(nodeToParentFloat4X4);
 
   scene::Camera camera;
   if (loadCameraFromNode(tinyModel, tinyNode, camera))
