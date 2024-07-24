@@ -4,6 +4,7 @@ module;
 
 export module crude.scene.camera;
 
+export import crude.scene.component;
 export import crude.core.alias;
 export import crude.core.std_containers_heap;
 
