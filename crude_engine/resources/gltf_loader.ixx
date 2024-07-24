@@ -27,6 +27,7 @@ private:
   bool loadModelFromFile(const char* path);
   core::shared_ptr<scene::Geometry> loadGeometryFromModel();
   core::shared_ptr<scene::Node> loadNodesFromModel(const tinygltf::Node& tinyNode, DirectX::FXMMATRIX parentToParent);
+  core::vector<core::shared_ptr<scene::Texture>> loadTexturesFromModel();
   core::vector<scene::Vertex> loadVerticesFromPrimitive(const tinygltf::Primitive& tinyPrimitive);
   core::vector<core::uint32> loadVertexIndicesFromPrimitive(const tinygltf::Primitive& tinyPrimitive);
   void loadBufferFromAccessor(const tinygltf::Accessor& tinyAccessor, core::byte* data, core::size_t elementSize, core::size_t byteStride);
@@ -37,8 +38,6 @@ private:
                      core::vector<scene::Meshlet>&       meshMeshlets);
 
   DirectX::XMMATRIX calculateNodeToParent(const tinygltf::Node& tinyNode, DirectX::FXMMATRIX nodeToParent);
-  bool loadMaterialFromMesh(const tinygltf::Primitive& tinyPrimitive,
-    scene::Texture& texture);
 private:
   tinygltf::Model m_tinyModel;
 };
@@ -50,18 +49,20 @@ core::Optional<core::shared_ptr<scene::World>> GLTF_Loader::loadWorldFromFile(co
 
   core::shared_ptr<scene::Geometry> geometry = loadGeometryFromModel();
 
-  core::shared_ptr<scene::Node> node = core::allocateShared<scene::Node>();
   tinygltf::Scene& tinyScene = m_tinyModel.scenes[m_tinyModel.defaultScene];
+  
+  core::vector<core::shared_ptr<scene::Node>> nodes;
   for (core::uint32 tinyNodeIndex : tinyScene.nodes)
   {
     const tinygltf::Node& tinyNode = m_tinyModel.nodes[tinyNodeIndex];
     const DirectX::XMMATRIX nodeToParent = calculateNodeToParent(tinyNode, DirectX::XMMatrixIdentity());
-    node->m_nodes.push_back(loadNodesFromModel(tinyNode, nodeToParent));
+    nodes.push_back(loadNodesFromModel(tinyNode, nodeToParent));
   }
 
   core::shared_ptr<scene::World> world = core::allocateShared<scene::World>();
   world->setGeometry(geometry);
-  world->setNode(node);
+  world->setNodes(nodes);
+  world->setTextures(loadTexturesFromModel());
 
   return world;
 }
@@ -146,14 +147,34 @@ core::shared_ptr<scene::Node> GLTF_Loader::loadNodesFromModel(const tinygltf::No
   const DirectX::XMMATRIX nodeToParent = calculateNodeToParent(tinyNode, parentToParent);
   DirectX::XMStoreFloat4x4(&node->m_nodeToParent, nodeToParent);
 
-  if (tinyNode.mesh != -1)
-    node->m_geometryIndex = tinyNode.mesh;
-
+  node->m_geometryIndex = tinyNode.mesh;
+  
   for (core::uint32 childIndex : tinyNode.children)
   {
     node->m_nodes.push_back(loadNodesFromModel(m_tinyModel.nodes[childIndex], nodeToParent));
   }
   return node;
+}
+
+core::vector<core::shared_ptr<scene::Texture>> GLTF_Loader::loadTexturesFromModel()
+{
+  core::vector<core::shared_ptr<scene::Texture>> textures;
+  textures.reserve(m_tinyModel.textures.size());
+  for (const tinygltf::Texture& tinyTexture : m_tinyModel.textures)
+  {
+    const tinygltf::Image& tinyImage = m_tinyModel.images[tinyTexture.source];
+    core::shared_ptr<core::byte[]> imageByte = core::allocateShared<core::byte[]>(tinyImage.image.size());
+    std::memcpy(imageByte.get(), tinyImage.image.data(), static_cast<core::size_t>(tinyImage.image.size()));
+
+    core::shared_ptr<scene::Image> image = core::allocateShared<scene::Image>(imageByte, scene::Image_Format::IMAGE_FORMAT_RGB_ALPHA, tinyImage.width, tinyImage.height);
+    core::shared_ptr<graphics::Sampler_State> samplerState = core::allocateShared<graphics::Sampler_State>(graphics::csamlper_state::gMagMinMipLinearRepeat);
+    
+    core::shared_ptr<scene::Texture> texture = core::allocateShared<scene::Texture>();
+    texture->setImage(image);
+    texture->setSamplerState(samplerState);
+    textures.push_back(texture);
+  }
+  return textures;
 }
 
 core::vector<scene::Vertex> GLTF_Loader::loadVerticesFromPrimitive(const tinygltf::Primitive& tinyPrimitive)
@@ -294,26 +315,6 @@ DirectX::XMMATRIX GLTF_Loader::calculateNodeToParent(const tinygltf::Node& tinyN
     tinyNode.matrix[4], tinyNode.matrix[5], tinyNode.matrix[6], tinyNode.matrix[7],
     tinyNode.matrix[8], tinyNode.matrix[9], tinyNode.matrix[10], tinyNode.matrix[11],
     tinyNode.matrix[12], tinyNode.matrix[13], tinyNode.matrix[14], tinyNode.matrix[15]));
-}
-
-
-bool GLTF_Loader::loadMaterialFromMesh(const tinygltf::Primitive& tinyPrimitive,
-  scene::Texture& texture)
-{
-  if (tinyPrimitive.material == -1)
-    return false;
-
-  const tinygltf::Material& tinyMaterial = m_tinyModel.materials[tinyPrimitive.material];
-  const tinygltf::Texture& tinyTexture = m_tinyModel.textures[tinyMaterial.pbrMetallicRoughness.baseColorTexture.index];
-  const tinygltf::Image& tinyImage = m_tinyModel.images[tinyTexture.source];
-  core::shared_ptr<core::byte[]> imageByte = core::allocateShared<core::byte[]>(tinyImage.image.size());
-  std::memcpy(imageByte.get(), tinyImage.image.data(), static_cast<core::size_t>(tinyImage.image.size()));
-
-  core::shared_ptr<scene::Image> image = core::allocateShared<scene::Image>(imageByte, scene::Image_Format::IMAGE_FORMAT_RGB_ALPHA, tinyImage.width, tinyImage.height);
-  core::shared_ptr<graphics::Sampler_State> samplerState = core::allocateShared<graphics::Sampler_State>(graphics::csamlper_state::gMagMinMipLinearRepeat);
-  texture.setImage(image);
-  texture.setSamplerState(samplerState);
-  return true;
 }
 
 }

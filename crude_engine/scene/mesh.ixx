@@ -53,8 +53,8 @@ struct Geometry
 
 struct Node
 {
-  core::uint32                         m_geometryIndex;
-  core::uint32                         m_textureIndex;
+  core::int64                         m_geometryIndex;
+  core::int64                         m_textureIndex;
   DirectX::XMFLOAT4X4                  m_nodeToParent;
   core::vector<core::shared_ptr<Node>> m_nodes;
 };
