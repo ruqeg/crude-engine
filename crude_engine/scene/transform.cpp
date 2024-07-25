@@ -8,7 +8,7 @@ import crude.scene.node;
 namespace crude::scene
 {
 
-Transform::Transform(core::shared_ptr<Node2> node)
+Transform::Transform(core::shared_ptr<Node> node)
   : m_node(node)
 {}
 
@@ -103,12 +103,12 @@ const DirectX::XMFLOAT4X4& Transform::getNodeToWorldFloat4x4()
   return m_nodeToWorldFloat4x4;
 }
 
-core::shared_ptr<Node2> Transform::getNode()
+core::shared_ptr<Node> Transform::getNode()
 {
   return m_node;
 }
 
-core::shared_ptr<const Node2> Transform::getNode() const
+core::shared_ptr<const Node> Transform::getNode() const
 {
   return m_node;
 }
@@ -127,7 +127,7 @@ void Transform::updateNodeToWorld()
   if (!m_updateNodeToWorld)
     return;
 
-  core::shared_ptr<Node2> parent = m_node->getParent();
+  core::shared_ptr<Node> parent = m_node->getParent();
   if (parent)
   {
     auto transform = parent->getEntity().get_ref<Transform>();

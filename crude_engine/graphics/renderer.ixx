@@ -40,7 +40,6 @@ export import crude.graphics.image_attachment;
 export import crude.graphics.uniform_buffer;
 export import crude.graphics.storage_buffer;
 export import crude.graphics.camera_ubo;
-export import crude.scene.meshlet;
 export import crude.core.filesystem;
 
 export namespace crude::scene

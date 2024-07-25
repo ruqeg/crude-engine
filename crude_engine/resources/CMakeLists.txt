@@ -1,7 +1,6 @@
-#target_sources(crude_engine
-#    PRIVATE
-#    world_loader.cpp
-#    image_loader.cpp)
+target_sources(crude_engine
+    PRIVATE
+    gltf_loader.cpp)
 
 target_sources(crude_engine
     PUBLIC

@@ -44,25 +44,4 @@ private:
   Image_Format                          m_format;
 };
 
-class Sampler
-{
-
-};
-
-class Texture
-{
-public:
-  Texture() = default;
-  ~Texture() = default;
-public:
-  void setImage(core::shared_ptr<Image> image) { m_image = image; }
-  void setSamplerState(core::shared_ptr<graphics::Sampler_State> samplerState) { m_samplerState = samplerState; }
-  core::shared_ptr<const Image> getImage() const { return m_image; }
-  core::shared_ptr<const graphics::Sampler_State> getSamplerState() const { return m_samplerState; }
-private:
-  core::shared_ptr<Image>                    m_image;
-  core::shared_ptr<graphics::Sampler_State>  m_samplerState;
-};
-
-
 }
