@@ -1,12 +1,14 @@
 module;
 
 #include <directxmath/DirectXMath.h>
+#include <typeindex>
 
 export module crude.scene.mesh;
 
 export import crude.scene.image;
 export import crude.core.std_containers_heap;
 export import crude.core.std_containers_stack;
+export import crude.scene.component;
 
 export namespace crude::scene
 {
@@ -57,6 +59,33 @@ struct Node
   core::int64                         m_textureIndex;
   DirectX::XMFLOAT4X4                  m_nodeToParent;
   core::vector<core::shared_ptr<Node>> m_nodes;
+};
+
+struct Sub_Mesh_Lod
+{
+  core::uint32  indexOffset;
+  core::uint32  indexCount;
+  core::uint32  meshletOffset;
+  core::uint32  meshletCount;
+};
+
+class Sub_Mesh
+{
+public:
+  core::uint32                  vertexOffset;
+  core::uint32                  vertexCount;
+  core::uint32                  lodCount;
+  core::array<Sub_Mesh_Lod, 8>  lods;
+};
+
+class Mesh2
+{
+public:
+  core::vector<Vertex>        vertices;
+  core::vector<core::uint32>  vertexIndices;
+  core::vector<Meshlet>       meshlets;
+  core::vector<core::uint8>   primitiveIndices;
+  core::vector<Sub_Mesh>      subMeshes;
 };
 
 }

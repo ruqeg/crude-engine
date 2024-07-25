@@ -1,4 +1,5 @@
 #include <directxmath/DirectXMath.h>
+#include <flecs.h>
 
 module crude.scene.transform;
 
@@ -7,7 +8,7 @@ import crude.scene.node;
 namespace crude::scene
 {
 
-Transform::Transform(core::shared_ptr<Node> node)
+Transform::Transform(core::shared_ptr<Node2> node)
   : m_node(node)
 {}
 
@@ -102,12 +103,12 @@ const DirectX::XMFLOAT4X4& Transform::getNodeToWorldFloat4x4()
   return m_nodeToWorldFloat4x4;
 }
 
-core::shared_ptr<Node> Transform::getNode()
+core::shared_ptr<Node2> Transform::getNode()
 {
   return m_node;
 }
 
-core::shared_ptr<const Node> Transform::getNode() const
+core::shared_ptr<const Node2> Transform::getNode() const
 {
   return m_node;
 }
@@ -126,11 +127,11 @@ void Transform::updateNodeToWorld()
   if (!m_updateNodeToWorld)
     return;
 
-  core::shared_ptr<Node> parent = m_node->getParent();
+  core::shared_ptr<Node2> parent = m_node->getParent();
   if (parent)
   {
-    Transform& transform = parent->getTransform();
-    const DirectX::XMMATRIX nodeToWorld = DirectX::XMMatrixMultiply(transform.getNodeToWorldMatrix(), getNodeToParentMatrix());
+    auto transform = parent->getEntity().get_ref<Transform>();
+    const DirectX::XMMATRIX nodeToWorld = DirectX::XMMatrixMultiply(transform->getNodeToWorldMatrix(), getNodeToParentMatrix());
     DirectX::XMStoreFloat4x4(&m_nodeToWorldFloat4x4, nodeToWorld);
   }
   else

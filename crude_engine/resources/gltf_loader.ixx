@@ -11,7 +11,7 @@ module;
 
 export module crude.resources.gltf_loader;
 
-export import crude.scene.world;
+export import crude.scene.scene;
 export import crude.core.optional;
 import crude.core.logger;
 import crude.core.assert;
@@ -57,6 +57,45 @@ core::Optional<core::shared_ptr<scene::World>> GLTF_Loader::loadWorldFromFile(co
     const tinygltf::Node& tinyNode = m_tinyModel.nodes[tinyNodeIndex];
     const DirectX::XMMATRIX nodeToParent = calculateNodeToParent(tinyNode, DirectX::XMMatrixIdentity());
     nodes.push_back(loadNodesFromModel(tinyNode, nodeToParent));
+  }
+
+  // Load meshes
+  std::vector<scene::Mesh2> meshes(m_tinyModel.meshes.size());
+  core::uint32 verticesOffset = 0u;
+  core::uint32 primitiviesOffset = 0u;
+  core::uint32 vertexIndicestOffset = 0u;
+  core::uint32 meshletsOffset = 0u;
+
+  for (core::size_t meshIndex = 0u; meshIndex < meshes.size(); ++meshIndex)
+  {
+    const tinygltf::Mesh& tinyMesh = m_tinyModel.meshes[meshIndex];
+    scene::Mesh2 mesh = meshes[meshIndex];
+
+    for (const tinygltf::Primitive& tinyPrimitive : tinyMesh.primitives)
+    {
+      core::vector<scene::Vertex> primtiveVertices = loadVerticesFromPrimitive(tinyPrimitive);
+      core::vector<core::uint32> primitiveVertexIndices = loadVertexIndicesFromPrimitive(tinyPrimitive);
+
+      verticesOffset += geometry->m_vertices.size();
+      primitiviesOffset += geometry->m_primitiveIndices.size();
+      vertexIndicestOffset += geometry->m_vertexIndices.size();
+      meshletsOffset += geometry->m_meshlets.size();
+
+      buildMeshlets(primtiveVertices, primitiveVertexIndices, geometry->m_vertexIndices, geometry->m_primitiveIndices, geometry->m_meshlets);
+      mesh.vertices.insert(geometry->m_vertices.end(), primtiveVertices.begin(), primtiveVertices.end());
+
+      mesh.subMeshes.push_back(scene::Sub_Mesh{
+        .vertexOffset = verticesOffset,
+        .vertexCount = static_cast<core::uint32>(primtiveVertices.size()),
+        .lodCount = 1u,
+        .lods = core::array<scene::Sub_Mesh_Lod, 8> { scene::Sub_Mesh_Lod {
+          .indexOffset = vertexIndicestOffset,
+          .indexCount = static_cast<core::uint32>(geometry->m_vertexIndices.size() - vertexIndicestOffset),
+          .meshletOffset = meshletsOffset,
+          .meshletCount = static_cast<core::uint32>(geometry->m_meshlets.size() - meshletsOffset),
+        } }
+        });
+    }
   }
 
   core::shared_ptr<scene::World> world = core::allocateShared<scene::World>();

@@ -8,7 +8,7 @@ export import crude.core.timer;
 export import crude.graphics.renderer;
 export import crude.network.network_system;
 export import crude.system.sdl_io_manager;
-export import crude.scene.world;
+export import crude.scene.scene;
 
 export namespace crude
 {

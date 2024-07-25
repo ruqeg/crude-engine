@@ -13,7 +13,7 @@ import crude.resources.image_loader;
 import crude.graphics.format_helper;
 import crude.graphics.generate_mipmaps;
 import crude.graphics.flush;
-import crude.scene.world;
+import crude.scene.scene;
 
 namespace crude::graphics
 {
