@@ -1,5 +1,6 @@
 target_sources(crude_engine
     PRIVATE
+    mesh_buffer.cpp
     texture.cpp
     renderer_base.cpp
     extension.cpp
@@ -46,6 +47,7 @@ target_sources(crude_engine
 target_sources(crude_engine
     PUBLIC
     FILE_SET cxx_modules_graphics TYPE CXX_MODULES FILES
+    mesh_buffer.ixx
     texture.ixx
     renderer_base.ixx
     camera_ubo.ixx

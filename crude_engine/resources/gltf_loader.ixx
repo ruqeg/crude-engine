@@ -17,6 +17,7 @@ class Device;
 class Sampler;
 class Command_Pool;
 class Image;
+class Mesh_Buffer;
 }
 
 export namespace crude::resources
@@ -30,6 +31,7 @@ public:
   core::Optional<core::shared_ptr<scene::Scene>> loadSceneFromFile(const char* path);
   core::shared_ptr<graphics::Sampler> parseSampler(const tinygltf::Sampler& tinySampler);
   core::shared_ptr<graphics::Image> parseImage(const tinygltf::Image& tinyImage);
+  core::shared_ptr<scene::Node> parseNode(const tinygltf::Node& tinyNode, const core::vector< core::shared_ptr<scene::Mesh>>& meshes, const core::vector<core::shared_ptr<graphics::Mesh_Buffer>>& meshBuffers);
   core::vector<scene::Vertex> loadVerticesFromPrimitive(const tinygltf::Primitive& tinyPrimitive);
   core::vector<core::uint32> loadVertexIndicesFromPrimitive(const tinygltf::Primitive& tinyPrimitive);
   void loadBufferFromAccessor(const tinygltf::Accessor& tinyAccessor, core::byte* data, core::size_t elementSize, core::size_t byteStride);

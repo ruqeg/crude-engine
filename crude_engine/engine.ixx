@@ -34,7 +34,7 @@ private:
   static void initalizeSystem();
   static void initalizeNetwork();
 protected:
-  core::shared_ptr<scene::World>        m_world;
+  core::shared_ptr<scene::Scene>        m_scene;
   core::shared_ptr<graphics::Renderer>  m_renderer;
   system::SDL_IO_Manager                m_ioManager;
   core::Timer                           m_timer;

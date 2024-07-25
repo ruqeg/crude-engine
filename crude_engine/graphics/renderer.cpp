@@ -14,6 +14,7 @@ import crude.graphics.format_helper;
 import crude.graphics.generate_mipmaps;
 import crude.graphics.flush;
 import crude.scene.scene;
+import crude.resources.gltf_loader;
 
 namespace crude::graphics
 {
@@ -33,7 +34,7 @@ core::array<core::uint32, 8> vertexIndices =
 constexpr core::array<const char* const, 5> deviceEnabledExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_KHR_SPIRV_1_4_EXTENSION_NAME, VK_EXT_MESH_SHADER_EXTENSION_NAME, VK_KHR_SHADER_FLOAT_CONTROLS_EXTENSION_NAME, VK_KHR_8BIT_STORAGE_EXTENSION_NAME };
 constexpr core::array<const char*, 1> instanceEnabledLayers = { "VK_LAYER_KHRONOS_validation" };
 
-Renderer::Renderer(core::shared_ptr<system::SDL_Window_Container> windowContainer, core::shared_ptr<scene::World> world)
+Renderer::Renderer(core::shared_ptr<system::SDL_Window_Container> windowContainer, core::shared_ptr<scene::Scene> scene)
   : m_windowContainer(windowContainer)
   , m_currentFrame(0u)
   , m_perFrameUniformBufferDesc{
@@ -45,7 +46,7 @@ Renderer::Renderer(core::shared_ptr<system::SDL_Window_Container> windowContaine
   , m_primitiveIndicesBufferDescriptor(4u, VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT)
   , m_vertexIndicesBufferDescriptor(5u, VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT)
   , m_textureSamplerDesc{Combined_Image_Sampler_Descriptor(6u, VK_SHADER_STAGE_FRAGMENT_BIT), Combined_Image_Sampler_Descriptor(6u, VK_SHADER_STAGE_FRAGMENT_BIT)}
-  , m_world(world)
+  , m_scene(scene)
 {
   initializeInstance();
   initializeSurface();
@@ -57,6 +58,10 @@ Renderer::Renderer(core::shared_ptr<system::SDL_Window_Container> windowContaine
   initializeDepthImage();
   initalizeGraphicsPipeline();
   initializeSwapchainFramebuffers();
+
+  resources::GLTF_Loader gltfLoader(m_transferCommandPool);
+  m_scene = gltfLoader.loadSceneFromFile("../../crude_example/basic_triangle_examle/resources/helmet.glb").value();
+
   initializeTextureImage();
   initializeSampler();
   initializeUniformBuffers();

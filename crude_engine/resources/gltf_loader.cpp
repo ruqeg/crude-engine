@@ -17,6 +17,8 @@ import crude.graphics.generate_mipmaps;
 import crude.graphics.command_pool;
 import crude.graphics.flush;
 import crude.graphics.image_2d;
+import crude.graphics.texture;
+import crude.graphics.mesh_buffer;
 
 namespace crude::resources
 {
@@ -32,29 +34,37 @@ core::Optional<core::shared_ptr<scene::Scene>> GLTF_Loader::loadSceneFromFile(co
     return core::nullopt;
 
   // Load samples
-  std::vector<core::shared_ptr<graphics::Sampler>> samplers(m_tinyModel.meshes.size());
+  core::vector<core::shared_ptr<graphics::Sampler>> samplers(m_tinyModel.meshes.size());
   for (core::size_t samplerIndex = 0u; samplerIndex < m_tinyModel.samplers.size(); ++samplerIndex)
   {
     samplers[samplerIndex] = parseSampler(m_tinyModel.samplers[samplerIndex]);
   }
 
   // Load images
-  std::vector<core::shared_ptr<graphics::Image>> images(m_tinyModel.images.size());
+  core::vector<core::shared_ptr<graphics::Image>> images(m_tinyModel.images.size());
   for (core::size_t imageIndex = 0u; imageIndex < m_tinyModel.images.size(); ++imageIndex)
   {
     images[imageIndex] = parseImage(m_tinyModel.images[imageIndex]);
   }
 
   // Load textures
+  core::vector<core::shared_ptr<graphics::Texture>> textures(m_tinyModel.textures.size());
+  for (core::size_t textureIndex = 0u; textureIndex < m_tinyModel.textures.size(); ++textureIndex)
+  {
+    const tinygltf::Texture& tinyTexture = m_tinyModel.textures[textureIndex];
+    if (tinyTexture.source >= 0 && tinyTexture.source < images.size())
+      textures[textureIndex]->setImage(images[tinyTexture.source]);
+    if (tinyTexture.sampler >= 0 && tinyTexture.sampler < samplers.size())
+    textures[textureIndex]->setSampler(samplers[tinyTexture.sampler]);
+  }
 
   // Load meshes
-  std::vector<scene::Mesh_Buffer> meshBuffers(m_tinyModel.meshes.size());
-  std::vector<scene::Mesh> meshes(m_tinyModel.meshes.size());
+  core::vector<core::shared_ptr<scene::Mesh>> meshes(m_tinyModel.meshes.size());
 
   for (core::size_t meshIndex = 0u; meshIndex < meshes.size(); ++meshIndex)
   {
     const tinygltf::Mesh& tinyMesh = m_tinyModel.meshes[meshIndex];
-    scene::Mesh& mesh = meshes[meshIndex];
+    core::shared_ptr<scene::Mesh> mesh = meshes[meshIndex];
 
     core::uint32 verticesOffset = 0u;
     core::uint32 primitiviesOffset = 0u;
@@ -66,41 +76,51 @@ core::Optional<core::shared_ptr<scene::Scene>> GLTF_Loader::loadSceneFromFile(co
       core::vector<scene::Vertex> primtiveVertices = loadVerticesFromPrimitive(tinyPrimitive);
       core::vector<core::uint32> primitiveVertexIndices = loadVertexIndicesFromPrimitive(tinyPrimitive);
 
-      verticesOffset += mesh.vertices.size();
-      primitiviesOffset += mesh.primitiveIndices.size();
-      vertexIndicestOffset += mesh.vertexIndices.size();
-      meshletsOffset += mesh.meshlets.size();
+      verticesOffset += mesh->vertices.size();
+      primitiviesOffset += mesh->primitiveIndices.size();
+      vertexIndicestOffset += mesh->vertexIndices.size();
+      meshletsOffset += mesh->meshlets.size();
 
-      buildMeshlets(primtiveVertices, primitiveVertexIndices, mesh.vertexIndices, mesh.primitiveIndices, mesh.meshlets);
-      mesh.vertices.insert(mesh.vertices.end(), primtiveVertices.begin(), primtiveVertices.end());
+      buildMeshlets(primtiveVertices, primitiveVertexIndices, mesh->vertexIndices, mesh->primitiveIndices, mesh->meshlets);
+      mesh->vertices.insert(mesh->vertices.end(), primtiveVertices.begin(), primtiveVertices.end());
 
-      mesh.subMeshes.push_back(scene::Sub_Mesh{
+      core::shared_ptr<graphics::Texture> submeshTexture;
+      if (tinyPrimitive.material != -1)
+      {
+        submeshTexture = textures[m_tinyModel.materials[tinyPrimitive.material].pbrMetallicRoughness.baseColorTexture.index];
+      }
+
+      mesh->subMeshes.push_back(scene::Sub_Mesh{
         .vertexOffset = verticesOffset,
         .vertexCount = static_cast<core::uint32>(primtiveVertices.size()),
         .lodCount = 1u,
         .lods = core::array<scene::Sub_Mesh_Lod, 8> { scene::Sub_Mesh_Lod {
           .indexOffset = vertexIndicestOffset,
-          .indexCount = static_cast<core::uint32>(mesh.vertexIndices.size() - vertexIndicestOffset),
+          .indexCount = static_cast<core::uint32>(mesh->vertexIndices.size() - vertexIndicestOffset),
           .meshletOffset = meshletsOffset,
-          .meshletCount = static_cast<core::uint32>(mesh.meshlets.size() - meshletsOffset),
-        } }
+          .meshletCount = static_cast<core::uint32>(mesh->meshlets.size() - meshletsOffset),
+        } },
+        .texture = submeshTexture
         });
     }
   }
 
-  //for (core::size_t meshIndex = 0u; meshIndex < meshes.size(); ++meshIndex)
-  //{
-  //  scene::Mesh_Buffer& meshBuffer = meshBuffers[meshIndex];
-  //  meshBuffers[meshIndex].meshletsBuffer;
-  //  meshBuffers[meshIndex].primitiveIndicesBuffer;
-  //  meshBuffers[meshIndex].vertexIndicesBuffer;
-  //  meshBuffers[meshIndex].verticesBuffer;
-  //}
-
+  core::vector<core::shared_ptr<graphics::Mesh_Buffer>> meshBuffers(m_tinyModel.meshes.size());
+  for (core::size_t meshIndex = 0u; meshIndex < meshes.size(); ++meshIndex)
+  {
+    auto commandBuffer = core::allocateShared<graphics::Command_Buffer>(m_commandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+    meshBuffers[meshIndex] = core::allocateShared<graphics::Mesh_Buffer>(commandBuffer, *meshes[meshIndex]);
+  }
 
   // Load nodes
+  core::vector<core::shared_ptr<scene::Node>> nodes(m_tinyModel.nodes.size());
+  for (core::size_t nodeIndex = 0u; nodeIndex < nodes.size(); ++nodeIndex)
+  {
+    nodes[nodeIndex] = parseNode(m_tinyModel.nodes[nodeIndex], meshes);
+  }
 
   core::shared_ptr<scene::Scene> scene = core::allocateShared<scene::Scene>();
+  scene->setNodes(nodes);
   return scene;
 }
 
@@ -166,41 +186,23 @@ bool GLTF_Loader::loadModelFromFile(const char* path)
   return true;
 }
 
-core::shared_ptr<scene::Node> GLTF_Loader::loadNodesFromModel(const tinygltf::Node& tinyNode, DirectX::FXMMATRIX parentToParent)
+core::shared_ptr<scene::Node> GLTF_Loader::parseNode(const tinygltf::Node& tinyNode, const core::vector<core::shared_ptr<scene::Mesh>>& meshes, const core::vector<core::shared_ptr<graphics::Mesh_Buffer>>& meshBuffers)
 {
   core::shared_ptr<scene::Node> node = core::allocateShared<scene::Node>();
 
-  const DirectX::XMMATRIX nodeToParent = calculateNodeToParent(tinyNode, parentToParent);
-  DirectX::XMStoreFloat4x4(&node->m_nodeToParent, nodeToParent);
-
-  node->m_geometryIndex = tinyNode.mesh;
+  if (tinyNode.mesh != -1)
+  {
+    node->getEntity().set<core::shared_ptr<scene::Mesh>>(meshes[tinyNode.mesh]);
+    node->getEntity().set<core::shared_ptr<graphics::Mesh_Buffer>>(meshBuffers[tinyNode.mesh]);
+  }
 
   for (core::uint32 childIndex : tinyNode.children)
   {
-    node->m_nodes.push_back(loadNodesFromModel(m_tinyModel.nodes[childIndex], nodeToParent));
+    core::shared_ptr<scene::Node> child = parseNode(m_tinyModel.nodes[childIndex], meshes);
+    child->setParent(child);
+    node->addChild(child);
   }
   return node;
-}
-
-core::vector<core::shared_ptr<scene::Texture>> GLTF_Loader::loadTexturesFromModel()
-{
-  core::vector<core::shared_ptr<scene::Texture>> textures;
-  textures.reserve(m_tinyModel.textures.size());
-  for (const tinygltf::Texture& tinyTexture : m_tinyModel.textures)
-  {
-    const tinygltf::Image& tinyImage = m_tinyModel.images[tinyTexture.source];
-    core::shared_ptr<core::byte[]> imageByte = core::allocateShared<core::byte[]>(tinyImage.image.size());
-    std::memcpy(imageByte.get(), tinyImage.image.data(), static_cast<core::size_t>(tinyImage.image.size()));
-
-    core::shared_ptr<scene::Image> image = core::allocateShared<scene::Image>(imageByte, scene::Image_Format::IMAGE_FORMAT_RGB_ALPHA, tinyImage.width, tinyImage.height);
-    core::shared_ptr<graphics::Sampler_State> samplerState = core::allocateShared<graphics::Sampler_State>(graphics::csamlper_state::gMagMinMipLinearRepeat);
-
-    core::shared_ptr<scene::Texture> texture = core::allocateShared<scene::Texture>();
-    texture->setImage(image);
-    texture->setSamplerState(samplerState);
-    textures.push_back(texture);
-  }
-  return textures;
 }
 
 core::vector<scene::Vertex> GLTF_Loader::loadVerticesFromPrimitive(const tinygltf::Primitive& tinyPrimitive)
@@ -329,18 +331,6 @@ void GLTF_Loader::buildMeshlets(const core::vector<scene::Vertex>& vertices,
       .primitiveOffest = zeuxMeshlet.triangle_offset,
       });
   }
-}
-
-DirectX::XMMATRIX GLTF_Loader::calculateNodeToParent(const tinygltf::Node& tinyNode, DirectX::FXMMATRIX nodeToParent)
-{
-  if (tinyNode.matrix.size() == 0)
-    return nodeToParent;
-
-  return DirectX::XMMatrixTranspose(DirectX::XMMatrixSet(
-    tinyNode.matrix[0], tinyNode.matrix[1], tinyNode.matrix[2], tinyNode.matrix[3],
-    tinyNode.matrix[4], tinyNode.matrix[5], tinyNode.matrix[6], tinyNode.matrix[7],
-    tinyNode.matrix[8], tinyNode.matrix[9], tinyNode.matrix[10], tinyNode.matrix[11],
-    tinyNode.matrix[12], tinyNode.matrix[13], tinyNode.matrix[14], tinyNode.matrix[15]));
 }
 
 }

@@ -5,6 +5,10 @@ module crude.scene.camera;
 namespace crude::scene
 {
 
+const DirectX::XMVECTOR cDefaultCameraRight = DirectX::XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
+const DirectX::XMVECTOR cDefaultCameraTop = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+const DirectX::XMVECTOR cDefaultCameraForward = DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+
 Camera::Camera()
 {
   m_positionFloat3 = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);

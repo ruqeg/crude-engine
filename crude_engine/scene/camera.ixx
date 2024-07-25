@@ -14,7 +14,6 @@ class Camera
 {
 public:
   Camera();
-  ~Camera() = default;
 public:
   void calculateViewToClipMatrix(core::float32 fovRadians, core::float32 aspectRatio, core::float32 nearZ, core::float32 farZ);
   void calculateWorldToViewMatrix();
@@ -67,9 +66,5 @@ private:
   core::float32        m_fovRadians;
   core::float32        m_nearZ;
   core::float32        m_farZ;
-private:
-  const DirectX::XMVECTOR cDefaultCameraRight   = DirectX::XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
-  const DirectX::XMVECTOR cDefaultCameraTop     = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-  const DirectX::XMVECTOR cDefaultCameraForward = DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
 };
 }

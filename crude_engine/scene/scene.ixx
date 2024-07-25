@@ -17,6 +17,7 @@ class Scene
 {
 public:
   void addNode(core::shared_ptr<Node> node) { m_nodes.push_back(node); }
+  void setNodes(const core::vector<core::shared_ptr<Node>>& nodes) { m_nodes = nodes; }
   const core::vector<core::shared_ptr<Node>>& getNodes() const { return m_nodes; }
   flecs::world& getWorld() { return m_world; }
 private:

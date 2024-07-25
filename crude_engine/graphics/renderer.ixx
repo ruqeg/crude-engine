@@ -40,14 +40,8 @@ export import crude.graphics.image_attachment;
 export import crude.graphics.uniform_buffer;
 export import crude.graphics.storage_buffer;
 export import crude.graphics.camera_ubo;
+export import crude.scene.scene;
 export import crude.core.filesystem;
-
-export namespace crude::scene
-{
-
-class World;
-
-}
 
 export namespace crude::graphics
 {
@@ -60,7 +54,7 @@ struct Per_Frame
 class Renderer
 {
 public:
-  Renderer(core::shared_ptr<system::SDL_Window_Container> windowContainer, core::shared_ptr<scene::World> world);
+  Renderer(core::shared_ptr<system::SDL_Window_Container> windowContainer, core::shared_ptr<scene::Scene> scene);
   ~Renderer();
 public:
   void drawFrame();
@@ -91,7 +85,6 @@ private:
 private:
   static constexpr core::uint32 cFramesCount = 2u;
 private:
-  core::shared_ptr<scene::World>                        m_world;
   core::shared_ptr<Queue>                               m_graphicsQueue;
   core::shared_ptr<Queue>                               m_presentQueue;
   core::shared_ptr<Queue>                               m_transferQueue;
@@ -133,6 +126,7 @@ private:
   core::array<core::shared_ptr<Semaphore>, cFramesCount>        m_renderFinishedSemaphores;
   core::array<core::shared_ptr<Fence>, cFramesCount>            m_inFlightFences;
   core::uint32                                                  m_currentFrame;
+  core::shared_ptr<scene::Scene>                                m_scene;
 };
 
 }

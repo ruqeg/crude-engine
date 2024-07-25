@@ -8,8 +8,7 @@ export module crude.scene.mesh;
 export import crude.scene.image;
 export import crude.core.std_containers_heap;
 export import crude.core.std_containers_stack;
-export import crude.graphics.storage_buffer;
-export import crude.graphics.buffer_descriptor;
+export import crude.graphics.texture;
 
 export namespace crude::scene
 {
@@ -39,10 +38,11 @@ struct Sub_Mesh_Lod
 
 struct Sub_Mesh
 {
-  core::uint32                  vertexOffset;
-  core::uint32                  vertexCount;
-  core::uint32                  lodCount;
-  core::array<Sub_Mesh_Lod, 8>  lods;
+  core::uint32                         vertexOffset;
+  core::uint32                         vertexCount;
+  core::uint32                         lodCount;
+  core::array<Sub_Mesh_Lod, 8>         lods;
+  core::shared_ptr<graphics::Texture>  texture;
 };
 
 struct Mesh
@@ -52,14 +52,6 @@ struct Mesh
   core::vector<Meshlet>       meshlets;
   core::vector<core::uint8>   primitiveIndices;
   core::vector<Sub_Mesh>      subMeshes;
-};
-
-struct Mesh_Buffer
-{
-  core::shared_ptr<graphics::Storage_Buffer>  verticesBuffer;
-  core::shared_ptr<graphics::Storage_Buffer>  meshletsBuffer;
-  core::shared_ptr<graphics::Storage_Buffer>  primitiveIndicesBuffer;
-  core::shared_ptr<graphics::Storage_Buffer>  vertexIndicesBuffer;
 };
 
 }
