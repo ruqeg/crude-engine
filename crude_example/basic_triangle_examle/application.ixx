@@ -1,3 +1,5 @@
+module;
+
 export module application;
 
 export import crude.engine;

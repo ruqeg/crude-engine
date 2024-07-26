@@ -69,8 +69,6 @@ private:
   void initializeColorResources();
   void initializeDepthImage();
   void initializeSwapchainFramebuffers();
-  void initializeTextureImage();
-  void initializeSampler();
   void initializeUniformBuffers();
   void initializeStorageBuffers();
   void updateDescriptorSets();

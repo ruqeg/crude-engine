@@ -15,6 +15,7 @@ class Sampler;
 class Texture
 {
 public:
+  explicit Texture(core::shared_ptr<Image> image, core::shared_ptr<Sampler> sampler);
   void setImage(core::shared_ptr<Image> image);
   void setSampler(core::shared_ptr<Sampler> sampler);
   core::shared_ptr<Image> getImage();

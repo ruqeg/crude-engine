@@ -62,8 +62,6 @@ Renderer::Renderer(core::shared_ptr<system::SDL_Window_Container> windowContaine
   resources::GLTF_Loader gltfLoader(m_transferCommandPool);
   m_scene = gltfLoader.loadSceneFromFile("../../crude_example/basic_triangle_examle/resources/helmet.glb").value();
 
-  initializeTextureImage();
-  initializeSampler();
   initializeUniformBuffers();
   initializeStorageBuffers();
   updateDescriptorSets();
@@ -334,7 +332,7 @@ void Renderer::recordCommandBuffer(core::shared_ptr<Command_Buffer> commandBuffe
 void Renderer::updateUniformBuffer(core::uint32 currentImage)
 {
   Per_Frame* data = m_perFrameUniformBuffer[currentImage]->mapUnsafe();
-  data->camera = Camera_UBO(*m_world->getCamera());
+  //data->camera = Camera_UBO(*m_world->getCamera());
   m_perFrameUniformBuffer[currentImage]->unmap();
 }
 
@@ -475,32 +473,6 @@ void Renderer::initializeSwapchainFramebuffers()
   }
 }
 
-void Renderer::initializeTextureImage()
-{
-  core::shared_ptr<const scene::Image> image = m_world->getTextures()[m_world->getNodes().front()->m_textureIndex]->getImage();
-  auto commandBuffer = core::allocateShared<Command_Buffer>(m_transferCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
-  VkExtent3D extent;
-  extent.width = image->getWidth();
-  extent.height = image->getHeight();
-  extent.depth = 1u;
-  m_texture = core::allocateShared<Image_2D>(
-    commandBuffer, 
-    VK_FORMAT_R8G8B8A8_SRGB, 
-    Image::Mip_Data(extent, image->getTexelsSpan()),
-    image->calculateMaximumMipLevelsCount(),
-    VK_SHARING_MODE_EXCLUSIVE);
-  commandBuffer->begin();
-  generateMipmaps(commandBuffer, m_texture, VK_FILTER_LINEAR);
-  commandBuffer->end();
-  flush(commandBuffer);
-  m_textureView = core::allocateShared<Image_View>(m_texture, Image_Subresource_Range(m_texture));
-}
-
-void Renderer::initializeSampler()
-{
-  m_sampler = core::allocateShared<Sampler>(m_device, *m_world->getTextures()[m_world->getNodes().front()->m_textureIndex]->getSamplerState());
-}
-
 void Renderer::initializeUniformBuffers()
 {
   for (core::uint32 i = 0; i < cFramesCount; ++i)
@@ -516,14 +488,6 @@ void Renderer::initializeUniformBuffers()
 
 void Renderer::initializeStorageBuffers()
 {
-  core::shared_ptr<graphics::Command_Buffer> commandBuffer = core::allocateShared<graphics::Command_Buffer>(m_transferCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
-
-  m_drawsBuffer = core::allocateShared<graphics::Storage_Buffer>(commandBuffer, core::vector({ m_world->getNodes().front()->m_nodeToParent }));
-  m_vertexBuffer = core::allocateShared<graphics::Storage_Buffer>(commandBuffer, m_world->getGeometry()->m_vertices);
-  m_meshletBuffer = core::allocateShared<graphics::Storage_Buffer>(commandBuffer, m_world->getGeometry()->m_meshlets);
-  m_primitiveIndicesBuffer = core::allocateShared<graphics::Storage_Buffer>(commandBuffer, m_world->getGeometry()->m_primitiveIndices);
-  m_vertexIndicesBuffer = core::allocateShared<graphics::Storage_Buffer>(commandBuffer, m_world->getGeometry()->m_vertexIndices);
-
   m_drawsBufferDescriptor.update(m_drawsBuffer, m_drawsBuffer->getSize());
   m_vertexBufferDescriptor.update(m_vertexBuffer, m_vertexBuffer->getSize());
   m_meshletBufferDescriptor.update(m_meshletBuffer, m_meshletBuffer->getSize());

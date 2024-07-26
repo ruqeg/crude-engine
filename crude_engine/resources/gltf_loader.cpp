@@ -5,6 +5,7 @@
 #include <functional>
 #include <meshoptimizer.h>
 #include <limits>
+#include <flecs.h>
 #include <directxmath/DirectXMath.h>
 #undef assert
 
@@ -33,38 +34,47 @@ core::Optional<core::shared_ptr<scene::Scene>> GLTF_Loader::loadSceneFromFile(co
   if (!loadModelFromFile(path))
     return core::nullopt;
 
+  core::shared_ptr<scene::Scene> scene = core::allocateShared<scene::Scene>();
+
   // Load samples
-  core::vector<core::shared_ptr<graphics::Sampler>> samplers(m_tinyModel.meshes.size());
-  for (core::size_t samplerIndex = 0u; samplerIndex < m_tinyModel.samplers.size(); ++samplerIndex)
+  core::vector<core::shared_ptr<graphics::Sampler>> samplers;
+  samplers.reserve(m_tinyModel.samplers.size());
+  for (const tinygltf::Sampler& tinySampler : m_tinyModel.samplers)
   {
-    samplers[samplerIndex] = parseSampler(m_tinyModel.samplers[samplerIndex]);
+    samplers.push_back(parseSampler(samplers));
   }
 
   // Load images
-  core::vector<core::shared_ptr<graphics::Image>> images(m_tinyModel.images.size());
-  for (core::size_t imageIndex = 0u; imageIndex < m_tinyModel.images.size(); ++imageIndex)
+  core::vector<core::shared_ptr<graphics::Image>> images;
+  images.reserve(m_tinyModel.images.size());
+  for (const tinygltf::Image& tinyImage : m_tinyModel.images)
   {
-    images[imageIndex] = parseImage(m_tinyModel.images[imageIndex]);
+    images.push_back(parseImage(tinyImage));
   }
 
   // Load textures
-  core::vector<core::shared_ptr<graphics::Texture>> textures(m_tinyModel.textures.size());
-  for (core::size_t textureIndex = 0u; textureIndex < m_tinyModel.textures.size(); ++textureIndex)
+  core::vector<core::shared_ptr<graphics::Texture>> textures;
+  textures.reserve(m_tinyModel.textures.size());
+  for (const tinygltf::Texture& tinyTexture : m_tinyModel.textures)
   {
-    const tinygltf::Texture& tinyTexture = m_tinyModel.textures[textureIndex];
+    core::shared_ptr<graphics::Image> image = nullptr;
+    core::shared_ptr<graphics::Image> sampler = nullptr;
+
     if (tinyTexture.source >= 0 && tinyTexture.source < images.size())
-      textures[textureIndex]->setImage(images[tinyTexture.source]);
+      image = images[tinyTexture.source];
     if (tinyTexture.sampler >= 0 && tinyTexture.sampler < samplers.size())
-    textures[textureIndex]->setSampler(samplers[tinyTexture.sampler]);
+      sampler = samplers[tinyTexture.sampler];
+
+    textures.push_back(core::allocateShared<graphics::Texture>(image, sampler));
   }
 
   // Load meshes
-  core::vector<core::shared_ptr<scene::Mesh>> meshes(m_tinyModel.meshes.size());
+  core::vector<core::shared_ptr<scene::Mesh>> meshes;
+  meshes.reserve(m_tinyModel.meshes.size());
 
-  for (core::size_t meshIndex = 0u; meshIndex < meshes.size(); ++meshIndex)
+  for (const tinygltf::Mesh& tinyMesh : m_tinyModel.meshes)
   {
-    const tinygltf::Mesh& tinyMesh = m_tinyModel.meshes[meshIndex];
-    core::shared_ptr<scene::Mesh> mesh = meshes[meshIndex];
+    core::shared_ptr<scene::Mesh> mesh = core::allocateShared<scene::Mesh>();
 
     core::uint32 verticesOffset = 0u;
     core::uint32 primitiviesOffset = 0u;
@@ -103,30 +113,33 @@ core::Optional<core::shared_ptr<scene::Scene>> GLTF_Loader::loadSceneFromFile(co
         .texture = submeshTexture
         });
     }
+
+    meshes.push_back(mesh);
   }
 
-  core::vector<core::shared_ptr<graphics::Mesh_Buffer>> meshBuffers(m_tinyModel.meshes.size());
-  for (core::size_t meshIndex = 0u; meshIndex < meshes.size(); ++meshIndex)
+  core::vector<core::shared_ptr<graphics::Mesh_Buffer>> meshBuffers;
+  meshBuffers.reserve(m_tinyModel.meshes.size());
+  for (core::shared_ptr<scene::Mesh> mesh : meshes)
   {
     auto commandBuffer = core::allocateShared<graphics::Command_Buffer>(m_commandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
-    meshBuffers[meshIndex] = core::allocateShared<graphics::Mesh_Buffer>(commandBuffer, *meshes[meshIndex]);
+    meshBuffers.push_back(core::allocateShared<graphics::Mesh_Buffer>(commandBuffer, *mesh));
   }
 
   // Load nodes
-  core::vector<core::shared_ptr<scene::Node>> nodes(m_tinyModel.nodes.size());
-  for (core::size_t nodeIndex = 0u; nodeIndex < nodes.size(); ++nodeIndex)
+  core::vector<core::shared_ptr<scene::Node>> nodes;
+  nodes.reserve(m_tinyModel.nodes.size());
+  for (const tinygltf::Node& tinyNode : m_tinyModel.nodes)
   {
-    nodes[nodeIndex] = parseNode(m_tinyModel.nodes[nodeIndex], meshes);
+    nodes.push_back(parseNode(tinyNode, scene, meshes, meshBuffers));
   }
 
-  core::shared_ptr<scene::Scene> scene = core::allocateShared<scene::Scene>();
   scene->setNodes(nodes);
   return scene;
 }
 
 core::shared_ptr<graphics::Sampler> GLTF_Loader::parseSampler(const tinygltf::Sampler& tinySampler)
 {
-  return core::allocateShared<graphics::Sampler>(graphics::csamlper_state::gMagMinMipLinearRepeat);
+  return core::allocateShared<graphics::Sampler>(m_device, graphics::csamlper_state::gMagMinMipLinearRepeat);
 }
 
 core::shared_ptr<graphics::Image> GLTF_Loader::parseImage(const tinygltf::Image& tinyImage)
@@ -186,9 +199,9 @@ bool GLTF_Loader::loadModelFromFile(const char* path)
   return true;
 }
 
-core::shared_ptr<scene::Node> GLTF_Loader::parseNode(const tinygltf::Node& tinyNode, const core::vector<core::shared_ptr<scene::Mesh>>& meshes, const core::vector<core::shared_ptr<graphics::Mesh_Buffer>>& meshBuffers)
+core::shared_ptr<scene::Node> GLTF_Loader::parseNode(const tinygltf::Node& tinyNode, core::shared_ptr<scene::Scene> scene, const core::vector<core::shared_ptr<scene::Mesh>>& meshes, const core::vector<core::shared_ptr<graphics::Mesh_Buffer>>& meshBuffers)
 {
-  core::shared_ptr<scene::Node> node = core::allocateShared<scene::Node>();
+  core::shared_ptr<scene::Node> node = core::allocateShared<scene::Node>(scene, tinyNode.name.c_str());
 
   if (tinyNode.mesh != -1)
   {
@@ -198,7 +211,7 @@ core::shared_ptr<scene::Node> GLTF_Loader::parseNode(const tinygltf::Node& tinyN
 
   for (core::uint32 childIndex : tinyNode.children)
   {
-    core::shared_ptr<scene::Node> child = parseNode(m_tinyModel.nodes[childIndex], meshes);
+    core::shared_ptr<scene::Node> child = parseNode(m_tinyModel.nodes[childIndex], scene, meshes, meshBuffers);
     child->setParent(child);
     node->addChild(child);
   }

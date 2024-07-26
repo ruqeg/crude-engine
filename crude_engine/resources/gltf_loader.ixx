@@ -31,7 +31,7 @@ public:
   core::Optional<core::shared_ptr<scene::Scene>> loadSceneFromFile(const char* path);
   core::shared_ptr<graphics::Sampler> parseSampler(const tinygltf::Sampler& tinySampler);
   core::shared_ptr<graphics::Image> parseImage(const tinygltf::Image& tinyImage);
-  core::shared_ptr<scene::Node> parseNode(const tinygltf::Node& tinyNode, const core::vector< core::shared_ptr<scene::Mesh>>& meshes, const core::vector<core::shared_ptr<graphics::Mesh_Buffer>>& meshBuffers);
+  core::shared_ptr<scene::Node> parseNode(const tinygltf::Node& tinyNode, core::shared_ptr<scene::Scene> scene, const core::vector<core::shared_ptr<scene::Mesh>>& meshes, const core::vector<core::shared_ptr<graphics::Mesh_Buffer>>& meshBuffers);
   core::vector<scene::Vertex> loadVerticesFromPrimitive(const tinygltf::Primitive& tinyPrimitive);
   core::vector<core::uint32> loadVertexIndicesFromPrimitive(const tinygltf::Primitive& tinyPrimitive);
   void loadBufferFromAccessor(const tinygltf::Accessor& tinyAccessor, core::byte* data, core::size_t elementSize, core::size_t byteStride);
@@ -44,7 +44,7 @@ public:
 private:
   bool loadModelFromFile(const char* path);
 private:
-  core::shared_ptr<graphics::Device>        m_device;
+  core::shared_ptr<const graphics::Device>  m_device;
   core::shared_ptr<graphics::Command_Pool>  m_commandPool;
   tinygltf::Model                           m_tinyModel;
 };
