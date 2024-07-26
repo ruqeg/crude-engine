@@ -37,6 +37,10 @@ constexpr const char* pfnToProcAddr()
   {
     return "vkCmdDrawMeshTasksEXT";
   }
+  else if constexpr (std::same_as<Fn, PFN_vkCmdPushDescriptorSetKHR>)
+  {
+    return "vkCmdPushDescriptorSetKHR";
+  }
   core::logError(core::Debug::Channel::Graphics, "Failed to converty pfn to procAddr!");
   return "";
 }
@@ -65,8 +69,6 @@ class Instance_Extension : public Extension<Fn>
 public:
   explicit Instance_Extension(core::shared_ptr<const Instance> instance) noexcept
     : Extension<Fn>(getInstanceProcAddr(instance, pfnToProcAddr<Fn>())) {}
-  template<class Fn>
-  friend const Instance_Extension<Fn>& getInstanceExtension(core::shared_ptr<const Instance> instance);
 };
 
 template<class Fn>
@@ -75,7 +77,6 @@ class Device_Extension : public Extension<Fn>
 public:
   explicit Device_Extension(core::shared_ptr<const Device> device) noexcept
     : Extension<Fn>(gettDeviceProcAddr(device, pfnToProcAddr<Fn>())) {}
-  friend const Device_Extension<Fn>& getDeviceExtension(core::shared_ptr<const Device> device);
 };
 
 template<class Fn>

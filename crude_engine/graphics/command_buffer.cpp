@@ -201,6 +201,25 @@ void Command_Buffer::bindDescriptorSets(core::shared_ptr<Pipeline>              
     dynamicOffsets.data());
 }
 
+void Command_Buffer::pushDescriptorSet(core::shared_ptr<Pipeline>                    pipeline,
+                                       const core::span<const Write_Descriptor_Set>& descriptorWrites)
+{
+  core::vector<VkWriteDescriptorSet> vkDescriptorWrites(descriptorWrites.size());
+  core::copy(descriptorWrites.begin(), descriptorWrites.end(), vkDescriptorWrites.begin());
+
+  auto vkCmdPushDescriptorSetKHR = getDeviceExtension<PFN_vkCmdPushDescriptorSetKHR>(m_commandPool->getDevice());
+  if (vkCmdPushDescriptorSetKHR)
+  {
+    vkCmdPushDescriptorSetKHR(
+      m_handle,
+      pipeline->getBindPoint(),
+      pipeline->getPipelineLayout()->getHandle(),
+      0u,
+      vkDescriptorWrites.size(),
+      vkDescriptorWrites.data());
+  }
+}
+
 void Command_Buffer::pushConstantBase(core::shared_ptr<const Pipeline_Layout> layout, core::span<const core::byte> data, core::uint32 offset)
 {
   if (layout->m_pushConstantRanges.size() < 1)

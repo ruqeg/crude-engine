@@ -35,6 +35,11 @@ Descriptor_Pool::Descriptor_Pool(core::shared_ptr<const Device>           device
   vulkanHandleResult(result, "failed to create descriptor pool");
 }
 
+core::shared_ptr<const Device> Descriptor_Pool::getDevice() const
+{
+  return m_device;
+}
+
 Descriptor_Pool::~Descriptor_Pool()
 {
   vkDestroyDescriptorPool(m_device->getHandle(), m_handle, getPVkAllocationCallbacks());

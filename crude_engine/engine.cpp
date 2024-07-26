@@ -10,13 +10,10 @@ namespace crude
 
 Engine::Engine(core::shared_ptr<system::SDL_Window_Container> windowContainer)
 {
-  scene::Camera camera;
-  camera.calculateViewToClipMatrix(DirectX::XM_PIDIV4, windowContainer->getAspect(), 0.1f, 10.0f);
-  camera.setPosition(0, 0, -2);
-  m_renderer = core::allocateShared<graphics::Renderer>(windowContainer, m_scene);
-  core::shared_ptr<scene::Node> cameraNode = core::allocateShared<scene::Node>(m_scene, "camera node");
-  cameraNode->getEntity().set<scene::Camera>(camera);
-  m_scene->addNode(cameraNode);
+  m_camera = core::allocateShared<scene::Camera>();
+  m_camera->calculateViewToClipMatrix(DirectX::XM_PIDIV4, windowContainer->getAspect(), 0.1f, 10.0f);
+  m_camera->setPosition(0, 0, -2);
+  m_renderer = core::allocateShared<graphics::Renderer>(windowContainer, m_scene, m_camera);
   m_timer.setFrameRate(60);
 }
 
@@ -41,51 +38,47 @@ void Engine::mainLoop()
 
 void Engine::update(core::float64 elapsed)
 {
-  flecs::system s = m_scene->getWorld().system<scene::Camera>()
-    .each([&](flecs::entity e, scene::Camera& camera) {
-    if (m_ioManager.getKeyboardEH().keyIsPressed(system::Scancode::SDL_SCANCODE_W))
+  core::shared_ptr<scene::Camera> camera = m_camera;
+  // !TODO :D
+  if (m_ioManager.getKeyboardEH().keyIsPressed(system::Scancode::SDL_SCANCODE_W))
+  {
+    camera->addPosition(DirectX::XMVectorScale(camera->getForwardVector(), 7 * elapsed));
+  }
+  if (m_ioManager.getKeyboardEH().keyIsPressed(system::Scancode::SDL_SCANCODE_S))
+  {
+    camera->addPosition(DirectX::XMVectorScale(camera->getForwardVector(), -7 * elapsed));
+  }
+  if (m_ioManager.getKeyboardEH().keyIsPressed(system::Scancode::SDL_SCANCODE_A))
+  {
+    camera->addPosition(DirectX::XMVectorScale(camera->getRightVector(), -7 * elapsed));
+  }
+  if (m_ioManager.getKeyboardEH().keyIsPressed(system::Scancode::SDL_SCANCODE_D))
+  {
+    camera->addPosition(DirectX::XMVectorScale(camera->getRightVector(), 7 * elapsed));
+  }
+  if (m_ioManager.getKeyboardEH().keyIsPressed(system::Scancode::SDL_SCANCODE_E))
+  {
+    camera->addPosition(DirectX::XMVectorScale(camera->getTopVector(), -7 * elapsed));
+  }
+  if (m_ioManager.getKeyboardEH().keyIsPressed(system::Scancode::SDL_SCANCODE_Q))
+  {
+    camera->addPosition(DirectX::XMVectorScale(camera->getTopVector(), 7 * elapsed));
+  }
+  while (!m_ioManager.getMouseEH().eventBufferIsEmpty())
+  {
+    system::Mouse_Event me = m_ioManager.getMouseEH().readEvent();
+    if (me.getType() == system::MOUSE_EVENT_TYPE_MOVE)
     {
-      camera.addPosition(DirectX::XMVectorScale(camera.getForwardVector(), 7 * elapsed));
-    }
-    if (m_ioManager.getKeyboardEH().keyIsPressed(system::Scancode::SDL_SCANCODE_S))
-    {
-      camera.addPosition(DirectX::XMVectorScale(camera.getForwardVector(), -7 * elapsed));
-    }
-    if (m_ioManager.getKeyboardEH().keyIsPressed(system::Scancode::SDL_SCANCODE_A))
-    {
-      camera.addPosition(DirectX::XMVectorScale(camera.getRightVector(), -7 * elapsed));
-    }
-    if (m_ioManager.getKeyboardEH().keyIsPressed(system::Scancode::SDL_SCANCODE_D))
-    {
-      camera.addPosition(DirectX::XMVectorScale(camera.getRightVector(), 7 * elapsed));
-    }
-    if (m_ioManager.getKeyboardEH().keyIsPressed(system::Scancode::SDL_SCANCODE_E))
-    {
-      camera.addPosition(DirectX::XMVectorScale(camera.getTopVector(), -7 * elapsed));
-    }
-    if (m_ioManager.getKeyboardEH().keyIsPressed(system::Scancode::SDL_SCANCODE_Q))
-    {
-      camera.addPosition(DirectX::XMVectorScale(camera.getTopVector(), 7 * elapsed));
-    }
-    while (!m_ioManager.getMouseEH().eventBufferIsEmpty())
-    {
-      system::Mouse_Event me = m_ioManager.getMouseEH().readEvent();
-      if (me.getType() == system::MOUSE_EVENT_TYPE_MOVE)
+      if (m_ioManager.getMouseEH().isRightDown())
       {
-        if (m_ioManager.getMouseEH().isRightDown())
-        {
-          camera.addRotation(
-            -0.15 * me.getPositionRelY() * elapsed,
-            0.15 * me.getPositionRelX() * elapsed,
-            0.f);
-        }
+        camera->addRotation(
+          -0.15 * me.getPositionRelY() * elapsed,
+          0.15 * me.getPositionRelX() * elapsed,
+          0.f);
       }
     }
-    camera.calculateWorldToViewMatrix();
-  });
-
-  m_scene->getWorld().progress();
-  
+  }
+  camera->calculateWorldToViewMatrix();
 }
 
 void Engine::render()

@@ -36,6 +36,7 @@ export import crude.graphics.descriptor_pool;
 export import crude.graphics.image_descriptor;
 export import crude.graphics.sampler;
 export import crude.graphics.descriptor_set;
+export import crude.graphics.descriptor_set_layout;
 export import crude.graphics.image_attachment;
 export import crude.graphics.uniform_buffer;
 export import crude.graphics.storage_buffer;
@@ -54,7 +55,7 @@ struct Per_Frame
 class Renderer
 {
 public:
-  Renderer(core::shared_ptr<system::SDL_Window_Container> windowContainer, core::shared_ptr<scene::Scene> scene);
+  Renderer(core::shared_ptr<system::SDL_Window_Container> windowContainer, core::shared_ptr<scene::Scene> scene, core::shared_ptr<scene::Camera> camera);
   ~Renderer();
 public:
   void drawFrame();
@@ -70,8 +71,6 @@ private:
   void initializeDepthImage();
   void initializeSwapchainFramebuffers();
   void initializeUniformBuffers();
-  void initializeStorageBuffers();
-  void updateDescriptorSets();
   void initializeCommandBuffers();
   void initializeSyncObjects();
 private:
@@ -79,7 +78,6 @@ private:
   void initializeLogicDevice(core::shared_ptr<const Physical_Device> physicalDevice);
   core::shared_ptr<Render_Pass> initializeRenderPass();
   void recordCommandBuffer(core::shared_ptr<Command_Buffer> commandBuffer, core::uint32 imageIndex);
-  void updateUniformBuffer(core::uint32 currentImage);
 private:
   static constexpr core::uint32 cFramesCount = 2u;
 private:
@@ -98,23 +96,15 @@ private:
   core::shared_ptr<Pipeline>                            m_graphicsPipeline;
   core::shared_ptr<Command_Pool>                        m_graphicsCommandPool;
   core::shared_ptr<Command_Pool>                        m_transferCommandPool;
-  core::shared_ptr<Image_2D>                            m_texture;
-  core::shared_ptr<Image_View>                          m_textureView;
-  core::shared_ptr<Sampler>                             m_sampler;
   core::shared_ptr<Depth_Stencil_Attachment>            m_depthStencilAttachment;
   core::shared_ptr<Image_View>                          m_depthImageView;
   core::shared_ptr<Color_Attachment>                    m_colorAttachment;
   core::shared_ptr<Image_View>                          m_colorAttachmentView;
-  core::shared_ptr<graphics::Storage_Buffer>            m_drawsBuffer;
-  core::shared_ptr<graphics::Storage_Buffer>            m_vertexBuffer;
-  core::shared_ptr<graphics::Storage_Buffer>            m_meshletBuffer;
-  core::shared_ptr<graphics::Storage_Buffer>            m_primitiveIndicesBuffer;
-  core::shared_ptr<graphics::Storage_Buffer>            m_vertexIndicesBuffer;
-  graphics::Storage_Buffer_Descriptor                   m_drawsBufferDescriptor;
   graphics::Storage_Buffer_Descriptor                   m_vertexBufferDescriptor;
   graphics::Storage_Buffer_Descriptor                   m_meshletBufferDescriptor;
   graphics::Storage_Buffer_Descriptor                   m_primitiveIndicesBufferDescriptor;
   graphics::Storage_Buffer_Descriptor                   m_vertexIndicesBufferDescriptor;
+  core::shared_ptr<graphics::Descriptor_Set_Layout>     m_descriptorSetLayout;
   core::array<Uniform_Buffer_Descriptor, cFramesCount>         m_perFrameUniformBufferDesc;
   core::array<Combined_Image_Sampler_Descriptor, cFramesCount> m_textureSamplerDesc;
   core::array<core::shared_ptr<Descriptor_Set>, cFramesCount>  m_descriptorSets;
@@ -125,6 +115,7 @@ private:
   core::array<core::shared_ptr<Fence>, cFramesCount>            m_inFlightFences;
   core::uint32                                                  m_currentFrame;
   core::shared_ptr<scene::Scene>                                m_scene;
+  core::shared_ptr<scene::Camera>                               m_camera;
 };
 
 }

@@ -57,6 +57,7 @@ layout(binding=0, std140, row_major) uniform Per_Frame
   Camera camera;
 };
 
+/*
 struct MeshDraw
 {
   mat4 meshToModel;
@@ -66,6 +67,7 @@ layout(binding=1, std140, row_major) readonly buffer Draws
 {
   MeshDraw meshDraws[];
 };
+*/
 
 layout(binding=2) readonly buffer Meshlets
 {
@@ -109,7 +111,7 @@ void main()
     const uint vertexOffset = uint(meshlets[meshletIndex].vertexOffset);
     const uint vertexIndex = vertexIndices[groupThreadIndex + vertexOffset];
     
-    gl_MeshVerticesEXT[groupThreadIndex].gl_Position = vec4(vertices[vertexIndex].position, 1.0) * meshDraws[0].meshToModel * camera.worldToView * camera.viewToClip;
+    gl_MeshVerticesEXT[groupThreadIndex].gl_Position = vec4(vertices[vertexIndex].position, 1.0) * camera.worldToView * camera.viewToClip;
     v_out[groupThreadIndex].color = vec3(1.0, 1.0, 1.0);
     v_out[groupThreadIndex].texCoord = vertices[vertexIndex].texCoord;
   }

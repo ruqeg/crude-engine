@@ -20,6 +20,7 @@ public:
   explicit Descriptor_Pool(core::shared_ptr<const Device>           device,
                            const core::span<Descriptor_Pool_Size>&  poolSizes,
                            bool                                     freeDescriptorSet = false);
+  core::shared_ptr<const Device> getDevice() const;
   ~Descriptor_Pool();
   bool canFreeDescriptorSet() const;
 private:

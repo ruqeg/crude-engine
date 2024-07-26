@@ -9,14 +9,15 @@ namespace crude::graphics
 {
   
 Descriptor_Set_Layout::Descriptor_Set_Layout(core::shared_ptr<const Device>                    device,
-                                             const core::span<Descriptor_Set_Layout_Binding>&  bindings)
+                                             const core::span<Descriptor_Set_Layout_Binding>&  bindings,
+                                             bool                                              pushDescriptor)
   :
   m_device(device)
 {
   VkDescriptorSetLayoutCreateInfo vkCreateInfo;
   vkCreateInfo.sType         = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
   vkCreateInfo.pNext         = nullptr;
-  vkCreateInfo.flags         = 0u;
+  vkCreateInfo.flags         = pushDescriptor ? VK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHR : 0;
 
   vkCreateInfo.pBindings     = bindings.data();
   vkCreateInfo.bindingCount  = bindings.size();

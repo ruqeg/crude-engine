@@ -18,6 +18,7 @@ import crude.graphics.generate_mipmaps;
 import crude.graphics.command_pool;
 import crude.graphics.flush;
 import crude.graphics.image_2d;
+import crude.graphics.image_view;
 import crude.graphics.texture;
 import crude.graphics.mesh_buffer;
 
@@ -41,7 +42,7 @@ core::Optional<core::shared_ptr<scene::Scene>> GLTF_Loader::loadSceneFromFile(co
   samplers.reserve(m_tinyModel.samplers.size());
   for (const tinygltf::Sampler& tinySampler : m_tinyModel.samplers)
   {
-    samplers.push_back(parseSampler(samplers));
+    samplers.push_back(parseSampler(tinySampler));
   }
 
   // Load images
@@ -57,15 +58,15 @@ core::Optional<core::shared_ptr<scene::Scene>> GLTF_Loader::loadSceneFromFile(co
   textures.reserve(m_tinyModel.textures.size());
   for (const tinygltf::Texture& tinyTexture : m_tinyModel.textures)
   {
-    core::shared_ptr<graphics::Image> image = nullptr;
-    core::shared_ptr<graphics::Image> sampler = nullptr;
+    core::shared_ptr<graphics::Image_View> imageView = nullptr;
+    core::shared_ptr<graphics::Sampler> sampler = nullptr;
 
     if (tinyTexture.source >= 0 && tinyTexture.source < images.size())
-      image = images[tinyTexture.source];
+      imageView = core::allocateShared<graphics::Image_View>(images[tinyTexture.source], graphics::Image_Subresource_Range(images[tinyTexture.source]));
     if (tinyTexture.sampler >= 0 && tinyTexture.sampler < samplers.size())
       sampler = samplers[tinyTexture.sampler];
 
-    textures.push_back(core::allocateShared<graphics::Texture>(image, sampler));
+    textures.push_back(core::allocateShared<graphics::Texture>(imageView, sampler));
   }
 
   // Load meshes
