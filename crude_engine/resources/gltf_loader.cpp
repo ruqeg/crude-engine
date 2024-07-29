@@ -145,12 +145,7 @@ core::shared_ptr<graphics::Sampler> GLTF_Loader::parseSampler(const tinygltf::Sa
 
 core::shared_ptr<graphics::Image> GLTF_Loader::parseImage(const tinygltf::Image& tinyImage)
 {
-  core::shared_ptr<core::byte[]> imageByte = core::allocateShared<core::byte[]>(tinyImage.image.size());
-
   auto commandBuffer = core::allocateShared<graphics::Command_Buffer>(m_commandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
-  
-  core::shared_ptr<scene::Image> sceneImage = core::allocateShared<scene::Image>(
-    imageByte, scene::Image_Format::IMAGE_FORMAT_RGB_ALPHA, tinyImage.width, tinyImage.height);
 
   VkExtent3D extent;
   extent.width  = tinyImage.width;
@@ -160,8 +155,8 @@ core::shared_ptr<graphics::Image> GLTF_Loader::parseImage(const tinygltf::Image&
   core::shared_ptr<graphics::Image> image = core::allocateShared<graphics::Image_2D>(
     commandBuffer,
     VK_FORMAT_R8G8B8A8_SRGB,
-    graphics::Image::Mip_Data(extent, sceneImage->getTexelsSpan()),
-    sceneImage->calculateMaximumMipLevelsCount(),
+    graphics::Image::Mip_Data(extent, core::span<const core::byte>(tinyImage.image)),
+    scene::calculateMaximumMipLevelsCount(tinyImage.width, tinyImage.height),
     VK_SHARING_MODE_EXCLUSIVE);
   
   commandBuffer->begin();

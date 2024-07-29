@@ -317,8 +317,7 @@ void Renderer::recordCommandBuffer(core::shared_ptr<Command_Buffer> commandBuffe
   m_perFrameUniformBuffer[m_currentFrame]->unmap();
 
   // !TODO
-  flecs::system s = m_scene->getWorld().system<core::shared_ptr<scene::Mesh>, core::shared_ptr<graphics::Mesh_Buffer>>()
-    .each([&](flecs::entity e, core::shared_ptr<scene::Mesh> mesh, core::shared_ptr<graphics::Mesh_Buffer> meshBuffer)
+  m_scene->getWorld().each([&](flecs::entity e, core::shared_ptr<scene::Mesh> mesh, core::shared_ptr<graphics::Mesh_Buffer> meshBuffer)
   {
     m_vertexBufferDescriptor.update(meshBuffer->getVerticesBuffer(), meshBuffer->getVerticesBuffer()->getSize());
     m_meshletBufferDescriptor.update(meshBuffer->getMeshletsBuffer(), meshBuffer->getMeshletsBuffer()->getSize());
@@ -343,8 +342,6 @@ void Renderer::recordCommandBuffer(core::shared_ptr<Command_Buffer> commandBuffe
       commandBuffer->drawMeshTasks(1u);
     }
   });
-
-  m_scene->getWorld().progress();
 
   commandBuffer->endRenderPass();
 

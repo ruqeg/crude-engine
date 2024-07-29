@@ -21,6 +21,11 @@ enum Image_Format
   IMAGE_FORMAT_RGB_ALPHA 
 };
 
+core::int64 calculateMaximumMipLevelsCount(core::int32 width, core::int32 height) noexcept
+{
+  return std::floor(std::log2(std::max(width, height))) + 1;
+}
+
 class Image
 {
 public:
@@ -36,7 +41,7 @@ public:
   core::int64 getSizeBytes() const noexcept { return 4 * m_width * m_height; }
   core::int64 getWidth() const noexcept { return m_width; }
   core::int64 getHeight() const noexcept { return m_height; }
-  core::int64 calculateMaximumMipLevelsCount() const noexcept { return std::floor(std::log2(std::max(m_width, m_height))) + 1; }
+public:
 private:
   core::shared_ptr<const core::byte[]>  m_texels;
   core::int32                           m_width;
