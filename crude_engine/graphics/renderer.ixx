@@ -107,7 +107,6 @@ private:
   core::shared_ptr<graphics::Descriptor_Set_Layout>     m_descriptorSetLayout;
   core::array<Uniform_Buffer_Descriptor, cFramesCount>         m_perFrameUniformBufferDesc;
   core::array<Combined_Image_Sampler_Descriptor, cFramesCount> m_textureSamplerDesc;
-  core::array<core::shared_ptr<Descriptor_Set>, cFramesCount>  m_descriptorSets;
   core::array<core::shared_ptr<Uniform_Buffer<Per_Frame>>, cFramesCount>  m_perFrameUniformBuffer;
   core::array<core::shared_ptr<Command_Buffer>, cFramesCount>   m_graphicsCommandBuffers;
   core::array<core::shared_ptr<Semaphore>, cFramesCount>        m_imageAvailableSemaphores;

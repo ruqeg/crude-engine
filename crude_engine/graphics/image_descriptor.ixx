@@ -21,7 +21,8 @@ protected:
   explicit Image_Descriptor(VkDescriptorType descriptorType, core::uint32 binding, VkShaderStageFlags stageFlags) noexcept;
 protected:
   VkDescriptorImageInfo m_descriptorImageInfo;
-  friend class Image_Write_Descriptor_Set;
+  friend class Write_Image_Descriptor_Set;
+  friend class Write_Image_Push_Descriptor_Set;
 };
 
 class Combined_Image_Sampler_Descriptor : public Image_Descriptor

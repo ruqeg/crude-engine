@@ -59,8 +59,8 @@ public:
                   core::shared_ptr<Buffer>        dstBuffer, 
                   const VkBufferCopy&             copyRegion);
   
-  void pushDescriptorSet(core::shared_ptr<Pipeline>                    pipeline,
-                         const core::span<const Write_Descriptor_Set>& descriptorWrites);
+  void pushDescriptorSet(core::shared_ptr<Pipeline>                         pipeline,
+                         const core::span<const Write_Push_Descriptor_Set>& descriptorWrites);
   void bindDescriptorSets(core::shared_ptr<Pipeline>                    pipeline,
                           core::span<core::shared_ptr<Descriptor_Set>>  descriptorSets,
                           core::span<core::uint32>                      dynamicOffsets = {});

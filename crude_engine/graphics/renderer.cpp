@@ -280,9 +280,6 @@ void Renderer::initalizeDescriptorSet()
 
   auto descriptorPool = core::allocateShared<Descriptor_Pool>(m_device, poolSizes);
   m_descriptorSetLayout = core::allocateShared<Descriptor_Set_Layout>(m_device, layoutBindings, true);
-
-  for (auto& m_descriptorSet : m_descriptorSets)
-    m_descriptorSet = core::allocateShared<Descriptor_Set>(descriptorPool);
 }
 
 void Renderer::recordCommandBuffer(core::shared_ptr<Command_Buffer> commandBuffer, core::uint32 imageIndex)
@@ -332,14 +329,14 @@ void Renderer::recordCommandBuffer(core::shared_ptr<Command_Buffer> commandBuffe
     {
       m_textureSamplerDesc[m_currentFrame].update(submesh.texture->getImageView(), submesh.texture->getSampler());
 
-      const core::array<Write_Descriptor_Set, 6> descriptorWrites =
+      const core::array<Write_Push_Descriptor_Set, 6> descriptorWrites =
       {
-        Buffer_Write_Descriptor_Set(m_descriptorSets[m_currentFrame], m_perFrameUniformBufferDesc[m_currentFrame]),
-        Image_Write_Descriptor_Set(m_descriptorSets[m_currentFrame], m_textureSamplerDesc[m_currentFrame]),
-        Buffer_Write_Descriptor_Set(m_descriptorSets[m_currentFrame], m_vertexBufferDescriptor),
-        Buffer_Write_Descriptor_Set(m_descriptorSets[m_currentFrame], m_meshletBufferDescriptor),
-        Buffer_Write_Descriptor_Set(m_descriptorSets[m_currentFrame], m_primitiveIndicesBufferDescriptor),
-        Buffer_Write_Descriptor_Set(m_descriptorSets[m_currentFrame], m_vertexIndicesBufferDescriptor),
+        Write_Buffer_Push_Descriptor_Set(m_perFrameUniformBufferDesc[m_currentFrame]),
+        Write_Image_Push_Descriptor_Set(m_textureSamplerDesc[m_currentFrame]),
+        Write_Buffer_Push_Descriptor_Set(m_vertexBufferDescriptor),
+        Write_Buffer_Push_Descriptor_Set(m_meshletBufferDescriptor),
+        Write_Buffer_Push_Descriptor_Set(m_primitiveIndicesBufferDescriptor),
+        Write_Buffer_Push_Descriptor_Set(m_vertexIndicesBufferDescriptor),
       };
       commandBuffer->pushDescriptorSet(m_graphicsPipeline, descriptorWrites);
 

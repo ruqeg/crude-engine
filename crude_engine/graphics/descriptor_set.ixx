@@ -17,16 +17,15 @@ class Descriptor_Pool;
 class Descriptor_Set : public Vulkan_Object<VkDescriptorSet>
 {
 public:
-  explicit Descriptor_Set(core::shared_ptr<Descriptor_Pool> pool);
-  explicit Descriptor_Set(core::shared_ptr<Descriptor_Pool> pool, const core::vector<core::shared_ptr<Descriptor_Set_Layout>>& setLayouts);
+  explicit Descriptor_Set(core::shared_ptr<Descriptor_Pool> pool, core::shared_ptr<Descriptor_Set_Layout> setLayout);
   ~Descriptor_Set();
 public:
   core::shared_ptr<const Device> getDevice() noexcept;
-  const core::vector<core::shared_ptr<Descriptor_Set_Layout>>& getSetLayouts() noexcept;
+  core::shared_ptr<Descriptor_Set_Layout> getSetLayout() noexcept;
   core::shared_ptr<Descriptor_Pool> getPool() noexcept;
 private:
-  core::vector<core::shared_ptr<Descriptor_Set_Layout>>  m_setLayouts;
-  core::shared_ptr<Descriptor_Pool>                      m_pool;
+  core::shared_ptr<Descriptor_Set_Layout>  m_setLayout;
+  core::shared_ptr<Descriptor_Pool>        m_pool;
 };
 
 }

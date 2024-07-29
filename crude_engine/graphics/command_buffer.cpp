@@ -201,8 +201,8 @@ void Command_Buffer::bindDescriptorSets(core::shared_ptr<Pipeline>              
     dynamicOffsets.data());
 }
 
-void Command_Buffer::pushDescriptorSet(core::shared_ptr<Pipeline>                    pipeline,
-                                       const core::span<const Write_Descriptor_Set>& descriptorWrites)
+void Command_Buffer::pushDescriptorSet(core::shared_ptr<Pipeline>                         pipeline,
+                                       const core::span<const Write_Push_Descriptor_Set>& descriptorWrites)
 {
   core::vector<VkWriteDescriptorSet> vkDescriptorWrites(descriptorWrites.size());
   core::copy(descriptorWrites.begin(), descriptorWrites.end(), vkDescriptorWrites.begin());

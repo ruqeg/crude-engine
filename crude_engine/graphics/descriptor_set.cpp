@@ -11,20 +11,15 @@ import crude.core.algorithms;
 namespace crude::graphics
 {
 
-Descriptor_Set::Descriptor_Set(core::shared_ptr<Descriptor_Pool> pool)
-  : Descriptor_Set(pool, {})
-{}
-
-Descriptor_Set::Descriptor_Set(core::shared_ptr<Descriptor_Pool> pool, const core::vector<core::shared_ptr<Descriptor_Set_Layout>>& setLayouts)
+Descriptor_Set::Descriptor_Set(core::shared_ptr<Descriptor_Pool> pool, core::shared_ptr<Descriptor_Set_Layout> setLayout)
   : m_pool(pool)
-  , m_setLayouts(setLayouts)
+  , m_setLayout(setLayout)
 {
-  core::vector<VkDescriptorSetLayout> setLayoutHandles(setLayouts.begin(), setLayouts.end());
   VkDescriptorSetAllocateInfo vkAllocateInfo{};
   vkAllocateInfo.sType               = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
   vkAllocateInfo.pNext               = nullptr;
-  vkAllocateInfo.pSetLayouts         = setLayoutHandles.data();
-  vkAllocateInfo.descriptorSetCount  = m_setLayouts.size();
+  vkAllocateInfo.pSetLayouts         = &m_setLayout->getHandle();
+  vkAllocateInfo.descriptorSetCount  = 1u;
   vkAllocateInfo.descriptorPool      = m_pool->getHandle();
 
   VkResult result = vkAllocateDescriptorSets(getDevice()->getHandle(), &vkAllocateInfo, &m_handle);
@@ -42,9 +37,9 @@ core::shared_ptr<const Device> Descriptor_Set::getDevice() noexcept
   return m_pool->getDevice();
 }
 
-const core::vector<core::shared_ptr<Descriptor_Set_Layout>>& Descriptor_Set::getSetLayouts() noexcept
+core::shared_ptr<Descriptor_Set_Layout> Descriptor_Set::getSetLayout() noexcept
 { 
-  return m_setLayouts;
+  return m_setLayout;
 }
 
 core::shared_ptr<Descriptor_Pool> Descriptor_Set::getPool() noexcept 

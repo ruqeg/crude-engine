@@ -22,7 +22,8 @@ protected:
   void updateBase(core::shared_ptr<const Buffer> buffer, VkDeviceSize range, VkDeviceSize offset);
 private:
   VkDescriptorBufferInfo m_descriptoBuferInfo;
-  friend class Buffer_Write_Descriptor_Set;
+  friend class Write_Buffer_Descriptor_Set;
+  friend class Write_Buffer_Push_Descriptor_Set;
 };
 
 class Storage_Buffer_Descriptor : public Buffer_Descriptor
