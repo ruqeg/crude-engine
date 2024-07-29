@@ -57,17 +57,26 @@ layout(binding=0, std140, row_major) uniform Per_Frame
   Camera camera;
 };
 
-/*
-struct MeshDraw
+struct SubMeshLod
 {
-  mat4 meshToModel;
+  uint32_t indexOffset;
+  uint32_t indexCount;
+  uint32_t meshletOffset;
+  uint32_t meshletCount;
 };
 
-layout(binding=1, std140, row_major) readonly buffer Draws
+struct SubMeshDraw
 {
-  MeshDraw meshDraws[];
+  uint32_t    vertexOffset;
+  uint32_t    vertexCount;
+  uint32_t    lodCount;
+  SubMeshLod  lods[8];
 };
-*/
+
+layout(binding=1, std140) readonly buffer Draws
+{
+  SubMeshDraw submeshes[];
+};
 
 layout(binding=2) readonly buffer Meshlets
 {

@@ -10,7 +10,6 @@ module crude.graphics.renderer;
 
 import crude.core.logger;
 import crude.scene.image;
-import crude.resources.image_loader;
 import crude.graphics.format_helper;
 import crude.graphics.generate_mipmaps;
 import crude.graphics.flush;
@@ -62,7 +61,7 @@ Renderer::Renderer(core::shared_ptr<system::SDL_Window_Container> windowContaine
   initializeSwapchainFramebuffers();
 
   resources::GLTF_Loader gltfLoader(m_transferCommandPool);
-  m_scene = gltfLoader.loadSceneFromFile("../../crude_example/basic_triangle_examle/resources/helmet.glb").value();
+  m_scene = gltfLoader.loadSceneFromFile("../../crude_example/basic_triangle_examle/resources/sponza.glb").value();
 
   initializeUniformBuffers();
   initializeCommandBuffers();

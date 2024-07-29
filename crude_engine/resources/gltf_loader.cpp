@@ -290,11 +290,11 @@ void GLTF_Loader::loadBufferFromAccessor(const tinygltf::Accessor& tinyAccessor,
   }
 }
 
-void GLTF_Loader::buildMeshlets(const core::vector<scene::Vertex>& vertices,
-  const core::vector<core::uint32>& vertexIndices,
-  core::vector<core::uint32>& meshVertexIndices,
-  core::vector<core::uint8>& meshPrimitiveIndices,
-  core::vector<scene::Meshlet>& meshMeshlets)
+void GLTF_Loader::buildMeshlets(const core::vector<scene::Vertex>&  vertices,
+                                const core::vector<core::uint32>&   vertexIndices,
+                                core::vector<core::uint32>&         meshVertexIndices,
+                                core::vector<core::uint8>&          meshPrimitiveIndices,
+                                core::vector<scene::Meshlet>&       meshMeshlets)
 {
   constexpr core::size_t maxVertices = 64u;
   constexpr core::size_t maxTriangles = 124u;

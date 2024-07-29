@@ -31,7 +31,7 @@ bool Image_Descriptor::update(core::shared_ptr<const Image_View> imageView, core
 
   m_descriptorImageInfo.sampler = sampler->getHandle();
   m_descriptorImageInfo.imageView = imageView->getHandle();
-  m_descriptorImageInfo.imageLayout = imageView->getImage()->getMipLayout(baseLayout);
+  m_descriptorImageInfo.imageLayout = baseLayout;
   return true;
 }
 
