@@ -19,6 +19,7 @@ public:
   explicit Node(core::shared_ptr<Scene> scene, const char* name);
 public:
   flecs::entity& getEntity() { return m_entity; }
+  flecs::entity_view getEntity() const { return m_entity; }
 public:
   void addChild(core::shared_ptr<Node> child) { m_children.push_back(child); }
   const core::vector<core::shared_ptr<Node>>& getChildren() const { return m_children; }

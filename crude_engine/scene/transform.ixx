@@ -20,24 +20,35 @@ public:
   void setTranslation(const DirectX::XMFLOAT3& translatio);
   void setTranslation(DirectX::FXMVECTOR translation);
   void setTranslation(core::float32 x, core::float32 y, core::float32 z);
+  void addTranslation(const DirectX::XMFLOAT3& translatio);
+  void addTranslation(DirectX::FXMVECTOR translation);
+  void addTranslation(core::float32 x, core::float32 y, core::float32 z);
   void setScale(const DirectX::XMFLOAT3& scale);
   void setScale(DirectX::FXMVECTOR scale);
   void setScale(core::float32 x, core::float32 y, core::float32 z);
+  void addScale(const DirectX::XMFLOAT3& scale);
+  void addScale(DirectX::FXMVECTOR scale);
+  void addScale(core::float32 x, core::float32 y, core::float32 z);
   void setRotation(const DirectX::XMFLOAT3& rotation);
   void setRotation(DirectX::FXMVECTOR rotation);
   void setRotation(core::float32 x, core::float32 y, core::float32 z);
+  void addRotation(const DirectX::XMFLOAT3& rotation);
+  void addRotation(DirectX::FXMVECTOR rotation);
+  void addRotation(core::float32 x, core::float32 y, core::float32 z);
   void setNodeToParent(const DirectX::XMFLOAT4X4& nodeToParent);
   void setNodeToParent(DirectX::FXMMATRIX nodeToParent);
   DirectX::XMMATRIX getNodeToParentMatrix() const;
   DirectX::XMMATRIX getNodeToWorldMatrix();
+  DirectX::XMMATRIX getWorldToNodeMatrix();
   const DirectX::XMFLOAT4X4& getNodeToWorldFloat4x4();
+  const DirectX::XMFLOAT4X4& getWorldToNodeFloat4x4();
   core::shared_ptr<Node> getNode();
   core::shared_ptr<const Node> getNode() const;
   const DirectX::XMFLOAT3& getTranslationFloat3() const { return m_translationFloat3; }
   const DirectX::XMFLOAT4& getRotationFloat3() const { return m_rotationFloat4; }
   const DirectX::XMFLOAT3& getScaleFloat4() const { return m_scaleFloat3; }
   DirectX::XMVECTOR getTranslationVector() const { return DirectX::XMLoadFloat3(&m_translationFloat3); }
-  DirectX::XMVECTOR getRotationVector() const { return DirectX::XMLoadFloat4(&m_rotationFloat4); }
+  DirectX::XMVECTOR getRotationQuaternion() const { return DirectX::XMLoadFloat4(&m_rotationFloat4); }
   DirectX::XMVECTOR getScaleVector() const { return DirectX::XMLoadFloat3(&m_scaleFloat3); }
   void invalidateNodeToWorld() { m_updateNodeToWorld = true; }
 private:
@@ -46,6 +57,7 @@ private:
 private:
   core::shared_ptr<Node>  m_node;
   DirectX::XMFLOAT4X4     m_nodeToWorldFloat4x4;
+  DirectX::XMFLOAT4X4     m_worldToNodeFloat4x4;
   DirectX::XMFLOAT3       m_translationFloat3;
   DirectX::XMFLOAT4       m_rotationFloat4;
   DirectX::XMFLOAT3       m_scaleFloat3;
