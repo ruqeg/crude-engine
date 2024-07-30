@@ -52,30 +52,38 @@ struct Camera
   mat4 clipToWorld;
 };
 
-layout(binding=0, std140, row_major) uniform Per_Frame
-{
-  Camera camera;
-};
-
 struct SubMeshLod
 {
-  uint32_t indexOffset;
-  uint32_t indexCount;
-  uint32_t meshletOffset;
-  uint32_t meshletCount;
+  uint indexOffset;
+  uint indexCount;
+  uint meshletOffset;
+  uint meshletCount;
 };
 
 struct SubMeshDraw
 {
-  uint32_t    vertexOffset;
-  uint32_t    vertexCount;
-  uint32_t    lodCount;
+  uint        vertexOffset;
+  uint        vertexCount;
+  uint        lodCount;
   SubMeshLod  lods[8];
 };
 
-layout(binding=1, std140) readonly buffer Draws
+layout(push_constant) uniform PerSubmesh
 {
-  SubMeshDraw submeshes[];
+  // !TODO move meshToWorld
+  mat4  meshToWorld;
+  uint  drawID;
+
+} perSubmesh;
+
+layout(binding=0, row_major) uniform Per_Frame
+{
+  Camera camera;
+};
+
+layout(binding=1) readonly buffer SubMeshDraws
+{
+  SubMeshDraw submeshDraws[];
 };
 
 layout(binding=2) readonly buffer Meshlets
@@ -83,7 +91,7 @@ layout(binding=2) readonly buffer Meshlets
   Meshlet meshlets[];
 };
 
-layout(binding=3, std140) readonly buffer Vertices
+layout(binding=3) readonly buffer Vertices
 {
   Vertex vertices[];
 };
@@ -108,7 +116,12 @@ void main()
   const uint groupIndex = gl_WorkGroupID.x;
   const uint groupThreadIndex = gl_LocalInvocationID.x;
   
-  const uint meshletIndex = groupIndex;
+  const uint drawID = perSubmesh.drawID;
+
+  const SubMeshDraw submeshDraw = submeshDraws[drawID];
+  const SubMeshLod submeshLod = submeshDraw.lods[0];
+
+  const uint meshletIndex = submeshLod.meshletOffset + groupIndex;
 
   const uint vertexCount = uint(meshlets[meshletIndex].vertexCount);
   const uint primitiveCount = uint(meshlets[meshletIndex].primitiveCount);
@@ -120,7 +133,8 @@ void main()
     const uint vertexOffset = uint(meshlets[meshletIndex].vertexOffset);
     const uint vertexIndex = vertexIndices[groupThreadIndex + vertexOffset];
     
-    gl_MeshVerticesEXT[groupThreadIndex].gl_Position = vec4(vertices[vertexIndex].position, 1.0) * camera.worldToView * camera.viewToClip;
+    const vec4 submeshPosition = vec4(vertices[vertexIndex].position, 1.0);
+    gl_MeshVerticesEXT[groupThreadIndex].gl_Position = submeshPosition * perSubmesh.meshToWorld * camera.worldToView * camera.viewToClip;
     v_out[groupThreadIndex].color = vec3(1.0, 1.0, 1.0);
     v_out[groupThreadIndex].texCoord = vertices[vertexIndex].texCoord;
   }

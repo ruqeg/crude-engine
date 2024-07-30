@@ -17,13 +17,41 @@ struct Meshlet
   uint     primitiveOffest;
 };
 
+struct SubMeshLod
+{
+  uint indexOffset;
+  uint indexCount;
+  uint meshletOffset;
+  uint meshletCount;
+};
+
+struct SubMeshDraw
+{
+  uint        vertexOffset;
+  uint        vertexCount;
+  uint        lodCount;
+  SubMeshLod  lods[8];
+};
+
+layout(push_constant) uniform PerSubmesh
+{
+  mat4  meshToWorld;
+  uint  drawID;
+} perSubmesh;
+
+layout(binding=1) readonly buffer SubMeshDraws
+{
+  SubMeshDraw submeshDraws[];
+};
+
 layout(binding=2) readonly buffer Meshlets {
   Meshlet meshlets[];
 };
 
 void main()
 {
-  const uint meshletCount = meshlets.length(); //min(cMaxMeshlets, pushConstants.meshletDrawCount - (gl_WorkGroupID.x * cMaxMeshlets));
+  const uint drawID = perSubmesh.drawID;
+  const uint meshletCount = submeshDraws[drawID].lods[0].meshletCount;
   const uint visibleMeshlets = meshletCount;
   EmitMeshTasksEXT(visibleMeshlets, 1, 1);
 }

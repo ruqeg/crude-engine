@@ -10,6 +10,11 @@ import crude.core.algorithms;
 
 namespace crude::graphics
 {
+Pipeline_Layout::Pipeline_Layout(core::shared_ptr<const Device>                 device, 
+                                 core::shared_ptr<const Descriptor_Set_Layout>  descriptorSetLayout, 
+                                 const Push_Constant_Range_Base&                pushConstantRange)
+  : Pipeline_Layout(device, core::vector { descriptorSetLayout }, core::vector{ pushConstantRange })
+{}
 
 Pipeline_Layout::Pipeline_Layout(core::shared_ptr<const Device>                                      device,
                                  const core::vector<core::shared_ptr<const Descriptor_Set_Layout>>&  descriptorSetLayouts,

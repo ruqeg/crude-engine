@@ -15,6 +15,7 @@ class Node;
 class Transform
 {
 public:
+  Transform() = default;
   Transform(core::shared_ptr<Node> node);
   void setTranslation(const DirectX::XMFLOAT3& translatio);
   void setTranslation(DirectX::FXMVECTOR translation);
@@ -33,10 +34,10 @@ public:
   core::shared_ptr<Node> getNode();
   core::shared_ptr<const Node> getNode() const;
   const DirectX::XMFLOAT3& getTranslationFloat3() const { return m_translationFloat3; }
-  const DirectX::XMFLOAT3& getRotationFloat3() const { return m_rotationFloat3; }
-  const DirectX::XMFLOAT3& getScaleFloat3() const { return m_scaleFloat3; }
+  const DirectX::XMFLOAT4& getRotationFloat3() const { return m_rotationFloat4; }
+  const DirectX::XMFLOAT3& getScaleFloat4() const { return m_scaleFloat3; }
   DirectX::XMVECTOR getTranslationVector() const { return DirectX::XMLoadFloat3(&m_translationFloat3); }
-  DirectX::XMVECTOR getRotationVector() const { return DirectX::XMLoadFloat3(&m_rotationFloat3); }
+  DirectX::XMVECTOR getRotationVector() const { return DirectX::XMLoadFloat4(&m_rotationFloat4); }
   DirectX::XMVECTOR getScaleVector() const { return DirectX::XMLoadFloat3(&m_scaleFloat3); }
   void invalidateNodeToWorld() { m_updateNodeToWorld = true; }
 private:
@@ -46,7 +47,7 @@ private:
   core::shared_ptr<Node>  m_node;
   DirectX::XMFLOAT4X4     m_nodeToWorldFloat4x4;
   DirectX::XMFLOAT3       m_translationFloat3;
-  DirectX::XMFLOAT3       m_rotationFloat3;
+  DirectX::XMFLOAT4       m_rotationFloat4;
   DirectX::XMFLOAT3       m_scaleFloat3;
   bool                    m_updateNodeToWorld = false;
 };

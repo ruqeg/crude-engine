@@ -52,6 +52,13 @@ struct Per_Frame
   Camera_UBO camera;
 };
 
+struct Per_Mesh
+{
+  // !TODO Move
+  DirectX::XMFLOAT4X4  modelToWorld;
+  core::uint32         submeshIndex;
+};
+
 class Renderer
 {
 public:
@@ -100,6 +107,7 @@ private:
   core::shared_ptr<Image_View>                          m_depthImageView;
   core::shared_ptr<Color_Attachment>                    m_colorAttachment;
   core::shared_ptr<Image_View>                          m_colorAttachmentView;
+  graphics::Storage_Buffer_Descriptor                   m_submeshesDrawsBufferDescriptor;
   graphics::Storage_Buffer_Descriptor                   m_vertexBufferDescriptor;
   graphics::Storage_Buffer_Descriptor                   m_meshletBufferDescriptor;
   graphics::Storage_Buffer_Descriptor                   m_primitiveIndicesBufferDescriptor;

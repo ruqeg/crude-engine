@@ -45,13 +45,26 @@ struct Sub_Mesh
   core::shared_ptr<graphics::Texture>  texture;
 };
 
+struct Sub_Mesh_Draw
+{
+  Sub_Mesh_Draw(const Sub_Mesh& submesh)
+    : vertexOffset(submesh.vertexOffset)
+    , vertexCount(submesh.vertexCount)
+    , lodCount(submesh.lodCount)
+    , lods(submesh.lods) {}
+  core::uint32                  vertexOffset;
+  core::uint32                  vertexCount;
+  core::uint32                  lodCount;
+  core::array<Sub_Mesh_Lod, 8>  lods;
+};
+
 struct Mesh
 {
   core::vector<Vertex>        vertices;
   core::vector<core::uint32>  vertexIndices;
   core::vector<Meshlet>       meshlets;
   core::vector<core::uint8>   primitiveIndices;
-  core::vector<Sub_Mesh>      subMeshes;
+  core::vector<Sub_Mesh>      submeshes;
 };
 
 }

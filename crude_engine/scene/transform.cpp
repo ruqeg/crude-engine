@@ -47,6 +47,7 @@ void Transform::setScale(DirectX::FXMVECTOR scale)
 void Transform::setScale(core::float32 x, core::float32 y, core::float32 z)
 {
   invalidateNodeToWorld();
+  DirectX::XMVECTOR scale = getScaleVector();
   m_scaleFloat3.x = x;
   m_scaleFloat3.y = y;
   m_scaleFloat3.z = z;
@@ -55,21 +56,21 @@ void Transform::setScale(core::float32 x, core::float32 y, core::float32 z)
 void Transform::setRotation(const DirectX::XMFLOAT3& rotationFloat3)
 {
   invalidateNodeToWorld();
-  m_rotationFloat3 = rotationFloat3;
+  DirectX::XMVECTOR rotation = DirectX::XMQuaternionRotationRollPitchYaw(rotationFloat3.x, rotationFloat3.y, rotationFloat3.z);
+  DirectX::XMStoreFloat4(&m_rotationFloat4, rotation);
 }
 
 void Transform::setRotation(DirectX::FXMVECTOR rotation)
 {
   invalidateNodeToWorld();
-  DirectX::XMStoreFloat3(&m_rotationFloat3, rotation);
+  DirectX::XMStoreFloat4(&m_rotationFloat4, DirectX::XMQuaternionRotationRollPitchYawFromVector(rotation));
 }
 
 void Transform::setRotation(core::float32 x, core::float32 y, core::float32 z)
 {
   invalidateNodeToWorld();
-  m_rotationFloat3.x = x;
-  m_rotationFloat3.y = y;
-  m_rotationFloat3.z = z;
+  DirectX::XMVECTOR rotation = DirectX::XMQuaternionRotationRollPitchYaw(x, y, z);
+  DirectX::XMStoreFloat4(&m_rotationFloat4, rotation);
 }
 
 void Transform::setNodeToParent(const DirectX::XMFLOAT4X4& nodeToParent)
@@ -86,10 +87,7 @@ void Transform::setNodeToParent(DirectX::FXMMATRIX nodeToParent)
 
 DirectX::XMMATRIX Transform::getNodeToParentMatrix() const
 {
-  return DirectX::XMMatrixMultiply(DirectX::XMMatrixMultiply(
-    DirectX::XMMatrixTranslationFromVector(DirectX::XMLoadFloat3(&m_translationFloat3)),
-    DirectX::XMMatrixRotationQuaternion(DirectX::XMLoadFloat3(&m_rotationFloat3))),
-    DirectX::XMMatrixScalingFromVector(DirectX::XMLoadFloat3(&m_scaleFloat3)));
+  return DirectX::XMMatrixAffineTransformation(getScaleVector(), DirectX::XMVectorZero(), getRotationVector(), getTranslationVector());
 }
 
 DirectX::XMMATRIX Transform::getNodeToWorldMatrix()
@@ -118,7 +116,7 @@ void Transform::decomposeNodeToParent(DirectX::FXMMATRIX nodeToParent)
   DirectX::XMVECTOR translation, rotation, scale;
   DirectX::XMMatrixDecompose(&scale, &rotation, &translation, nodeToParent);
   DirectX::XMStoreFloat3(&m_scaleFloat3, scale);
-  DirectX::XMStoreFloat3(&m_rotationFloat3, rotation);
+  DirectX::XMStoreFloat4(&m_rotationFloat4, rotation);
   DirectX::XMStoreFloat3(&m_translationFloat3, translation);
 }
 

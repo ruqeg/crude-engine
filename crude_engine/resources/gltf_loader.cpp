@@ -77,20 +77,15 @@ core::Optional<core::shared_ptr<scene::Scene>> GLTF_Loader::loadSceneFromFile(co
   {
     core::shared_ptr<scene::Mesh> mesh = core::allocateShared<scene::Mesh>();
 
-    core::uint32 verticesOffset = 0u;
-    core::uint32 primitiviesOffset = 0u;
-    core::uint32 vertexIndicestOffset = 0u;
-    core::uint32 meshletsOffset = 0u;
-
     for (const tinygltf::Primitive& tinyPrimitive : tinyMesh.primitives)
     {
+      const core::uint32 verticesOffset = mesh->vertices.size();
+      const core::uint32 primitiviesOffset = mesh->primitiveIndices.size();
+      const core::uint32 vertexIndicestOffset = mesh->vertexIndices.size();
+      const core::uint32 meshletsOffset = mesh->meshlets.size();
+
       core::vector<scene::Vertex> primtiveVertices = loadVerticesFromPrimitive(tinyPrimitive);
       core::vector<core::uint32> primitiveVertexIndices = loadVertexIndicesFromPrimitive(tinyPrimitive);
-
-      verticesOffset += mesh->vertices.size();
-      primitiviesOffset += mesh->primitiveIndices.size();
-      vertexIndicestOffset += mesh->vertexIndices.size();
-      meshletsOffset += mesh->meshlets.size();
 
       buildMeshlets(primtiveVertices, primitiveVertexIndices, mesh->vertexIndices, mesh->primitiveIndices, mesh->meshlets);
       mesh->vertices.insert(mesh->vertices.end(), primtiveVertices.begin(), primtiveVertices.end());
@@ -101,7 +96,7 @@ core::Optional<core::shared_ptr<scene::Scene>> GLTF_Loader::loadSceneFromFile(co
         submeshTexture = textures[m_tinyModel.materials[tinyPrimitive.material].pbrMetallicRoughness.baseColorTexture.index];
       }
 
-      mesh->subMeshes.push_back(scene::Sub_Mesh{
+      mesh->submeshes.push_back(scene::Sub_Mesh{
         .vertexOffset = verticesOffset,
         .vertexCount = static_cast<core::uint32>(primtiveVertices.size()),
         .lodCount = 1u,
@@ -198,6 +193,17 @@ bool GLTF_Loader::loadModelFromFile(const char* path)
 core::shared_ptr<scene::Node> GLTF_Loader::parseNode(const tinygltf::Node& tinyNode, core::shared_ptr<scene::Scene> scene, const core::vector<core::shared_ptr<scene::Mesh>>& meshes, const core::vector<core::shared_ptr<graphics::Mesh_Buffer>>& meshBuffers)
 {
   core::shared_ptr<scene::Node> node = core::allocateShared<scene::Node>(scene, tinyNode.name.c_str());
+
+  if (tinyNode.matrix.size() > 0)
+  {
+    scene::Transform transform(node);
+    transform.setNodeToParent(DirectX::XMMATRIX(
+      tinyNode.matrix[0], tinyNode.matrix[1], tinyNode.matrix[2], tinyNode.matrix[3], 
+      tinyNode.matrix[4], tinyNode.matrix[5], tinyNode.matrix[6], tinyNode.matrix[7],
+      tinyNode.matrix[8], tinyNode.matrix[9], tinyNode.matrix[10], tinyNode.matrix[11],
+      tinyNode.matrix[12], tinyNode.matrix[13], tinyNode.matrix[14], tinyNode.matrix[15]));
+    node->getEntity().set<scene::Transform>(std::move(transform));
+  }
 
   if (tinyNode.mesh != -1)
   {

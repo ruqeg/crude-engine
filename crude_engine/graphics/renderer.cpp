@@ -41,6 +41,7 @@ Renderer::Renderer(core::shared_ptr<system::SDL_Window_Container> windowContaine
   , m_perFrameUniformBufferDesc{
       Uniform_Buffer_Descriptor(0u, VK_SHADER_STAGE_MESH_BIT_EXT),
       Uniform_Buffer_Descriptor(0u, VK_SHADER_STAGE_MESH_BIT_EXT)}
+  , m_submeshesDrawsBufferDescriptor(1u, VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT)
   , m_meshletBufferDescriptor(2u, VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT)
   , m_vertexBufferDescriptor(3u, VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT)
   , m_primitiveIndicesBufferDescriptor(4u, VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT)
@@ -61,7 +62,7 @@ Renderer::Renderer(core::shared_ptr<system::SDL_Window_Container> windowContaine
   initializeSwapchainFramebuffers();
 
   resources::GLTF_Loader gltfLoader(m_transferCommandPool);
-  m_scene = gltfLoader.loadSceneFromFile("../../crude_example/basic_triangle_examle/resources/sponza.glb").value();
+  m_scene = gltfLoader.loadSceneFromFile("../../crude_example/basic_triangle_examle/resources/helmet.glb").value();
 
   initializeUniformBuffers();
   initializeCommandBuffers();
@@ -257,20 +258,22 @@ core::shared_ptr<Render_Pass> Renderer::initializeRenderPass()
 
 void Renderer::initalizeDescriptorSet()
 {
-  core::array<Descriptor_Set_Layout_Binding, 6u> layoutBindings =
+  core::array<Descriptor_Set_Layout_Binding, 7u> layoutBindings =
   {
     m_perFrameUniformBufferDesc[0],
     m_textureSamplerDesc[0],
+    m_submeshesDrawsBufferDescriptor,
     m_vertexBufferDescriptor,
     m_meshletBufferDescriptor,
     m_primitiveIndicesBufferDescriptor,
     m_vertexIndicesBufferDescriptor,
   };
 
-  core::array<Descriptor_Pool_Size, 6u> poolSizes =
+  core::array<Descriptor_Pool_Size, 7u> poolSizes =
   {
     Uniform_Buffer_Pool_Size(cFramesCount),
     Combined_Image_Sampler_Pool_Size(cFramesCount),
+    Storage_Buffer_Pool_Size(1u),
     Storage_Buffer_Pool_Size(1u),
     Storage_Buffer_Pool_Size(1u),
     Storage_Buffer_Pool_Size(1u),
@@ -316,28 +319,40 @@ void Renderer::recordCommandBuffer(core::shared_ptr<Command_Buffer> commandBuffe
   m_perFrameUniformBuffer[m_currentFrame]->unmap();
 
   // !TODO
-  m_scene->getWorld().each([&](flecs::entity e, core::shared_ptr<scene::Mesh> mesh, core::shared_ptr<graphics::Mesh_Buffer> meshBuffer)
+  m_scene->getWorld().each([&](flecs::entity entity, core::shared_ptr<scene::Mesh> mesh, core::shared_ptr<graphics::Mesh_Buffer> meshBuffer)
   {
+      m_submeshesDrawsBufferDescriptor.update(meshBuffer->getSubmeshesDrawsBuffer(), meshBuffer->getSubmeshesDrawsBuffer()->getSize());
     m_vertexBufferDescriptor.update(meshBuffer->getVerticesBuffer(), meshBuffer->getVerticesBuffer()->getSize());
     m_meshletBufferDescriptor.update(meshBuffer->getMeshletsBuffer(), meshBuffer->getMeshletsBuffer()->getSize());
     m_primitiveIndicesBufferDescriptor.update(meshBuffer->getPrimitiveIndicesBuffer(), meshBuffer->getPrimitiveIndicesBuffer()->getSize());
     m_vertexIndicesBufferDescriptor.update(meshBuffer->getVertexIndicesBuffer(), meshBuffer->getVertexIndicesBuffer()->getSize());
 
-    for (const scene::Sub_Mesh& submesh : mesh->subMeshes)
+    Per_Mesh perMesh;
+    if (entity.has<scene::Transform>())
     {
+      auto transform = entity.get_ref<scene::Transform>();
+      perMesh.modelToWorld = transform->getNodeToWorldFloat4x4();
+    }
+    
+    for (core::uint32 submeshIndex = 0u; submeshIndex < mesh->submeshes.size(); ++submeshIndex)
+    {
+      const scene::Sub_Mesh& submesh = mesh->submeshes[submeshIndex];
       m_textureSamplerDesc[m_currentFrame].update(submesh.texture->getImageView(), submesh.texture->getSampler());
 
-      const core::array<Write_Push_Descriptor_Set, 6> descriptorWrites =
+      const core::array<Write_Push_Descriptor_Set, 7u> descriptorWrites =
       {
         Write_Buffer_Push_Descriptor_Set(m_perFrameUniformBufferDesc[m_currentFrame]),
         Write_Image_Push_Descriptor_Set(m_textureSamplerDesc[m_currentFrame]),
+        Write_Buffer_Push_Descriptor_Set(m_submeshesDrawsBufferDescriptor),
         Write_Buffer_Push_Descriptor_Set(m_vertexBufferDescriptor),
         Write_Buffer_Push_Descriptor_Set(m_meshletBufferDescriptor),
         Write_Buffer_Push_Descriptor_Set(m_primitiveIndicesBufferDescriptor),
         Write_Buffer_Push_Descriptor_Set(m_vertexIndicesBufferDescriptor),
       };
-      commandBuffer->pushDescriptorSet(m_graphicsPipeline, descriptorWrites);
 
+      commandBuffer->pushDescriptorSet(m_graphicsPipeline, descriptorWrites);
+      perMesh.submeshIndex = submeshIndex;
+      commandBuffer->pushConstant(m_graphicsPipeline->getPipelineLayout(), perMesh);
       commandBuffer->drawMeshTasks(1u);
     }
   });
@@ -429,8 +444,8 @@ void Renderer::initalizeGraphicsPipeline()
   Dynamic_State_Create_Info dynamicStateInfo(dynamicStates);
   
   core::shared_ptr<Pipeline_Layout> pipelineLayout = core::allocateShared<Pipeline_Layout>(
-    m_device, 
-    core::vector<core::shared_ptr<const Descriptor_Set_Layout>>{ m_descriptorSetLayout });
+    m_device, m_descriptorSetLayout,
+    graphics::Push_Constant_Range<Per_Mesh>(VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT));
 
   m_graphicsPipeline = core::allocateShared<Pipeline>(
     m_device,
