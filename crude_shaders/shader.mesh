@@ -131,7 +131,7 @@ void main()
   if (groupThreadIndex < vertexCount)
   {
     const uint vertexOffset = uint(meshlets[meshletIndex].vertexOffset);
-    const uint vertexIndex = vertexIndices[groupThreadIndex + vertexOffset];
+    const uint vertexIndex = submeshDraw.vertexOffset + vertexIndices[groupThreadIndex + vertexOffset];
     
     const vec4 submeshPosition = vec4(vertices[vertexIndex].position, 1.0);
     gl_MeshVerticesEXT[groupThreadIndex].gl_Position = submeshPosition * perSubmesh.meshToWorld * camera.worldToView * camera.viewToClip;

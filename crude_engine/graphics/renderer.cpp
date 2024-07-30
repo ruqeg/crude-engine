@@ -62,7 +62,7 @@ Renderer::Renderer(core::shared_ptr<system::SDL_Window_Container> windowContaine
   initializeSwapchainFramebuffers();
 
   resources::GLTF_Loader gltfLoader(m_transferCommandPool);
-  m_scene = gltfLoader.loadSceneFromFile("../../crude_example/basic_triangle_examle/resources/helmet.glb").value();
+  m_scene = gltfLoader.loadSceneFromFile("../../crude_example/basic_triangle_examle/resources/sponza.glb").value();
 
   initializeUniformBuffers();
   initializeCommandBuffers();

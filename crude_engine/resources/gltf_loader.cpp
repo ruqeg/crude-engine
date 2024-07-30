@@ -296,8 +296,8 @@ void GLTF_Loader::loadBufferFromAccessor(const tinygltf::Accessor& tinyAccessor,
   }
 }
 
-void GLTF_Loader::buildMeshlets(const core::vector<scene::Vertex>&  vertices,
-                                const core::vector<core::uint32>&   vertexIndices,
+void GLTF_Loader::buildMeshlets(const core::vector<scene::Vertex>&  submeshVertices,
+                                const core::vector<core::uint32>&   submeshVertexIndices,
                                 core::vector<core::uint32>&         meshVertexIndices,
                                 core::vector<core::uint8>&          meshPrimitiveIndices,
                                 core::vector<scene::Meshlet>&       meshMeshlets)
@@ -312,14 +312,17 @@ void GLTF_Loader::buildMeshlets(const core::vector<scene::Vertex>&  vertices,
   const core::uint32 meshPrimitiveIndicesOffset = meshPrimitiveIndices.size();
   const core::uint32 meshMeshletOffset = meshMeshlets.size();
 
-  const core::size_t maxMeshlets = meshopt_buildMeshletsBound(vertexIndices.size(), maxVertices, maxTriangles);
+  const core::size_t maxMeshlets = meshopt_buildMeshletsBound(submeshVertexIndices.size(), maxVertices, maxTriangles);
 
   core::vector<meshopt_Meshlet> zeuxMeshlets(maxMeshlets);
   meshVertexIndices.resize(meshVertexIndicesOffset + maxMeshlets * maxVertices);
   meshPrimitiveIndices.resize(meshPrimitiveIndicesOffset + maxMeshlets * maxTriangles * 3);
 
-  const core::size_t meshletCount = meshopt_buildMeshlets(zeuxMeshlets.data(), meshVertexIndices.data(), meshPrimitiveIndices.data(), vertexIndices.data(),
-    vertexIndices.size(), &vertices[0].position.x, vertices.size(), sizeof(scene::Vertex), maxVertices, maxTriangles, coneWeight);
+  const core::size_t meshletCount = meshopt_buildMeshlets(zeuxMeshlets.data(), 
+    &meshVertexIndices[meshVertexIndicesOffset], &meshPrimitiveIndices[meshPrimitiveIndicesOffset], 
+    submeshVertexIndices.data(), submeshVertexIndices.size(), 
+    &submeshVertices[0].position.x, submeshVertices.size(), sizeof(scene::Vertex), 
+    maxVertices, maxTriangles, coneWeight);
 
   const meshopt_Meshlet& zeuxLastMeshlet = zeuxMeshlets[meshletCount - 1];
   meshVertexIndices.resize(meshVertexIndicesOffset + zeuxLastMeshlet.vertex_offset + zeuxLastMeshlet.vertex_count);
@@ -342,8 +345,8 @@ void GLTF_Loader::buildMeshlets(const core::vector<scene::Vertex>&  vertices,
     meshMeshlets.push_back(scene::Meshlet{
       .vertexCount = static_cast<core::uint8>(zeuxMeshlet.vertex_count),
       .primitiveCount = static_cast<core::uint8>(zeuxMeshlet.triangle_count),
-      .vertexOffset = zeuxMeshlet.vertex_offset,
-      .primitiveOffest = zeuxMeshlet.triangle_offset,
+      .vertexOffset = meshVertexIndicesOffset + zeuxMeshlet.vertex_offset,
+      .primitiveOffest = meshPrimitiveIndicesOffset + zeuxMeshlet.triangle_offset,
       });
   }
 }

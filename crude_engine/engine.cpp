@@ -11,7 +11,7 @@ namespace crude
 Engine::Engine(core::shared_ptr<system::SDL_Window_Container> windowContainer)
 {
   m_camera = core::allocateShared<scene::Camera>();
-  m_camera->calculateViewToClipMatrix(DirectX::XM_PIDIV4, windowContainer->getAspect(), 0.1f, 10.0f);
+  m_camera->calculateViewToClipMatrix(DirectX::XM_PIDIV4, windowContainer->getAspect(), 0.05f, 100.0f);
   m_camera->setPosition(0, 0, -2);
   m_renderer = core::allocateShared<graphics::Renderer>(windowContainer, m_scene, m_camera);
   m_timer.setFrameRate(60);

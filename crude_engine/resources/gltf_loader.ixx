@@ -35,8 +35,8 @@ public:
   core::vector<scene::Vertex> loadVerticesFromPrimitive(const tinygltf::Primitive& tinyPrimitive);
   core::vector<core::uint32> loadVertexIndicesFromPrimitive(const tinygltf::Primitive& tinyPrimitive);
   void loadBufferFromAccessor(const tinygltf::Accessor& tinyAccessor, core::byte* data, core::size_t elementSize, core::size_t byteStride);
-  void buildMeshlets(const core::vector<scene::Vertex>&  vertices, 
-                     const core::vector<core::uint32>&   vertexIndices,
+  void buildMeshlets(const core::vector<scene::Vertex>&  submeshVertices, 
+                     const core::vector<core::uint32>&   submeshVertexIndices,
                      core::vector<core::uint32>&         meshVertexIndices, 
                      core::vector<core::uint8>&          meshPrimitiveIndices,
                      core::vector<scene::Meshlet>&       meshMeshlets);
