@@ -3,14 +3,11 @@
 
 module crude.scene.transform;
 
-import crude.scene.node;
-
 namespace crude::scene
 {
 
-Transform::Transform(core::shared_ptr<Node> node)
-  : m_node(node)
-{}
+Transform::Transform(flecs::entity_view node)
+  : m_node(node) {}
 
 void Transform::setTranslation(const DirectX::XMFLOAT3& translationFloat3)
 {
@@ -138,6 +135,13 @@ void Transform::addRotation(core::float32 x, core::float32 y, core::float32 z)
   DirectX::XMStoreFloat4(&m_rotationFloat4, newRotation);
 }
 
+void Transform::addRotationAxis(DirectX::FXMVECTOR vector, core::float32 rotation)
+{
+  invalidateNodeToWorld();
+  DirectX::XMVECTOR newRotation = DirectX::XMQuaternionMultiply(getRotationQuaternion(), DirectX::XMQuaternionRotationAxis(vector, rotation));
+  DirectX::XMStoreFloat4(&m_rotationFloat4, newRotation);
+}
+
 void Transform::setNodeToParent(const DirectX::XMFLOAT4X4& nodeToParent)
 {
   invalidateNodeToWorld();
@@ -177,16 +181,6 @@ const DirectX::XMFLOAT4X4& Transform::getWorldToNodeFloat4x4()
   return m_worldToNodeFloat4x4;
 }
 
-core::shared_ptr<Node> Transform::getNode()
-{
-  return m_node;
-}
-
-core::shared_ptr<const Node> Transform::getNode() const
-{
-  return m_node;
-}
-
 void Transform::decomposeNodeToParent(DirectX::FXMMATRIX nodeToParent)
 {
   DirectX::XMVECTOR translation, rotation, scale;
@@ -201,10 +195,10 @@ void Transform::updateNodeToWorld()
   if (!m_updateNodeToWorld)
     return;
 
-  core::shared_ptr<Node> parent = m_node ? m_node->getParent() : nullptr;
-  if (parent)
+  flecs::entity parent = m_node.parent();
+  if (parent.is_valid())
   {
-    auto transform = parent->getEntity().get_ref<Transform>();
+    Transform* transform = parent.get_mut<Transform>();
     const DirectX::XMMATRIX nodeToWorld = DirectX::XMMatrixMultiply(transform->getNodeToWorldMatrix(), getNodeToParentMatrix());
     DirectX::XMStoreFloat4x4(&m_nodeToWorldFloat4x4, nodeToWorld);
   }

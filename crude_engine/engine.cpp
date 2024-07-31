@@ -1,19 +1,19 @@
 #include <directxmath/DirectXMath.h>
 #include <flecs.h>
+#include <SDL3/SDL.h>
+#include <functional>
 
 module crude.engine;
 
 import crude.core.logger;
+import crude.scene.free_camera;
 
 namespace crude
 {
 
 Engine::Engine(core::shared_ptr<system::SDL_Window_Container> windowContainer)
 {
-  m_camera = core::allocateShared<scene::Camera>();
-  m_camera->calculateViewToClipMatrix(DirectX::XM_PIDIV4, windowContainer->getAspect(), 0.05f, 100.0f);
-  m_camera->setPosition(0, 0, -2);
-  m_renderer = core::allocateShared<graphics::Renderer>(windowContainer, m_scene, m_camera);
+  m_renderer = core::allocateShared<graphics::Renderer>(windowContainer, m_world);
   m_timer.setFrameRate(60);
 }
 
@@ -22,9 +22,7 @@ void Engine::mainLoop()
   bool quit = false;
   while (quit == false)
   {
-    m_ioManager.update();
-    if (m_ioManager.getWindowEH().readEvent().shouldClose())
-      quit = true;
+    updateEvent();
 
     core::float64 elapsed;
     if (m_timer.frameElasped(elapsed))
@@ -36,49 +34,22 @@ void Engine::mainLoop()
   }
 }
 
+void Engine::updateEvent()
+{
+  SDL_Event inputEvent;
+  while (SDL_PollEvent(&inputEvent))
+  {
+    auto q = m_world.query<scene::Free_Camera_Component>();
+    m_world.set<SDL_Event>(inputEvent);
+    q.each(std::function(scene::freeCameraUpdateEvent));
+  }
+}
+
 void Engine::update(core::float64 elapsed)
 {
-  core::shared_ptr<scene::Camera> camera = m_camera;
-  // !TODO :D
-  if (m_ioManager.getKeyboardEH().keyIsPressed(system::Scancode::SDL_SCANCODE_W))
-  {
-    camera->addPosition(DirectX::XMVectorScale(camera->getForwardVector(), 7 * elapsed));
-  }
-  if (m_ioManager.getKeyboardEH().keyIsPressed(system::Scancode::SDL_SCANCODE_S))
-  {
-    camera->addPosition(DirectX::XMVectorScale(camera->getForwardVector(), -7 * elapsed));
-  }
-  if (m_ioManager.getKeyboardEH().keyIsPressed(system::Scancode::SDL_SCANCODE_A))
-  {
-    camera->addPosition(DirectX::XMVectorScale(camera->getRightVector(), -7 * elapsed));
-  }
-  if (m_ioManager.getKeyboardEH().keyIsPressed(system::Scancode::SDL_SCANCODE_D))
-  {
-    camera->addPosition(DirectX::XMVectorScale(camera->getRightVector(), 7 * elapsed));
-  }
-  if (m_ioManager.getKeyboardEH().keyIsPressed(system::Scancode::SDL_SCANCODE_E))
-  {
-    camera->addPosition(DirectX::XMVectorScale(camera->getTopVector(), -7 * elapsed));
-  }
-  if (m_ioManager.getKeyboardEH().keyIsPressed(system::Scancode::SDL_SCANCODE_Q))
-  {
-    camera->addPosition(DirectX::XMVectorScale(camera->getTopVector(), 7 * elapsed));
-  }
-  while (!m_ioManager.getMouseEH().eventBufferIsEmpty())
-  {
-    system::Mouse_Event me = m_ioManager.getMouseEH().readEvent();
-    if (me.getType() == system::MOUSE_EVENT_TYPE_MOVE)
-    {
-      if (m_ioManager.getMouseEH().isRightDown())
-      {
-        camera->addRotation(
-          -0.15 * me.getPositionRelY() * elapsed,
-          0.15 * me.getPositionRelX() * elapsed,
-          0.f);
-      }
-    }
-  }
-  camera->calculateWorldToViewMatrix();
+  auto q = m_world.query<scene::Free_Camera_Component, scene::Transform>();
+  m_world.set<core::float64>(elapsed);
+  q.each(std::function(scene::freeCameraUpdate));
 }
 
 void Engine::render()

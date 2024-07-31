@@ -21,21 +21,23 @@ import crude.graphics.image_2d;
 import crude.graphics.image_view;
 import crude.graphics.texture;
 import crude.graphics.mesh_buffer;
+import crude.scene.transform;
 
 namespace crude::resources
 {
 
-GLTF_Loader::GLTF_Loader(core::shared_ptr<graphics::Command_Pool> commandPool)
+GLTF_Loader::GLTF_Loader(core::shared_ptr<graphics::Command_Pool> commandPool, flecs::world world)
   : m_device(commandPool->getDevice())
   , m_commandPool(commandPool)
+  , m_world(world)
 {}
 
-core::Optional<core::shared_ptr<scene::Scene>> GLTF_Loader::loadSceneFromFile(const char* path)
+flecs::entity GLTF_Loader::loadNodeFromFile(const char* path)
 {
+  flecs::entity node(m_world, path);
+  
   if (!loadModelFromFile(path))
-    return core::nullopt;
-
-  core::shared_ptr<scene::Scene> scene = core::allocateShared<scene::Scene>();
+    return node;
 
   // Load samples
   core::vector<core::shared_ptr<graphics::Sampler>> samplers;
@@ -122,15 +124,13 @@ core::Optional<core::shared_ptr<scene::Scene>> GLTF_Loader::loadSceneFromFile(co
   }
 
   // Load nodes
-  core::vector<core::shared_ptr<scene::Node>> nodes;
-  nodes.reserve(m_tinyModel.nodes.size());
   for (const tinygltf::Node& tinyNode : m_tinyModel.nodes)
   {
-    nodes.push_back(parseNode(tinyNode, scene, meshes, meshBuffers));
+    flecs::entity child = parseNode(tinyNode, node, meshes, meshBuffers);
+    child.child_of(node);
   }
 
-  scene->setNodes(nodes);
-  return scene;
+  return node;
 }
 
 core::shared_ptr<graphics::Sampler> GLTF_Loader::parseSampler(const tinygltf::Sampler& tinySampler)
@@ -190,9 +190,9 @@ bool GLTF_Loader::loadModelFromFile(const char* path)
   return true;
 }
 
-core::shared_ptr<scene::Node> GLTF_Loader::parseNode(const tinygltf::Node& tinyNode, core::shared_ptr<scene::Scene> scene, const core::vector<core::shared_ptr<scene::Mesh>>& meshes, const core::vector<core::shared_ptr<graphics::Mesh_Buffer>>& meshBuffers)
+flecs::entity GLTF_Loader::parseNode(const tinygltf::Node& tinyNode, flecs::entity_view parent, const core::vector<core::shared_ptr<scene::Mesh>>& meshes, const core::vector<core::shared_ptr<graphics::Mesh_Buffer>>& meshBuffers)
 {
-  core::shared_ptr<scene::Node> node = core::allocateShared<scene::Node>(scene, tinyNode.name.c_str());
+  flecs::entity node(m_world, tinyNode.name.c_str());
 
   if (tinyNode.matrix.size() > 0)
   {
@@ -202,20 +202,19 @@ core::shared_ptr<scene::Node> GLTF_Loader::parseNode(const tinygltf::Node& tinyN
       tinyNode.matrix[4], tinyNode.matrix[5], tinyNode.matrix[6], tinyNode.matrix[7],
       tinyNode.matrix[8], tinyNode.matrix[9], tinyNode.matrix[10], tinyNode.matrix[11],
       tinyNode.matrix[12], tinyNode.matrix[13], tinyNode.matrix[14], tinyNode.matrix[15]));
-    node->getEntity().set<scene::Transform>(std::move(transform));
+    node.set<scene::Transform>(std::move(transform));
   }
 
   if (tinyNode.mesh != -1)
   {
-    node->getEntity().set<core::shared_ptr<scene::Mesh>>(meshes[tinyNode.mesh]);
-    node->getEntity().set<core::shared_ptr<graphics::Mesh_Buffer>>(meshBuffers[tinyNode.mesh]);
+    node.set<core::shared_ptr<scene::Mesh>>(meshes[tinyNode.mesh]);
+    node.set<core::shared_ptr<graphics::Mesh_Buffer>>(meshBuffers[tinyNode.mesh]);
   }
 
   for (core::uint32 childIndex : tinyNode.children)
   {
-    core::shared_ptr<scene::Node> child = parseNode(m_tinyModel.nodes[childIndex], scene, meshes, meshBuffers);
-    child->setParent(child);
-    node->addChild(child);
+    flecs::entity child = parseNode(m_tinyModel.nodes[childIndex], node, meshes, meshBuffers);
+    child.child_of(node);
   }
   return node;
 }

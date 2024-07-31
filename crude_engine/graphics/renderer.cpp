@@ -2,6 +2,7 @@
 #include <flecs.h>
 #include <cstring>
 #include <algorithm>
+#include <directxmath/DirectXMath.h>
 #include <crude_shaders/shader.frag.inl>
 #include <crude_shaders/shader.mesh.inl>
 #include <crude_shaders/shader.task.inl>
@@ -14,7 +15,7 @@ import crude.graphics.format_helper;
 import crude.graphics.generate_mipmaps;
 import crude.graphics.flush;
 import crude.graphics.mesh_buffer;
-import crude.scene.scene;
+import crude.scene.free_camera;
 import crude.resources.gltf_loader;
 
 namespace crude::graphics
@@ -35,7 +36,7 @@ core::array<core::uint32, 8> vertexIndices =
 constexpr core::array<const char* const, 6> deviceEnabledExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_KHR_SPIRV_1_4_EXTENSION_NAME, VK_EXT_MESH_SHADER_EXTENSION_NAME, VK_KHR_SHADER_FLOAT_CONTROLS_EXTENSION_NAME, VK_KHR_8BIT_STORAGE_EXTENSION_NAME, VK_KHR_PUSH_DESCRIPTOR_EXTENSION_NAME };
 constexpr core::array<const char*, 1> instanceEnabledLayers = { "VK_LAYER_KHRONOS_validation" };
 
-Renderer::Renderer(core::shared_ptr<system::SDL_Window_Container> windowContainer, core::shared_ptr<scene::Scene> scene, core::shared_ptr<scene::Camera> camera)
+Renderer::Renderer(core::shared_ptr<system::SDL_Window_Container> windowContainer, flecs::world world)
   : m_windowContainer(windowContainer)
   , m_currentFrame(0u)
   , m_perFrameUniformBufferDesc{
@@ -47,8 +48,7 @@ Renderer::Renderer(core::shared_ptr<system::SDL_Window_Container> windowContaine
   , m_primitiveIndicesBufferDescriptor(4u, VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT)
   , m_vertexIndicesBufferDescriptor(5u, VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT)
   , m_textureSamplerDesc{Combined_Image_Sampler_Descriptor(6u, VK_SHADER_STAGE_FRAGMENT_BIT), Combined_Image_Sampler_Descriptor(6u, VK_SHADER_STAGE_FRAGMENT_BIT)}
-  , m_scene(scene)
-  , m_camera(camera)
+  , m_world(world)
 {
   initializeInstance();
   initializeSurface();
@@ -61,8 +61,18 @@ Renderer::Renderer(core::shared_ptr<system::SDL_Window_Container> windowContaine
   initalizeGraphicsPipeline();
   initializeSwapchainFramebuffers();
 
-  resources::GLTF_Loader gltfLoader(m_transferCommandPool);
-  m_scene = gltfLoader.loadSceneFromFile("../../crude_example/basic_triangle_examle/resources/sponza.glb").value();
+  resources::GLTF_Loader gltfLoader(m_transferCommandPool, world);
+  m_node = gltfLoader.loadNodeFromFile("../../crude_example/basic_triangle_examle/resources/sponza.glb");
+
+  scene::Camera camera;
+  camera.calculateViewToClipMatrix(DirectX::XM_PIDIV4, windowContainer->getAspect(), 0.05f, 100.0f);
+  m_cameraNode.set<scene::Camera>(std::move(camera));
+  scene::Transform transform(m_cameraNode);
+  transform.setTranslation(0.0, 0.0, -2.0);
+  m_cameraNode.set<scene::Transform>(std::move(transform));
+  scene::Free_Camera_Component freeCamera;
+  m_cameraNode.set<scene::Free_Camera_Component>(std::move(freeCamera));
+  m_cameraNode.child_of(m_node);
 
   initializeUniformBuffers();
   initializeCommandBuffers();
@@ -315,11 +325,11 @@ void Renderer::recordCommandBuffer(core::shared_ptr<Command_Buffer> commandBuffe
     .extent = m_swapchain->getExtent() }));
 
   Per_Frame* data = m_perFrameUniformBuffer[m_currentFrame]->mapUnsafe();
-  data->camera = Camera_UBO(*m_camera);
+  data->camera = Camera_UBO(m_cameraNode);
   m_perFrameUniformBuffer[m_currentFrame]->unmap();
 
   // !TODO
-  m_scene->getWorld().each([&](flecs::entity entity, core::shared_ptr<scene::Mesh> mesh, core::shared_ptr<graphics::Mesh_Buffer> meshBuffer)
+  m_world.each([&](flecs::entity entity, core::shared_ptr<scene::Mesh> mesh, core::shared_ptr<graphics::Mesh_Buffer> meshBuffer)
   {
       m_submeshesDrawsBufferDescriptor.update(meshBuffer->getSubmeshesDrawsBuffer(), meshBuffer->getSubmeshesDrawsBuffer()->getSize());
     m_vertexBufferDescriptor.update(meshBuffer->getVerticesBuffer(), meshBuffer->getVerticesBuffer()->getSize());

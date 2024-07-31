@@ -44,12 +44,10 @@ struct Mesh
 
 struct Camera
 {
-  mat4 worldToClip;
   mat4 worldToView;
   mat4 viewToClip;
   mat4 clipToView;
   mat4 viewToWorld;
-  mat4 clipToWorld;
 };
 
 struct SubMeshLod

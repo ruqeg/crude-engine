@@ -2,6 +2,7 @@ module;
 
 #include <vulkan/vulkan.hpp>
 #include <directxmath/DirectXMath.h>
+#include <flecs.h>
 
 export module crude.graphics.renderer;
 
@@ -41,7 +42,6 @@ export import crude.graphics.image_attachment;
 export import crude.graphics.uniform_buffer;
 export import crude.graphics.storage_buffer;
 export import crude.graphics.camera_ubo;
-export import crude.scene.scene;
 export import crude.core.filesystem;
 
 export namespace crude::graphics
@@ -62,10 +62,11 @@ struct Per_Mesh
 class Renderer
 {
 public:
-  Renderer(core::shared_ptr<system::SDL_Window_Container> windowContainer, core::shared_ptr<scene::Scene> scene, core::shared_ptr<scene::Camera> camera);
+  Renderer(core::shared_ptr<system::SDL_Window_Container> windowContainer, flecs::world world);
   ~Renderer();
 public:
   void drawFrame();
+  flecs::entity_view getNode() { return m_node; }
 private:
   void initializeInstance();
   void initializeSurface();
@@ -121,8 +122,9 @@ private:
   core::array<core::shared_ptr<Semaphore>, cFramesCount>        m_renderFinishedSemaphores;
   core::array<core::shared_ptr<Fence>, cFramesCount>            m_inFlightFences;
   core::uint32                                                  m_currentFrame;
-  core::shared_ptr<scene::Scene>                                m_scene;
-  core::shared_ptr<scene::Camera>                               m_camera;
+  flecs::entity                                                 m_node;
+  flecs::entity                                                 m_cameraNode;
+  flecs::world                                                  m_world;
 };
 
 }

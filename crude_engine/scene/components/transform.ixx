@@ -1,6 +1,7 @@
 module;
 
 #include <directxmath/DirectXMath.h>
+#include <flecs.h>
 
 export module crude.scene.transform;
 
@@ -10,13 +11,11 @@ export import crude.core.std_containers_heap;
 export namespace crude::scene
 {
 
-class Node;
-
 class Transform
 {
 public:
   Transform() = default;
-  Transform(core::shared_ptr<Node> node);
+  Transform(flecs::entity_view node);
   void setTranslation(const DirectX::XMFLOAT3& translatio);
   void setTranslation(DirectX::FXMVECTOR translation);
   void setTranslation(core::float32 x, core::float32 y, core::float32 z);
@@ -35,6 +34,7 @@ public:
   void addRotation(const DirectX::XMFLOAT3& rotation);
   void addRotation(DirectX::FXMVECTOR rotation);
   void addRotation(core::float32 x, core::float32 y, core::float32 z);
+  void addRotationAxis(DirectX::FXMVECTOR vector, core::float32 rotation);
   void setNodeToParent(const DirectX::XMFLOAT4X4& nodeToParent);
   void setNodeToParent(DirectX::FXMMATRIX nodeToParent);
   DirectX::XMMATRIX getNodeToParentMatrix() const;
@@ -42,8 +42,6 @@ public:
   DirectX::XMMATRIX getWorldToNodeMatrix();
   const DirectX::XMFLOAT4X4& getNodeToWorldFloat4x4();
   const DirectX::XMFLOAT4X4& getWorldToNodeFloat4x4();
-  core::shared_ptr<Node> getNode();
-  core::shared_ptr<const Node> getNode() const;
   const DirectX::XMFLOAT3& getTranslationFloat3() const { return m_translationFloat3; }
   const DirectX::XMFLOAT4& getRotationFloat3() const { return m_rotationFloat4; }
   const DirectX::XMFLOAT3& getScaleFloat4() const { return m_scaleFloat3; }
@@ -55,13 +53,13 @@ private:
   void decomposeNodeToParent(DirectX::FXMMATRIX nodeToParent);
   void updateNodeToWorld();
 private:
-  core::shared_ptr<Node>  m_node;
-  DirectX::XMFLOAT4X4     m_nodeToWorldFloat4x4;
-  DirectX::XMFLOAT4X4     m_worldToNodeFloat4x4;
-  DirectX::XMFLOAT3       m_translationFloat3;
-  DirectX::XMFLOAT4       m_rotationFloat4;
-  DirectX::XMFLOAT3       m_scaleFloat3;
-  bool                    m_updateNodeToWorld = false;
+  flecs::entity_view   m_node;
+  DirectX::XMFLOAT4X4  m_nodeToWorldFloat4x4;
+  DirectX::XMFLOAT4X4  m_worldToNodeFloat4x4;
+  DirectX::XMFLOAT3    m_translationFloat3;
+  DirectX::XMFLOAT4    m_rotationFloat4;
+  DirectX::XMFLOAT3    m_scaleFloat3;
+  bool                 m_updateNodeToWorld = false;
 };
 
 }

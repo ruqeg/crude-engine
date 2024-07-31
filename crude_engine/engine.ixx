@@ -1,5 +1,7 @@
 module;
 
+#include <flecs.h>
+
 export module crude.engine;
 
 export import crude.system.sdl_system;
@@ -7,8 +9,6 @@ export import crude.core.memory_manager;
 export import crude.core.timer;
 export import crude.graphics.renderer;
 export import crude.network.network_system;
-export import crude.system.sdl_io_manager;
-export import crude.scene.scene;
 
 export namespace crude
 {
@@ -25,6 +25,7 @@ public:
   Engine(core::shared_ptr<system::SDL_Window_Container> windowContainer);
 public:
   void mainLoop();
+  void updateEvent();
   void update(core::float64 elapsed);
   void render();
 public:
@@ -34,12 +35,9 @@ private:
   static void initalizeSystem();
   static void initalizeNetwork();
 protected:
-  core::shared_ptr<scene::Scene>        m_scene;
-  core::shared_ptr<scene::Camera>       m_camera;
   core::shared_ptr<graphics::Renderer>  m_renderer;
-  system::SDL_IO_Manager                m_ioManager;
   core::Timer                           m_timer;
-  
+  flecs::world                          m_world;
 };
 
 }
