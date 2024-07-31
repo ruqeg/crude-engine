@@ -26,7 +26,8 @@ void freeCameraUpdate(flecs::iter& it, size_t index, Free_Camera_Component& free
   if (movingUp)
     transform.addTranslation(DirectX::XMVectorScale(DirectX::XMVectorMultiply(transform.getWorldBasisUpVector(), movingSpeedMultiplier), movingUp * deltaTime));
 
-  transform.addRotationAxis(transform.getDefaultBasisUpVector(), -freeCamera.rotatingSpeedMultiplier.x * freeCamera.rotatingRel.x * deltaTime);
+  DirectX::XMVECTOR cameraUp = DirectX::XMVectorGetY(transform.getWorldBasisUpVector()) > 0.0f ? transform.getDefaultBasisUpVector() : DirectX::XMVectorNegate(transform.getDefaultBasisUpVector());
+  transform.addRotationAxis(cameraUp, -freeCamera.rotatingSpeedMultiplier.x * freeCamera.rotatingRel.x * deltaTime);
   transform.addRotationAxis(transform.getWorldBasisRightVector(), -freeCamera.rotatingSpeedMultiplier.y * freeCamera.rotatingRel.y * deltaTime);
   freeCamera.rotatingRel = {};
 }
