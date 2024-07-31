@@ -6,8 +6,19 @@ module crude.scene.transform;
 namespace crude::scene
 {
 
+const DirectX::XMVECTOR cDefaultBasisRight = DirectX::XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
+const DirectX::XMVECTOR cDefaultBasisUp = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+const DirectX::XMVECTOR cDefaultBasisForward = DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+
 Transform::Transform(flecs::entity_view node)
-  : m_node(node) {}
+  : m_node(node) 
+{
+  DirectX::XMStoreFloat4x4(&m_nodeToWorldFloat4x4, DirectX::XMMatrixIdentity());
+  DirectX::XMStoreFloat4x4(&m_worldToNodeFloat4x4, DirectX::XMMatrixIdentity());
+  DirectX::XMStoreFloat3(&m_translationFloat3, DirectX::XMVectorZero());
+  DirectX::XMStoreFloat4(&m_rotationFloat4, DirectX::XMQuaternionIdentity());
+  DirectX::XMStoreFloat3(&m_scaleFloat3, DirectX::XMVectorSplatOne());
+}
 
 void Transform::setTranslation(const DirectX::XMFLOAT3& translationFloat3)
 {
@@ -114,6 +125,12 @@ void Transform::setRotation(core::float32 x, core::float32 y, core::float32 z)
   DirectX::XMStoreFloat4(&m_rotationFloat4, rotation);
 }
 
+void Transform::setRotationQuaternion(DirectX::FXMVECTOR quaternion)
+{
+  invalidateNodeToWorld();
+  DirectX::XMStoreFloat4(&m_rotationFloat4, quaternion);
+}
+
 void Transform::addRotation(const DirectX::XMFLOAT3& rotation)
 {
   invalidateNodeToWorld();
@@ -181,6 +198,37 @@ const DirectX::XMFLOAT4X4& Transform::getWorldToNodeFloat4x4()
   return m_worldToNodeFloat4x4;
 }
 
+// !TODO
+DirectX::XMVECTOR Transform::getWorldBasisUpVector()
+{
+  return DirectX::XMVector3TransformNormal(cDefaultBasisUp, getNodeToWorldMatrix());
+}
+
+DirectX::XMVECTOR Transform::getWorldBasisRightVector()
+{
+  return DirectX::XMVector3TransformNormal(cDefaultBasisRight, getNodeToWorldMatrix());
+}
+
+DirectX::XMVECTOR Transform::getWorldBasisForwardVector()
+{
+  return DirectX::XMVector3TransformNormal(cDefaultBasisForward, getNodeToWorldMatrix());
+}
+
+DirectX::XMVECTOR Transform::getDefaultBasisUpVector()
+{
+  return cDefaultBasisUp;
+}
+
+DirectX::XMVECTOR Transform::getDefaultBasisRightVector()
+{
+  return cDefaultBasisRight;
+}
+
+DirectX::XMVECTOR Transform::getDefaultBasisForwardVector()
+{
+  return cDefaultBasisForward;
+}
+
 void Transform::decomposeNodeToParent(DirectX::FXMMATRIX nodeToParent)
 {
   DirectX::XMVECTOR translation, rotation, scale;
@@ -208,7 +256,8 @@ void Transform::updateNodeToWorld()
     DirectX::XMStoreFloat4x4(&m_nodeToWorldFloat4x4, nodeToWorld);
   }
 
-  DirectX::XMStoreFloat4x4(&m_worldToNodeFloat4x4, DirectX::XMMatrixInverse(nullptr, DirectX::XMLoadFloat4x4(&m_nodeToWorldFloat4x4)));
+  const DirectX::XMMATRIX nodeToWorld = DirectX::XMLoadFloat4x4(&m_nodeToWorldFloat4x4);
+  DirectX::XMStoreFloat4x4(&m_worldToNodeFloat4x4, DirectX::XMMatrixInverse(nullptr, nodeToWorld));
 
   m_updateNodeToWorld = false;
 }

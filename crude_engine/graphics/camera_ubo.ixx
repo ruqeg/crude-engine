@@ -25,8 +25,8 @@ struct Camera_UBO
     if (cameraNode.has<scene::Transform>())
     {
       scene::Transform* transform = cameraNode.get_mut<scene::Transform>();
-      worldToView = transform->getNodeToWorldFloat4x4();
-      viewToWorld = transform->getWorldToNodeFloat4x4();
+      worldToView = transform->getWorldToNodeFloat4x4();
+      viewToWorld = transform->getNodeToWorldFloat4x4();
     }
   }
   DirectX::XMFLOAT4X4 worldToView;

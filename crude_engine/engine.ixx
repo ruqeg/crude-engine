@@ -38,6 +38,7 @@ protected:
   core::shared_ptr<graphics::Renderer>  m_renderer;
   core::Timer                           m_timer;
   flecs::world                          m_world;
+  bool                                  m_quit = false;
 };
 
 }

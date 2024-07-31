@@ -19,8 +19,7 @@ Engine::Engine(core::shared_ptr<system::SDL_Window_Container> windowContainer)
 
 void Engine::mainLoop()
 {
-  bool quit = false;
-  while (quit == false)
+  while (m_quit == false)
   {
     updateEvent();
 
@@ -39,6 +38,12 @@ void Engine::updateEvent()
   SDL_Event inputEvent;
   while (SDL_PollEvent(&inputEvent))
   {
+    if (inputEvent.type == SDL_EVENT_QUIT)
+    {
+      m_quit = true;
+      return;
+    }
+
     auto q = m_world.query<scene::Free_Camera_Component>();
     m_world.set<SDL_Event>(inputEvent);
     q.each(std::function(scene::freeCameraUpdateEvent));

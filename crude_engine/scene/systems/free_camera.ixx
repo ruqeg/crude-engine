@@ -16,10 +16,10 @@ class Scene;
 
 struct Free_Camera_Component
 {
-  DirectX::XMFLOAT3  movingSpeedMultiplier{ 7.f, 7.f, 7.f };
-  DirectX::XMFLOAT2  rotatingSpeedMultiplier{ 0.15f, -0.15f };
-  DirectX::XMFLOAT2  rotatingRel;
-  DirectX::XMINT3    movingDirection;
+  DirectX::XMFLOAT3  movingSpeedMultiplier{ 7.f,- 7.f, 7.f };
+  DirectX::XMFLOAT2  rotatingSpeedMultiplier{ -0.15f, 0.15f };
+  DirectX::XMFLOAT2  rotatingRel{};
+  DirectX::XMFLOAT3  movingDirection[2] { };
   bool               rotatingLocked = true;
 };
 
