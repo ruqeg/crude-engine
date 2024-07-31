@@ -49,6 +49,7 @@ Renderer::Renderer(core::shared_ptr<system::SDL_Window_Container> windowContaine
   , m_vertexIndicesBufferDescriptor(5u, VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT)
   , m_textureSamplerDesc{Combined_Image_Sampler_Descriptor(6u, VK_SHADER_STAGE_FRAGMENT_BIT), Combined_Image_Sampler_Descriptor(6u, VK_SHADER_STAGE_FRAGMENT_BIT)}
   , m_world(world)
+  , m_cameraNode(world, "camera node")
 {
   initializeInstance();
   initializeSurface();

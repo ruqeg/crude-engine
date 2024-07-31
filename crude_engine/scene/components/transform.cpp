@@ -196,7 +196,7 @@ void Transform::updateNodeToWorld()
     return;
 
   flecs::entity parent = m_node.parent();
-  if (parent.is_valid())
+  if (parent.is_valid() && parent.has<scene::Transform>())
   {
     Transform* transform = parent.get_mut<Transform>();
     const DirectX::XMMATRIX nodeToWorld = DirectX::XMMatrixMultiply(transform->getNodeToWorldMatrix(), getNodeToParentMatrix());
