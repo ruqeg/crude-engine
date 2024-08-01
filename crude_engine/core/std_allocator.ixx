@@ -2,7 +2,7 @@ module;
 
 export module crude.core.std_allocator;
 
-export import crude.core.memory_manager;
+export import crude.core.memory;
 
 export namespace crude::core
 {
@@ -19,12 +19,12 @@ struct STD_Allocator
 
   [[nodiscard]] T* allocate(core::size_t size) noexcept
   {
-    return static_cast<T*>(Memory_Manager::getDefaultAllocator()->allocate(size * sizeof(T)));
+    return static_cast<T*>(defaultAllocate(size * sizeof(T)));
   }
 
   void deallocate(T* ptr, core::size_t size) noexcept
   {
-    Memory_Manager::getDefaultAllocator()->deallocate(ptr);
+    defaultDeallocate(ptr);
   }
 };
 

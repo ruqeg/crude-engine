@@ -4,7 +4,6 @@ module;
 
 export module crude.engine;
 
-export import crude.core.memory_manager;
 export import crude.core.timer;
 export import crude.graphics.renderer;
 export import crude.network.network_system;
@@ -31,10 +30,6 @@ private:
   void updateEvent();
   void update(core::float64 elapsed);
   void render();
-private:
-  void initializeMemory(core::uint32 defaultFreeRBTCapacity);
-  void initalizeSDL();
-  void deinitalizeSDL();
 private:
   core::shared_ptr<graphics::Renderer>  m_renderer;
   core::Timer                           m_timer;

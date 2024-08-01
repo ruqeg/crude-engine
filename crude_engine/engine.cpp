@@ -8,14 +8,16 @@ module crude.engine;
 import crude.core.logger;
 import crude.scene.free_camera;
 import crude.system.sdl_helper;
+import crude.core.memory;
 
 namespace crude
 {
 
 void Engine::initialize(const Engine_Initialize& config)
 {
-  initializeMemory(config.defaultFreeRBTCapacity);
-  initalizeSDL();
+  core::initializeMemory(config.defaultFreeRBTCapacity);
+  system::initializeSDL();
+  system::loadSDLVulkan();
 
   auto windowContainer = crude::core::allocateShared<crude::system::SDL_Window_Container>(
     config.title, config.width, config.height, crude::system::SDL_WINDOW_CONTAINER_FLAG_VULKAN);
@@ -25,7 +27,8 @@ void Engine::initialize(const Engine_Initialize& config)
 
 void Engine::deinitialize()
 {
-  deinitalizeSDL();
+  system::deinitializeSDL();
+  system::unloadSDLVulkan();
 }
 
 void Engine::mainLoop()
@@ -71,23 +74,6 @@ void Engine::update(core::float64 elapsed)
 void Engine::render()
 {
   m_renderer->drawFrame();
-}
-
-void Engine::initializeMemory(core::uint32 defaultFreeRBTCapacity)
-{
-  core::Memory_Manager::getInstance().initialize(defaultFreeRBTCapacity);
-}
-
-void Engine::initalizeSDL()
-{
-  system::initializeSDL();
-  system::loadSDLVulkan();
-}
-
-void Engine::deinitalizeSDL()
-{
-  system::deinitializeSDL();
-  system::unloadSDLVulkan();
 }
 
 }

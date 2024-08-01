@@ -4,7 +4,7 @@ module crude.graphics.subpass_description;
 
 import crude.core.algorithms;
 import crude.graphics.device;
-import crude.core.memory_manager;
+import crude.core.memory;
 
 namespace crude::graphics
 {

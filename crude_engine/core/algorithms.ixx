@@ -4,7 +4,7 @@ module;
 
 export module crude.core.algorithms;
 
-export import crude.core.memory_manager;
+export import crude.core.memory;
 export import crude.core.alias;
 
 export namespace crude::core
@@ -48,7 +48,7 @@ T* cxxDefaultAllocateCopy(const T* src, core::size_t size) noexcept
   T* dst = nullptr;
   if (src && size)
   {
-    dst = core::defaultCxxAllocate<T>(size);
+    dst = defaultCxxAllocate<T>(size);
     if (dst)
     {
       std::memcpy(dst, src, sizeof(T) * size);
