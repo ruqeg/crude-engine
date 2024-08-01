@@ -7,14 +7,25 @@ module crude.engine;
 
 import crude.core.logger;
 import crude.scene.free_camera;
+import crude.system.sdl_helper;
 
 namespace crude
 {
 
-Engine::Engine(core::shared_ptr<system::SDL_Window_Container> windowContainer)
+void Engine::initialize(const Engine_Initialize& config)
 {
+  initializeMemory(config.defaultFreeRBTCapacity);
+  initalizeSDL();
+
+  auto windowContainer = crude::core::allocateShared<crude::system::SDL_Window_Container>(
+    config.title, config.width, config.height, crude::system::SDL_WINDOW_CONTAINER_FLAG_VULKAN);
   m_renderer = core::allocateShared<graphics::Renderer>(windowContainer, m_world);
   m_timer.setFrameRate(60);
+}
+
+void Engine::deinitialize()
+{
+  deinitalizeSDL();
 }
 
 void Engine::mainLoop()
@@ -62,27 +73,21 @@ void Engine::render()
   m_renderer->drawFrame();
 }
 
-void Engine::initialize(const Engine_Config& config)
-{
-  initializeMemory(config.defaultFreeRBTCapacity);
-  initalizeSystem();
-  initalizeNetwork();
-}
-
 void Engine::initializeMemory(core::uint32 defaultFreeRBTCapacity)
 {
   core::Memory_Manager::getInstance().initialize(defaultFreeRBTCapacity);
 }
 
-void Engine::initalizeSystem()
+void Engine::initalizeSDL()
 {
-  crude::system::SDL_System::getInstance().initialize();
-  crude::system::SDL_System::getInstance().initializeVulkan();
+  system::initializeSDL();
+  system::loadSDLVulkan();
 }
 
-void Engine::initalizeNetwork()
+void Engine::deinitalizeSDL()
 {
-  crude::network::Network_System::getInstance().initialize();
+  system::deinitializeSDL();
+  system::unloadSDLVulkan();
 }
 
 }

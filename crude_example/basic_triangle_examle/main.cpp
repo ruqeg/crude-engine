@@ -8,10 +8,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE      hInstance,
                       _In_ LPWSTR         lpCmdLine,
                       _In_ int            nCmdShow)
 {
-  crude::Engine::initialize({600000000});
-  auto windowContainer = crude::core::allocateShared<crude::system::SDL_Window_Container>(
-    "TEST", 600, 600, crude::system::SDL_WINDOW_CONTAINER_FLAG_VULKAN);
-  Application application(windowContainer);
+  Application application;
   application.run();
   return EXIT_SUCCESS;
 }

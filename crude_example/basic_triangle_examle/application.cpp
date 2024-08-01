@@ -1,11 +1,23 @@
+#include <flecs.h>
+
 module application;
 
-Application::Application(crude::core::shared_ptr<crude::system::SDL_Window_Container> windowContainer)
-  :
-  crude::Engine(windowContainer)
-{}
+Application::Application()
+{
+  initialize(crude::Engine_Initialize {
+    .defaultFreeRBTCapacity = 600000000,
+    .width = 800,
+    .height = 800,
+    .title = "TEST",
+  });
+}
 
-void Application::run() noexcept
+Application::~Application()
+{
+  deinitialize();
+}
+
+void Application::run()
 {
   mainLoop();
 }

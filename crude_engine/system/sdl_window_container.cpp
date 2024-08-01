@@ -12,16 +12,6 @@ SDL_Window_Container::SDL_Window_Container(const char* title, core::int32 width,
     SDL_DestroyWindow);
 }
 
-bool SDL_Window_Container::isValid() const
-{
-  return (m_window.get() != nullptr);
-}
-
-std::shared_ptr<const SDL_Window> SDL_Window_Container::getWindow() const
-{
-  return m_window;
-}
-
 core::uint32 SDL_Window_Container::getWidth() const
 {
   int width, height;
@@ -41,11 +31,6 @@ core::float32 SDL_Window_Container::getAspect() const
   int width, height;
   SDL_GetWindowSize(m_window.get(), &width, &height);
   return static_cast<core::float32>(width) / height;
-}
-
-std::shared_ptr<SDL_Window> SDL_Window_Container::getWindow()
-{
-  return m_window;
 }
 
 }
