@@ -17,14 +17,12 @@ void freeCameraUpdate(flecs::iter& it, size_t index, Free_Camera_Component& free
   const core::int32 movingUp = freeCamera.movingDirection[0].y - freeCamera.movingDirection[1].y;
   const core::int32 movingRight = freeCamera.movingDirection[0].x - freeCamera.movingDirection[1].x;
 
-  const DirectX::XMVECTOR movingSpeedMultiplier = DirectX::XMLoadFloat3(&freeCamera.movingSpeedMultiplier);
-
   if (movingRight)
-    transform.addTranslation(DirectX::XMVectorScale(DirectX::XMVectorMultiply(transform.getWorldBasisRightVector(), movingSpeedMultiplier), movingRight * deltaTime));
+    transform.addTranslation(DirectX::XMVectorScale(transform.getWorldBasisRightVector(), freeCamera.movingSpeedMultiplier.x * movingRight * deltaTime));
   if (movingForaward)
-    transform.addTranslation(DirectX::XMVectorScale(DirectX::XMVectorMultiply(transform.getWorldBasisForwardVector(), movingSpeedMultiplier), movingForaward * deltaTime));
+    transform.addTranslation(DirectX::XMVectorScale(transform.getWorldBasisForwardVector(), freeCamera.movingSpeedMultiplier.z * movingForaward * deltaTime));
   if (movingUp)
-    transform.addTranslation(DirectX::XMVectorScale(DirectX::XMVectorMultiply(transform.getWorldBasisUpVector(), movingSpeedMultiplier), movingUp * deltaTime));
+    transform.addTranslation(DirectX::XMVectorScale(transform.getWorldBasisUpVector(), freeCamera.movingSpeedMultiplier.y * movingUp * deltaTime));
 
   DirectX::XMVECTOR cameraUp = DirectX::XMVectorGetY(transform.getWorldBasisUpVector()) > 0.0f ? transform.getDefaultBasisUpVector() : DirectX::XMVectorNegate(transform.getDefaultBasisUpVector());
   transform.addRotationAxis(cameraUp, -freeCamera.rotatingSpeedMultiplier.x * freeCamera.rotatingRel.x * deltaTime);
