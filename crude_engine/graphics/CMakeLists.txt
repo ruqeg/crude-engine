@@ -23,7 +23,6 @@ target_sources(crude_engine
     subpass_description.cpp
     swap_chain.cpp
     vulkan_allocator.cpp
-    write_descriptor_set.cpp
     instance.cpp
     physical_device.cpp
     pipeline.cpp
@@ -121,5 +120,4 @@ target_sources(crude_engine
     viewport_state_create_info.ixx
     vulkan_allocator.ixx
     vulkan_object.ixx
-    vulkan_utils.ixx
-    write_descriptor_set.ixx)
+    vulkan_utils.ixx)

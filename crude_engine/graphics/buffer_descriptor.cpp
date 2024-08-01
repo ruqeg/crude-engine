@@ -13,6 +13,15 @@ Buffer_Descriptor::Buffer_Descriptor(core::uint32 binding, VkDescriptorType desc
   : Descriptor_Set_Layout_Binding(binding, descriptorType, 1u, stageFlags) 
 {}
 
+void Buffer_Descriptor::write(VkWriteDescriptorSet& writeDescriptorSet)
+{
+  writeEmpty(writeDescriptorSet);
+  writeDescriptorSet.dstBinding      = this->binding;
+  writeDescriptorSet.descriptorCount = this->descriptorCount;
+  writeDescriptorSet.descriptorType  = this->descriptorType;
+  writeDescriptorSet.pBufferInfo     = &m_descriptoBuferInfo;
+}
+
 void Buffer_Descriptor::updateBase(core::shared_ptr<const Buffer> buffer, VkDeviceSize range, VkDeviceSize offset)
 {
   m_descriptoBuferInfo.buffer = buffer->getHandle();

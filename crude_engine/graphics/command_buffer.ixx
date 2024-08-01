@@ -8,7 +8,6 @@ import crude.core.std_containers_stack;
 import crude.graphics.vulkan_object;
 export import crude.graphics.image_memory_barrier;
 export import crude.core.std_containers_heap;
-export import crude.graphics.write_descriptor_set;
 export import crude.graphics.scissor;
 export import crude.graphics.viewport;
 
@@ -59,8 +58,8 @@ public:
                   core::shared_ptr<Buffer>        dstBuffer, 
                   const VkBufferCopy&             copyRegion);
   
-  void pushDescriptorSet(core::shared_ptr<Pipeline>                         pipeline,
-                         const core::span<const Write_Push_Descriptor_Set>& descriptorWrites);
+  void pushDescriptorSet(core::shared_ptr<Pipeline>                     pipeline,
+                         const core::span<const VkWriteDescriptorSet>&  descriptorWrites);
   void bindDescriptorSets(core::shared_ptr<Pipeline>                    pipeline,
                           core::span<core::shared_ptr<Descriptor_Set>>  descriptorSets,
                           core::span<core::uint32>                      dynamicOffsets = {});

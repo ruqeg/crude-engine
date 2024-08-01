@@ -17,13 +17,13 @@ class Uniform_Buffer;
 
 class Buffer_Descriptor : public Descriptor_Set_Layout_Binding
 {
+public:
+  void write(VkWriteDescriptorSet& writeDescriptorSet);
+  void updateBase(core::shared_ptr<const Buffer> buffer, VkDeviceSize range, VkDeviceSize offset);
 protected:
   explicit Buffer_Descriptor(core::uint32 binding, VkDescriptorType descriptorType, VkShaderStageFlags stageFlags);
-  void updateBase(core::shared_ptr<const Buffer> buffer, VkDeviceSize range, VkDeviceSize offset);
 private:
   VkDescriptorBufferInfo m_descriptoBuferInfo;
-  friend class Write_Buffer_Descriptor_Set;
-  friend class Write_Buffer_Push_Descriptor_Set;
 };
 
 class Storage_Buffer_Descriptor : public Buffer_Descriptor
@@ -42,8 +42,6 @@ public:
   {
     updateBase(buffer, range, offset);
   }
-private:
-  friend class Write_Descriptor_Set;
 };
 
 }

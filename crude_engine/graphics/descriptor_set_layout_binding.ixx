@@ -20,6 +20,20 @@ public:
     this->stageFlags         = stageFlags;
     this->pImmutableSamplers = nullptr;
   }
+protected:
+  void writeEmpty(VkWriteDescriptorSet& writeDescriptorSet)
+  {
+    writeDescriptorSet.sType             = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    writeDescriptorSet.pNext             = nullptr;
+    writeDescriptorSet.dstSet            = nullptr;
+    writeDescriptorSet.dstBinding        = 0u;
+    writeDescriptorSet.dstArrayElement   = 0u;
+    writeDescriptorSet.descriptorCount   = 0u;
+    writeDescriptorSet.descriptorType    = VK_DESCRIPTOR_TYPE_MAX_ENUM;
+    writeDescriptorSet.pImageInfo        = nullptr;
+    writeDescriptorSet.pBufferInfo       = nullptr;
+    writeDescriptorSet.pTexelBufferView  = nullptr;
+  }
 };
 
 }

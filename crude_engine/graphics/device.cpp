@@ -95,16 +95,13 @@ core::Optional<core::shared_ptr<Queue>> Device::getQueueByFamily(core::uint32 qu
   return core::nullopt;
 }
 
-void Device::updateDescriptorSets(const core::span<const Write_Descriptor_Set>&  descriptorWrites,
-                                  const core::span<const VkCopyDescriptorSet>&   descriptorCopies)
+void Device::updateDescriptorSets(const core::span<const VkWriteDescriptorSet>  descriptorWrites,
+                                  const core::span<const VkCopyDescriptorSet>   descriptorCopies)
 {
-  core::vector<VkWriteDescriptorSet> vkDescriptorWrites(descriptorWrites.size());
-  core::copy(descriptorWrites.begin(), descriptorWrites.end(), vkDescriptorWrites.begin());
-
   vkUpdateDescriptorSets(
     m_handle, 
-    static_cast<core::uint32>(vkDescriptorWrites.size()),
-    vkDescriptorWrites.data(), 
+    static_cast<core::uint32>(descriptorWrites.size()),
+    descriptorWrites.data(),
     descriptorCopies.size(),
     descriptorCopies.data());
 }

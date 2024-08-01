@@ -15,6 +15,15 @@ Image_Descriptor::Image_Descriptor(VkDescriptorType descriptorType, core::uint32
   Descriptor_Set_Layout_Binding(binding, descriptorType, 1u, stageFlags)
 {}
 
+void Image_Descriptor::write(VkWriteDescriptorSet& writeDescriptorSet)
+{
+  writeEmpty(writeDescriptorSet);
+  writeDescriptorSet.dstBinding      = this->binding;
+  writeDescriptorSet.descriptorCount = this->descriptorCount;
+  writeDescriptorSet.descriptorType  = this->descriptorType;
+  writeDescriptorSet.pImageInfo      = &m_descriptorImageInfo;
+}
+
 bool Image_Descriptor::update(core::shared_ptr<const Image_View> imageView, core::shared_ptr<const Sampler> sampler) noexcept
 {
   Image_Subresource_Range range = imageView->getSubresourceRange();

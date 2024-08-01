@@ -33,6 +33,8 @@ export import crude.graphics.buffer;
 export import crude.graphics.device_memory;
 export import crude.graphics.framebuffer;
 export import crude.graphics.swap_chain_image;
+export import crude.graphics.buffer_descriptor;
+export import crude.graphics.image_descriptor;
 export import crude.graphics.descriptor_pool;
 export import crude.graphics.image_descriptor;
 export import crude.graphics.sampler;

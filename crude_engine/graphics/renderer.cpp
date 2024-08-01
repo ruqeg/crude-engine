@@ -350,16 +350,15 @@ void Renderer::recordCommandBuffer(core::shared_ptr<Command_Buffer> commandBuffe
       const scene::Sub_Mesh& submesh = mesh->submeshes[submeshIndex];
       m_textureSamplerDesc[m_currentFrame].update(submesh.texture->getImageView(), submesh.texture->getSampler());
 
-      const core::array<Write_Push_Descriptor_Set, 7u> descriptorWrites =
-      {
-        Write_Buffer_Push_Descriptor_Set(m_perFrameUniformBufferDesc[m_currentFrame]),
-        Write_Image_Push_Descriptor_Set(m_textureSamplerDesc[m_currentFrame]),
-        Write_Buffer_Push_Descriptor_Set(m_submeshesDrawsBufferDescriptor),
-        Write_Buffer_Push_Descriptor_Set(m_vertexBufferDescriptor),
-        Write_Buffer_Push_Descriptor_Set(m_meshletBufferDescriptor),
-        Write_Buffer_Push_Descriptor_Set(m_primitiveIndicesBufferDescriptor),
-        Write_Buffer_Push_Descriptor_Set(m_vertexIndicesBufferDescriptor),
-      };
+      core::logInfo(core::Debug::Channel::Gameplay, "%i %i", (int)submesh.texture->getImageView()->getHandle(), VK_NULL_HANDLE);
+      core::array<VkWriteDescriptorSet, 7u> descriptorWrites;
+      m_perFrameUniformBufferDesc[m_currentFrame].write(descriptorWrites[0]);
+      m_textureSamplerDesc[m_currentFrame].write(descriptorWrites[1]);
+      m_submeshesDrawsBufferDescriptor.write(descriptorWrites[2]);
+      m_vertexBufferDescriptor.write(descriptorWrites[3]);
+      m_meshletBufferDescriptor.write(descriptorWrites[4]);
+      m_primitiveIndicesBufferDescriptor.write(descriptorWrites[5]);
+      m_vertexIndicesBufferDescriptor.write(descriptorWrites[6]);
 
       commandBuffer->pushDescriptorSet(m_graphicsPipeline, descriptorWrites);
       perMesh.submeshIndex = submeshIndex;

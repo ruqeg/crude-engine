@@ -17,12 +17,11 @@ class Image_Descriptor : public Descriptor_Set_Layout_Binding
 {
 public:
   bool update(core::shared_ptr<const Image_View> imageView, core::shared_ptr<const Sampler> sampler) noexcept;
+  void write(VkWriteDescriptorSet& writeDescriptorSet);
 protected:
   explicit Image_Descriptor(VkDescriptorType descriptorType, core::uint32 binding, VkShaderStageFlags stageFlags) noexcept;
 protected:
   VkDescriptorImageInfo m_descriptorImageInfo;
-  friend class Write_Image_Descriptor_Set;
-  friend class Write_Image_Push_Descriptor_Set;
 };
 
 class Combined_Image_Sampler_Descriptor : public Image_Descriptor
