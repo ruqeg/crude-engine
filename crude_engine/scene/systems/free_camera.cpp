@@ -6,13 +6,14 @@ module crude.scene.free_camera;
 
 import crude.scene.transform;
 import crude.core.logger;
+import crude.system.input_system;
 
 namespace crude::scene
 {
 
-void freeCameraUpdate(flecs::iter& it, size_t index, Free_Camera_Component& freeCamera, scene::Transform& transform)
+void freeCameraUpdateSystemProcess(flecs::iter& it, size_t index, Free_Camera_Component& freeCamera, scene::Transform& transform)
 {
-  const core::float64 deltaTime = *it.world().get<core::float64>();
+  const core::float64 deltaTime = it.delta_time();
   const core::int32 movingForaward = freeCamera.movingDirection[0].z - freeCamera.movingDirection[1].z;
   const core::int32 movingUp = freeCamera.movingDirection[0].y - freeCamera.movingDirection[1].y;
   const core::int32 movingRight = freeCamera.movingDirection[0].x - freeCamera.movingDirection[1].x;
@@ -30,13 +31,15 @@ void freeCameraUpdate(flecs::iter& it, size_t index, Free_Camera_Component& free
   freeCamera.rotatingRel = {};
 }
 
-void freeCameraUpdateEvent(flecs::iter& it, size_t index, Free_Camera_Component& freeCamera)
+void freeCameraUpdateEventSystemProcess(flecs::iter& it, size_t index, scene::Free_Camera_Component& freeCamera)
 {
-  const SDL_Event* inputEvent = it.world().get<SDL_Event>();
-  switch (inputEvent->type)
+  const system::Input_System_Component* inputSystemComponent = it.world().get<system::Input_System_Component>();
+  const SDL_Event& inputEvent = inputSystemComponent->inputEvent;
+  
+  switch (inputEvent.type)
   {
   case SDL_EVENT_KEY_DOWN:
-    switch (inputEvent->key.keysym.scancode)
+    switch (inputEvent.key.keysym.scancode)
     {
     case SDL_SCANCODE_W: freeCamera.movingDirection[0].z = 1; break;
     case SDL_SCANCODE_S: freeCamera.movingDirection[1].z = 1; break;
@@ -47,7 +50,7 @@ void freeCameraUpdateEvent(flecs::iter& it, size_t index, Free_Camera_Component&
     }
     break;
   case SDL_EVENT_KEY_UP:
-    switch (inputEvent->key.keysym.scancode)
+    switch (inputEvent.key.keysym.scancode)
     {
     case SDL_SCANCODE_W: freeCamera.movingDirection[0].z = 0; break;
     case SDL_SCANCODE_S: freeCamera.movingDirection[1].z = 0; break;
@@ -58,7 +61,7 @@ void freeCameraUpdateEvent(flecs::iter& it, size_t index, Free_Camera_Component&
     }
     break;
   case SDL_EVENT_MOUSE_BUTTON_DOWN:
-    switch (inputEvent->button.button)
+    switch (inputEvent.button.button)
     {
     case SDL_BUTTON_RIGHT:
       freeCamera.rotatingLocked = false;
@@ -66,7 +69,7 @@ void freeCameraUpdateEvent(flecs::iter& it, size_t index, Free_Camera_Component&
     }
     break;
   case SDL_EVENT_MOUSE_BUTTON_UP:
-    switch (inputEvent->button.button)
+    switch (inputEvent.button.button)
     {
     case SDL_BUTTON_RIGHT:
       freeCamera.rotatingLocked = true;
@@ -76,11 +79,11 @@ void freeCameraUpdateEvent(flecs::iter& it, size_t index, Free_Camera_Component&
   case SDL_EVENT_MOUSE_MOTION:
     if (!freeCamera.rotatingLocked)
     {
-      freeCamera.rotatingRel.x += inputEvent->motion.xrel;
-      freeCamera.rotatingRel.y += inputEvent->motion.yrel;
+      freeCamera.rotatingRel.x += inputEvent.motion.xrel;
+      freeCamera.rotatingRel.y += inputEvent.motion.yrel;
     }
     break;
-  }
+  };
 }
 
 }

@@ -11,26 +11,21 @@ export import crude.core.std_containers_heap;
 export namespace crude::system
 {
 
-struct Update_Event_System_Context
+struct Input_System_Component
 {
-  SDL_Event inputEvent;
+  Input_System_Component() = default;
+  Input_System_Component(std::function<void()> callback) : callback{callback}, inputEvent{} {}
+  std::function<void()>  callback;
+  SDL_Event              inputEvent;
 };
 
-struct Input_System_Context
+void inputSystemProcess(flecs::iter& it)
 {
-  std::function<void(core::shared_ptr<const Update_Event_System_Context>)> callback;
-};
+  Input_System_Component* inputSystemComponent = it.world().get_mut<Input_System_Component>();
 
-void inputSystem(flecs::iter& it, size_t index)
-{
-  auto inputSystemCtx = *it.ctx<core::shared_ptr<const Input_System_Context>>();
-
-  SDL_Event inputEvent;
-  while (SDL_PollEvent(&inputEvent))
+  while (SDL_PollEvent(&inputSystemComponent->inputEvent))
   {
-    auto updateEventCtx = core::allocateShared<Update_Event_System_Context>();
-    updateEventCtx->inputEvent = inputEvent;
-    inputSystemCtx->callback(updateEventCtx);
+    inputSystemComponent->callback();
   }
 }
 

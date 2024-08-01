@@ -18,6 +18,7 @@ void Engine::initialize(const Engine_Initialize& config)
   core::initializeMemory(config.defaultFreeRBTCapacity);
   system::initializeSDL();
   system::loadSDLVulkan();
+  initializeSystems();
 
   auto windowContainer = crude::core::allocateShared<crude::system::SDL_Window_Container>(
     config.title, config.width, config.height, crude::system::SDL_WINDOW_CONTAINER_FLAG_VULKAN);
@@ -35,40 +36,32 @@ void Engine::mainLoop()
 {
   while (m_quit == false)
   {
-    updateEvent();
+    m_inputSystem.run();
 
     core::float64 elapsed;
     if (m_timer.frameElasped(elapsed))
     {
       core::logInfo(core::Debug::Channel::All, "fps: %i\n", (int)(1.0 / elapsed));
-      update(elapsed);
+      m_freeCameraUpdateSystem.run(elapsed);
       render();
     }
   }
 }
 
-void Engine::updateEvent()
+void Engine::initializeSystems()
 {
-  SDL_Event inputEvent;
-  while (SDL_PollEvent(&inputEvent))
-  {
-    if (inputEvent.type == SDL_EVENT_QUIT)
-    {
-      m_quit = true;
-      return;
-    }
+  flecs::query<scene::Free_Camera_Component> freeCameraUpdateEvent = m_world.query_builder<scene::Free_Camera_Component>().build();
+  m_world.set<system::Input_System_Component>(system::Input_System_Component([freeCameraUpdateEvent]() {
+    freeCameraUpdateEvent.each(std::function(scene::freeCameraUpdateEventSystemProcess));
+  }));
 
-    auto q = m_world.query<scene::Free_Camera_Component>();
-    m_world.set<SDL_Event>(inputEvent);
-    q.each(std::function(scene::freeCameraUpdateEvent));
-  }
-}
+  m_inputSystem = m_world.system("InputSystem")
+    .kind(flecs::PreUpdate)
+    .run(system::inputSystemProcess);
 
-void Engine::update(core::float64 elapsed)
-{
-  auto q = m_world.query<scene::Free_Camera_Component, scene::Transform>();
-  m_world.set<core::float64>(elapsed);
-  q.each(std::function(scene::freeCameraUpdate));
+  m_freeCameraUpdateSystem = m_world.system<scene::Free_Camera_Component, scene::Transform>("FreeCameraUpdateSystem")
+    .kind(flecs::OnUpdate)
+    .each(std::function(scene::freeCameraUpdateSystemProcess));
 }
 
 void Engine::render()

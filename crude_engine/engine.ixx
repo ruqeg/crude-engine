@@ -7,6 +7,7 @@ export module crude.engine;
 export import crude.core.timer;
 export import crude.graphics.renderer;
 export import crude.network.network_system;
+export import crude.system.input_system;
 
 export namespace crude
 {
@@ -27,13 +28,14 @@ public:
   void deinitialize();
   void mainLoop();
 private:
-  void updateEvent();
-  void update(core::float64 elapsed);
+  void initializeSystems();
   void render();
 private:
   core::shared_ptr<graphics::Renderer>  m_renderer;
   core::Timer                           m_timer;
   flecs::world                          m_world;
+  flecs::system                         m_freeCameraUpdateSystem;
+  flecs::system                         m_inputSystem;
   bool                                  m_quit = false;
 };
 
