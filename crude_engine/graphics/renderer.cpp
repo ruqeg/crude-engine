@@ -6,6 +6,7 @@
 #include <crude_shaders/shader.frag.inl>
 #include <crude_shaders/shader.mesh.inl>
 #include <crude_shaders/shader.task.inl>
+#include <functional>
 
 module crude.graphics.renderer;
 
@@ -17,6 +18,7 @@ import crude.graphics.flush;
 import crude.graphics.mesh_buffer;
 import crude.scene.free_camera_script;
 import crude.resources.gltf_loader;
+import crude.graphics.renderer_system;
 
 namespace crude::graphics
 {
@@ -330,42 +332,19 @@ void Renderer::recordCommandBuffer(core::shared_ptr<Command_Buffer> commandBuffe
   m_perFrameUniformBuffer[m_currentFrame]->unmap();
 
   // !TODO
-  m_world.each([&](flecs::entity entity, core::shared_ptr<scene::Mesh> mesh, core::shared_ptr<graphics::Mesh_Buffer> meshBuffer)
-  {
-      m_submeshesDrawsBufferDescriptor.update(meshBuffer->getSubmeshesDrawsBuffer(), meshBuffer->getSubmeshesDrawsBuffer()->getSize());
-    m_vertexBufferDescriptor.update(meshBuffer->getVerticesBuffer(), meshBuffer->getVerticesBuffer()->getSize());
-    m_meshletBufferDescriptor.update(meshBuffer->getMeshletsBuffer(), meshBuffer->getMeshletsBuffer()->getSize());
-    m_primitiveIndicesBufferDescriptor.update(meshBuffer->getPrimitiveIndicesBuffer(), meshBuffer->getPrimitiveIndicesBuffer()->getSize());
-    m_vertexIndicesBufferDescriptor.update(meshBuffer->getVertexIndicesBuffer(), meshBuffer->getVertexIndicesBuffer()->getSize());
+  Render_Component renderComponent;
+  renderComponent.pipeline = m_graphicsPipeline;
+  renderComponent.commandBuffer = commandBuffer;
+  renderComponent.perFrameUniformBufferDescriptor = &m_perFrameUniformBufferDesc[m_currentFrame];
+  renderComponent.textureSamplerDescriptor = &m_textureSamplerDesc[m_currentFrame];
+  renderComponent.submeshesDrawsBufferDescriptor = &m_submeshesDrawsBufferDescriptor;
+  renderComponent.vertexBufferDescriptor = &m_vertexBufferDescriptor;
+  renderComponent.meshletBufferDescriptor = &m_meshletBufferDescriptor;
+  renderComponent.primitiveIndicesBufferDescriptor = &m_primitiveIndicesBufferDescriptor;
+  renderComponent.vertexIndicesBufferDescriptor = &m_vertexIndicesBufferDescriptor;
+  m_world.set<Render_Component>(renderComponent);
 
-    Per_Mesh perMesh;
-    if (entity.has<scene::Transform>())
-    {
-      auto transform = entity.get_ref<scene::Transform>();
-      perMesh.modelToWorld = transform->getNodeToWorldFloat4x4();
-    }
-    
-    for (core::uint32 submeshIndex = 0u; submeshIndex < mesh->submeshes.size(); ++submeshIndex)
-    {
-      const scene::Sub_Mesh& submesh = mesh->submeshes[submeshIndex];
-      m_textureSamplerDesc[m_currentFrame].update(submesh.texture->getImageView(), submesh.texture->getSampler());
-
-      core::logInfo(core::Debug::Channel::Gameplay, "%i %i", (int)submesh.texture->getImageView()->getHandle(), VK_NULL_HANDLE);
-      core::array<VkWriteDescriptorSet, 7u> descriptorWrites;
-      m_perFrameUniformBufferDesc[m_currentFrame].write(descriptorWrites[0]);
-      m_textureSamplerDesc[m_currentFrame].write(descriptorWrites[1]);
-      m_submeshesDrawsBufferDescriptor.write(descriptorWrites[2]);
-      m_vertexBufferDescriptor.write(descriptorWrites[3]);
-      m_meshletBufferDescriptor.write(descriptorWrites[4]);
-      m_primitiveIndicesBufferDescriptor.write(descriptorWrites[5]);
-      m_vertexIndicesBufferDescriptor.write(descriptorWrites[6]);
-
-      commandBuffer->pushDescriptorSet(m_graphicsPipeline, descriptorWrites);
-      perMesh.submeshIndex = submeshIndex;
-      commandBuffer->pushConstant(m_graphicsPipeline->getPipelineLayout(), perMesh);
-      commandBuffer->drawMeshTasks(1u);
-    }
-  });
+  m_world.query<core::shared_ptr<scene::Mesh>, core::shared_ptr<graphics::Mesh_Buffer>>().each(std::function(rendereSystemEach));
 
   commandBuffer->endRenderPass();
 
