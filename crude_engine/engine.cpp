@@ -23,7 +23,8 @@ void Engine::initialize(const Engine_Initialize& config)
 
   auto windowContainer = crude::core::allocateShared<crude::platform::SDL_Window_Container>(
     config.title, config.width, config.height, crude::platform::SDL_WINDOW_CONTAINER_FLAG_VULKAN);
-  m_renderer = core::allocateShared<graphics::Renderer>(windowContainer, m_world);
+  auto rendererBase = core::allocateShared<graphics::Renderer_Base>(windowContainer);
+  m_renderer = core::allocateShared<graphics::Renderer>(rendererBase, m_world);
   m_timer.setFrameRate(60);
 }
 
