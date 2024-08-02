@@ -9,6 +9,7 @@ import crude.core.logger;
 import crude.scene.free_camera_script;
 import crude.scene.window_script;
 import crude.platform.sdl_helper;
+import crude.platform.sdl_window_container;
 import crude.core.memory;
 
 namespace crude
@@ -24,7 +25,8 @@ void Engine::initialize(const Engine_Initialize& config)
   auto windowContainer = crude::core::allocateShared<crude::platform::SDL_Window_Container>(
     config.title, config.width, config.height, crude::platform::SDL_WINDOW_CONTAINER_FLAG_VULKAN);
   auto rendererBase = core::allocateShared<graphics::Renderer_Base>(windowContainer);
-  m_renderer = core::allocateShared<graphics::Renderer>(rendererBase, m_world);
+  auto program = core::allocateShared<graphics::Program>(rendererBase, m_world);
+  m_renderer = core::allocateShared<graphics::Renderer>(program);
   m_timer.setFrameRate(60);
 }
 
