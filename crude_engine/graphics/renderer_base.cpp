@@ -13,6 +13,7 @@ import crude.graphics.swap_chain;
 import crude.graphics.swap_chain_image;
 import crude.graphics.image_view;
 import crude.graphics.debug_utils_messenger;
+import crude.graphics.command_pool;
 
 namespace crude::graphics
 {
@@ -27,6 +28,7 @@ Renderer_Base::Renderer_Base(core::shared_ptr<platform::SDL_Window_Container> wi
   initializeSurface();
   initializeDevice();
   initializeSwapchain();
+  initalizeCommandPool();
 }
 
 Renderer_Base::~Renderer_Base()
@@ -128,6 +130,12 @@ void Renderer_Base::initializeSwapchain()
   }
 }
 
+void Renderer_Base::initalizeCommandPool()
+{
+  m_graphicsCommandPool = core::allocateShared<Command_Pool>(m_device, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, m_graphicsQueue->getFamilyIndex());
+  m_transferCommandPool = m_graphicsCommandPool; // = core::allocateShared<Command_Pool>(m_device, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, queueIndices.transferFamily.value());
+}
+
 core::shared_ptr<Physical_Device> Renderer_Base::pickPhysicalDevice()
 {
   auto physicalDevices = m_instance->getPhysicalDevices();
@@ -192,5 +200,7 @@ const core::vector<core::shared_ptr<Swap_Chain_Image>>& Renderer_Base::getSwapch
 const core::vector<core::shared_ptr<Image_View>>& Renderer_Base::getSwapchainImagesViews() { return m_swapchainImagesViews; }
 core::shared_ptr<Debug_Utils_Messenger> Renderer_Base::getDebugUtilsMessenger() { return m_debugUtilsMessenger; }
 core::shared_ptr<platform::SDL_Window_Container> Renderer_Base::getWindowContainer() { return m_windowContainer; }
+core::shared_ptr<Command_Pool> Renderer_Base::getGraphicsCommandPool() { return m_graphicsCommandPool; }
+core::shared_ptr<Command_Pool> Renderer_Base::getTransferCommandPool() { return m_transferCommandPool; }
 
 }

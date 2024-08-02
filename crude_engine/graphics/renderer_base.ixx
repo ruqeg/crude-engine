@@ -26,6 +26,7 @@ class Swap_Chain;
 class Swap_Chain_Image;
 class Image_View;
 class Debug_Utils_Messenger;
+class Command_Pool;
 
 }
 
@@ -48,17 +49,24 @@ public:
   const core::vector<core::shared_ptr<Image_View>>& getSwapchainImagesViews();
   core::shared_ptr<Debug_Utils_Messenger> getDebugUtilsMessenger();
   core::shared_ptr<platform::SDL_Window_Container> getWindowContainer();
+  core::shared_ptr<Command_Pool> getGraphicsCommandPool();
+  core::shared_ptr<Command_Pool> getTransferCommandPool();
 private:
   void initializeInstance();
   void initializeSurface();
   void initializeDevice();
   void initializeSwapchain();
+  void initalizeCommandPool();
   core::shared_ptr<Physical_Device> pickPhysicalDevice();
   void initializeLogicDevice(core::shared_ptr<const Physical_Device> physicalDevice);
 private:
   core::shared_ptr<Queue>                           m_graphicsQueue;
   core::shared_ptr<Queue>                           m_presentQueue;
   core::shared_ptr<Queue>                           m_transferQueue;
+
+  core::shared_ptr<Command_Pool>                    m_graphicsCommandPool;
+  core::shared_ptr<Command_Pool>                    m_transferCommandPool;
+
   core::shared_ptr<Instance>                        m_instance;
   core::shared_ptr<Device>                          m_device;
   core::shared_ptr<Surface>                         m_surface;

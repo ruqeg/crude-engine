@@ -1,5 +1,6 @@
 target_sources(crude_engine
     PRIVATE
+    program.cpp
     renderer_base.cpp
     mesh_buffer.cpp
     texture.cpp
@@ -47,6 +48,7 @@ target_sources(crude_engine
 target_sources(crude_engine
     PUBLIC
     FILE_SET cxx_modules_graphics TYPE CXX_MODULES FILES
+    program.ixx
     renderer_base.ixx
     mesh_buffer.ixx
     texture.ixx
