@@ -1,6 +1,5 @@
 target_sources(crude_engine
     PRIVATE
-    input_system.cpp
     sdl_window_container.cpp
     sdl_helper.cpp)
 

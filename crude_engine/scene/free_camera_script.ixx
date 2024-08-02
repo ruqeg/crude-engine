@@ -21,7 +21,7 @@ struct Free_Camera_Component
   bool               rotatingLocked = true;
 };
 
-void freeCameraUpdateSystemProcess(flecs::iter& it, size_t index, Free_Camera_Component& freeCamera, Transform& transform);
-void freeCameraUpdateEventSystemProcess(flecs::iter& it, size_t index, Free_Camera_Component& freeCamera);
+void freeCameraUpdateSystemEach(flecs::iter& it, size_t index, Free_Camera_Component& freeCamera, Transform& transform);
+void freeCameraUpdateEventSystemEach(flecs::iter& it, size_t index, Free_Camera_Component& freeCamera);
 
 }

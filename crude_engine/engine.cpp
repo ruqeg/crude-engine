@@ -7,6 +7,7 @@ module crude.engine;
 
 import crude.core.logger;
 import crude.scene.free_camera_script;
+import crude.scene.window_script;
 import crude.platform.sdl_helper;
 import crude.core.memory;
 
@@ -34,7 +35,8 @@ void Engine::deinitialize()
 
 void Engine::mainLoop()
 {
-  while (m_quit == false)
+  const auto windowComponent = m_world.get<scene::script::Window_Component>();
+  while (!windowComponent->shouldClose)
   {
     m_inputSystem.run();
 
@@ -50,9 +52,13 @@ void Engine::mainLoop()
 
 void Engine::initializeSystems()
 {
+  m_world.set<scene::script::Window_Component>({});
+
   flecs::query<scene::script::Free_Camera_Component> freeCameraUpdateEvent = m_world.query_builder<scene::script::Free_Camera_Component>().build();
-  m_world.set<platform::Input_System_Component>(platform::Input_System_Component([freeCameraUpdateEvent]() {
-    freeCameraUpdateEvent.each(std::function(scene::script::freeCameraUpdateEventSystemProcess));
+  flecs::query windowUpdateEvent = m_world.query_builder().build();
+  m_world.set<platform::Input_System_Component>(platform::Input_System_Component([freeCameraUpdateEvent, windowUpdateEvent]() {
+    freeCameraUpdateEvent.each(std::function(scene::script::freeCameraUpdateEventSystemEach));
+    windowUpdateEvent.run(std::function(scene::script::windowUpdateEventSystemProcess));
   }));
 
   m_inputSystem = m_world.system("InputSystem")
@@ -61,7 +67,7 @@ void Engine::initializeSystems()
 
   m_freeCameraUpdateSystem = m_world.system<scene::script::Free_Camera_Component, scene::Transform>("FreeCameraUpdateSystem")
     .kind(flecs::OnUpdate)
-    .each(std::function(scene::script::freeCameraUpdateSystemProcess));
+    .each(std::function(scene::script::freeCameraUpdateSystemEach));
 }
 
 void Engine::render()

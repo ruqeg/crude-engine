@@ -4,7 +4,7 @@ module;
 #include <flecs.h>
 #include <functional>
 
-export module crude.system.input_system;
+export module crude.platform.input_system;
 
 export import crude.core.std_containers_heap;
 

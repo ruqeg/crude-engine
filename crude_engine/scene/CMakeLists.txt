@@ -7,6 +7,7 @@ target_sources(crude_engine
 target_sources(crude_engine
     PUBLIC
     FILE_SET cxx_modules_scene TYPE CXX_MODULES FILES
+    window_script.ixx
     camera.ixx
     free_camera_script.ixx
     image.ixx

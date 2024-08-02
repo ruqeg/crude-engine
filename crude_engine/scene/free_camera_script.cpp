@@ -6,12 +6,12 @@ module crude.scene.free_camera_script;
 
 import crude.scene.transform;
 import crude.core.logger;
-import crude.system.input_system;
+import crude.platform.input_system;
 
 namespace crude::scene::script
 {
 
-void freeCameraUpdateSystemProcess(flecs::iter& it, size_t index, Free_Camera_Component& freeCamera, scene::Transform& transform)
+void freeCameraUpdateSystemEach(flecs::iter& it, size_t index, Free_Camera_Component& freeCamera, scene::Transform& transform)
 {
   const core::float64 deltaTime = it.delta_time();
   const core::int32 movingForaward = freeCamera.movingDirection[0].z - freeCamera.movingDirection[1].z;
@@ -31,7 +31,7 @@ void freeCameraUpdateSystemProcess(flecs::iter& it, size_t index, Free_Camera_Co
   freeCamera.rotatingRel = {};
 }
 
-void freeCameraUpdateEventSystemProcess(flecs::iter& it, size_t index, Free_Camera_Component& freeCamera)
+void freeCameraUpdateEventSystemEach(flecs::iter& it, size_t index, Free_Camera_Component& freeCamera)
 {
   const platform::Input_System_Component* inputSystemComponent = it.world().get<platform::Input_System_Component>();
   const SDL_Event& inputEvent = inputSystemComponent->inputEvent;
