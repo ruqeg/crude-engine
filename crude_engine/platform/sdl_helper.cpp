@@ -1,11 +1,11 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_vulkan.h>
 
-module crude.system.sdl_helper;
+module crude.platform.sdl_helper;
 
 import crude.core.logger;
 
-namespace crude::system
+namespace crude::platform
 {
 
 constexpr SDL_InitFlags cSDLInitFlags = SDL_INIT_VIDEO;

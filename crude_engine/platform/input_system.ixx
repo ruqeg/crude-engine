@@ -8,7 +8,7 @@ export module crude.system.input_system;
 
 export import crude.core.std_containers_heap;
 
-export namespace crude::system
+export namespace crude::platform
 {
 
 struct Input_System_Component

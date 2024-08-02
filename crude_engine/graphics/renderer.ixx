@@ -17,7 +17,7 @@ export import crude.graphics.surface;
 export import crude.graphics.debug_utils_messenger;
 export import crude.core.std_containers_stack;
 export import crude.core.std_containers_heap;
-export import crude.system.sdl_window_container;
+export import crude.platform.sdl_window_container;
 export import crude.graphics.render_pass;
 export import crude.graphics.pipeline;
 export import crude.graphics.shader_module;
@@ -64,7 +64,7 @@ struct Per_Mesh
 class Renderer
 {
 public:
-  Renderer(core::shared_ptr<system::SDL_Window_Container> windowContainer, flecs::world world);
+  Renderer(core::shared_ptr<platform::SDL_Window_Container> windowContainer, flecs::world world);
   ~Renderer();
 public:
   void drawFrame();
@@ -102,7 +102,7 @@ private:
   core::vector<core::shared_ptr<Image_View>>            m_swapchainImagesViews;
   core::vector<core::shared_ptr<Framebuffer>>           m_swapchainFramebuffers;
   core::shared_ptr<Debug_Utils_Messenger>               m_debugUtilsMessenger;
-  core::shared_ptr<system::SDL_Window_Container>        m_windowContainer;
+  core::shared_ptr<platform::SDL_Window_Container>      m_windowContainer;
   core::shared_ptr<Pipeline>                            m_graphicsPipeline;
   core::shared_ptr<Command_Pool>                        m_graphicsCommandPool;
   core::shared_ptr<Command_Pool>                        m_transferCommandPool;

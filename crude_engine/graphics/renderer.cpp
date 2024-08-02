@@ -15,7 +15,7 @@ import crude.graphics.format_helper;
 import crude.graphics.generate_mipmaps;
 import crude.graphics.flush;
 import crude.graphics.mesh_buffer;
-import crude.scene.free_camera;
+import crude.scene.free_camera_script;
 import crude.resources.gltf_loader;
 
 namespace crude::graphics
@@ -36,7 +36,7 @@ core::array<core::uint32, 8> vertexIndices =
 constexpr core::array<const char* const, 6> deviceEnabledExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_KHR_SPIRV_1_4_EXTENSION_NAME, VK_EXT_MESH_SHADER_EXTENSION_NAME, VK_KHR_SHADER_FLOAT_CONTROLS_EXTENSION_NAME, VK_KHR_8BIT_STORAGE_EXTENSION_NAME, VK_KHR_PUSH_DESCRIPTOR_EXTENSION_NAME };
 constexpr core::array<const char*, 1> instanceEnabledLayers = { "VK_LAYER_KHRONOS_validation" };
 
-Renderer::Renderer(core::shared_ptr<system::SDL_Window_Container> windowContainer, flecs::world world)
+Renderer::Renderer(core::shared_ptr<platform::SDL_Window_Container> windowContainer, flecs::world world)
   : m_windowContainer(windowContainer)
   , m_currentFrame(0u)
   , m_perFrameUniformBufferDesc{
@@ -71,8 +71,8 @@ Renderer::Renderer(core::shared_ptr<system::SDL_Window_Container> windowContaine
   scene::Transform transform(m_cameraNode);
   transform.setTranslation(0.0, 0.0, -2.0);
   m_cameraNode.set<scene::Transform>(std::move(transform));
-  scene::Free_Camera_Component freeCamera;
-  m_cameraNode.set<scene::Free_Camera_Component>(std::move(freeCamera));
+  scene::script::Free_Camera_Component freeCamera;
+  m_cameraNode.set<scene::script::Free_Camera_Component>(std::move(freeCamera));
   m_cameraNode.child_of(m_node);
 
   initializeUniformBuffers();

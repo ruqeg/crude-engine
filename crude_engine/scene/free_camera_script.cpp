@@ -2,13 +2,13 @@
 #include <directxmath/DirectXMath.h>
 #include <flecs.h>
 
-module crude.scene.free_camera;
+module crude.scene.free_camera_script;
 
 import crude.scene.transform;
 import crude.core.logger;
 import crude.system.input_system;
 
-namespace crude::scene
+namespace crude::scene::script
 {
 
 void freeCameraUpdateSystemProcess(flecs::iter& it, size_t index, Free_Camera_Component& freeCamera, scene::Transform& transform)
@@ -31,9 +31,9 @@ void freeCameraUpdateSystemProcess(flecs::iter& it, size_t index, Free_Camera_Co
   freeCamera.rotatingRel = {};
 }
 
-void freeCameraUpdateEventSystemProcess(flecs::iter& it, size_t index, scene::Free_Camera_Component& freeCamera)
+void freeCameraUpdateEventSystemProcess(flecs::iter& it, size_t index, Free_Camera_Component& freeCamera)
 {
-  const system::Input_System_Component* inputSystemComponent = it.world().get<system::Input_System_Component>();
+  const platform::Input_System_Component* inputSystemComponent = it.world().get<platform::Input_System_Component>();
   const SDL_Event& inputEvent = inputSystemComponent->inputEvent;
   
   switch (inputEvent.type)

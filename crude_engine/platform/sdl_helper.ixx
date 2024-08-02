@@ -2,9 +2,9 @@ module;
 
 #include <SDL3/SDL.h>
 
-export module crude.system.sdl_helper;
+export module crude.platform.sdl_helper;
 
-export namespace crude::system
+export namespace crude::platform
 {
  
 bool initializeSDL();

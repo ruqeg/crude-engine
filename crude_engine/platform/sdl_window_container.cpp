@@ -1,8 +1,8 @@
 #include <SDL3/SDL.h>
 
-module crude.system.sdl_window_container;
+module crude.platform.sdl_window_container;
 
-namespace crude::system
+namespace crude::platform
 {
 
 SDL_Window_Container::SDL_Window_Container(const char* title, core::int32 width, core::int32 height, core::uint32 flags)

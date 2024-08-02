@@ -20,14 +20,14 @@ target_sources(crude_engine PUBLIC FILE_SET cxx_modules_engine TYPE CXX_MODULES 
 
 add_subdirectory(core)
 add_subdirectory(network)
-add_subdirectory(system)
+add_subdirectory(platform)
 add_subdirectory(graphics)
 add_subdirectory(scene)
 add_subdirectory(resources)
 
 source_group(core REGULAR_EXPRESSION "${CMAKE_CURRENT_SOURCE_DIR}/core/*")
 source_group(network REGULAR_EXPRESSION "${CMAKE_CURRENT_SOURCE_DIR}/network/*")
-source_group(system REGULAR_EXPRESSION "${CMAKE_CURRENT_SOURCE_DIR}/system/*")
+source_group(platform REGULAR_EXPRESSION "${CMAKE_CURRENT_SOURCE_DIR}/platform/*")
 source_group(graphics REGULAR_EXPRESSION "${CMAKE_CURRENT_SOURCE_DIR}/graphics/*")
 source_group(scene REGULAR_EXPRESSION "${CMAKE_CURRENT_SOURCE_DIR}/scene/*")
 source_group(resources REGULAR_EXPRESSION "${CMAKE_CURRENT_SOURCE_DIR}/resources/*")

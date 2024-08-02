@@ -3,11 +3,11 @@ module;
 #include <SDL3/SDL.h>
 #include <memory>
 
-export module crude.system.sdl_window_container;
+export module crude.platform.sdl_window_container;
 
 import crude.core.alias;
 
-export namespace crude::system
+export namespace crude::platform
 {
 
 enum SDL_Window_Container_Flag

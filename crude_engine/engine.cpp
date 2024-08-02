@@ -6,8 +6,8 @@
 module crude.engine;
 
 import crude.core.logger;
-import crude.scene.free_camera;
-import crude.system.sdl_helper;
+import crude.scene.free_camera_script;
+import crude.platform.sdl_helper;
 import crude.core.memory;
 
 namespace crude
@@ -16,20 +16,20 @@ namespace crude
 void Engine::initialize(const Engine_Initialize& config)
 {
   core::initializeMemory(config.defaultFreeRBTCapacity);
-  system::initializeSDL();
-  system::loadSDLVulkan();
+  platform::initializeSDL();
+  platform::loadSDLVulkan();
   initializeSystems();
 
-  auto windowContainer = crude::core::allocateShared<crude::system::SDL_Window_Container>(
-    config.title, config.width, config.height, crude::system::SDL_WINDOW_CONTAINER_FLAG_VULKAN);
+  auto windowContainer = crude::core::allocateShared<crude::platform::SDL_Window_Container>(
+    config.title, config.width, config.height, crude::platform::SDL_WINDOW_CONTAINER_FLAG_VULKAN);
   m_renderer = core::allocateShared<graphics::Renderer>(windowContainer, m_world);
   m_timer.setFrameRate(60);
 }
 
 void Engine::deinitialize()
 {
-  system::deinitializeSDL();
-  system::unloadSDLVulkan();
+  platform::deinitializeSDL();
+  platform::unloadSDLVulkan();
 }
 
 void Engine::mainLoop()
@@ -50,18 +50,18 @@ void Engine::mainLoop()
 
 void Engine::initializeSystems()
 {
-  flecs::query<scene::Free_Camera_Component> freeCameraUpdateEvent = m_world.query_builder<scene::Free_Camera_Component>().build();
-  m_world.set<system::Input_System_Component>(system::Input_System_Component([freeCameraUpdateEvent]() {
-    freeCameraUpdateEvent.each(std::function(scene::freeCameraUpdateEventSystemProcess));
+  flecs::query<scene::script::Free_Camera_Component> freeCameraUpdateEvent = m_world.query_builder<scene::script::Free_Camera_Component>().build();
+  m_world.set<platform::Input_System_Component>(platform::Input_System_Component([freeCameraUpdateEvent]() {
+    freeCameraUpdateEvent.each(std::function(scene::script::freeCameraUpdateEventSystemProcess));
   }));
 
   m_inputSystem = m_world.system("InputSystem")
     .kind(flecs::PreUpdate)
-    .run(system::inputSystemProcess);
+    .run(platform::inputSystemProcess);
 
-  m_freeCameraUpdateSystem = m_world.system<scene::Free_Camera_Component, scene::Transform>("FreeCameraUpdateSystem")
+  m_freeCameraUpdateSystem = m_world.system<scene::script::Free_Camera_Component, scene::Transform>("FreeCameraUpdateSystem")
     .kind(flecs::OnUpdate)
-    .each(std::function(scene::freeCameraUpdateSystemProcess));
+    .each(std::function(scene::script::freeCameraUpdateSystemProcess));
 }
 
 void Engine::render()

@@ -4,12 +4,12 @@ module;
 #include <SDL3/SDL.h>
 #include <flecs.h>
 
-export module crude.scene.free_camera;
+export module crude.scene.free_camera_script;
 
 export import crude.core.std_containers_heap;
 export import crude.scene.transform;
 
-export namespace crude::scene
+export namespace crude::scene::script
 {
 
 struct Free_Camera_Component
@@ -21,7 +21,7 @@ struct Free_Camera_Component
   bool               rotatingLocked = true;
 };
 
-void freeCameraUpdateSystemProcess(flecs::iter& it, size_t index, Free_Camera_Component& freeCamera, scene::Transform& transform);
-void freeCameraUpdateEventSystemProcess(flecs::iter& it, size_t index, scene::Free_Camera_Component& freeCamera);
+void freeCameraUpdateSystemProcess(flecs::iter& it, size_t index, Free_Camera_Component& freeCamera, Transform& transform);
+void freeCameraUpdateEventSystemProcess(flecs::iter& it, size_t index, Free_Camera_Component& freeCamera);
 
 }

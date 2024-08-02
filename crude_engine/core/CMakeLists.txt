@@ -8,7 +8,7 @@ target_sources(crude_engine
     pool_allocator.cpp
     stack_allocator.cpp
     string.cpp
-    memory_manager.cpp
+    memory.cpp
     timer.cpp
     system_allocator.cpp)
 
@@ -30,7 +30,7 @@ target_sources(crude_engine
     input_memory_stream.ixx
     linear_allocator.ixx
     logger.ixx
-    memory_manager.ixx
+    memory.ixx
     memory_utils.ixx
     aligned_allocator.ixx
     optional.ixx
