@@ -2,7 +2,7 @@ module;
 
 #include <vulkan/vulkan.hpp>
 
-export module crude.graphics.renderer_base;
+export module crude.graphics.renderer_core_component;
 
 export import crude.core.std_containers_heap;
 export import crude.core.std_containers_stack;
@@ -33,11 +33,12 @@ class Command_Pool;
 export namespace crude::graphics
 {
 
-class Renderer_Base
+class Renderer_Core_Component
 {
 public:
-  Renderer_Base(core::shared_ptr<platform::SDL_Window_Container> windowContainer);
-  ~Renderer_Base();
+  Renderer_Core_Component(core::shared_ptr<platform::SDL_Window_Container> windowContainer);
+  ~Renderer_Core_Component();
+public:
   core::shared_ptr<Queue> getGraphicsQueue();
   core::shared_ptr<Queue> getPresentQueue();
   core::shared_ptr<Queue> getTransferQueue();

@@ -1,6 +1,6 @@
 #include <vulkan/vulkan.hpp>
 
-module crude.graphics.renderer_base;
+module crude.graphics.renderer_core_component;
 
 import crude.core.logger;
 import crude.platform.sdl_window_container;
@@ -21,7 +21,7 @@ namespace crude::graphics
 constexpr core::array<const char* const, 6> cDeviceEnabledExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_KHR_SPIRV_1_4_EXTENSION_NAME, VK_EXT_MESH_SHADER_EXTENSION_NAME, VK_KHR_SHADER_FLOAT_CONTROLS_EXTENSION_NAME, VK_KHR_8BIT_STORAGE_EXTENSION_NAME, VK_KHR_PUSH_DESCRIPTOR_EXTENSION_NAME };
 constexpr core::array<const char*, 1> cInstanceEnabledLayers = { "VK_LAYER_KHRONOS_validation" };
 
-Renderer_Base::Renderer_Base(core::shared_ptr<platform::SDL_Window_Container> windowContainer)
+Renderer_Core_Component::Renderer_Core_Component(core::shared_ptr<platform::SDL_Window_Container> windowContainer)
   : m_windowContainer(windowContainer)
 {
   initializeInstance();
@@ -31,12 +31,12 @@ Renderer_Base::Renderer_Base(core::shared_ptr<platform::SDL_Window_Container> wi
   initalizeCommandPool();
 }
 
-Renderer_Base::~Renderer_Base()
+Renderer_Core_Component::~Renderer_Core_Component()
 {
   m_device->waitIdle();
 }
 
-void Renderer_Base::initializeInstance()
+void Renderer_Core_Component::initializeInstance()
 {
   // Calculate extensions for instance
   const auto surfaceExtensions = Surface::requiredExtensions();
@@ -75,12 +75,12 @@ void Renderer_Base::initializeInstance()
   m_debugUtilsMessenger = core::allocateShared<Debug_Utils_Messenger>(m_instance, debugCallback);
 }
 
-void Renderer_Base::initializeSurface()
+void Renderer_Core_Component::initializeSurface()
 {
   m_surface = core::allocateShared<Surface>(m_instance, m_windowContainer);
 }
 
-void Renderer_Base::initializeDevice()
+void Renderer_Core_Component::initializeDevice()
 {
   core::shared_ptr<Physical_Device> physicalDevice = pickPhysicalDevice();
   if (!physicalDevice)
@@ -91,7 +91,7 @@ void Renderer_Base::initializeDevice()
   initializeLogicDevice(physicalDevice);
 }
 
-void Renderer_Base::initializeSwapchain()
+void Renderer_Core_Component::initializeSwapchain()
 {
   Surface_Capabilities_KHR surfaceCapabilites = m_device->getPhysicalDevice()->getSurfaceCapabilitis(m_surface);
   const VkSurfaceFormatKHR surfaceFormat = m_device->getPhysicalDevice()->findSurfaceFormat(m_surface, VK_FORMAT_B8G8R8A8_SRGB, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR);
@@ -130,13 +130,13 @@ void Renderer_Base::initializeSwapchain()
   }
 }
 
-void Renderer_Base::initalizeCommandPool()
+void Renderer_Core_Component::initalizeCommandPool()
 {
   m_graphicsCommandPool = core::allocateShared<Command_Pool>(m_device, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, m_graphicsQueue->getFamilyIndex());
   m_transferCommandPool = m_graphicsCommandPool; // = core::allocateShared<Command_Pool>(m_device, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, queueIndices.transferFamily.value());
 }
 
-core::shared_ptr<Physical_Device> Renderer_Base::pickPhysicalDevice()
+core::shared_ptr<Physical_Device> Renderer_Core_Component::pickPhysicalDevice()
 {
   auto physicalDevices = m_instance->getPhysicalDevices();
   for (auto& physicalDevice : physicalDevices)
@@ -164,7 +164,7 @@ core::shared_ptr<Physical_Device> Renderer_Base::pickPhysicalDevice()
   return nullptr;
 }
 
-void Renderer_Base::initializeLogicDevice(core::shared_ptr<const Physical_Device> physicalDevice)
+void Renderer_Core_Component::initializeLogicDevice(core::shared_ptr<const Physical_Device> physicalDevice)
 {
   VkPhysicalDeviceFeatures deviceFeatures{};
   deviceFeatures.samplerAnisotropy = VK_TRUE;
@@ -189,18 +189,18 @@ void Renderer_Base::initializeLogicDevice(core::shared_ptr<const Physical_Device
   if (!m_transferQueue) m_transferQueue = m_graphicsQueue;
 }
 
-core::shared_ptr<Queue> Renderer_Base::getGraphicsQueue() { return m_graphicsQueue; }
-core::shared_ptr<Queue> Renderer_Base::getPresentQueue() { return m_presentQueue; }
-core::shared_ptr<Queue> Renderer_Base::getTransferQueue() { return m_transferQueue; }
-core::shared_ptr<Instance> Renderer_Base::getInstance() { return m_instance; }
-core::shared_ptr<Device> Renderer_Base::getDevice() { return m_device; }
-core::shared_ptr<Surface> Renderer_Base::getSurface() { return m_surface; }
-core::shared_ptr<Swap_Chain> Renderer_Base::getSwapchain() { return m_swapchain; }
-const core::vector<core::shared_ptr<Swap_Chain_Image>>& Renderer_Base::getSwapchainImages() { return m_swapchainImages; }
-const core::vector<core::shared_ptr<Image_View>>& Renderer_Base::getSwapchainImagesViews() { return m_swapchainImagesViews; }
-core::shared_ptr<Debug_Utils_Messenger> Renderer_Base::getDebugUtilsMessenger() { return m_debugUtilsMessenger; }
-core::shared_ptr<platform::SDL_Window_Container> Renderer_Base::getWindowContainer() { return m_windowContainer; }
-core::shared_ptr<Command_Pool> Renderer_Base::getGraphicsCommandPool() { return m_graphicsCommandPool; }
-core::shared_ptr<Command_Pool> Renderer_Base::getTransferCommandPool() { return m_transferCommandPool; }
+core::shared_ptr<Queue> Renderer_Core_Component::getGraphicsQueue() { return m_graphicsQueue; }
+core::shared_ptr<Queue> Renderer_Core_Component::getPresentQueue() { return m_presentQueue; }
+core::shared_ptr<Queue> Renderer_Core_Component::getTransferQueue() { return m_transferQueue; }
+core::shared_ptr<Instance> Renderer_Core_Component::getInstance() { return m_instance; }
+core::shared_ptr<Device> Renderer_Core_Component::getDevice() { return m_device; }
+core::shared_ptr<Surface> Renderer_Core_Component::getSurface() { return m_surface; }
+core::shared_ptr<Swap_Chain> Renderer_Core_Component::getSwapchain() { return m_swapchain; }
+const core::vector<core::shared_ptr<Swap_Chain_Image>>& Renderer_Core_Component::getSwapchainImages() { return m_swapchainImages; }
+const core::vector<core::shared_ptr<Image_View>>& Renderer_Core_Component::getSwapchainImagesViews() { return m_swapchainImagesViews; }
+core::shared_ptr<Debug_Utils_Messenger> Renderer_Core_Component::getDebugUtilsMessenger() { return m_debugUtilsMessenger; }
+core::shared_ptr<platform::SDL_Window_Container> Renderer_Core_Component::getWindowContainer() { return m_windowContainer; }
+core::shared_ptr<Command_Pool> Renderer_Core_Component::getGraphicsCommandPool() { return m_graphicsCommandPool; }
+core::shared_ptr<Command_Pool> Renderer_Core_Component::getTransferCommandPool() { return m_transferCommandPool; }
 
 }
