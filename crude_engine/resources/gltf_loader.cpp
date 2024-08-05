@@ -34,7 +34,7 @@ GLTF_Loader::GLTF_Loader(core::shared_ptr<graphics::Command_Pool> commandPool, f
 
 flecs::entity GLTF_Loader::loadNodeFromFile(const char* path)
 {
-  flecs::entity node(m_world, path);
+  flecs::entity node = m_world.entity(path);
   
   if (!loadModelFromFile(path))
     return node;

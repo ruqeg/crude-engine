@@ -31,7 +31,10 @@ private:
   flecs::world   m_world;
   flecs::system  m_freeCameraUpdateSystem;
   flecs::system  m_inputSystem;
-  flecs::system  m_renderFrameSystem;
+  flecs::system  m_rendererGeometrySystem;
+  flecs::system  m_rendererFrameStartSystem;
+  flecs::system  m_rendererFrameSubmitSystem;
+  flecs::entity  m_sceneNode;
 };
 
 }

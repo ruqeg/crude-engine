@@ -13,13 +13,6 @@ export import crude.graphics.descriptor_pool_size;
 export import crude.graphics.image_descriptor;
 import crude.graphics.renderer_frame_system;
 
-export namespace crude::scene
-{
-
-class Mesh;
-
-}
-
 export namespace crude::graphics
 {
 
@@ -36,19 +29,22 @@ class Swap_Chain;
 class Semaphore;
 class Fence;
 class Mesh_Buffer;
+class Swap_Chain_Image;
 
 struct Renderer_Geometry_Component
 {
 public:
-  Renderer_Geometry_Component() = default;
-  Renderer_Geometry_Component(core::shared_ptr<Device>                    device,
-                              core::shared_ptr<Color_Attachment>          colorAttachment,
-                              core::shared_ptr<Depth_Stencil_Attachment>  depthStencilAttachment);
+  Renderer_Geometry_Component();
+  Renderer_Geometry_Component(core::shared_ptr<Device>                        device,
+                              core::shared_ptr<Color_Attachment>              colorAttachment,
+                              core::shared_ptr<Depth_Stencil_Attachment>      depthStencilAttachment,
+                              core::shared_ptr<Swap_Chain>                    swapchain,
+                              core::span<const core::shared_ptr<Image_View>>  swapchainImagesViews);
 private:
   core::shared_ptr<Descriptor_Set_Layout> createDescriptorSetLayout(core::shared_ptr<Device> device);
-  void initializeRenderPass(core::shared_ptr<Device> device, core::shared_ptr<Color_Attachment> colorAttachment, core::shared_ptr<Depth_Stencil_Attachment> depthStencilAttachment);
+  void initializeRenderPass(core::shared_ptr<Device> device, core::shared_ptr<Color_Attachment> colorAttachment, core::shared_ptr<Depth_Stencil_Attachment> depthStencilAttachment, core::shared_ptr<Swap_Chain> swapchain);
   void initalizeGraphicsPipeline(core::shared_ptr<Device> device);
-  void initializeFramebuffers(core::shared_ptr<Device> device, core::shared_ptr<Color_Attachment> colorAttachment, core::shared_ptr<Depth_Stencil_Attachment> depthStencilAttachment);
+  void initializeFramebuffers(core::shared_ptr<Device> device, core::shared_ptr<Color_Attachment> colorAttachment, core::shared_ptr<Depth_Stencil_Attachment> depthStencilAttachment, core::span<const core::shared_ptr<Image_View>> swapchainImagesViews);
 public:
   core::shared_ptr<Render_Pass>                                 renderPass;
   core::shared_ptr<Pipeline>                                    pipeline;
@@ -63,6 +59,6 @@ public:
   graphics::Storage_Buffer_Descriptor                           vertexIndicesBufferDescriptor;
 };
 
-void renderGeometrySystemProcess(flecs::iter& it);
+void rendererGeometrySystemProcess(flecs::iter& it);
 
 }

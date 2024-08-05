@@ -10,7 +10,6 @@ import crude.graphics.swap_chain;
 import crude.graphics.uniform_buffer;
 import crude.graphics.semaphore;
 import crude.graphics.renderer_core_component;
-import crude.graphics.renderer_geometry_system;
 import crude.graphics.queue;
 import crude.graphics.device;
 import crude.core.logger;
@@ -50,14 +49,13 @@ core::shared_ptr<Semaphore> Renderer_Frame_Component::getFrameImageAvailableSema
 core::shared_ptr<Semaphore> Renderer_Frame_Component::getFrameRenderFinishedSemaphore() { return renderFinishedSemaphores[currentFrame]; }
 core::shared_ptr<Fence> Renderer_Frame_Component::getFrameInFlightFence() { return inFlightFences[currentFrame]; };
 
-void renderFrameSystemProcess(flecs::iter& it)
+void rendererFrameStartSystemProcess(flecs::iter& it)
 {
   Renderer_Core_Component* coreComponent = it.world().get_mut<Renderer_Core_Component>();
   Renderer_Frame_Component* frameComponent = it.world().get_mut<Renderer_Frame_Component>();
-  Renderer_Geometry_Component* geometryComponent = it.world().get_mut<Renderer_Geometry_Component>();
 
   frameComponent->getFrameInFlightFence()->wait();
-  
+
   const Swap_Chain_Next_Image acquireNextImageResult = coreComponent->swapchain->acquireNextImage(frameComponent->getFrameImageAvailableSemaphore());
 
   if (acquireNextImageResult.outOfDate())
@@ -70,7 +68,7 @@ void renderFrameSystemProcess(flecs::iter& it)
     core::logError(core::Debug::Channel::Graphics, "Failed to acquire swap chain image!");
   }
 
-  core::uint32 imageIndex = acquireNextImageResult.getImageIndex().value();
+  frameComponent->swapchainImageIndex = acquireNextImageResult.getImageIndex().value();
 
   Per_Frame* data = frameComponent->getFramePerFrameUniformBuffer()->mapUnsafe();
   data->camera = Camera_UBO(frameComponent->cameraNode);
@@ -81,9 +79,12 @@ void renderFrameSystemProcess(flecs::iter& it)
   {
     core::logError(core::Debug::Channel::Graphics, "Failed to begin recording command buffer!");
   }
+}
 
-  geometryComponent->perFrameBufferDescriptors[frameComponent->currentFrame].update(frameComponent->getFramePerFrameUniformBuffer());
-  it.world().query().run(std::function(renderGeometrySystemProcess));
+void rendererFrameSubmitSystemProcess(flecs::iter& it)
+{
+  Renderer_Core_Component* coreComponent = it.world().get_mut<Renderer_Core_Component>();
+  Renderer_Frame_Component* frameComponent = it.world().get_mut<Renderer_Frame_Component>();
 
   if (!frameComponent->getFrameGraphicsCommandBuffer()->end())
   {
@@ -92,10 +93,10 @@ void renderFrameSystemProcess(flecs::iter& it)
 
   core::uint32 waitStageMasks[1] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
   const bool graphicsQueueSubmited = coreComponent->graphicsQueue->sumbit(
-    core::array{ frameComponent->getFrameGraphicsCommandBuffer()},
+    core::array{ frameComponent->getFrameGraphicsCommandBuffer() },
     waitStageMasks,
-    core::array{ frameComponent->getFrameImageAvailableSemaphore()},
-    core::array{ frameComponent->getFrameRenderFinishedSemaphore()},
+    core::array{ frameComponent->getFrameImageAvailableSemaphore() },
+    core::array{ frameComponent->getFrameRenderFinishedSemaphore() },
     frameComponent->getFrameInFlightFence());
 
   if (!graphicsQueueSubmited)
@@ -104,8 +105,8 @@ void renderFrameSystemProcess(flecs::iter& it)
   }
 
   const Queue_Present_Result presentResult = coreComponent->presentQueue->present(
-    core::array{ coreComponent->swapchain},
-    core::array{ imageIndex },
+    core::array{ coreComponent->swapchain },
+    core::array{ frameComponent->swapchainImageIndex },
     core::array{ frameComponent->getFrameRenderFinishedSemaphore() });
 
   bool framebufferResized = false;

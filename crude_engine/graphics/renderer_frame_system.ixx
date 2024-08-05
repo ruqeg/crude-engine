@@ -20,6 +20,7 @@ class Device;
 class Semaphore;
 class Fence;
 class Command_Pool;
+class Mesh_Buffer;
 
 struct Per_Frame
 {
@@ -31,6 +32,7 @@ constexpr core::uint32 cFramesCount = 2u;
 struct Renderer_Frame_Component
 {
 public:
+  Renderer_Frame_Component() = default;
   Renderer_Frame_Component(core::shared_ptr<Device> device, core::shared_ptr<Command_Pool> graphicsCommandPool);
   ~Renderer_Frame_Component() = default;
 public:
@@ -41,15 +43,17 @@ public:
   core::shared_ptr<Semaphore> getFrameRenderFinishedSemaphore();
   core::shared_ptr<Fence> getFrameInFlightFence();
 public:
-  core::array<core::shared_ptr<Uniform_Buffer<Per_Frame>>, cFramesCount>  perFrameUniformBuffer;
-  core::array<core::shared_ptr<Command_Buffer>, cFramesCount>             graphicsCommandBuffers;
-  core::array<core::shared_ptr<Semaphore>, cFramesCount>                  imageAvailableSemaphores;
-  core::array<core::shared_ptr<Semaphore>, cFramesCount>                  renderFinishedSemaphores;
-  core::array<core::shared_ptr<Fence>, cFramesCount>                      inFlightFences;
-  core::uint32                                                            currentFrame;
-  flecs::entity                                                           cameraNode; // !TODO move
+  core::array<core::shared_ptr<Uniform_Buffer<Per_Frame>>, cFramesCount>      perFrameUniformBuffer;
+  core::array<core::shared_ptr<Command_Buffer>, cFramesCount>                 graphicsCommandBuffers;
+  core::array<core::shared_ptr<Semaphore>, cFramesCount>                      imageAvailableSemaphores;
+  core::array<core::shared_ptr<Semaphore>, cFramesCount>                      renderFinishedSemaphores;
+  core::array<core::shared_ptr<Fence>, cFramesCount>                          inFlightFences;
+  core::uint32                                                                currentFrame;
+  flecs::entity                                                               cameraNode; // !TODO move
+  core::uint32                                                                swapchainImageIndex;
 };
 
-void renderFrameSystemProcess(flecs::iter& it);
+void rendererFrameStartSystemProcess(flecs::iter& it);
+void rendererFrameSubmitSystemProcess(flecs::iter& it);
 
 }

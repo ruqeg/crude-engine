@@ -50,12 +50,12 @@ void Engine::initialize(const Engine_Initialize& config)
     rendererCoreComponent.device, depthFormat, rendererCoreComponent.swapchain->getExtent(), 1u,
     rendererCoreComponent.device->getPhysicalDevice()->getProperties().getMaximumUsableSampleCount());
 
-  m_world.set<graphics::Renderer_Geometry_Component>(graphics::Renderer_Geometry_Component(rendererCoreComponent.device, colorAttachment, depthStencilAttachment));
+  m_world.set<graphics::Renderer_Geometry_Component>(graphics::Renderer_Geometry_Component(rendererCoreComponent.device, colorAttachment, depthStencilAttachment, rendererCoreComponent.swapchain, rendererCoreComponent.swapchainImagesViews));
   m_world.set<graphics::Renderer_Frame_Component>(graphics::Renderer_Frame_Component(rendererCoreComponent.device, rendererCoreComponent.graphicsCommandPool));
 
   resources::GLTF_Loader gltfLoader(m_world.get_mut<graphics::Renderer_Core_Component>()->transferCommandPool, m_world);
-  flecs::entity mainNode = gltfLoader.loadNodeFromFile("../../crude_example/basic_triangle_examle/resources/sponza.glb");
-  
+  m_sceneNode = gltfLoader.loadNodeFromFile("../../crude_example/basic_triangle_examle/resources/sponza.glb");
+
   flecs::entity cameraNode = m_world.entity("camera node");
   cameraNode.set<scene::Camera>([windowContainer](){
     scene::Camera camera;
@@ -68,8 +68,9 @@ void Engine::initialize(const Engine_Initialize& config)
     return transform;
   }());
   cameraNode.set<scene::script::Free_Camera_Component>(scene::script::Free_Camera_Component());
-  cameraNode.child_of(mainNode);
-
+  cameraNode.child_of(m_sceneNode);
+  m_world.get_mut<graphics::Renderer_Frame_Component>()->cameraNode = cameraNode;
+  
   m_timer.setFrameRate(60);
 }
 
@@ -91,6 +92,9 @@ void Engine::mainLoop()
     {
       core::logInfo(core::Debug::Channel::All, "fps: %i\n", (int)(1.0 / elapsed));
       m_freeCameraUpdateSystem.run(elapsed);
+      m_rendererFrameStartSystem.run();
+      m_rendererGeometrySystem.run();
+      m_rendererFrameSubmitSystem.run();
     }
   }
 }
@@ -113,6 +117,18 @@ void Engine::initializeSystems()
   m_freeCameraUpdateSystem = m_world.system<scene::script::Free_Camera_Component, scene::Transform>("FreeCameraUpdateSystem")
     .kind(flecs::OnUpdate)
     .each(std::function(scene::script::freeCameraUpdateSystemEach));
+
+  m_rendererGeometrySystem = m_world.system<core::shared_ptr<graphics::Mesh_Buffer>, core::shared_ptr<scene::Mesh>>("RendererGeometrySystem")
+    .kind(flecs::OnUpdate)
+    .run(graphics::rendererGeometrySystemProcess);
+
+  m_rendererFrameStartSystem = m_world.system("RendererFrameStartSystem")
+    .kind(flecs::OnUpdate)
+    .run(graphics::rendererFrameStartSystemProcess);
+
+  m_rendererFrameSubmitSystem = m_world.system("RendererFrameSubmitSystem")
+    .kind(flecs::OnUpdate)
+    .run(graphics::rendererFrameSubmitSystemProcess);
 }
 
 }
