@@ -67,6 +67,7 @@ public:
   core::uint32 getMipLevelsCount() const { return m_mipLevelsCount; }
   core::uint32 getArrayLayersCount() const { return m_arrayLayersCount; }
   const VkExtent3D& getExtent() const { return m_extent; }
+  VkExtent2D getExtent2D() const { return VkExtent2D{ m_extent.width, m_extent.height }; }
   core::uint32 getWidth() const { return m_extent.width; }
   core::uint32 getHeight() const { return m_extent.height; }
   core::uint32 getDepth() const { return m_extent.depth; }

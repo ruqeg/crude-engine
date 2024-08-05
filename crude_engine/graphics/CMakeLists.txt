@@ -1,5 +1,6 @@
 target_sources(crude_engine
     PRIVATE
+    renderer_frame_system.cpp
     renderer_geometry_system.cpp
     renderer_core_component.cpp
     mesh_buffer.cpp
@@ -13,7 +14,6 @@ target_sources(crude_engine
     uniform_buffer.cpp
     flush.cpp
     device_queue_descriptor.cpp
-    renderer.cpp
     command_buffer.cpp
     buffer.cpp
     command_pool.cpp
@@ -47,7 +47,7 @@ target_sources(crude_engine
 target_sources(crude_engine
     PUBLIC
     FILE_SET cxx_modules_graphics TYPE CXX_MODULES FILES
-    renderer_frame_component.ixx
+    renderer_frame_system.ixx
     renderer_geometry_system.ixx
     renderer_core_component.ixx
     mesh_buffer.ixx
@@ -77,7 +77,6 @@ target_sources(crude_engine
     staging_buffer.ixx
     vertex_buffer.ixx
     index_buffer.ixx
-    renderer.ixx
     application.ixx
     attachment_description.ixx
     buffer.ixx

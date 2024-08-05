@@ -20,11 +20,11 @@ Queue::Queue(VkQueueFlagBits flags, core::uint32 familyIndex, core::uint32 index
   m_index(index)
 {}
 
-bool Queue::sumbit(const core::span<core::shared_ptr<Command_Buffer>>&  commandBuffers,
-                   const core::span<VkPipelineStageFlags>&              waitStageMasks,
-                   const core::span<core::shared_ptr<Semaphore>>&       waitSemaphores,
-                   const core::span<core::shared_ptr<Semaphore>>&       signalSemaphores,
-                   const core::Optional<core::shared_ptr<Fence>>&       fence)
+bool Queue::sumbit(core::span<const core::shared_ptr<Command_Buffer>>  commandBuffers,
+                   core::span<const VkPipelineStageFlags>              waitStageMasks,
+                   core::span<const core::shared_ptr<Semaphore>>       waitSemaphores,
+                   core::span<const core::shared_ptr<Semaphore>>       signalSemaphores,
+                   const core::Optional<core::shared_ptr<Fence>>&      fence)
 {
   if (waitSemaphores.size() != waitStageMasks.size())
   {
@@ -61,9 +61,9 @@ bool Queue::sumbit(const core::span<core::shared_ptr<Command_Buffer>>&  commandB
   return result == VK_SUCCESS;
 }
 
-Queue_Present_Result Queue::present(const core::span<core::shared_ptr<Swap_Chain>>&  swapchains,
-                                    const core::span<core::uint32>&                  imageIndices,
-                                    const core::span<core::shared_ptr<Semaphore>>&   waitSemaphores)
+Queue_Present_Result Queue::present(core::span<const core::shared_ptr<Swap_Chain>>  swapchains,
+                                    core::span<const core::uint32>                  imageIndices,
+                                    core::span<const core::shared_ptr<Semaphore>>   waitSemaphores)
 {
   core::vector<VkSemaphore> waitSemaphoreHandles(waitSemaphores.size());
   core::copyc(waitSemaphores.begin(), waitSemaphores.end(), waitSemaphoreHandles.begin(), [](auto& src, auto& dst) -> void {

@@ -15,11 +15,9 @@ import crude.scene.image;
 import crude.graphics.format_helper;
 import crude.graphics.generate_mipmaps;
 import crude.graphics.flush;
-import crude.graphics.core;
 import crude.graphics.mesh_buffer;
 import crude.scene.free_camera_script;
 import crude.resources.gltf_loader;
-import crude.graphics.renderer_system;
 import crude.graphics.render_pass;
 import crude.graphics.command_buffer;
 import crude.graphics.framebuffer;
@@ -50,8 +48,6 @@ import crude.graphics.storage_buffer;
 namespace crude::graphics
 {
 
-constexpr core::uint32       cFramesCount = 2u;
-
 constexpr core::uint32       cPerFrameUniformBufferBinding = 0u;
 constexpr VkShaderStageFlags cPerFrameUniformBufferStageFlags = VK_SHADER_STAGE_MESH_BIT_EXT;
 
@@ -73,16 +69,13 @@ constexpr VkShaderStageFlags cVertexIndicesBufferStageFlags = VK_SHADER_STAGE_ME
 constexpr core::uint32       cTextureSamplerBinding = 6u;
 constexpr VkShaderStageFlags cTextureSamplerStageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
-const Uniform_Buffer_Descriptor         cPerFrameUniformBufferDescriptor(cPerFrameUniformBufferBinding, cPerFrameUniformBufferStageFlags);
-const Combined_Image_Sampler_Descriptor cTextureSamplerDescriptor(cTextureSamplerBinding, cTextureSamplerStageFlags);
-
-core::array<Uniform_Buffer_Descriptor, cFramesCount>         cPerFrameUniformBufferDescriptor{ cPerFrameUniformBufferDescriptor, cPerFrameUniformBufferDescriptor };
-core::array<Combined_Image_Sampler_Descriptor, cFramesCount> cTextureSamplerDescriptor{ cTextureSamplerDescriptor, cTextureSamplerDescriptor };
-graphics::Storage_Buffer_Descriptor                          cSubmeshesDrawsBufferDescriptor{ cSubmeshesDrawsBufferBinding, cSubmeshesDrawsBufferStageFlags };
-graphics::Storage_Buffer_Descriptor                          cVertexBufferDescriptor{ cVertexBufferBinding, cVertexBufferStageFlags };
-graphics::Storage_Buffer_Descriptor                          cMeshletBufferDescriptor{ cMeshletBufferBinding, cMeshletBufferStageFlags };
-graphics::Storage_Buffer_Descriptor                          cPrimitiveIndicesBufferDescriptor{ cPrimitiveIndicesBufferBinding, cPrimitiveIndicesBufferStageFlags };
-graphics::Storage_Buffer_Descriptor                          cVertexIndicesBufferDescriptor{ cVertexIndicesBufferBinding, cVertexIndicesBufferStageFlags };
+const Uniform_Buffer_Descriptor          cPerFrameUniformBufferDescriptor(cPerFrameUniformBufferBinding, cPerFrameUniformBufferStageFlags);
+const Combined_Image_Sampler_Descriptor  cTextureSamplerDescriptor(cTextureSamplerBinding, cTextureSamplerStageFlags);
+const Storage_Buffer_Descriptor          cSubmeshesDrawsBufferDescriptor{ cSubmeshesDrawsBufferBinding, cSubmeshesDrawsBufferStageFlags };
+const Storage_Buffer_Descriptor          cVertexBufferDescriptor{ cVertexBufferBinding, cVertexBufferStageFlags };
+const Storage_Buffer_Descriptor          cMeshletBufferDescriptor{ cMeshletBufferBinding, cMeshletBufferStageFlags };
+const Storage_Buffer_Descriptor          cPrimitiveIndicesBufferDescriptor{ cPrimitiveIndicesBufferBinding, cPrimitiveIndicesBufferStageFlags };
+const Storage_Buffer_Descriptor          cVertexIndicesBufferDescriptor{ cVertexIndicesBufferBinding, cVertexIndicesBufferStageFlags };
 
 core::array<Descriptor_Set_Layout_Binding, 7u> cDescriptorLayoutBindings = 
 {
@@ -116,13 +109,13 @@ struct Per_Mesh
 Renderer_Geometry_Component::Renderer_Geometry_Component(core::shared_ptr<Device>                    device,
                                                          core::shared_ptr<Color_Attachment>          colorAttachment,
                                                          core::shared_ptr<Depth_Stencil_Attachment>  depthStencilAttachment)
-  : m_perFrameUniformBufferDescriptor{ cPerFrameUniformBufferDescriptor, cPerFrameUniformBufferDescriptor }
-  , m_textureSamplerDescriptor{ cTextureSamplerDescriptor, cTextureSamplerDescriptor }
-  , m_submeshesDrawsBufferDescriptor{ cSubmeshesDrawsBufferDescriptor }
-  , m_vertexBufferDescriptor{ cVertexBufferDescriptor }
-  , m_meshletBufferDescriptor{ cMeshletBufferDescriptor }
-  , m_primitiveIndicesBufferDescriptor{ cPrimitiveIndicesBufferDescriptor }
-  , m_vertexIndicesBufferDescriptor{ cVertexIndicesBufferDescriptor }
+  : perFrameUniformBufferDescriptors{ cPerFrameUniformBufferDescriptor, cPerFrameUniformBufferDescriptor }
+  , textureSamplerDescriptors{ cTextureSamplerDescriptor, cTextureSamplerDescriptor }
+  , submeshesDrawsBufferDescriptor{ cSubmeshesDrawsBufferDescriptor }
+  , vertexBufferDescriptor{ cVertexBufferDescriptor }
+  , meshletBufferDescriptor{ cMeshletBufferDescriptor }
+  , primitiveIndicesBufferDescriptor{ cPrimitiveIndicesBufferDescriptor }
+  , vertexIndicesBufferDescriptor{ cVertexIndicesBufferDescriptor }
 {
   initializeRenderPass(device, colorAttachment, depthStencilAttachment);
   initalizeGraphicsPipeline(device);
@@ -165,7 +158,7 @@ void Renderer_Geometry_Component::initializeRenderPass(core::shared_ptr<Device> 
       .attachment = depthStencilAttachment }),
   };
 
-  m_renderPass = core::allocateShared<Render_Pass>(device, subpasses, subpassesDependencies, attachments);
+  renderPass = core::allocateShared<Render_Pass>(device, subpasses, subpassesDependencies, attachments);
 }
 
 void Renderer_Geometry_Component::initalizeGraphicsPipeline(core::shared_ptr<Device> device)
@@ -247,12 +240,12 @@ void Renderer_Geometry_Component::initalizeGraphicsPipeline(core::shared_ptr<Dev
   Dynamic_State_Create_Info dynamicStateInfo(dynamicStates);
 
   core::shared_ptr<Pipeline_Layout> pipelineLayout = core::allocateShared<Pipeline_Layout>(
-    device, createDescriptorSetLayout(),
-    graphics::Push_Constant_Range<Per_Mesh>(VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT));
+    device, createDescriptorSetLayout(device),
+    Push_Constant_Range<Per_Mesh>(VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT));
 
-  m_pipeline = core::allocateShared<Pipeline>(
+  pipeline = core::allocateShared<Pipeline>(
     device,
-    m_renderPass,
+    renderPass,
     pipelineLayout,
     nullptr,
     shaderStagesInfo,
@@ -270,26 +263,17 @@ void Renderer_Geometry_Component::initalizeGraphicsPipeline(core::shared_ptr<Dev
 
 void Renderer_Geometry_Component::initializeFramebuffers(core::shared_ptr<Device> device, core::shared_ptr<Color_Attachment> colorAttachment, core::shared_ptr<Depth_Stencil_Attachment> depthStencilAttachment)
 {
-  m_framebuffers.reserve(cFramesCount);
+  framebuffers.reserve(cFramesCount);
   for (core::uint32 i = 0; i < cFramesCount; ++i)
   {
     core::shared_ptr<Image_View> colorAttachmentView = core::allocateShared<Image_View>(colorAttachment, Image_Subresource_Range(colorAttachment));
     core::shared_ptr<Image_View> depthStencilAttachmentView = core::allocateShared<Image_View>(depthStencilAttachment, Image_Subresource_Range(depthStencilAttachment));
     core::vector<core::shared_ptr<Image_View>> attachments = { colorAttachmentView, depthStencilAttachmentView };
-    m_framebuffers.push_back(core::allocateShared<Framebuffer>(device, m_pipeline->getRenderPass(), attachments, colorAttachment->getExtent(), 1u));
+    framebuffers.push_back(core::allocateShared<Framebuffer>(device, pipeline->getRenderPass(), attachments, colorAttachment->getExtent2D(), 1u));
   }
 }
 
-core::shared_ptr<Render_Pass> Renderer_Geometry_Component::getRenderPass() { return m_renderPass; }
-core::shared_ptr<Pipeline> Renderer_Geometry_Component::getPipeline() { return m_pipeline; }
-core::vector<core::shared_ptr<Framebuffer>> Renderer_Geometry_Component::getFramebuffers() { return m_framebuffers; }
-core::array<Uniform_Buffer_Descriptor, cFramesCount> Renderer_Geometry_Component::getPerFrameUniformBufferDescriptor() { return m_perFrameUniformBufferDescriptor; }
-core::array<Combined_Image_Sampler_Descriptor, cFramesCount> Renderer_Geometry_Component::getTextureSamplerDescriptor() { return m_textureSamplerDescriptor; }
-graphics::Storage_Buffer_Descriptor Renderer_Geometry_Component::getSubmeshesDrawsBufferDescriptor() { return m_submeshesDrawsBufferDescriptor; }
-graphics::Storage_Buffer_Descriptor Renderer_Geometry_Component::getVertexBufferDescriptor() { return m_vertexBufferDescriptor; }
-graphics::Storage_Buffer_Descriptor Renderer_Geometry_Component::getMeshletBufferDescriptor() { return m_meshletBufferDescriptor; }
-graphics::Storage_Buffer_Descriptor Renderer_Geometry_Component::getPrimitiveIndicesBufferDescriptor() { return m_primitiveIndicesBufferDescriptor; }
-graphics::Storage_Buffer_Descriptor Renderer_Geometry_Component::getVertexIndicesBufferDescriptor() { return m_vertexIndicesBufferDescriptor; }
+void renderGeometrySystemEach(flecs::iter& it, size_t index, core::shared_ptr<scene::Mesh> mesh, core::shared_ptr<Mesh_Buffer> meshBuffer);
 
 void renderGeometrySystemProcess(flecs::iter& it)
 {
@@ -301,17 +285,16 @@ void renderGeometrySystemProcess(flecs::iter& it)
   clearValues[0].color = { {0.0f, 0.0f, 0.0f, 1.0f} };
   clearValues[1].depthStencil = { 1.0f, 0 };
 
-  VkRect2D renderArea = {
-    .extent = coreComponent->getSwapchain()->getExtent(),
-    .offset = { 0.f, 0.f}
-  };
+  VkRect2D renderArea;
+  renderArea.extent = coreComponent->swapchain->getExtent();
+  renderArea.offset = VkOffset2D { 0, 0 };
 
-  frameComponent->commandBuffer->beginRenderPass(geometryComponent->getPipeline()->getRenderPass(), geometryComponent->getFramebuffers()[frameComponent->imageIndex], clearValues, renderArea);
-  frameComponent->commandBuffer->bindPipeline(geometryComponent->getPipeline());
+  frameComponent->getFrameGraphicsCommandBuffer()->beginRenderPass(geometryComponent->pipeline->getRenderPass(), geometryComponent->framebuffers[frameComponent->currentFrame], clearValues, renderArea);
+  frameComponent->getFrameGraphicsCommandBuffer()->bindPipeline(geometryComponent->pipeline);
 
   it.world().query<core::shared_ptr<scene::Mesh>, core::shared_ptr<Mesh_Buffer>>().each(std::function(renderGeometrySystemEach));
 
-  frameComponent->commandBuffer->endRenderPass();
+  frameComponent->getFrameGraphicsCommandBuffer()->endRenderPass();
 }
 
 void renderGeometrySystemEach(flecs::iter& it, size_t index, core::shared_ptr<scene::Mesh> mesh, core::shared_ptr<Mesh_Buffer> meshBuffer)
@@ -320,11 +303,11 @@ void renderGeometrySystemEach(flecs::iter& it, size_t index, core::shared_ptr<sc
   Renderer_Frame_Component* frameComponent = it.world().get_mut<Renderer_Frame_Component>();
   Renderer_Core_Component* coreComponent = it.world().get_mut<Renderer_Core_Component>();
 
-  geometryComponent->getSubmeshesDrawsBufferDescriptor()->update(meshBuffer->getSubmeshesDrawsBuffer(), meshBuffer->getSubmeshesDrawsBuffer()->getSize());
-  geometryComponent->getVertexBufferDescriptor()->update(meshBuffer->getVerticesBuffer(), meshBuffer->getVerticesBuffer()->getSize());
-  geometryComponent->getMeshletBufferDescriptor()->update(meshBuffer->getMeshletsBuffer(), meshBuffer->getMeshletsBuffer()->getSize());
-  geometryComponent->getPrimitiveIndicesBufferDescriptor()->update(meshBuffer->getPrimitiveIndicesBuffer(), meshBuffer->getPrimitiveIndicesBuffer()->getSize());
-  geometryComponent->getVertexIndicesBufferDescriptor()->update(meshBuffer->getVertexIndicesBuffer(), meshBuffer->getVertexIndicesBuffer()->getSize());
+  geometryComponent->submeshesDrawsBufferDescriptor.update(meshBuffer->getSubmeshesDrawsBuffer(), meshBuffer->getSubmeshesDrawsBuffer()->getSize());
+  geometryComponent->vertexBufferDescriptor.update(meshBuffer->getVerticesBuffer(), meshBuffer->getVerticesBuffer()->getSize());
+  geometryComponent->meshletBufferDescriptor.update(meshBuffer->getMeshletsBuffer(), meshBuffer->getMeshletsBuffer()->getSize());
+  geometryComponent->primitiveIndicesBufferDescriptor.update(meshBuffer->getPrimitiveIndicesBuffer(), meshBuffer->getPrimitiveIndicesBuffer()->getSize());
+  geometryComponent->vertexIndicesBufferDescriptor.update(meshBuffer->getVertexIndicesBuffer(), meshBuffer->getVertexIndicesBuffer()->getSize());
 
   Per_Mesh perMesh;
   if (it.entity(index).has<scene::Transform>())
@@ -336,21 +319,21 @@ void renderGeometrySystemEach(flecs::iter& it, size_t index, core::shared_ptr<sc
   for (core::uint32 submeshIndex = 0u; submeshIndex < mesh->submeshes.size(); ++submeshIndex)
   {
     const scene::Sub_Mesh& submesh = mesh->submeshes[submeshIndex];
-    geometryComponent->getTextureSamplerDescriptor()->update(submesh.texture->getImageView(), submesh.texture->getSampler());
+    geometryComponent->textureSamplerDescriptors[frameComponent->currentFrame].update(submesh.texture->getImageView(), submesh.texture->getSampler());
 
     core::array<VkWriteDescriptorSet, 7u> descriptorWrites;
-    geometryComponent->getPerFrameUniformBufferDescriptor()->write(descriptorWrites[0]);
-    geometryComponent->getTextureSamplerDescriptor()->write(descriptorWrites[1]);
-    geometryComponent->getSubmeshesDrawsBufferDescriptor()->write(descriptorWrites[2]);
-    geometryComponent->getVertexBufferDescriptor()->write(descriptorWrites[3]);
-    geometryComponent->getMeshletBufferDescriptor()->write(descriptorWrites[4]);
-    geometryComponent->getPrimitiveIndicesBufferDescriptor()->write(descriptorWrites[5]);
-    geometryComponent->getVertexIndicesBufferDescriptor()->write(descriptorWrites[6]);
+    geometryComponent->perFrameBufferDescriptors[frameComponent->currentFrame].write(descriptorWrites[0]);
+    geometryComponent->textureSamplerDescriptors[frameComponent->currentFrame].write(descriptorWrites[1]);
+    geometryComponent->submeshesDrawsBufferDescriptor.write(descriptorWrites[2]);
+    geometryComponent->vertexBufferDescriptor.write(descriptorWrites[3]);
+    geometryComponent->meshletBufferDescriptor.write(descriptorWrites[4]);
+    geometryComponent->primitiveIndicesBufferDescriptor.write(descriptorWrites[5]);
+    geometryComponent->vertexIndicesBufferDescriptor.write(descriptorWrites[6]);
 
-    frameComponent->commandBuffer->pushDescriptorSet(geometryComponent->getPipeline(), descriptorWrites);
+    frameComponent->getFrameGraphicsCommandBuffer()->pushDescriptorSet(geometryComponent->pipeline, descriptorWrites);
     perMesh.submeshIndex = submeshIndex;
-    frameComponent->commandBuffer->pushConstant(geometryComponent->getPipeline()->getPipelineLayout(), perMesh);
-    frameComponent->commandBuffer->drawMeshTasks(1u);
+    frameComponent->getFrameGraphicsCommandBuffer()->pushConstant(geometryComponent->pipeline->getPipelineLayout(), perMesh);
+    frameComponent->getFrameGraphicsCommandBuffer()->drawMeshTasks(1u);
   }
 }
 

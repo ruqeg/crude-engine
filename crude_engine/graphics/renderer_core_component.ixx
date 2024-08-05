@@ -36,22 +36,9 @@ export namespace crude::graphics
 class Renderer_Core_Component
 {
 public:
+  Renderer_Core_Component() = default;
   Renderer_Core_Component(core::shared_ptr<platform::SDL_Window_Container> windowContainer);
   ~Renderer_Core_Component();
-public:
-  core::shared_ptr<Queue> getGraphicsQueue();
-  core::shared_ptr<Queue> getPresentQueue();
-  core::shared_ptr<Queue> getTransferQueue();
-  core::shared_ptr<Instance> getInstance();
-  core::shared_ptr<Device> getDevice();
-  core::shared_ptr<Surface> getSurface();
-  core::shared_ptr<Swap_Chain> getSwapchain();
-  const core::vector<core::shared_ptr<Swap_Chain_Image>>& getSwapchainImages();
-  const core::vector<core::shared_ptr<Image_View>>& getSwapchainImagesViews();
-  core::shared_ptr<Debug_Utils_Messenger> getDebugUtilsMessenger();
-  core::shared_ptr<platform::SDL_Window_Container> getWindowContainer();
-  core::shared_ptr<Command_Pool> getGraphicsCommandPool();
-  core::shared_ptr<Command_Pool> getTransferCommandPool();
 private:
   void initializeInstance();
   void initializeSurface();
@@ -60,22 +47,22 @@ private:
   void initalizeCommandPool();
   core::shared_ptr<Physical_Device> pickPhysicalDevice();
   void initializeLogicDevice(core::shared_ptr<const Physical_Device> physicalDevice);
-private:
-  core::shared_ptr<Queue>                           m_graphicsQueue;
-  core::shared_ptr<Queue>                           m_presentQueue;
-  core::shared_ptr<Queue>                           m_transferQueue;
+public:
+  core::shared_ptr<Queue>                           graphicsQueue;
+  core::shared_ptr<Queue>                           presentQueue;
+  core::shared_ptr<Queue>                           transferQueue;
 
-  core::shared_ptr<Command_Pool>                    m_graphicsCommandPool;
-  core::shared_ptr<Command_Pool>                    m_transferCommandPool;
+  core::shared_ptr<Command_Pool>                    graphicsCommandPool;
+  core::shared_ptr<Command_Pool>                    transferCommandPool;
 
-  core::shared_ptr<Instance>                        m_instance;
-  core::shared_ptr<Device>                          m_device;
-  core::shared_ptr<Surface>                         m_surface;
-  core::shared_ptr<Swap_Chain>                      m_swapchain;
-  core::vector<core::shared_ptr<Swap_Chain_Image>>  m_swapchainImages;
-  core::vector<core::shared_ptr<Image_View>>        m_swapchainImagesViews;
-  core::shared_ptr<Debug_Utils_Messenger>           m_debugUtilsMessenger;
-  core::shared_ptr<platform::SDL_Window_Container>  m_windowContainer;
+  core::shared_ptr<Instance>                        instance;
+  core::shared_ptr<Device>                          device;
+  core::shared_ptr<Surface>                         surface;
+  core::shared_ptr<Swap_Chain>                      swapchain;
+  core::vector<core::shared_ptr<Swap_Chain_Image>>  swapchainImages;
+  core::vector<core::shared_ptr<Image_View>>        swapchainImagesViews;
+  core::shared_ptr<Debug_Utils_Messenger>           debugUtilsMessenger;
+  core::shared_ptr<platform::SDL_Window_Container>  windowContainer;
 };
 
 }
