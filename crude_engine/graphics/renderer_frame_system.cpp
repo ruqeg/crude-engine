@@ -50,14 +50,15 @@ core::shared_ptr<Semaphore> Renderer_Frame_Component::getFrameImageAvailableSema
 core::shared_ptr<Semaphore> Renderer_Frame_Component::getFrameRenderFinishedSemaphore() { return renderFinishedSemaphores[currentFrame]; }
 core::shared_ptr<Fence> Renderer_Frame_Component::getFrameInFlightFence() { return inFlightFences[currentFrame]; };
 
-void renderSystemProcess(flecs::iter& it)
+void renderFrameSystemProcess(flecs::iter& it)
 {
   Renderer_Core_Component* coreComponent = it.world().get_mut<Renderer_Core_Component>();
-  Renderer_Frame_Component* fameComponent = it.world().get_mut<Renderer_Frame_Component>();
+  Renderer_Frame_Component* frameComponent = it.world().get_mut<Renderer_Frame_Component>();
   Renderer_Geometry_Component* geometryComponent = it.world().get_mut<Renderer_Geometry_Component>();
-  rendererComponent->getFrameInFlightFence()->wait();
+
+  frameComponent->getFrameInFlightFence()->wait();
   
-  const Swap_Chain_Next_Image acquireNextImageResult = coreComponent->swapchain->acquireNextImage(rendererComponent->getFrameImageAvailableSemaphore());
+  const Swap_Chain_Next_Image acquireNextImageResult = coreComponent->swapchain->acquireNextImage(frameComponent->getFrameImageAvailableSemaphore());
 
   if (acquireNextImageResult.outOfDate())
   {
@@ -71,30 +72,31 @@ void renderSystemProcess(flecs::iter& it)
 
   core::uint32 imageIndex = acquireNextImageResult.getImageIndex().value();
 
-  rendererComponent->getFrameInFlightFence()->reset();
-  if (!rendererComponent->getFrameGraphicsCommandBuffer()->begin())
+  Per_Frame* data = frameComponent->getFramePerFrameUniformBuffer()->mapUnsafe();
+  data->camera = Camera_UBO(frameComponent->cameraNode);
+  frameComponent->getFramePerFrameUniformBuffer()->unmap();
+
+  frameComponent->getFrameInFlightFence()->reset();
+  if (!frameComponent->getFrameGraphicsCommandBuffer()->begin())
   {
     core::logError(core::Debug::Channel::Graphics, "Failed to begin recording command buffer!");
   }
-  Per_Frame* data = m_perFrameUniformBuffer[m_currentFrame]->mapUnsafe();
-  data->camera = Camera_UBO(m_cameraNode);
-  m_perFrameUniformBuffer[m_currentFrame]->unmap();
 
-  geometryComponent->perFrameBufferDescriptors[rendererComponent->currentFrame].update();
+  geometryComponent->perFrameBufferDescriptors[frameComponent->currentFrame].update(frameComponent->getFramePerFrameUniformBuffer());
   it.world().query().run(std::function(renderGeometrySystemProcess));
 
-  if (!rendererComponent->getFrameGraphicsCommandBuffer()->end())
+  if (!frameComponent->getFrameGraphicsCommandBuffer()->end())
   {
     core::logError(core::Debug::Channel::Graphics, "Failed to record command buffer!");
   }
 
   core::uint32 waitStageMasks[1] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
   const bool graphicsQueueSubmited = coreComponent->graphicsQueue->sumbit(
-    core::array{rendererComponent->getFrameGraphicsCommandBuffer()},
+    core::array{ frameComponent->getFrameGraphicsCommandBuffer()},
     waitStageMasks,
-    core::array{rendererComponent->getFrameImageAvailableSemaphore()},
-    core::array{rendererComponent->getFrameRenderFinishedSemaphore()},
-    rendererComponent->getFrameInFlightFence());
+    core::array{ frameComponent->getFrameImageAvailableSemaphore()},
+    core::array{ frameComponent->getFrameRenderFinishedSemaphore()},
+    frameComponent->getFrameInFlightFence());
 
   if (!graphicsQueueSubmited)
   {
@@ -104,7 +106,7 @@ void renderSystemProcess(flecs::iter& it)
   const Queue_Present_Result presentResult = coreComponent->presentQueue->present(
     core::array{ coreComponent->swapchain},
     core::array{ imageIndex },
-    core::array{ rendererComponent->getFrameRenderFinishedSemaphore() });
+    core::array{ frameComponent->getFrameRenderFinishedSemaphore() });
 
   bool framebufferResized = false;
   if (presentResult.outOfDate() || presentResult.suboptimal() || framebufferResized)
@@ -116,7 +118,7 @@ void renderSystemProcess(flecs::iter& it)
     core::logError(core::Debug::Channel::Graphics, "Failed to present swap chain image!");
   }
 
-  rendererComponent->stepToNextFrame();
+  frameComponent->stepToNextFrame();
 }
 
 }

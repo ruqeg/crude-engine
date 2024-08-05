@@ -1,19 +1,30 @@
 #include <directxmath/DirectXMath.h>
 #include <flecs.h>
 #include <SDL3/SDL.h>
+#include <vulkan/vulkan.h>
 #include <functional>
 
 module crude.engine;
 
 import crude.core.logger;
+import crude.core.memory;
 import crude.scene.free_camera_script;
 import crude.scene.window_script;
+import crude.scene.camera;
 import crude.platform.sdl_helper;
 import crude.platform.sdl_window_container;
-import crude.graphics.renderer_core_component;
-import crude.scene.camera;
+import crude.platform.input_system;
 import crude.resources.gltf_loader;
-import crude.core.memory;
+import crude.graphics.renderer_core_component;
+import crude.graphics.renderer_geometry_system;
+import crude.graphics.renderer_frame_system;
+import crude.graphics.device;
+import crude.graphics.physical_device;
+import crude.graphics.swap_chain;
+import crude.graphics.swap_chain_image;
+import crude.graphics.image_attachment;
+import crude.graphics.format_helper;
+import crude.network.network_system;
 
 namespace crude
 {
@@ -28,7 +39,19 @@ void Engine::initialize(const Engine_Initialize& config)
   auto windowContainer = crude::core::allocateShared<crude::platform::SDL_Window_Container>(
     config.title, config.width, config.height, crude::platform::SDL_WINDOW_CONTAINER_FLAG_VULKAN);
   
-  m_world.set<graphics::Renderer_Core_Component>(graphics::Renderer_Core_Component(windowContainer));
+  graphics::Renderer_Core_Component rendererCoreComponent(windowContainer);
+  m_world.set<graphics::Renderer_Core_Component>(rendererCoreComponent);
+  auto colorAttachment = core::allocateShared<graphics::Color_Attachment>(
+    rendererCoreComponent.device, rendererCoreComponent.swapchainImages.front()->getFormat(), rendererCoreComponent.swapchain->getExtent(), 1u,
+    rendererCoreComponent.device->getPhysicalDevice()->getProperties().getMaximumUsableSampleCount());
+
+  const VkFormat depthFormat = graphics::findDepthFormatSupportedByDevice(rendererCoreComponent.device->getPhysicalDevice(), graphics::depth_formats::gDepthStencilCandidates);
+  auto depthStencilAttachment = core::allocateShared<graphics::Depth_Stencil_Attachment>(
+    rendererCoreComponent.device, depthFormat, rendererCoreComponent.swapchain->getExtent(), 1u,
+    rendererCoreComponent.device->getPhysicalDevice()->getProperties().getMaximumUsableSampleCount());
+
+  m_world.set<graphics::Renderer_Geometry_Component>(graphics::Renderer_Geometry_Component(rendererCoreComponent.device, colorAttachment, depthStencilAttachment));
+  m_world.set<graphics::Renderer_Frame_Component>(graphics::Renderer_Frame_Component(rendererCoreComponent.device, rendererCoreComponent.graphicsCommandPool));
 
   resources::GLTF_Loader gltfLoader(m_world.get_mut<graphics::Renderer_Core_Component>()->transferCommandPool, m_world);
   flecs::entity mainNode = gltfLoader.loadNodeFromFile("../../crude_example/basic_triangle_examle/resources/sponza.glb");
@@ -47,7 +70,6 @@ void Engine::initialize(const Engine_Initialize& config)
   cameraNode.set<scene::script::Free_Camera_Component>(scene::script::Free_Camera_Component());
   cameraNode.child_of(mainNode);
 
-  m_renderer = core::allocateShared<graphics::Renderer>();
   m_timer.setFrameRate(60);
 }
 
@@ -69,7 +91,6 @@ void Engine::mainLoop()
     {
       core::logInfo(core::Debug::Channel::All, "fps: %i\n", (int)(1.0 / elapsed));
       m_freeCameraUpdateSystem.run(elapsed);
-      render();
     }
   }
 }
@@ -92,11 +113,6 @@ void Engine::initializeSystems()
   m_freeCameraUpdateSystem = m_world.system<scene::script::Free_Camera_Component, scene::Transform>("FreeCameraUpdateSystem")
     .kind(flecs::OnUpdate)
     .each(std::function(scene::script::freeCameraUpdateSystemEach));
-}
-
-void Engine::render()
-{
-  m_renderer->drawFrame();
 }
 
 }

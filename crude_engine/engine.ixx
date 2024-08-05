@@ -5,9 +5,6 @@ module;
 export module crude.engine;
 
 export import crude.core.timer;
-export import crude.graphics.renderer;
-export import crude.network.network_system;
-export import crude.platform.input_system;
 
 export namespace crude
 {
@@ -29,13 +26,12 @@ public:
   void mainLoop();
 private:
   void initializeSystems();
-  void render();
 private:
-  core::shared_ptr<graphics::Renderer>  m_renderer;
-  core::Timer                           m_timer;
-  flecs::world                          m_world;
-  flecs::system                         m_freeCameraUpdateSystem;
-  flecs::system                         m_inputSystem;
+  core::Timer    m_timer;
+  flecs::world   m_world;
+  flecs::system  m_freeCameraUpdateSystem;
+  flecs::system  m_inputSystem;
+  flecs::system  m_renderFrameSystem;
 };
 
 }

@@ -109,7 +109,7 @@ struct Per_Mesh
 Renderer_Geometry_Component::Renderer_Geometry_Component(core::shared_ptr<Device>                    device,
                                                          core::shared_ptr<Color_Attachment>          colorAttachment,
                                                          core::shared_ptr<Depth_Stencil_Attachment>  depthStencilAttachment)
-  : perFrameUniformBufferDescriptors{ cPerFrameUniformBufferDescriptor, cPerFrameUniformBufferDescriptor }
+  : perFrameBufferDescriptors{ cPerFrameUniformBufferDescriptor, cPerFrameUniformBufferDescriptor }
   , textureSamplerDescriptors{ cTextureSamplerDescriptor, cTextureSamplerDescriptor }
   , submeshesDrawsBufferDescriptor{ cSubmeshesDrawsBufferDescriptor }
   , vertexBufferDescriptor{ cVertexBufferDescriptor }

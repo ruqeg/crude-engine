@@ -47,6 +47,7 @@ public:
   core::array<core::shared_ptr<Semaphore>, cFramesCount>                  renderFinishedSemaphores;
   core::array<core::shared_ptr<Fence>, cFramesCount>                      inFlightFences;
   core::uint32                                                            currentFrame;
+  flecs::entity                                                           cameraNode; // !TODO move
 };
 
 void renderFrameSystemProcess(flecs::iter& it);

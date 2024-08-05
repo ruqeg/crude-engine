@@ -17,7 +17,7 @@ public:
                                     const VkExtent2D&         extent,
                                     core::uint32              mipLevelsCount,
                                     VkSampleCountFlagBits     samples,
-                                    VkSharingMode             sharingMode)
+                                    VkSharingMode             sharingMode = VK_SHARING_MODE_EXCLUSIVE)
     :
     Image_2D(device, depthStencilFormat, extent, mipLevelsCount,
       1u, samples, 0u, 
@@ -33,7 +33,7 @@ public:
                             const VkExtent2D&         extent,
                             core::uint32              mipLevelsCount,
                             VkSampleCountFlagBits     samples,
-                            VkSharingMode             sharingMode)
+                            VkSharingMode             sharingMode = VK_SHARING_MODE_EXCLUSIVE)
     :
     Image_2D(device, format, extent, mipLevelsCount,
       1u, samples, 0u, 
