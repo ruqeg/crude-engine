@@ -14,9 +14,10 @@ export namespace crude::platform
 struct Input_System_Component
 {
   Input_System_Component() = default;
-  Input_System_Component(std::function<void()> callback) : callback{callback}, inputEvent{} {}
-  std::function<void()>  callback;
-  SDL_Event              inputEvent;
+  Input_System_Component(const core::vector<flecs::system>& eventSystems) : eventSystems(eventSystems) {}
+
+  core::vector<flecs::system>  eventSystems;
+  SDL_Event                    inputEvent;
 };
 
 void inputSystemProcess(flecs::iter& it)
@@ -25,7 +26,10 @@ void inputSystemProcess(flecs::iter& it)
 
   while (SDL_PollEvent(&inputSystemComponent->inputEvent))
   {
-    inputSystemComponent->callback();
+    for (auto& eventSystem : inputSystemComponent->eventSystems)
+    {
+      eventSystem.run();
+    }
   }
 }
 

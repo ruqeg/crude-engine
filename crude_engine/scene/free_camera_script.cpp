@@ -11,79 +11,95 @@ import crude.platform.input_system;
 namespace crude::scene::script
 {
 
-void freeCameraUpdateSystemEach(flecs::iter& it, size_t index, Free_Camera_Component& freeCamera, scene::Transform& transform)
+void freeCameraUpdateSystemProcess(flecs::iter& it)
 {
-  const core::float64 deltaTime = it.delta_time();
-  const core::int32 movingForaward = freeCamera.movingDirection[0].z - freeCamera.movingDirection[1].z;
-  const core::int32 movingUp = freeCamera.movingDirection[0].y - freeCamera.movingDirection[1].y;
-  const core::int32 movingRight = freeCamera.movingDirection[0].x - freeCamera.movingDirection[1].x;
+  while (it.next())
+  {
+    auto freeCameras = it.field<Free_Camera_Component>(0);
+    auto transforms = it.field<Transform>(1);
 
-  if (movingRight)
-    transform.addTranslation(DirectX::XMVectorScale(transform.getWorldBasisRightVector(), freeCamera.movingSpeedMultiplier.x * movingRight * deltaTime));
-  if (movingForaward)
-    transform.addTranslation(DirectX::XMVectorScale(transform.getWorldBasisForwardVector(), freeCamera.movingSpeedMultiplier.z * movingForaward * deltaTime));
-  if (movingUp)
-    transform.addTranslation(DirectX::XMVectorScale(transform.getWorldBasisUpVector(), freeCamera.movingSpeedMultiplier.y * movingUp * deltaTime));
+    for (auto i : it)
+    {
+      const core::float64 deltaTime = it.delta_time();
+      const core::int32 movingForaward = freeCameras[i].movingDirection[0].z - freeCameras[i].movingDirection[1].z;
+      const core::int32 movingUp = freeCameras[i].movingDirection[0].y - freeCameras[i].movingDirection[1].y;
+      const core::int32 movingRight = freeCameras[i].movingDirection[0].x - freeCameras[i].movingDirection[1].x;
 
-  DirectX::XMVECTOR cameraUp = DirectX::XMVectorGetY(transform.getWorldBasisUpVector()) > 0.0f ? transform.getDefaultBasisUpVector() : DirectX::XMVectorNegate(transform.getDefaultBasisUpVector());
-  transform.addRotationAxis(cameraUp, -freeCamera.rotatingSpeedMultiplier.x * freeCamera.rotatingRel.x * deltaTime);
-  transform.addRotationAxis(transform.getWorldBasisRightVector(), -freeCamera.rotatingSpeedMultiplier.y * freeCamera.rotatingRel.y * deltaTime);
-  freeCamera.rotatingRel = {};
+      if (movingRight)
+        transforms[i].addTranslation(DirectX::XMVectorScale(transforms[i].getWorldBasisRightVector(), freeCameras[i].movingSpeedMultiplier.x * movingRight * deltaTime));
+      if (movingForaward)
+        transforms[i].addTranslation(DirectX::XMVectorScale(transforms[i].getWorldBasisForwardVector(), freeCameras[i].movingSpeedMultiplier.z * movingForaward * deltaTime));
+      if (movingUp)
+        transforms[i].addTranslation(DirectX::XMVectorScale(transforms[i].getWorldBasisUpVector(), freeCameras[i].movingSpeedMultiplier.y * movingUp * deltaTime));
+
+      DirectX::XMVECTOR cameraUp = DirectX::XMVectorGetY(transforms[i].getWorldBasisUpVector()) > 0.0f ? transforms[i].getDefaultBasisUpVector() : DirectX::XMVectorNegate(transforms[i].getDefaultBasisUpVector());
+      transforms[i].addRotationAxis(cameraUp, -freeCameras[i].rotatingSpeedMultiplier.x * freeCameras[i].rotatingRel.x * deltaTime);
+      transforms[i].addRotationAxis(transforms[i].getWorldBasisRightVector(), -freeCameras[i].rotatingSpeedMultiplier.y * freeCameras[i].rotatingRel.y * deltaTime);
+      freeCameras[i].rotatingRel = {};
+    }
+  }
 }
 
-void freeCameraUpdateEventSystemEach(flecs::iter& it, size_t index, Free_Camera_Component& freeCamera)
+void freeCameraUpdateEventSystemProcess(flecs::iter& it)
 {
-  const platform::Input_System_Component* inputSystemComponent = it.world().get<platform::Input_System_Component>();
-  const SDL_Event& inputEvent = inputSystemComponent->inputEvent;
-  
-  switch (inputEvent.type)
+  const SDL_Event& inputEvent = it.world().get<platform::Input_System_Component>()->inputEvent;
+
+  while (it.next())
   {
-  case SDL_EVENT_KEY_DOWN:
-    switch (inputEvent.key.keysym.scancode)
+    auto freeCameras = it.field<Free_Camera_Component>(0);
+
+    for (auto i : it)
     {
-    case SDL_SCANCODE_W: freeCamera.movingDirection[0].z = 1; break;
-    case SDL_SCANCODE_S: freeCamera.movingDirection[1].z = 1; break;
-    case SDL_SCANCODE_D: freeCamera.movingDirection[0].x = 1; break;
-    case SDL_SCANCODE_A: freeCamera.movingDirection[1].x = 1; break;
-    case SDL_SCANCODE_E: freeCamera.movingDirection[0].y = 1; break;
-    case SDL_SCANCODE_Q: freeCamera.movingDirection[1].y = 1; break;
+      switch (inputEvent.type)
+      {
+      case SDL_EVENT_KEY_DOWN:
+        switch (inputEvent.key.keysym.scancode)
+        {
+        case SDL_SCANCODE_W: freeCameras[i].movingDirection[0].z = 1; break;
+        case SDL_SCANCODE_S: freeCameras[i].movingDirection[1].z = 1; break;
+        case SDL_SCANCODE_D: freeCameras[i].movingDirection[0].x = 1; break;
+        case SDL_SCANCODE_A: freeCameras[i].movingDirection[1].x = 1; break;
+        case SDL_SCANCODE_E: freeCameras[i].movingDirection[0].y = 1; break;
+        case SDL_SCANCODE_Q: freeCameras[i].movingDirection[1].y = 1; break;
+        }
+        break;
+      case SDL_EVENT_KEY_UP:
+        switch (inputEvent.key.keysym.scancode)
+        {
+        case SDL_SCANCODE_W: freeCameras[i].movingDirection[0].z = 0; break;
+        case SDL_SCANCODE_S: freeCameras[i].movingDirection[1].z = 0; break;
+        case SDL_SCANCODE_D: freeCameras[i].movingDirection[0].x = 0; break;
+        case SDL_SCANCODE_A: freeCameras[i].movingDirection[1].x = 0; break;
+        case SDL_SCANCODE_E: freeCameras[i].movingDirection[0].y = 0; break;
+        case SDL_SCANCODE_Q: freeCameras[i].movingDirection[1].y = 0; break;
+        }
+        break;
+      case SDL_EVENT_MOUSE_BUTTON_DOWN:
+        switch (inputEvent.button.button)
+        {
+        case SDL_BUTTON_RIGHT:
+          freeCameras[i].rotatingLocked = false;
+          break;
+        }
+        break;
+      case SDL_EVENT_MOUSE_BUTTON_UP:
+        switch (inputEvent.button.button)
+        {
+        case SDL_BUTTON_RIGHT:
+          freeCameras[i].rotatingLocked = true;
+          break;
+        }
+        break;
+      case SDL_EVENT_MOUSE_MOTION:
+        if (!freeCameras[i].rotatingLocked)
+        {
+          freeCameras[i].rotatingRel.x += inputEvent.motion.xrel;
+          freeCameras[i].rotatingRel.y += inputEvent.motion.yrel;
+        }
+        break;
+      };
     }
-    break;
-  case SDL_EVENT_KEY_UP:
-    switch (inputEvent.key.keysym.scancode)
-    {
-    case SDL_SCANCODE_W: freeCamera.movingDirection[0].z = 0; break;
-    case SDL_SCANCODE_S: freeCamera.movingDirection[1].z = 0; break;
-    case SDL_SCANCODE_D: freeCamera.movingDirection[0].x = 0; break;
-    case SDL_SCANCODE_A: freeCamera.movingDirection[1].x = 0; break;
-    case SDL_SCANCODE_E: freeCamera.movingDirection[0].y = 0; break;
-    case SDL_SCANCODE_Q: freeCamera.movingDirection[1].y = 0; break;
-    }
-    break;
-  case SDL_EVENT_MOUSE_BUTTON_DOWN:
-    switch (inputEvent.button.button)
-    {
-    case SDL_BUTTON_RIGHT:
-      freeCamera.rotatingLocked = false;
-      break;
-    }
-    break;
-  case SDL_EVENT_MOUSE_BUTTON_UP:
-    switch (inputEvent.button.button)
-    {
-    case SDL_BUTTON_RIGHT:
-      freeCamera.rotatingLocked = true;
-      break;
-    }
-    break;
-  case SDL_EVENT_MOUSE_MOTION:
-    if (!freeCamera.rotatingLocked)
-    {
-      freeCamera.rotatingRel.x += inputEvent.motion.xrel;
-      freeCamera.rotatingRel.y += inputEvent.motion.yrel;
-    }
-    break;
-  };
+  }
 }
 
 }

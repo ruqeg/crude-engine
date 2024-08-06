@@ -59,6 +59,8 @@ public:
   graphics::Storage_Buffer_Descriptor                           vertexIndicesBufferDescriptor;
 };
 
+// 0 component - core::shared_ptr<Mesh_Buffer>
+// 1 component - core::shared_ptr<scene::Mesh>
 void rendererGeometrySystemProcess(flecs::iter& it);
 
 }

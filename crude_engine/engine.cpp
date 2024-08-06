@@ -103,11 +103,13 @@ void Engine::initializeSystems()
 {
   m_world.set<scene::script::Window_Component>({});
 
-  flecs::query<scene::script::Free_Camera_Component> freeCameraUpdateEvent = m_world.query_builder<scene::script::Free_Camera_Component>().build();
-  flecs::query windowUpdateEvent = m_world.query_builder().build();
-  m_world.set<platform::Input_System_Component>(platform::Input_System_Component([freeCameraUpdateEvent, windowUpdateEvent]() {
-    freeCameraUpdateEvent.each(std::function(scene::script::freeCameraUpdateEventSystemEach));
-    windowUpdateEvent.run(std::function(scene::script::windowUpdateEventSystemProcess));
+  m_world.set<platform::Input_System_Component>(platform::Input_System_Component({ 
+    m_world.system<scene::script::Free_Camera_Component>("FreeCameraUpdateEvent")
+      .kind(flecs::OnUpdate)
+      .run(scene::script::freeCameraUpdateEventSystemProcess),
+    m_world.system("WindowUpdateEvent")
+      .kind(flecs::OnUpdate)
+      .run(scene::script::windowUpdateEventSystemProcess) 
   }));
 
   m_inputSystem = m_world.system("InputSystem")
@@ -116,7 +118,7 @@ void Engine::initializeSystems()
 
   m_freeCameraUpdateSystem = m_world.system<scene::script::Free_Camera_Component, scene::Transform>("FreeCameraUpdateSystem")
     .kind(flecs::OnUpdate)
-    .each(std::function(scene::script::freeCameraUpdateSystemEach));
+    .run(std::function(scene::script::freeCameraUpdateSystemProcess));
 
   m_rendererGeometrySystem = m_world.system<core::shared_ptr<graphics::Mesh_Buffer>, core::shared_ptr<scene::Mesh>>("RendererGeometrySystem")
     .kind(flecs::OnUpdate)
