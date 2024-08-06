@@ -2,6 +2,7 @@ module;
 
 #include <algorithm>
 #include <vulkan/vulkan.h>
+#include <memory>
 
 export module crude.graphics.buffer;
 
@@ -19,7 +20,8 @@ class Device;
 class Device_Memory;
 class Staging_Buffer;
 
-class Buffer : public Vulkan_Object<VkBuffer>
+class Buffer : public Vulkan_Object<VkBuffer>, 
+  public std::enable_shared_from_this<Buffer>
 {
 public:
   struct Initialize;

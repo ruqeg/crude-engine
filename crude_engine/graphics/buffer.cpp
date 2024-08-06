@@ -1,4 +1,5 @@
 #include <vulkan/vulkan.hpp>
+#include <memory>
 
 module crude.graphics.buffer;
 
@@ -75,14 +76,12 @@ void Buffer::copyTransfer(core::shared_ptr<Command_Buffer>        commandBuffer,
   region.srcOffset = srcOffset;
   region.dstOffset = dstOffset;
   region.size      = (VK_WHOLE_SIZE == size) ? wholeSize : size;
-  core::shared_ptr<Buffer> self = core::shared_ptr<Buffer>(this, [](Buffer*) {});
-  commandBuffer->copyBuffer(srcBuffer, self, region);
+  commandBuffer->copyBuffer(srcBuffer, shared_from_this(), region);
 }
 
 void Buffer::bindMemory(core::shared_ptr<Device_Memory> memory, VkDeviceSize offset)
 {
-  core::shared_ptr<Buffer> self = core::shared_ptr<Buffer>(this, [](Buffer*) {});
-  memory->bind(self);
+  memory->bind(shared_from_this());
   m_memory = memory;
 }
 

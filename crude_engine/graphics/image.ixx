@@ -1,6 +1,7 @@
 module;
 
 #include <vulkan/vulkan.hpp>
+#include <memory>
 
 export module crude.graphics.image;
 
@@ -16,7 +17,8 @@ class Device;
 class Device_Memory;
 class Staging_Buffer;
 
-class Image : public Vulkan_Object<VkImage>
+class Image : public Vulkan_Object<VkImage>,
+  public std::enable_shared_from_this<Image>
 {
 public:
   struct Initialize_Unique;
