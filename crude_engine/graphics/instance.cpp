@@ -99,7 +99,7 @@ core::vector<core::shared_ptr<Physical_Device>> Instance::getPhysicalDevices()
   core::vector<core::shared_ptr<Physical_Device>> physicaDevices(vkPhysicalDeviceCount);
   for (core::uint32 i = 0u; i < vkPhysicalDeviceCount; ++i)
   {
-    physicaDevices[i] = core::allocateShared<Physical_Device>(vkPhysicalDevices[i]);
+    physicaDevices[i] = core::allocateShared<Physical_Device>(vkPhysicalDevices[i], shared_from_this());
   }
   
   return physicaDevices;

@@ -84,8 +84,8 @@ Image::Image(core::shared_ptr<const Device>  device,
     memoryFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
   }
 
-  core::shared_ptr<Device_Memory> memory = core::allocateShared<Device_Memory>(m_device, getMemoryRequirements(), memoryFlags);
-  bindMemory(memory);
+  m_memory = core::allocateShared<Device_Memory>(m_device, getMemoryRequirements(), memoryFlags);
+  m_memory->bind(core::makeUnsafeSharedWithEmptyDestructor(this));
 }
   
 Image::~Image()
@@ -119,7 +119,8 @@ void Image::transitionMipLayout(core::shared_ptr<Command_Buffer> commandBuffer, 
     return;
   }
 
-  const Image_Memory_Barrier memoryBarrier(shared_from_this(), newLayout, Image_Subresource_Range(shared_from_this(), mipLevel, 1u, 0u, m_arrayLayersCount));
+  const std::shared_ptr<Image> self = core::makeUnsafeSharedWithEmptyDestructor(this);
+  const Image_Memory_Barrier memoryBarrier(self, newLayout, Image_Subresource_Range(self, mipLevel, 1u, 0u, m_arrayLayersCount));
   commandBuffer->barrier(srcStageMask, dstStageMask, memoryBarrier);
 }
 
@@ -171,7 +172,8 @@ void Image::copyMipFromBuffer(core::shared_ptr<Command_Buffer>        commandBuf
                               VkImageLayout                           dstLayout,
                               VkPipelineStageFlags                    dstStageMask)
 {
-  const Image_Subresource_Range imageRange(shared_from_this());
+  core::shared_ptr<Image> self = core::makeUnsafeSharedWithEmptyDestructor(this);
+  const Image_Subresource_Range imageRange(self);
 
   VkBufferImageCopy region;
   region.bufferOffset                     = bufferLayout.offset;
@@ -187,10 +189,10 @@ void Image::copyMipFromBuffer(core::shared_ptr<Command_Buffer>        commandBuf
   region.imageExtent                      = m_extent;
 
 
-  const Image_Memory_Barrier transferDst(shared_from_this(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, imageRange);
+  const Image_Memory_Barrier transferDst(self, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, imageRange);
   commandBuffer->barrier(VK_PIPELINE_STAGE_HOST_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, transferDst);
-  commandBuffer->copyBufferToImage(srcBuffer, shared_from_this(), region);
-  const Image_Memory_Barrier shaderRead(shared_from_this(), dstLayout, imageRange);
+  commandBuffer->copyBufferToImage(srcBuffer, self, region);
+  const Image_Memory_Barrier shaderRead(self, dstLayout, imageRange);
   commandBuffer->barrier(VK_PIPELINE_STAGE_TRANSFER_BIT, dstStageMask, shaderRead);
 }
   

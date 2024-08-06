@@ -32,8 +32,8 @@ Buffer::Buffer(const Initialize& info)
   VkResult result = vkCreateBuffer(m_device->getHandle(), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
   vulkanHandleResult(result, "failed to create buffer");
 
-  core::shared_ptr<Device_Memory> memory = core::allocateShared<Device_Memory>(m_device, getMemoryRequirements(), info.memoryFlags);
-  bindMemory(memory);
+  m_memory = core::allocateShared<Device_Memory>(m_device, getMemoryRequirements(), info.memoryFlags);
+  m_memory->bind(core::makeUnsafeSharedWithEmptyDestructor(this));
 }
 
 void Buffer::stagedUpload(core::shared_ptr<Command_Buffer> commandBuffer, const void* data, VkDeviceSize size) noexcept
@@ -76,7 +76,7 @@ void Buffer::copyTransfer(core::shared_ptr<Command_Buffer>        commandBuffer,
   region.srcOffset = srcOffset;
   region.dstOffset = dstOffset;
   region.size      = (VK_WHOLE_SIZE == size) ? wholeSize : size;
-  commandBuffer->copyBuffer(srcBuffer, shared_from_this(), region);
+  commandBuffer->copyBuffer(srcBuffer, core::makeUnsafeSharedWithEmptyDestructor(this), region);
 }
 
 void Buffer::bindMemory(core::shared_ptr<Device_Memory> memory, VkDeviceSize offset)

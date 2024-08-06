@@ -1,6 +1,7 @@
 module;
 
 #include <vulkan/vulkan.hpp>
+#include <memory>
 
 export module crude.graphics.instance;
 
@@ -14,7 +15,8 @@ export namespace crude::graphics
 
 class Physical_Device;
 
-class Instance : public Vulkan_Object<VkInstance>
+class Instance : public Vulkan_Object<VkInstance>,
+  public std::enable_shared_from_this<Instance>
 {
 public:
   explicit Instance(

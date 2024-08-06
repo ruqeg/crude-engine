@@ -35,7 +35,7 @@ Renderer_Core_Component::~Renderer_Core_Component()
 {
   device->waitIdle();
 }
-
+ 
 void Renderer_Core_Component::initializeInstance()
 {
   // Calculate extensions for instance

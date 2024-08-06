@@ -16,11 +16,12 @@ export namespace crude::graphics
 {
 
 class Surface;
+class Instance;
 
 class Physical_Device : public Vulkan_Object<VkPhysicalDevice>
 {
 public:
-  explicit Physical_Device(VkPhysicalDevice vkPhysicalDevice);
+  explicit Physical_Device(VkPhysicalDevice vkPhysicalDevice, core::shared_ptr<Instance> instance);
   bool checkPresentSupport(core::shared_ptr<const Surface> surface, core::uint32 queueFamilyIndex) const;
   bool checkSurfaceSupport(core::shared_ptr<const Surface> surface) const;
   Surface_Capabilities_KHR getSurfaceCapabilitis(core::shared_ptr<const Surface> surface) const;
@@ -36,7 +37,8 @@ public:
   VkPhysicalDeviceFeatures getFeatures() const;
   VkPhysicalDeviceMemoryProperties getMemoryProperties() const;
 private:
-  VkPhysicalDeviceProperties m_properties;
+  core::shared_ptr<Instance>  m_instance;
+  VkPhysicalDeviceProperties  m_properties;
 };
 
 }

@@ -56,4 +56,11 @@ shared_ptr<T> allocateShared(Args&&... args) noexcept
   return std::allocate_shared<T>(STD_Allocator<T>(), std::forward<Args>(args)...);
 }
 
+// !TODO idk, just need it for graphics T_T
+template <class T>
+std::shared_ptr<T> makeUnsafeSharedWithEmptyDestructor(T* ptr)
+{
+  return std::shared_ptr<T>(ptr, [](T*){});
+}
+
 }

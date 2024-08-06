@@ -40,36 +40,36 @@ void Engine::initialize(const Engine_Initialize& config)
     config.title, config.width, config.height, crude::platform::SDL_WINDOW_CONTAINER_FLAG_VULKAN);
   
   graphics::Renderer_Core_Component rendererCoreComponent(windowContainer);
-  //m_world.set<graphics::Renderer_Core_Component>(rendererCoreComponent);
-  //auto colorAttachment = core::allocateShared<graphics::Color_Attachment>(
-  //  rendererCoreComponent.device, rendererCoreComponent.swapchainImages.front()->getFormat(), rendererCoreComponent.swapchain->getExtent(), 1u,
-  //  rendererCoreComponent.device->getPhysicalDevice()->getProperties().getMaximumUsableSampleCount());
+  m_world.set<graphics::Renderer_Core_Component>(rendererCoreComponent);
+  auto colorAttachment = core::allocateShared<graphics::Color_Attachment>(
+    rendererCoreComponent.device, rendererCoreComponent.swapchainImages.front()->getFormat(), rendererCoreComponent.swapchain->getExtent(), 1u,
+    rendererCoreComponent.device->getPhysicalDevice()->getProperties().getMaximumUsableSampleCount());
 
-  //const VkFormat depthFormat = graphics::findDepthFormatSupportedByDevice(rendererCoreComponent.device->getPhysicalDevice(), graphics::depth_formats::gDepthStencilCandidates);
-  //auto depthStencilAttachment = core::allocateShared<graphics::Depth_Stencil_Attachment>(
-  //  rendererCoreComponent.device, depthFormat, rendererCoreComponent.swapchain->getExtent(), 1u,
-  //  rendererCoreComponent.device->getPhysicalDevice()->getProperties().getMaximumUsableSampleCount());
+  const VkFormat depthFormat = graphics::findDepthFormatSupportedByDevice(rendererCoreComponent.device->getPhysicalDevice(), graphics::depth_formats::gDepthStencilCandidates);
+  auto depthStencilAttachment = core::allocateShared<graphics::Depth_Stencil_Attachment>(
+    rendererCoreComponent.device, depthFormat, rendererCoreComponent.swapchain->getExtent(), 1u,
+    rendererCoreComponent.device->getPhysicalDevice()->getProperties().getMaximumUsableSampleCount());
 
-  //m_world.set<graphics::Renderer_Geometry_Component>(graphics::Renderer_Geometry_Component(rendererCoreComponent.device, colorAttachment, depthStencilAttachment, rendererCoreComponent.swapchain, rendererCoreComponent.swapchainImagesViews));
-  //m_world.set<graphics::Renderer_Frame_Component>(graphics::Renderer_Frame_Component(rendererCoreComponent.device, rendererCoreComponent.graphicsCommandPool));
+  m_world.set<graphics::Renderer_Geometry_Component>(graphics::Renderer_Geometry_Component(rendererCoreComponent.device, colorAttachment, depthStencilAttachment, rendererCoreComponent.swapchain, rendererCoreComponent.swapchainImagesViews));
+  m_world.set<graphics::Renderer_Frame_Component>(graphics::Renderer_Frame_Component(rendererCoreComponent.device, rendererCoreComponent.graphicsCommandPool));
 
-  //resources::GLTF_Loader gltfLoader(m_world.get_mut<graphics::Renderer_Core_Component>()->transferCommandPool, m_world);
-  //m_sceneNode = gltfLoader.loadNodeFromFile("../../crude_example/basic_triangle_examle/resources/sponza.glb");
+  resources::GLTF_Loader gltfLoader(m_world.get_mut<graphics::Renderer_Core_Component>()->transferCommandPool, m_world);
+  m_sceneNode = gltfLoader.loadNodeFromFile("../../crude_example/basic_triangle_examle/resources/sponza.glb");
 
-  //flecs::entity cameraNode = m_world.entity("camera node");
-  //cameraNode.set<scene::Camera>([windowContainer](){
-  //  scene::Camera camera;
-  //  camera.calculateViewToClipMatrix(DirectX::XM_PIDIV4, windowContainer->getAspect(), 0.05f, 100.0f);
-  //  return camera;
-  //}());
-  //cameraNode.set<scene::Transform>([&cameraNode]() {
-  //  scene::Transform transform(cameraNode);
-  //  transform.setTranslation(0.0, 0.0, -2.0);
-  //  return transform;
-  //}());
-  //cameraNode.set<scene::script::Free_Camera_Component>(scene::script::Free_Camera_Component());
-  //cameraNode.child_of(m_sceneNode);
-  //m_world.get_mut<graphics::Renderer_Frame_Component>()->cameraNode = cameraNode;
+  flecs::entity cameraNode = m_world.entity("camera node");
+  cameraNode.set<scene::Camera>([windowContainer](){
+    scene::Camera camera;
+    camera.calculateViewToClipMatrix(DirectX::XM_PIDIV4, windowContainer->getAspect(), 0.05f, 100.0f);
+    return camera;
+  }());
+  cameraNode.set<scene::Transform>([&cameraNode]() {
+    scene::Transform transform(cameraNode);
+    transform.setTranslation(0.0, 0.0, -2.0);
+    return transform;
+  }());
+  cameraNode.set<scene::script::Free_Camera_Component>(scene::script::Free_Camera_Component());
+  cameraNode.child_of(m_sceneNode);
+  m_world.get_mut<graphics::Renderer_Frame_Component>()->cameraNode = cameraNode;
   
   m_timer.setFrameRate(60);
 }
@@ -91,10 +91,10 @@ void Engine::mainLoop()
     if (m_timer.frameElasped(elapsed))
     {
       core::logInfo(core::Debug::Channel::All, "fps: %i\n", (int)(1.0 / elapsed));
-     /* m_freeCameraUpdateSystem.run(elapsed);
+      m_freeCameraUpdateSystem.run(elapsed);
       m_rendererFrameStartSystem.run();
       m_rendererGeometrySystem.run();
-      m_rendererFrameSubmitSystem.run();*/
+      m_rendererFrameSubmitSystem.run();
     }
   }
 }

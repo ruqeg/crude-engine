@@ -4,11 +4,13 @@ module crude.graphics.physical_device;
 
 import crude.core.logger;
 import crude.graphics.surface;
+import crude.graphics.instance;
 
 namespace crude::graphics
 {
  
-Physical_Device::Physical_Device(VkPhysicalDevice vkPhysicalDevice)
+Physical_Device::Physical_Device(VkPhysicalDevice vkPhysicalDevice, core::shared_ptr<Instance> instance)
+  : m_instance(instance)
 {
   m_handle = vkPhysicalDevice;
 }
