@@ -149,6 +149,11 @@ const VkExtent2D Swap_Chain::getExtent() const
   return m_extent;
 }
 
+core::shared_ptr<const Device> Swap_Chain::getDevice()
+{
+  return m_device;
+}
+
 Swap_Chain_Next_Image::Swap_Chain_Next_Image(core::uint32 imageIndex, VkResult result)
   :
   m_imageIndex(imageIndex),

@@ -8,16 +8,16 @@ import crude.graphics.format;
 namespace crude::graphics
 {
 
-Image_Subresource_Range::Image_Subresource_Range(core::shared_ptr<Image> image)
+Image_Subresource_Range::Image_Subresource_Range(core::shared_ptr<const Image> image)
   :
   Image_Subresource_Range(image, 0u, image->getMipLevelsCount(), 0u, image->getArrayLayersCount())
 {}
 
-Image_Subresource_Range::Image_Subresource_Range(core::shared_ptr<Image>  image,
-                                                 core::uint32             baseMipLevel,
-                                                 core::uint32             levelCount,
-                                                 core::uint32             baseArrayLayer,
-                                                 core::uint32             layerCount)
+Image_Subresource_Range::Image_Subresource_Range(core::shared_ptr<const Image>  image,
+                                                 core::uint32                   baseMipLevel,
+                                                 core::uint32                   levelCount,
+                                                 core::uint32                   baseArrayLayer,
+                                                 core::uint32                   layerCount)
 {
   this->baseMipLevel    = baseMipLevel;
   this->levelCount      = levelCount;

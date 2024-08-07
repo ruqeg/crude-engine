@@ -75,6 +75,7 @@ public:
   const VkImageUsageFlags getImageUsage() const;
   const VkSurfaceFormatKHR getSurfaceFormat() const;
   const VkExtent2D getExtent() const;
+  core::shared_ptr<const Device> getDevice();
 private:
   core::shared_ptr<const Device>                   m_device;
   core::shared_ptr<const Surface>                  m_surface;

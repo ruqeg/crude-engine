@@ -17,6 +17,7 @@ class Image;
 class Image_View : public Vulkan_Object<VkImageView>
 {
 public:
+  explicit Image_View(core::shared_ptr<const Image> image);
   explicit Image_View(core::shared_ptr<const Image>   image,
                       VkFormat                        format,
                       const Image_Subresource_Range&  subresourceRange,

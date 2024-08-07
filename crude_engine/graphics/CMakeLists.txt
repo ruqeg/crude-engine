@@ -1,7 +1,9 @@
 target_sources(crude_engine
     PRIVATE
+    gbuffer.cpp
+    renderer_fullscreen_geometry_system.cpp
     renderer_frame_system.cpp
-    renderer_geometry_system.cpp
+    renderer_deferred_geometry_system.cpp
     renderer_core_component.cpp
     mesh_buffer.cpp
     texture.cpp
@@ -47,8 +49,10 @@ target_sources(crude_engine
 target_sources(crude_engine
     PUBLIC
     FILE_SET cxx_modules_graphics TYPE CXX_MODULES FILES
+    gbuffer.ixx
+    renderer_fullscreen_geometry_system.ixx
     renderer_frame_system.ixx
-    renderer_geometry_system.ixx
+    renderer_deferred_geometry_system.ixx
     renderer_core_component.ixx
     mesh_buffer.ixx
     texture.ixx

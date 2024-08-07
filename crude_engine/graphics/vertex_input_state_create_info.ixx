@@ -14,8 +14,8 @@ class Vertex_Input_State_Create_Info : public VkPipelineVertexInputStateCreateIn
 public:
   struct Initialize
   {
-    core::span<const VkVertexInputBindingDescription>   bindings;
-    core::span<const VkVertexInputAttributeDescription> attributes;
+    core::span<const VkVertexInputBindingDescription>   bindings {};
+    core::span<const VkVertexInputAttributeDescription> attributes {};
   };
 public:
   explicit Vertex_Input_State_Create_Info(const Initialize& info)

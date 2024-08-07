@@ -123,6 +123,7 @@ Subpass_Description::Subpass_Description(VkPipelineBindPoint pipelineBindPoint) 
   this->preserveAttachmentCount = 0;
   this->pPreserveAttachments    = nullptr;
 }
+
 Subpass_Description::Subpass_Description(VkImageLayout colorLayout, VkImageLayout depthStencilLayout) noexcept
   : Subpass_Description(VK_PIPELINE_BIND_POINT_GRAPHICS)
 {

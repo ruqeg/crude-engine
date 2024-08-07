@@ -13,6 +13,10 @@ target_link_libraries(crude_engine PUBLIC flecs DirectXMath meshoptimizer tinygl
 get_target_property(CRUDE_SHADERS_INCLUDE crude_shaders INCLUDE_DIRECTORIES)
 target_include_directories(crude_engine PUBLIC ${CRUDE_SHADERS_INCLUDE})
 
+if(MSVC)
+ target_compile_options(crude_engine PRIVATE "/MP")
+endif()
+
 add_compile_definitions(_CRUDE_SSE_INTRINSICS _CRUDE_NO_INTRINSICS)
 
 target_sources(crude_engine PRIVATE engine.cpp)

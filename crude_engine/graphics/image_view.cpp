@@ -8,21 +8,23 @@ import crude.graphics.device;
 
 namespace crude::graphics
 {
+
+Image_View::Image_View(core::shared_ptr<const Image> image)
+  : Image_View(image, Image_Subresource_Range(image))
+{}
   
 Image_View::Image_View(core::shared_ptr<const Image>   image,
                        const Image_Subresource_Range&  subresourceRange,
                        const VkComponentMapping&       components)
-  :
-  Image_View(image, image->getFormat(), subresourceRange, components)
+  : Image_View(image, image->getFormat(), subresourceRange, components)
 {}
 
 Image_View::Image_View(core::shared_ptr<const Image>   image,
                        VkFormat                        format,
                        const Image_Subresource_Range&  subresourceRange,
                        const VkComponentMapping&       components)
-  :
-  m_image(image),
-  m_subresourceRange(subresourceRange)
+  : m_image(image)
+  , m_subresourceRange(subresourceRange)
 {
   VkImageViewCreateInfo vkCreateInfo{};
   vkCreateInfo.sType                            = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
