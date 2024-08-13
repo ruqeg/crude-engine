@@ -2,76 +2,19 @@
 #extension GL_EXT_mesh_shader : require
 #extension GL_EXT_shader_16bit_storage: require
 #extension GL_EXT_shader_8bit_storage: require
+#extension GL_GOOGLE_include_directive: require
 
-const uint cMaxMeshWorkGroupSize    = 128;
-const uint cMaxVerticesPerMeshlet   = 64;
-const uint cMaxPrimitivesPerMeshlet = 124;
+#include "mesh.h"
 
 layout(local_size_x=cMaxMeshWorkGroupSize, local_size_y=1, local_size_z=1) in;
 layout(triangles) out;
 layout(max_vertices=cMaxVerticesPerMeshlet, max_primitives=cMaxPrimitivesPerMeshlet) out;
-
-struct Meshlet
-{
-  uint8_t  vertexCount;
-  uint8_t  primitiveCount;
-  uint     vertexOffset;
-  uint     primitiveOffest;
-};
-
-struct Vertex
-{
-  vec3 position;
-  vec3 normal;
-  vec2 texCoord;
-};
-
-struct Mesh_Lod
-{
-  uint indexOffset;
-  uint indexCount;
-  uint meshletOffset;
-  uint meshletCount;
-};
-
-struct Mesh
-{
-  uint vertexOffset;
-  uint vertexCount;
-  uint lodCount;
-  Mesh_Lod lods[8];
-};
-
-struct Camera
-{
-  mat4 worldToView;
-  mat4 viewToClip;
-  mat4 clipToView;
-  mat4 viewToWorld;
-};
-
-struct SubMeshLod
-{
-  uint indexOffset;
-  uint indexCount;
-  uint meshletOffset;
-  uint meshletCount;
-};
-
-struct SubMeshDraw
-{
-  uint        vertexOffset;
-  uint        vertexCount;
-  uint        lodCount;
-  SubMeshLod  lods[8];
-};
 
 layout(push_constant) uniform PerSubmesh
 {
   // !TODO move meshToWorld
   mat4  meshToWorld;
   uint  drawID;
-
 } perSubmesh;
 
 layout(binding=0, row_major) uniform Per_Frame

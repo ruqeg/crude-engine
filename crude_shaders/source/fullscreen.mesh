@@ -1,0 +1,45 @@
+#version 450
+#extension GL_EXT_mesh_shader : require
+
+layout(local_size_x=1, local_size_y=1, local_size_z=1) in;
+layout(triangles) out;
+layout(max_vertices=3, max_primitives=1) out;
+
+layout(location=0) out PerVertexData {
+  vec2 texCoord;
+} v_out[];
+
+const vec4 cFullscreenPosition[3] =
+{
+  vec4(-1.0f, -1.0f, 1.0f, 1.0f),
+  vec4(-1.0f,  3.0f, 1.0f, 1.0f),
+  vec4( 3.0f, -1.0f, 1.0f, 1.0f)
+};
+
+const vec2 cFullScreenTexcoord[3] =
+{
+  vec2(0.0f, 1.0f),
+  vec2(0.0f, -1.0f),
+  vec2(2.0f, 1.0f)
+};
+
+void main()
+{
+  const uint groupThreadIndex = gl_LocalInvocationID.x;
+
+  const uint vertexCount = 3;
+  const uint primitiveCount = 1;
+
+  SetMeshOutputsEXT(vertexCount, primitiveCount);
+  
+  if (groupThreadIndex < vertexCount)
+  {
+    gl_MeshVerticesEXT[groupThreadIndex].gl_Position = cFullscreenPosition[groupThreadIndex];
+    v_out[groupThreadIndex].texCoord = cFullScreenTexcoord[groupThreadIndex];
+  }
+
+  if (groupThreadIndex < primitiveCount)
+  {
+    gl_PrimitiveTriangleIndicesEXT[groupThreadIndex] = uvec3(0, 1, 2);
+  }
+}

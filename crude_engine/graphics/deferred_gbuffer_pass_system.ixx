@@ -4,7 +4,7 @@ module;
 #include <directxmath/DirectXMath.h>
 #include <flecs.h>
 
-export module crude.graphics.deferred_pbr_pass_system;
+export module crude.graphics.deferred_gbuffer_pass_system;
 
 export import crude.core.std_containers_stack;
 export import crude.core.std_containers_heap;
@@ -35,11 +35,11 @@ class Mesh_Buffer;
 class Swap_Chain_Image;
 class GBuffer;
 
-struct Deferred_PBR_Pass_Component
+struct Deferred_GBuffer_Pass_Component
 {
 public:
-  Deferred_PBR_Pass_Component();
-  Deferred_PBR_Pass_Component(core::shared_ptr<Device> device, const VkExtent2D& extent, core::uint32 swapchainImagesCount);
+  Deferred_GBuffer_Pass_Component();
+  Deferred_GBuffer_Pass_Component(core::shared_ptr<Device> device, const VkExtent2D& extent, core::uint32 swapchainImagesCount);
 private:
   core::shared_ptr<Descriptor_Set_Layout> createDescriptorSetLayout();
   void initializeRenderPass();
@@ -57,7 +57,7 @@ public:
   core::shared_ptr<GBuffer>                                     gbuffer;
 
   core::array<Uniform_Buffer_Descriptor, cFramesCount>          perFrameBufferDescriptors;
-  core::array<Combined_Image_Sampler_Descriptor, cFramesCount>  textureSamplerDescriptors;
+  core::array<Combined_Image_Sampler_Descriptor, cFramesCount>  submeshTextureDescriptors;
   graphics::Storage_Buffer_Descriptor                           submeshesDrawsBufferDescriptor;
   graphics::Storage_Buffer_Descriptor                           vertexBufferDescriptor;
   graphics::Storage_Buffer_Descriptor                           meshletBufferDescriptor;
@@ -67,6 +67,6 @@ public:
 
 // 0 component - core::shared_ptr<Mesh_Buffer>
 // 1 component - core::shared_ptr<scene::Mesh>
-void deferredPbrPassSystemProcess(flecs::iter& it);
+void deferredGBufferPassSystemProcess(flecs::iter& it);
 
 }

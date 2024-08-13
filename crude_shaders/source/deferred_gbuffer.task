@@ -2,36 +2,11 @@
 #extension GL_EXT_mesh_shader : require
 #extension GL_EXT_shader_16bit_storage: require
 #extension GL_EXT_shader_8bit_storage: require
+#extension GL_GOOGLE_include_directive: require
 
-const uint cMaxTaskWorkGroupSize    = 128;
-const uint cMaxVerticesPerMeshlet   = 64;
-const uint cMaxPrimitivesPerMeshlet = 124;
+#include "mesh.h"
 
 layout (local_size_x=cMaxTaskWorkGroupSize, local_size_y=1, local_size_z=1) in;
-
-struct Meshlet
-{
-  uint8_t  vertexCount;
-  uint8_t  primitiveCount;
-  uint     vertexOffset;
-  uint     primitiveOffest;
-};
-
-struct SubMeshLod
-{
-  uint indexOffset;
-  uint indexCount;
-  uint meshletOffset;
-  uint meshletCount;
-};
-
-struct SubMeshDraw
-{
-  uint        vertexOffset;
-  uint        vertexCount;
-  uint        lodCount;
-  SubMeshLod  lods[8];
-};
 
 layout(push_constant) uniform PerSubmesh
 {

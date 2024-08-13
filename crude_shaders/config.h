@@ -1,4 +1,0 @@
-#define TASK_WGSIZE 64
-#define MESH_WGSIZE 64
-#define MESH_MAXVTX 64
-#define MESH_MAXTRI 128

@@ -124,16 +124,44 @@ Subpass_Description::Subpass_Description(VkPipelineBindPoint pipelineBindPoint) 
   this->pPreserveAttachments    = nullptr;
 }
 
-Subpass_Description::Subpass_Description(VkImageLayout colorLayout, VkImageLayout depthStencilLayout) noexcept
+Subpass_Description::Subpass_Description(const Initialize_Color& initialize) noexcept
   : Subpass_Description(VK_PIPELINE_BIND_POINT_GRAPHICS)
 {
-  if (colorLayout != VK_IMAGE_LAYOUT_UNDEFINED)
+  if (initialize.colorLayout != VK_IMAGE_LAYOUT_UNDEFINED)
   {
     VkAttachmentReference* colorReference = core::defaultCxxAllocate<VkAttachmentReference>();
     if (colorReference)
     {
       colorReference->attachment = 0;
-      colorReference->layout = colorLayout;
+      colorReference->layout = initialize.colorLayout;
+    }
+    this->pColorAttachments = colorReference;
+    this->colorAttachmentCount = 1;
+  }
+}
+
+Subpass_Description::Subpass_Description(const Initialize_Color_Resolve& initialize) noexcept
+  : Subpass_Description( Initialize_Color { .colorLayout = initialize.colorLayout })
+{
+  VkAttachmentReference* resolveReference = core::defaultCxxAllocate<VkAttachmentReference>();
+  if (resolveReference)
+  {
+    resolveReference->attachment = 1;
+    resolveReference->layout = initialize.resolveLayout;
+  }
+  this->pResolveAttachments = resolveReference;
+}
+
+Subpass_Description::Subpass_Description(const Initialize_Color_Depth& initialize) noexcept
+  : Subpass_Description(VK_PIPELINE_BIND_POINT_GRAPHICS)
+{
+  if (initialize.colorLayout != VK_IMAGE_LAYOUT_UNDEFINED)
+  {
+    VkAttachmentReference* colorReference = core::defaultCxxAllocate<VkAttachmentReference>();
+    if (colorReference)
+    {
+      colorReference->attachment = 0;
+      colorReference->layout = initialize.colorLayout;
     }
     this->pColorAttachments = colorReference;
     this->colorAttachmentCount = 1;
@@ -143,32 +171,32 @@ Subpass_Description::Subpass_Description(VkImageLayout colorLayout, VkImageLayou
   if (depthStencilReference)
   {
     depthStencilReference->attachment = 1;
-    depthStencilReference->layout = depthStencilLayout;
+    depthStencilReference->layout = initialize.depthStencilLayout;
   }
   this->pDepthStencilAttachment = depthStencilReference;
 }
 
-Subpass_Description::Subpass_Description(VkImageLayout colorLayout, VkImageLayout depthStencilLayout, VkImageLayout resolveLayout) noexcept
-  : Subpass_Description(colorLayout, depthStencilLayout)
-{
+Subpass_Description::Subpass_Description(const Initialize_Color_Depth_Resolve& initialize) noexcept
+  : Subpass_Description(Initialize_Color_Depth { .colorLayout = initialize.colorLayout, .depthStencilLayout = initialize.depthStencilLayout })
+{ 
   VkAttachmentReference* resolveReference = core::defaultCxxAllocate<VkAttachmentReference>();
   if (resolveReference)
   {
     resolveReference->attachment = 2;
-    resolveReference->layout = resolveLayout;
+    resolveReference->layout = initialize.resolveLayout;
   }
   this->pResolveAttachments = resolveReference;
 }
 
-Subpass_Description::Subpass_Description(core::span<const VkImageLayout> colorLayouts, VkImageLayout depthStencilLayout) noexcept
+Subpass_Description::Subpass_Description(const Initialize_Color_Array_Depth& initialize) noexcept
   : Subpass_Description(VK_PIPELINE_BIND_POINT_GRAPHICS)
 {
-  if (!colorLayouts.empty())
+  if (!initialize.colorLayouts.empty())
   {
-    VkAttachmentReference* colorReferences = core::defaultCxxAllocate<VkAttachmentReference>(colorLayouts.size());
+    VkAttachmentReference* colorReferences = core::defaultCxxAllocate<VkAttachmentReference>(initialize.colorLayouts.size());
     if (colorReferences)
     {
-      for (auto layout : colorLayouts)
+      for (auto layout : initialize.colorLayouts)
       {
         colorReferences[this->colorAttachmentCount].attachment = this->colorAttachmentCount;
         colorReferences[this->colorAttachmentCount].layout = layout;
@@ -182,7 +210,7 @@ Subpass_Description::Subpass_Description(core::span<const VkImageLayout> colorLa
   if (depthStencilReference)
   {
     depthStencilReference->attachment = 1;
-    depthStencilReference->layout = depthStencilLayout;
+    depthStencilReference->layout = initialize.depthStencilLayout;
   }
   this->pDepthStencilAttachment = depthStencilReference;
 }

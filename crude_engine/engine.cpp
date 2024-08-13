@@ -16,7 +16,8 @@ import crude.platform.sdl_window_container;
 import crude.platform.input_system;
 import crude.resources.gltf_loader;
 import crude.graphics.renderer_core_component;
-import crude.graphics.deferred_pbr_pass_system;
+import crude.graphics.deferred_gbuffer_pass_system;
+import crude.graphics.fullscreen_pbr_pass_system;
 import crude.graphics.renderer_frame_system;
 import crude.graphics.device;
 import crude.graphics.physical_device;
@@ -41,11 +42,16 @@ void Engine::initialize(const Engine_Initialize& config)
   
   graphics::Renderer_Core_Component rendererCoreComponent(windowContainer);
   m_world.set<graphics::Renderer_Core_Component>(rendererCoreComponent);
-  m_world.set<graphics::Deferred_PBR_Pass_Component>({ 
+  m_world.set<graphics::Deferred_GBuffer_Pass_Component>({ 
     rendererCoreComponent.device, 
     rendererCoreComponent.swapchain->getExtent(), 
     static_cast<core::uint32>(rendererCoreComponent.swapchainImagesViews.size()) });
-  m_world.set<graphics::Renderer_Frame_Component>(graphics::Renderer_Frame_Component(rendererCoreComponent.device, rendererCoreComponent.graphicsCommandPool));
+
+  m_world.set<graphics::Fullscreen_PBR_Pass_Component>({
+    m_world.get_mut<graphics::Deferred_GBuffer_Pass_Component>()->gbuffer,
+    rendererCoreComponent.swapchain });
+
+  m_world.set<graphics::Renderer_Frame_Component>({ rendererCoreComponent.device, rendererCoreComponent.graphicsCommandPool });
 
   resources::GLTF_Loader gltfLoader(m_world.get_mut<graphics::Renderer_Core_Component>()->transferCommandPool, m_world);
   m_sceneNode = gltfLoader.loadNodeFromFile("../../crude_example/basic_triangle_examle/resources/sponza.glb");
@@ -87,7 +93,7 @@ void Engine::mainLoop()
       core::logInfo(core::Debug::Channel::All, "fps: %i\n", (int)(1.0 / elapsed));
       m_freeCameraUpdateSystem.run(elapsed);
       m_rendererFrameStartSystem.run();
-      m_deferredPbrPassSystem.run();
+      m_deferredGBufferPassSystem.run();
       m_rendererFrameSubmitSystem.run();
     }
   }
@@ -114,9 +120,9 @@ void Engine::initializeSystems()
     .kind(flecs::OnUpdate)
     .run(scene::script::freeCameraUpdateSystemProcess);
 
-  m_deferredPbrPassSystem = m_world.system<core::shared_ptr<graphics::Mesh_Buffer>, core::shared_ptr<scene::Mesh>>("DeferredPbrPassSystem")
+  m_deferredGBufferPassSystem = m_world.system<core::shared_ptr<graphics::Mesh_Buffer>, core::shared_ptr<scene::Mesh>>("DeferredGBufferPassSystem")
     .kind(flecs::OnUpdate)
-    .run(graphics::deferredPbrPassSystemProcess);
+    .run(graphics::deferredGBufferPassSystemProcess);
 
   m_rendererFrameStartSystem = m_world.system("RendererFrameStartSystem")
     .kind(flecs::OnUpdate)
