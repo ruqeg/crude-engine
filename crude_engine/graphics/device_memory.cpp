@@ -79,7 +79,7 @@ void Device_Memory::bind(core::shared_ptr<Image> image, VkDeviceSize offset)
   vkBindImageMemory(m_device->getHandle(), image->getHandle(), m_handle, offset);
 }
 
-core::Optional<void*> Device_Memory::map(VkDeviceSize offset, VkDeviceSize size, VkMemoryMapFlags flags)
+core::optional<void*> Device_Memory::map(VkDeviceSize offset, VkDeviceSize size, VkMemoryMapFlags flags)
 {
   void* dst;
   VkResult result = vkMapMemory(m_device->getHandle(), m_handle, offset, size, flags, &dst);

@@ -4,7 +4,6 @@ module;
 
 export module crude.graphics.device;
 
-export import crude.core.optional;
 export import crude.core.std_containers_heap;
 export import crude.core.std_containers_stack;
 export import crude.graphics.vulkan_object;
@@ -28,10 +27,10 @@ public:
 
   ~Device();
   core::shared_ptr<const Physical_Device> getPhysicalDevice() const;
-  core::Optional<core::shared_ptr<Queue>> getQueueByFlag(VkQueueFlagBits flags, core::uint32 queueIndex) const;
-  core::Optional<core::shared_ptr<Queue>> getQueueByFamily(core::uint32 queueFamilyIndex, core::uint32 queueIndex) const;
-  void updateDescriptorSets(const core::span<const VkWriteDescriptorSet>  descriptorWrites,
-                            const core::span<const VkCopyDescriptorSet>   descriptorCopies);
+  core::optional<core::shared_ptr<Queue>> getQueueByFlag(VkQueueFlagBits flags, core::uint32 queueIndex) const;
+  core::optional<core::shared_ptr<Queue>> getQueueByFamily(core::uint32 queueFamilyIndex, core::uint32 queueIndex) const;
+  void updateDescriptorSets(core::span<const VkWriteDescriptorSet>  descriptorWrites,
+                            core::span<const VkCopyDescriptorSet>   descriptorCopies);
   void waitIdle();
   bool waitForFences(core::span<Fence> fences, bool waitAll, core::uint64 timeout = UINT64_MAX) const;
   bool resetForFences(core::span<Fence> fences) const;

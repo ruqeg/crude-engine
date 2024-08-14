@@ -22,7 +22,6 @@ target_sources(crude_engine
     debug_utils_messenger.cpp
     shader_module.cpp
     shader_stage_create_info.cpp
-    subpass_dependency.cpp
     subpass_description.cpp
     swap_chain.cpp
     vulkan_allocator.cpp

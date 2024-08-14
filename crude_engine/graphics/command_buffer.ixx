@@ -8,6 +8,7 @@ import crude.core.std_containers_stack;
 import crude.graphics.vulkan_object;
 export import crude.graphics.image_memory_barrier;
 export import crude.core.std_containers_heap;
+export import crude.core.std_containers_stack;
 export import crude.graphics.scissor;
 export import crude.graphics.viewport;
 
@@ -75,9 +76,10 @@ public:
 private:
   void pushConstantBase(core::shared_ptr<const Pipeline_Layout> layout, core::span<const core::byte> data, core::uint32 offset);
 private:
-  const core::shared_ptr<Command_Pool>  m_commandPool;
-  bool                                  m_withinRenderPass = false;
-  bool                                  m_recording = false;
+  const core::shared_ptr<Command_Pool>            m_commandPool;
+  core::optional<core::shared_ptr<Render_Pass>>   m_boundedRenderPass;
+  bool                                            m_withinRenderPass = false;
+  bool                                            m_recording = false;
 };
 
 template<class T>

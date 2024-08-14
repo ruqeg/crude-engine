@@ -4,7 +4,6 @@ module;
 
 export module crude.graphics.queue;
 
-import crude.core.optional;
 import crude.core.std_containers_stack;
 import crude.core.std_containers_heap;
 import crude.graphics.vulkan_object;
@@ -44,7 +43,7 @@ public:
               core::span<const VkPipelineStageFlags>              waitStageMasks = {},
               core::span<const core::shared_ptr<Semaphore>>       waitSemaphores = {},
               core::span<const core::shared_ptr<Semaphore>>       signalSemaphores = {},
-              const core::Optional<core::shared_ptr<Fence>>&      fence = core::nullopt);
+              const core::optional<core::shared_ptr<Fence>>&      fence = core::nullopt);
   Queue_Present_Result present(core::span<const core::shared_ptr<Swap_Chain>>  swapchains,
                                core::span<const core::uint32>                  imageIndices,
                                core::span<const core::shared_ptr<Semaphore>>   waitSemaphores = {});

@@ -4,8 +4,8 @@ module;
 
 export module crude.graphics.device_memory;
 
+export import crude.core.std_containers_stack;
 export import crude.core.std_containers_heap;
-export import crude.core.optional;
 import crude.graphics.vulkan_object;
 
 export namespace crude::graphics
@@ -34,7 +34,7 @@ public:
 
   void bind(core::shared_ptr<Image> image, VkDeviceSize offset = 0u);
   void bind(core::shared_ptr<Buffer> buffer, VkDeviceSize offset = 0u);
-  core::Optional<void*> map(VkDeviceSize offset = 0u, VkDeviceSize size = VK_WHOLE_SIZE, VkMemoryMapFlags flags = 0);
+  core::optional<void*> map(VkDeviceSize offset = 0u, VkDeviceSize size = VK_WHOLE_SIZE, VkMemoryMapFlags flags = 0);
   void* mapUnsafe(VkDeviceSize offset = 0u, VkDeviceSize size = VK_WHOLE_SIZE, VkMemoryMapFlags flags = 0);
   void unmap();
   core::shared_ptr<const Device> getDevice() const;

@@ -21,7 +21,7 @@ public:
     :
     Image_2D(device, depthStencilFormat, extent, mipLevelsCount,
       1u, samples, 0u, 
-      VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_IMAGE_TILING_OPTIMAL, sharingMode)
+      VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_IMAGE_TILING_OPTIMAL, sharingMode)
   {}
 };
 
@@ -37,7 +37,7 @@ public:
     :
     Image_2D(device, format, extent, mipLevelsCount,
       1u, samples, 0u, 
-      VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VK_IMAGE_TILING_OPTIMAL, sharingMode)
+      VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VK_IMAGE_TILING_OPTIMAL, sharingMode)
   {}
 };
 

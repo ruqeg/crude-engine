@@ -14,7 +14,7 @@ namespace crude::graphics
 void flush(core::shared_ptr<Command_Buffer> commandBuffer)
 {
   const core::uint32 queueFamilyIndex = commandBuffer->getCommandPool()->getQueueFamilyIndex();
-  core::shared_ptr<Queue> queue = commandBuffer->getDevice()->getQueueByFamily(queueFamilyIndex, 0u).valueOr(nullptr);
+  core::shared_ptr<Queue> queue = commandBuffer->getDevice()->getQueueByFamily(queueFamilyIndex, 0u).value_or(nullptr);
   if (queue.get() == nullptr)
   {
     core::logError(core::Debug::Channel::Graphics, "Failed to get queue by index %i in crude::graphics::flush", queueFamilyIndex);

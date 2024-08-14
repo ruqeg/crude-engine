@@ -4,7 +4,7 @@ module;
 
 export module crude.graphics.uniform_buffer;
 
-export import crude.core.optional;
+export import crude.core.std_containers_stack;
 export import crude.graphics.buffer;
 
 export namespace crude::graphics
@@ -29,7 +29,7 @@ class Uniform_Buffer : public Uniform_Buffer_Base
 {
 public:
   explicit Uniform_Buffer(core::shared_ptr<const Device> device);
-  core::Optional<T*> map();
+  core::optional<T*> map();
   T* mapUnsafe();
   void unmap();
 };
@@ -41,9 +41,9 @@ Uniform_Buffer<T>::Uniform_Buffer(core::shared_ptr<const Device> device)
 {}
 
 template<class T>
-core::Optional<T*> Uniform_Buffer<T>::map()
+core::optional<T*> Uniform_Buffer<T>::map()
 {
-  core::Optional<void*> data = m_memory->map();
+  core::optional<void*> data = m_memory->map();
   return data.hasValue() ? static_cast<T*>(data.value()) : core::nullopt;
 }
 

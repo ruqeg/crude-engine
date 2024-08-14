@@ -6,7 +6,6 @@ module;
 
 export module crude.graphics.buffer;
 
-import crude.core.optional;
 export import crude.graphics.device_memory;
 export import crude.core.std_containers_stack;
 export import crude.core.std_containers_heap;

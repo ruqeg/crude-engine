@@ -9,7 +9,7 @@ export module crude.resources.gltf_loader;
 
 export import crude.scene.mesh;
 export import crude.core.std_containers_heap;
-export import crude.core.optional;
+export import crude.core.std_containers_stack;
 import crude.core.logger;
 import crude.core.assert;
 

@@ -117,8 +117,8 @@ const core::vector<core::shared_ptr<Swap_Chain_Image>>& Swap_Chain::getSwapchain
   return m_swapChainImages;
 }
 
-Swap_Chain_Next_Image Swap_Chain::acquireNextImage(const core::Optional<core::shared_ptr<Semaphore>>&  semaphore,
-                                                   const core::Optional<core::shared_ptr<Fence>>&      fence,
+Swap_Chain_Next_Image Swap_Chain::acquireNextImage(const core::optional<core::shared_ptr<Semaphore>>&  semaphore,
+                                                   const core::optional<core::shared_ptr<Fence>>&      fence,
                                                    core::uint64                                        timeout)
 {
   core::uint32 imageIndex;
@@ -126,8 +126,8 @@ Swap_Chain_Next_Image Swap_Chain::acquireNextImage(const core::Optional<core::sh
     m_device->getHandle(),
     m_handle,
     timeout,
-    semaphore ? semaphore->getHandle() : VK_NULL_HANDLE,
-    fence ? fence->getHandle() : VK_NULL_HANDLE,
+    semaphore ? semaphore.value()->getHandle() : VK_NULL_HANDLE,
+    fence ? fence.value()->getHandle() : VK_NULL_HANDLE,
     &imageIndex);
 
   const Swap_Chain_Next_Image nextImage(imageIndex, result);
@@ -160,7 +160,7 @@ Swap_Chain_Next_Image::Swap_Chain_Next_Image(core::uint32 imageIndex, VkResult r
   m_result(result)
 {}
 
-core::Optional<core::uint32> Swap_Chain_Next_Image::getImageIndex() const
+core::optional<core::uint32> Swap_Chain_Next_Image::getImageIndex() const
 {
   if (failedAcquire())
     return core::nullopt;

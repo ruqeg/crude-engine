@@ -24,7 +24,7 @@ bool Queue::sumbit(core::span<const core::shared_ptr<Command_Buffer>>  commandBu
                    core::span<const VkPipelineStageFlags>              waitStageMasks,
                    core::span<const core::shared_ptr<Semaphore>>       waitSemaphores,
                    core::span<const core::shared_ptr<Semaphore>>       signalSemaphores,
-                   const core::Optional<core::shared_ptr<Fence>>&      fence)
+                   const core::optional<core::shared_ptr<Fence>>&      fence)
 {
   if (waitSemaphores.size() != waitStageMasks.size())
   {
@@ -57,7 +57,7 @@ bool Queue::sumbit(core::span<const core::shared_ptr<Command_Buffer>>  commandBu
   vkSumbitInfo.signalSemaphoreCount  = static_cast<core::uint32>(signalSemaphoreHandles.size());
   vkSumbitInfo.pSignalSemaphores     = signalSemaphoreHandles.data();
 
-  VkResult result = vkQueueSubmit(m_handle, 1u, &vkSumbitInfo, fence.hasValue() ? fence.value()->getHandle() : VK_NULL_HANDLE);
+  VkResult result = vkQueueSubmit(m_handle, 1u, &vkSumbitInfo, fence.has_value() ? fence.value()->getHandle() : VK_NULL_HANDLE);
   return result == VK_SUCCESS;
 }
 

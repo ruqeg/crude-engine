@@ -2,6 +2,7 @@ module;
 
 #include <array>
 #include <span>
+#include <optional>
 
 export module crude.core.std_containers_stack;
 
@@ -16,5 +17,10 @@ using span = std::span<T, N>;
 
 template<class T1, class T2>
 using pair = std::pair<T1, T2>;
+
+template<class T1>
+using optional = std::optional<T1>;
+
+constexpr std::nullopt_t nullopt = std::nullopt;
 
 }

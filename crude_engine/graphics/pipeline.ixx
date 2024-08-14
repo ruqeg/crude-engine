@@ -16,7 +16,6 @@ export import crude.graphics.depth_stencil_state_create_info;
 export import crude.graphics.color_blend_state_create_info;
 export import crude.graphics.dynamic_state_create_info;
 export import crude.graphics.tessellation_state_create_info;
-export import crude.core.optional;
 export import crude.core.std_containers_stack;
 export import crude.core.std_containers_heap;
 export import crude.graphics.pipeline_layout;
@@ -35,15 +34,15 @@ public:
                     core::shared_ptr<const Pipeline_Layout>                  pipelineLayout,
                     core::shared_ptr<const Pipeline>                         basePipeline,
                     const core::span<Shader_Stage_Create_Info>&              shaderStages,
-                    const core::Optional<Vertex_Input_State_Create_Info>&    vertexInputState,
-                    const core::Optional<Tessellation_State_Create_Info>&    tessellationState,
-                    const core::Optional<Input_Assembly_State_Create_Info>&  inputAsseblyState,
-                    const core::Optional<Viewport_State_Create_Info>&        viewportState,
-                    const core::Optional<Rasterization_State_Create_Info>&   rasterizationState,
-                    const core::Optional<Multisample_State_Create_Info>&     multisampleState,
-                    const core::Optional<Depth_Stencil_State_Create_Info>&   depthStencilState,
-                    const core::Optional<Color_Blend_State_Create_Info>&     colorBlendState,
-                    const core::Optional<Dynamic_State_Create_Info>&         dynamicState,
+                    const core::optional<Vertex_Input_State_Create_Info>&    vertexInputState,
+                    const core::optional<Tessellation_State_Create_Info>&    tessellationState,
+                    const core::optional<Input_Assembly_State_Create_Info>&  inputAsseblyState,
+                    const core::optional<Viewport_State_Create_Info>&        viewportState,
+                    const core::optional<Rasterization_State_Create_Info>&   rasterizationState,
+                    const core::optional<Multisample_State_Create_Info>&     multisampleState,
+                    const core::optional<Depth_Stencil_State_Create_Info>&   depthStencilState,
+                    const core::optional<Color_Blend_State_Create_Info>&     colorBlendState,
+                    const core::optional<Dynamic_State_Create_Info>&         dynamicState,
                     core::uint32                                             subpass);
   ~Pipeline();
   const VkPipelineBindPoint getBindPoint() const { return m_bindPoint; }

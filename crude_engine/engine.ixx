@@ -32,6 +32,7 @@ private:
   flecs::system  m_freeCameraUpdateSystem;
   flecs::system  m_inputSystem;
   flecs::system  m_deferredGBufferPassSystem;
+  flecs::system  m_fullscreenPBRPassSystem;
   flecs::system  m_rendererFrameStartSystem;
   flecs::system  m_rendererFrameSubmitSystem;
   flecs::entity  m_sceneNode;

@@ -181,9 +181,9 @@ void Renderer_Core_Component::initializeLogicDevice(core::shared_ptr<const Physi
   for (auto it = device->getQueueDescriptors().begin(); it != device->getQueueDescriptors().end(); ++it)
   {
     if (it->getDenotation() == DEVICE_QUEUE_DENOTATION_GRAPHICS_BITS)
-      graphicsQueue = device->getQueueByFamily(it->queueFamilyIndex, 0u).valueOr(nullptr);
+      graphicsQueue = device->getQueueByFamily(it->queueFamilyIndex, 0u).value_or(nullptr);
     if (it->getDenotation() == DEVICE_QUEUE_DENOTATION_PRESENT_BITS)
-      presentQueue = device->getQueueByFamily(it->queueFamilyIndex, 0u).valueOr(nullptr);
+      presentQueue = device->getQueueByFamily(it->queueFamilyIndex, 0u).value_or(nullptr);
   }
   if (!presentQueue) presentQueue = graphicsQueue;
   if (!transferQueue) transferQueue = graphicsQueue;

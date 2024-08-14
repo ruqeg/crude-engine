@@ -47,8 +47,8 @@ void Buffer::stagedUpload(core::shared_ptr<Command_Buffer> commandBuffer, const 
 
 void Buffer::copyHost(const void* data, VkDeviceSize size) noexcept
 {
-  core::Optional<void*> mappedData = m_memory->map();
-  if (mappedData.hasValue())
+  core::optional<void*> mappedData = m_memory->map();
+  if (mappedData.has_value())
   {
     std::memcpy(mappedData.value(), data, size);
     m_memory->unmap();

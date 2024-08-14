@@ -33,7 +33,6 @@ target_sources(crude_engine
     memory.ixx
     memory_utils.ixx
     aligned_allocator.ixx
-    optional.ixx
     output_memory_bit_stream.ixx
     output_memory_steam.ixx
     pool_allocator.ixx

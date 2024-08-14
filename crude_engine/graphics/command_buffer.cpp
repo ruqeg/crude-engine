@@ -26,8 +26,7 @@ namespace crude::graphics
 
 Command_Buffer::Command_Buffer(core::shared_ptr<Command_Pool>  commandPool,
                                VkCommandBufferLevel            level)
-  :
-  m_commandPool(commandPool)
+  : m_commandPool(commandPool)
 {
   VkCommandBufferAllocateInfo vkAllocateInfo{};
   vkAllocateInfo.sType               = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -119,6 +118,8 @@ void Command_Buffer::beginRenderPass(core::shared_ptr<Render_Pass>  renderPass,
                                      const VkRect2D&                renderArea, 
                                      VkSubpassContents              contents)
 {
+  m_boundedRenderPass = renderPass;
+
   core::assert(renderPass.get());
   core::assert(framebuffer.get());
   core::assert(clearValues.data());
@@ -253,6 +254,8 @@ void Command_Buffer::endRenderPass()
     vkCmdEndRenderPass(m_handle);
     m_withinRenderPass = false;
   }
+
+  m_boundedRenderPass = core::nullopt;
 }
 
 Command_Buffer::~Command_Buffer()

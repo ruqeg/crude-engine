@@ -99,13 +99,14 @@ void Fullscreen_PBR_Pass_Component::initializeRenderPass(core::shared_ptr<Swap_C
 {
   core::array<Subpass_Dependency, 1u> subpassesDependencies =
   {
-    Subpass_Dependency(
-      VK_SUBPASS_EXTERNAL, 0u,
-      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-      0u,
-      VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-      0u)
+    Subpass_Dependency({
+      .srcSubpass      = VK_SUBPASS_EXTERNAL,
+      .dstSubpass      = 0,
+      .srcStageMask    = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+      .dstStageMask    = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+      .srcAccessMask   = 0,
+      .dstAccessMask   = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+      .dependencyFlags = 0})
   };
   renderPass = core::allocateShared<Render_Pass>(gbuffer->getDevice(), getSubpassDescriptions(), subpassesDependencies, getAttachmentsDescriptions(swapchain));
 }

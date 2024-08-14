@@ -69,7 +69,7 @@ core::shared_ptr<const Physical_Device> Device::getPhysicalDevice() const
   return m_physicalDevice;
 }
   
-core::Optional<core::shared_ptr<Queue>> Device::getQueueByFlag(VkQueueFlagBits flags, core::uint32 queueIndex) const
+core::optional<core::shared_ptr<Queue>> Device::getQueueByFlag(VkQueueFlagBits flags, core::uint32 queueIndex) const
 {
   // !TODO
   const Device_Queue_Descriptor queueDescription(m_physicalDevice, flags, {});
@@ -83,13 +83,13 @@ core::Optional<core::shared_ptr<Queue>> Device::getQueueByFlag(VkQueueFlagBits f
   return queue;
 }
 
-core::Optional<core::shared_ptr<Queue>> Device::getQueueByFamily(core::uint32 queueFamilyIndex, core::uint32 queueIndex) const
+core::optional<core::shared_ptr<Queue>> Device::getQueueByFamily(core::uint32 queueFamilyIndex, core::uint32 queueIndex) const
 {
   // !TODO
   for (auto flag : { VK_QUEUE_GRAPHICS_BIT, VK_QUEUE_COMPUTE_BIT, VK_QUEUE_TRANSFER_BIT })
   {
     auto queue = getQueueByFlag(flag, queueIndex);
-    if (queue.hasValue() && queue->getFamilyIndex() == queueFamilyIndex)
+    if (queue.has_value() && queue.value()->getFamilyIndex() == queueFamilyIndex)
       return queue;
   }
   return core::nullopt;

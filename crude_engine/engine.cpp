@@ -94,6 +94,7 @@ void Engine::mainLoop()
       m_freeCameraUpdateSystem.run(elapsed);
       m_rendererFrameStartSystem.run();
       m_deferredGBufferPassSystem.run();
+      m_fullscreenPBRPassSystem.run();
       m_rendererFrameSubmitSystem.run();
     }
   }
@@ -121,15 +122,19 @@ void Engine::initializeSystems()
     .run(scene::script::freeCameraUpdateSystemProcess);
 
   m_deferredGBufferPassSystem = m_world.system<core::shared_ptr<graphics::Mesh_Buffer>, core::shared_ptr<scene::Mesh>>("DeferredGBufferPassSystem")
-    .kind(flecs::OnUpdate)
+    .kind(flecs::PreStore)
     .run(graphics::deferredGBufferPassSystemProcess);
 
+  m_fullscreenPBRPassSystem = m_world.system<core::shared_ptr<graphics::Mesh_Buffer>, core::shared_ptr<scene::Mesh>>("FullscreenPBRPassSystem")
+    .kind(flecs::PreStore)
+    .run(graphics::fullscreenPBRPassSystemProcess);
+
   m_rendererFrameStartSystem = m_world.system("RendererFrameStartSystem")
-    .kind(flecs::OnUpdate)
+    .kind(flecs::PreStore)
     .run(graphics::rendererFrameStartSystemProcess);
 
   m_rendererFrameSubmitSystem = m_world.system("RendererFrameSubmitSystem")
-    .kind(flecs::OnUpdate)
+    .kind(flecs::OnStore)
     .run(graphics::rendererFrameSubmitSystemProcess);
 }
 

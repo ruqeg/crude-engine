@@ -16,15 +16,15 @@ Pipeline::Pipeline(core::shared_ptr<const Device>                           devi
                    core::shared_ptr<const Pipeline_Layout>                  pipelineLayout,
                    core::shared_ptr<const Pipeline>                         basePipeline,
                    const core::span<Shader_Stage_Create_Info>&              shaderStages,
-                   const core::Optional<Vertex_Input_State_Create_Info>&    vertexInputState,
-                   const core::Optional<Tessellation_State_Create_Info>&    tessellationState,
-                   const core::Optional<Input_Assembly_State_Create_Info>&  inputAsseblyState,
-                   const core::Optional<Viewport_State_Create_Info>&        viewportState,
-                   const core::Optional<Rasterization_State_Create_Info>&   rasterizationState,
-                   const core::Optional<Multisample_State_Create_Info>&     multisampleState,
-                   const core::Optional<Depth_Stencil_State_Create_Info>&   depthStencilState,
-                   const core::Optional<Color_Blend_State_Create_Info>&     colorBlendState,
-                   const core::Optional<Dynamic_State_Create_Info>&         dynamicState,
+                   const core::optional<Vertex_Input_State_Create_Info>&    vertexInputState,
+                   const core::optional<Tessellation_State_Create_Info>&    tessellationState,
+                   const core::optional<Input_Assembly_State_Create_Info>&  inputAsseblyState,
+                   const core::optional<Viewport_State_Create_Info>&        viewportState,
+                   const core::optional<Rasterization_State_Create_Info>&   rasterizationState,
+                   const core::optional<Multisample_State_Create_Info>&     multisampleState,
+                   const core::optional<Depth_Stencil_State_Create_Info>&   depthStencilState,
+                   const core::optional<Color_Blend_State_Create_Info>&     colorBlendState,
+                   const core::optional<Dynamic_State_Create_Info>&         dynamicState,
                    core::uint32                                             subpass)
   :
   m_bindPoint(VK_PIPELINE_BIND_POINT_GRAPHICS),
@@ -45,15 +45,15 @@ Pipeline::Pipeline(core::shared_ptr<const Device>                           devi
   vkCreateInfo.pStages              = vkShaderStages.data();
 //==========
 //!TODO fix unsafe
-  vkCreateInfo.pVertexInputState    = vertexInputState.hasValue() ? &vertexInputState.value() : nullptr;
-  vkCreateInfo.pTessellationState   = tessellationState.hasValue() ? &tessellationState.value() : nullptr;
-  vkCreateInfo.pInputAssemblyState  = inputAsseblyState.hasValue() ? &inputAsseblyState.value() : nullptr;
-  vkCreateInfo.pViewportState       = viewportState.hasValue() ? &viewportState.value() : nullptr;
-  vkCreateInfo.pRasterizationState  = rasterizationState.hasValue() ? &rasterizationState.value() : nullptr;
-  vkCreateInfo.pMultisampleState    = multisampleState.hasValue() ? &multisampleState.value() : nullptr;
-  vkCreateInfo.pDepthStencilState   = depthStencilState.hasValue() ? &depthStencilState.value() : nullptr;
-  vkCreateInfo.pColorBlendState     = colorBlendState.hasValue() ? &colorBlendState.value() : nullptr;
-  vkCreateInfo.pDynamicState        = dynamicState.hasValue() ? &dynamicState.value() : nullptr;
+  vkCreateInfo.pVertexInputState    = vertexInputState.has_value() ? &vertexInputState.value() : nullptr;
+  vkCreateInfo.pTessellationState   = tessellationState.has_value() ? &tessellationState.value() : nullptr;
+  vkCreateInfo.pInputAssemblyState  = inputAsseblyState.has_value() ? &inputAsseblyState.value() : nullptr;
+  vkCreateInfo.pViewportState       = viewportState.has_value() ? &viewportState.value() : nullptr;
+  vkCreateInfo.pRasterizationState  = rasterizationState.has_value() ? &rasterizationState.value() : nullptr;
+  vkCreateInfo.pMultisampleState    = multisampleState.has_value() ? &multisampleState.value() : nullptr;
+  vkCreateInfo.pDepthStencilState   = depthStencilState.has_value() ? &depthStencilState.value() : nullptr;
+  vkCreateInfo.pColorBlendState     = colorBlendState.has_value() ? &colorBlendState.value() : nullptr;
+  vkCreateInfo.pDynamicState        = dynamicState.has_value() ? &dynamicState.value() : nullptr;
   //==========
   vkCreateInfo.layout               = m_pipelineLayout ? m_pipelineLayout->getHandle() : VK_NULL_HANDLE;
   vkCreateInfo.renderPass           = m_renderPass ? m_renderPass->getHandle() : VK_NULL_HANDLE;
