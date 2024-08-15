@@ -76,10 +76,11 @@ public:
 private:
   void pushConstantBase(core::shared_ptr<const Pipeline_Layout> layout, core::span<const core::byte> data, core::uint32 offset);
 private:
-  const core::shared_ptr<Command_Pool>            m_commandPool;
-  core::optional<core::shared_ptr<Render_Pass>>   m_boundedRenderPass;
-  bool                                            m_withinRenderPass = false;
-  bool                                            m_recording = false;
+  const core::shared_ptr<Command_Pool>          m_commandPool;
+  core::optional<core::shared_ptr<Render_Pass>> m_renderPass;
+  core::optional<core::shared_ptr<Framebuffer>> m_framebuffer;
+  bool                                          m_withinRenderPass = false;
+  bool                                          m_recording = false;
 };
 
 template<class T>

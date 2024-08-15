@@ -96,6 +96,11 @@ Image::~Image()
   }
 }
 
+void Image::fillLayout(VkImageLayout newLayout)
+{
+  std::fill(m_layouts.begin(), m_layouts.end(), newLayout);
+}
+
 void Image::transitionMipLayout(core::shared_ptr<Command_Buffer> commandBuffer, core::uint32 mipLevel, VkImageLayout newLayout)
 {
   VkPipelineStageFlags srcStageMask = 0;

@@ -10,6 +10,7 @@ import crude.graphics.render_pass;
 import crude.graphics.framebuffer;
 import crude.graphics.pipeline;
 import crude.graphics.pipeline_layout;
+import crude.graphics.image_view;
 import crude.graphics.buffer;
 import crude.graphics.vertex_buffer;
 import crude.graphics.index_buffer;
@@ -118,8 +119,6 @@ void Command_Buffer::beginRenderPass(core::shared_ptr<Render_Pass>  renderPass,
                                      const VkRect2D&                renderArea, 
                                      VkSubpassContents              contents)
 {
-  m_boundedRenderPass = renderPass;
-
   core::assert(renderPass.get());
   core::assert(framebuffer.get());
   core::assert(clearValues.data());
@@ -137,6 +136,9 @@ void Command_Buffer::beginRenderPass(core::shared_ptr<Render_Pass>  renderPass,
     m_handle,
     &renderPassInfo,
     contents);
+
+  m_renderPass = renderPass;
+  m_framebuffer = framebuffer;
 
   m_withinRenderPass = true;
 }
@@ -252,10 +254,24 @@ void Command_Buffer::endRenderPass()
   if (m_withinRenderPass)
   {
     vkCmdEndRenderPass(m_handle);
+
+    if (m_framebuffer.has_value() && m_renderPass.has_value())
+    {
+      const core::vector<Attachment_Description>& attachmentsDescs = m_renderPass.value()->m_attachmentsDesc;
+      const core::vector<core::shared_ptr<Image_View>>& attachments = m_framebuffer.value()->m_attachments;
+
+      for (core::uint32 attachmentIndex = 0; attachmentIndex < attachments.size(); ++attachmentIndex)
+      {
+        const core::shared_ptr<Image>& image = attachments[attachmentIndex]->getImage();
+        image->fillLayout(attachmentsDescs[attachmentIndex].finalLayout);
+      }
+
+      m_framebuffer->reset();
+      m_renderPass->reset();
+    }
+
     m_withinRenderPass = false;
   }
-
-  m_boundedRenderPass = core::nullopt;
 }
 
 Command_Buffer::~Command_Buffer()

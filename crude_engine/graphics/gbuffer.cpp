@@ -16,12 +16,24 @@ namespace crude::graphics
 GBuffer::GBuffer(core::shared_ptr<const Device> device, const VkExtent2D& extent)
   : m_extent{extent}
 {
-  m_albedoAttachment = core::allocateShared<Color_Attachment>(
-    device, VK_FORMAT_B8G8R8A8_SRGB, m_extent, 1u, device->getPhysicalDevice()->getProperties().getMaximumUsableSampleCount());
+  m_albedoAttachment = core::allocateShared<Color_Attachment>(Color_Attachment::Initialize{
+    .device          = device,
+    .format          = VK_FORMAT_B8G8R8A8_SRGB,
+    .extent          = m_extent,
+    .sampled         = true,
+    .explicitResolve = false,
+    .mipLevelsCount  = 1u,
+    .samples         = device->getPhysicalDevice()->getProperties().getMaximumUsableSampleCount() });
 
-  const VkFormat depthFormat = findDepthFormatSupportedByDevice(device->getPhysicalDevice(), depth_formats::gDepthStencilCandidates);
-  m_depthStencilAttachment = core::allocateShared<Depth_Stencil_Attachment>(
-    device, depthFormat, m_extent, 1u, device->getPhysicalDevice()->getProperties().getMaximumUsableSampleCount());
+  const VkFormat depthFormat = findDepthFormatSupportedByDevice(device->getPhysicalDevice(), depth_formats::gDepthCandidates);
+  m_depthStencilAttachment = core::allocateShared<Depth_Stencil_Attachment>(Depth_Stencil_Attachment::Initialize{
+    .device             = device,
+    .depthStencilFormat = depthFormat,
+    .extent             = m_extent,
+    .sampled            = true,
+    .explicitResolve    = false,
+    .mipLevelsCount     = 1u,
+    .samples            = device->getPhysicalDevice()->getProperties().getMaximumUsableSampleCount() });
 
   m_albedoAttachmentView = core::allocateShared<Image_View>(m_albedoAttachment);
   m_depthStencilAttachmentView = core::allocateShared<Image_View>(m_depthStencilAttachment);

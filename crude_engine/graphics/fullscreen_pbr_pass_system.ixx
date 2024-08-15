@@ -13,6 +13,7 @@ export import crude.graphics.descriptor_pool_size;
 export import crude.graphics.image_descriptor;
 export import crude.graphics.subpass_description;
 export import crude.graphics.attachment_description;
+export import crude.graphics.image_attachment;
 import crude.graphics.renderer_frame_system;
 import crude.graphics.color_blend_state_create_info;
 import crude.graphics.depth_stencil_state_create_info;

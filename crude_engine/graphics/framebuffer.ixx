@@ -34,6 +34,7 @@ protected:
   core::shared_ptr<const Device>              m_device;
   core::shared_ptr<Render_Pass>               m_renderPass;
   core::vector<core::shared_ptr<Image_View>>  m_attachments;
+  friend class Command_Buffer;
 };
 
 }

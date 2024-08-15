@@ -76,10 +76,15 @@ Fullscreen_PBR_Pass_Component::Fullscreen_PBR_Pass_Component(core::shared_ptr<GB
   : Fullscreen_PBR_Pass_Component()
 {
   this->gbuffer = gbuffer;
-
-  this->colorAttachment = core::allocateShared<Color_Attachment>(
-    swapchain->getDevice(), swapchain->getSurfaceFormat().format, swapchain->getExtent(), 1u,
-    swapchain->getDevice()->getPhysicalDevice()->getProperties().getMaximumUsableSampleCount());
+  
+  this->colorAttachment = core::allocateShared<Color_Attachment>(Color_Attachment::Initialize{
+    .device          = swapchain->getDevice(),
+    .format          = swapchain->getSurfaceFormat().format,
+    .extent          = swapchain->getExtent(),
+    .sampled         = false,
+    .explicitResolve = true,
+    .mipLevelsCount  = 1u,
+    .samples         = swapchain->getDevice()->getPhysicalDevice()->getProperties().getMaximumUsableSampleCount() });
 
   sampler = core::allocateShared<graphics::Sampler>(gbuffer->getDevice(), graphics::csamlper_state::gMagMinMipLinearRepeat);
 
@@ -208,10 +213,20 @@ core::vector<Attachment_Description> Fullscreen_PBR_Pass_Component::getAttachmen
 {
   return
   {
-    Color_Attachment_Description({.attachment = gbuffer->getAlbedoAttachment() }),
-    Swapchain_Attachment_Description({
-      .swapchain = swapchain,
-      .colorOp = attachment_op::gDontCare})
+    Attachment_Description({
+      .format        = gbuffer->getAlbedoAttachment()->getFormat(),
+      .samples       = gbuffer->getAlbedoAttachment()->getSampleCount(),
+      .colorOp       = attachment_op::gClearStore,
+      .stenicilOp    = attachment_op::gClearStore,
+      .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+      .finalLayout   = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL}),
+    Attachment_Description({
+      .format        = swapchain->getSurfaceFormat().format,
+      .samples       = VK_SAMPLE_COUNT_1_BIT,
+      .colorOp       = attachment_op::gClearStore,
+      .stenicilOp    = attachment_op::gDontCare,
+      .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+      .finalLayout   = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR})
   };
 }
 

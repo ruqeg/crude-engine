@@ -122,9 +122,9 @@ void Deferred_GBuffer_Pass_Component::initializeRenderPass()
       .srcSubpass      = VK_SUBPASS_EXTERNAL,
       .dstSubpass      = 0,
       .srcStageMask    = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
-      .dstStageMask    = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
-      .srcAccessMask   = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-      .dstAccessMask   = VK_ACCESS_SHADER_READ_BIT,
+      .dstStageMask    = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
+      .srcAccessMask   = 0u,
+      .dstAccessMask   = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
       .dependencyFlags = 0})
   };
   renderPass = core::allocateShared<Render_Pass>(gbuffer->getDevice(), getSubpassDescriptions(), subpassesDependencies, getAttachmentsDescriptions());
@@ -227,8 +227,20 @@ core::vector<Attachment_Description> Deferred_GBuffer_Pass_Component::getAttachm
 {
   return 
   {
-    Color_Attachment_Description({.attachment = gbuffer->getAlbedoAttachment() }),
-    Depth_Attachment_Description({.attachment = gbuffer->getDepthStencilAttachment() }),
+    Attachment_Description({
+      .format        = gbuffer->getAlbedoAttachment()->getFormat(),
+      .samples       = gbuffer->getAlbedoAttachment()->getSampleCount(),
+      .colorOp       = attachment_op::gClearStore,
+      .stenicilOp    = attachment_op::gClearStore,
+      .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+      .finalLayout   = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL }),
+    Attachment_Description({
+      .format        = gbuffer->getDepthStencilAttachment()->getFormat(),
+      .samples       = gbuffer->getDepthStencilAttachment()->getSampleCount(),
+      .colorOp       = attachment_op::gClearStore,
+      .stenicilOp    = attachment_op::gClearStore,
+      .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+      .finalLayout   = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL })
   };
 }
 

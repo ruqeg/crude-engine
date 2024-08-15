@@ -45,6 +45,7 @@ protected:
                  VkSharingMode                   sharingMode);
 public:
   ~Image();
+  void fillLayout(VkImageLayout newLayout);
   void transitionMipLayout(core::shared_ptr<Command_Buffer> commandBuffer, core::uint32 mipLevel, VkImageLayout newLayout);
   void transitionMipLayoutUpload(core::shared_ptr<Command_Buffer> commandBuffer, core::uint32 mipLevel, VkImageLayout newLayout);
   void bindMemory(core::shared_ptr<Device_Memory> memory);
@@ -55,7 +56,6 @@ public:
                          core::uint32                            arrayLayer,
                          VkImageLayout                           dstLayout,
                          VkPipelineStageFlags                    dstStageMask);
-public:
   void stagedUpload(core::shared_ptr<Command_Buffer>  commandBuffer,
                     const Mip_Data&                   mipMap,
                     core::uint32                      mipLevel,

@@ -9,17 +9,17 @@ import crude.graphics.device;
 namespace crude::graphics
 {
 
-Image_View::Image_View(core::shared_ptr<const Image> image)
+Image_View::Image_View(core::shared_ptr<Image> image)
   : Image_View(image, Image_Subresource_Range(image))
 {}
   
-Image_View::Image_View(core::shared_ptr<const Image>   image,
+Image_View::Image_View(core::shared_ptr<Image>         image,
                        const Image_Subresource_Range&  subresourceRange,
                        const VkComponentMapping&       components)
   : Image_View(image, image->getFormat(), subresourceRange, components)
 {}
 
-Image_View::Image_View(core::shared_ptr<const Image>   image,
+Image_View::Image_View(core::shared_ptr<Image>         image,
                        VkFormat                        format,
                        const Image_Subresource_Range&  subresourceRange,
                        const VkComponentMapping&       components)
@@ -49,6 +49,11 @@ Image_View::~Image_View()
 core::shared_ptr<const Image> Image_View::getImage() const
 {
   return m_image;
+}
+
+core::shared_ptr<Image> Image_View::getImage()
+{
+    return m_image;
 }
   
 VkImageViewType Image_View::imageToViewType(VkImageType imageType)

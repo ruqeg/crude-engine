@@ -9,7 +9,6 @@ target_sources(crude_engine
     texture.cpp
     extension.cpp
     format_helper.cpp
-    attachment_description.cpp
     image_descriptor.cpp
     image_2d.cpp
     buffer_descriptor.cpp
