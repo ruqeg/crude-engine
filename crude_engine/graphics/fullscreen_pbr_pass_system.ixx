@@ -57,7 +57,6 @@ public:
   core::shared_ptr<Render_Pass>                renderPass;
   core::shared_ptr<Pipeline>                   pipeline;
   core::vector<core::shared_ptr<Framebuffer>>  framebuffers;
-  core::shared_ptr<Color_Attachment>           colorAttachment;
   core::shared_ptr<GBuffer>                    gbuffer;
 
   core::array<Combined_Image_Sampler_Descriptor, cFramesCount>  albedoTextureDescriptors;

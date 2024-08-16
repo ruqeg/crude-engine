@@ -168,8 +168,8 @@ void Deferred_GBuffer_Pass_Component::initalizeGraphicsPipeline()
     .lineWidth = 1.f });
 
   Multisample_State_Create_Info multisampling({
-    .rasterizationSamples = gbuffer->getDevice()->getPhysicalDevice()->getProperties().getMaximumUsableSampleCount(),
-    .sampleShadingEnable = VK_TRUE,
+    .rasterizationSamples = VK_SAMPLE_COUNT_1_BIT,
+    .sampleShadingEnable = VK_FALSE,
     .minSampleShading = 0.2f,
     .alphaToCoverageEnable = false,
     .alphaToOneEnable = false });

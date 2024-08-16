@@ -77,15 +77,6 @@ Fullscreen_PBR_Pass_Component::Fullscreen_PBR_Pass_Component(core::shared_ptr<GB
 {
   this->gbuffer = gbuffer;
   
-  this->colorAttachment = core::allocateShared<Color_Attachment>(Color_Attachment::Initialize{
-    .device          = swapchain->getDevice(),
-    .format          = swapchain->getSurfaceFormat().format,
-    .extent          = swapchain->getExtent(),
-    .sampled         = false,
-    .explicitResolve = true,
-    .mipLevelsCount  = 1u,
-    .samples         = swapchain->getDevice()->getPhysicalDevice()->getProperties().getMaximumUsableSampleCount() });
-
   sampler = core::allocateShared<graphics::Sampler>(gbuffer->getDevice(), graphics::csamlper_state::gMagMinMipLinearRepeat);
 
   initializeRenderPass(swapchain);
@@ -152,8 +143,8 @@ void Fullscreen_PBR_Pass_Component::initalizeGraphicsPipeline()
     .lineWidth = 1.f });
 
   Multisample_State_Create_Info multisampling({
-    .rasterizationSamples = gbuffer->getDevice()->getPhysicalDevice()->getProperties().getMaximumUsableSampleCount(),
-    .sampleShadingEnable = VK_TRUE,
+    .rasterizationSamples = VK_SAMPLE_COUNT_1_BIT,
+    .sampleShadingEnable = VK_FALSE,
     .minSampleShading = 0.2f,
     .alphaToCoverageEnable = false,
     .alphaToOneEnable = false });
@@ -203,9 +194,8 @@ core::array<Subpass_Description, 1> Fullscreen_PBR_Pass_Component::getSubpassDes
 {
   return
   {
-    Subpass_Description(Subpass_Description::Initialize_Color_Resolve{
-      .colorLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-      .resolveLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL })
+    Subpass_Description(Subpass_Description::Initialize_Color{
+      .colorLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL})
   };
 }
 
@@ -213,13 +203,6 @@ core::vector<Attachment_Description> Fullscreen_PBR_Pass_Component::getAttachmen
 {
   return
   {
-    Attachment_Description({
-      .format        = gbuffer->getAlbedoAttachment()->getFormat(),
-      .samples       = gbuffer->getAlbedoAttachment()->getSampleCount(),
-      .colorOp       = attachment_op::gClearStore,
-      .stenicilOp    = attachment_op::gClearStore,
-      .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-      .finalLayout   = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL}),
     Attachment_Description({
       .format        = swapchain->getSurfaceFormat().format,
       .samples       = VK_SAMPLE_COUNT_1_BIT,
@@ -232,7 +215,7 @@ core::vector<Attachment_Description> Fullscreen_PBR_Pass_Component::getAttachmen
 
 core::vector<core::shared_ptr<Image_View>> Fullscreen_PBR_Pass_Component::getFramebufferAttachments(core::shared_ptr<Image_View> swapchainImageView)
 {
-  return { core::allocateShared<Image_View>(colorAttachment), swapchainImageView };
+  return { swapchainImageView };
 }
 
 Color_Blend_State_Create_Info Fullscreen_PBR_Pass_Component::createColorBlendStateCreateInfo()
