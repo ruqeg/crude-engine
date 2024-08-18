@@ -125,7 +125,7 @@ void Engine::initializeSystems()
     .kind(flecs::PreStore)
     .run(graphics::deferredGBufferPassSystemProcess);
 
-  m_fullscreenPBRPassSystem = m_world.system<core::shared_ptr<graphics::Mesh_Buffer>, core::shared_ptr<scene::Mesh>>("FullscreenPBRPassSystem")
+  m_fullscreenPBRPassSystem = m_world.system("FullscreenPBRPassSystem")
     .kind(flecs::PreStore)
     .run(graphics::fullscreenPBRPassSystemProcess);
 
