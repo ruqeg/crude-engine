@@ -1,6 +1,6 @@
 add_subdirectory(SDL)
 add_subdirectory(tinygltf)
-add_subdirectory(stb)
+add_subdirectory(stb_cmake)
 add_subdirectory(meshoptimizer)
 add_subdirectory(DirectXMath)
 add_subdirectory(flecs)
