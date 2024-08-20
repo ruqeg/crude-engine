@@ -2,7 +2,7 @@ module;
 
 #define TINYGLTF_NOEXCEPTION
 #include <tiny_gltf.h>
-#include <directxmath/DirectXMath.h>
+#include <DirectXMath.h>
 #include <flecs.h>
 
 export module crude.resources.gltf_loader;

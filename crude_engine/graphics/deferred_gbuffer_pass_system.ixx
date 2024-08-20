@@ -1,7 +1,7 @@
 module;
 
 #include <vulkan/vulkan.hpp>
-#include <directxmath/DirectXMath.h>
+#include <DirectXMath.h>
 #include <flecs.h>
 
 export module crude.graphics.deferred_gbuffer_pass_system;

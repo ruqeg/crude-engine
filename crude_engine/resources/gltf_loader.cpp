@@ -6,7 +6,7 @@
 #include <meshoptimizer.h>
 #include <limits>
 #include <flecs.h>
-#include <directxmath/DirectXMath.h>
+#include <DirectXMath.h>
 #undef assert
 
 module crude.resources.gltf_loader;

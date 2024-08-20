@@ -2,7 +2,7 @@
 #include <flecs.h>
 #include <cstring>
 #include <algorithm>
-#include <directxmath/DirectXMath.h>
+#include <DirectXMath.h>
 #include <crude_shaders/fullscreen_pbr.frag.inl>
 #include <crude_shaders/fullscreen.mesh.inl>
 #include <functional>

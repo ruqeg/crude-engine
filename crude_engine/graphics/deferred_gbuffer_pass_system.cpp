@@ -2,7 +2,7 @@
 #include <flecs.h>
 #include <cstring>
 #include <algorithm>
-#include <directxmath/DirectXMath.h>
+#include <DirectXMath.h>
 #include <crude_shaders/deferred_gbuffer.frag.inl>
 #include <crude_shaders/deferred_gbuffer.mesh.inl>
 #include <crude_shaders/deferred_gbuffer.task.inl>

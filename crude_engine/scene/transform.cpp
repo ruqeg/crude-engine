@@ -1,4 +1,4 @@
-#include <directxmath/DirectXMath.h>
+#include <DirectXMath.h>
 #include <flecs.h>
 
 module crude.scene.transform;

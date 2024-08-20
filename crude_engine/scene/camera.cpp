@@ -1,4 +1,4 @@
-#include <directxmath/DirectXMath.h>
+#include <DirectXMath.h>
 
 module crude.scene.camera;
 

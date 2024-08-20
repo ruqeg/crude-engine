@@ -1,6 +1,6 @@
 module;
 
-#include <directxmath/DirectXMath.h>
+#include <DirectXMath.h>
 
 export module crude.scene.camera;
 

@@ -1,6 +1,6 @@
 module;
 
-#include <directxmath/DirectXMath.h>
+#include <DirectXMath.h>
 #include <typeindex>
 
 export module crude.scene.mesh;

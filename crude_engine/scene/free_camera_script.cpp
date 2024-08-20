@@ -1,5 +1,5 @@
 #include <SDL3/SDL.h>
-#include <directxmath/DirectXMath.h>
+#include <DirectXMath.h>
 #include <flecs.h>
 
 module crude.scene.free_camera_script;
@@ -53,7 +53,7 @@ void freeCameraUpdateEventSystemProcess(flecs::iter& it)
       switch (inputEvent.type)
       {
       case SDL_EVENT_KEY_DOWN:
-        switch (inputEvent.key.keysym.scancode)
+        switch (inputEvent.key.scancode)
         {
         case SDL_SCANCODE_W: freeCameras[i].movingDirection[0].z = 1; break;
         case SDL_SCANCODE_S: freeCameras[i].movingDirection[1].z = 1; break;
@@ -64,7 +64,7 @@ void freeCameraUpdateEventSystemProcess(flecs::iter& it)
         }
         break;
       case SDL_EVENT_KEY_UP:
-        switch (inputEvent.key.keysym.scancode)
+        switch (inputEvent.key.scancode)
         {
         case SDL_SCANCODE_W: freeCameras[i].movingDirection[0].z = 0; break;
         case SDL_SCANCODE_S: freeCameras[i].movingDirection[1].z = 0; break;

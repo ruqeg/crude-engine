@@ -1,6 +1,6 @@
 module;
 
-#include <directxmath/DirectXMath.h>
+#include <DirectXMath.h>
 #include <flecs.h>
 
 export module crude.graphics.camera_ubo;

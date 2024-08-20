@@ -1,5 +1,5 @@
 #include <vulkan/vulkan.hpp>
-#include <directxmath/DirectXMath.h>
+#include <DirectXMath.h>
 #include <flecs.h>
 #include <functional>
 

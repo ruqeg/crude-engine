@@ -1,4 +1,4 @@
-#include <directxmath/DirectXMath.h>
+#include <DirectXMath.h>
 #include <flecs.h>
 #include <SDL3/SDL.h>
 #include <vulkan/vulkan.h>

@@ -1,6 +1,6 @@
 module;
 
-#include <directxmath/DirectXMath.h>
+#include <DirectXMath.h>
 #include <SDL3/SDL.h>
 #include <flecs.h>
 

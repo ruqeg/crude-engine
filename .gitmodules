@@ -16,3 +16,6 @@
 [submodule "crude_extlibs/flecs"]
 	path = crude_extlibs/flecs
 	url = https://github.com/SanderMertens/flecs.git
+[submodule "crude_extlibs/imgui_cmake/imgui"]
+	path = crude_extlibs/imgui_cmake/imgui
+	url = https://github.com/ocornut/imgui.git
