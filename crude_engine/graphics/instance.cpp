@@ -11,19 +11,25 @@ namespace crude::graphics
   
 Instance::Instance(
 #ifdef VK_EXT_debug_utils
-                   PFN_vkDebugUtilsMessengerCallbackEXT  debugUtilsCallback,
+                   PFN_vkDebugUtilsMessengerCallbackEXT   debugUtilsCallback,
 #endif // VK_EXT_debug_utils
-                   const Application&                    application,
-                   const core::span<const char* const>&  enabledExtensions,
-                   const core::span<const char* const>&  enabledLayers,
-                   VkInstanceCreateFlags                 flags)
+                   const Application&                     application,
+                   core::span<const char* const>          enabledExtensions,
+                   core::span<const char* const>          enabledLayers,
+                   VkInstanceCreateFlags                  flags)
 {
+  // !TODO
+  core::vector<const char*> enabledExtensionsUnique(enabledExtensions.begin(), enabledExtensions.end());
+  enabledExtensionsUnique.erase(std::unique(enabledExtensionsUnique.begin(), enabledExtensionsUnique.end()), enabledExtensionsUnique.end());
+  core::vector<const char*> enabledLayersUnique(enabledLayers.begin(), enabledLayers.end());
+  enabledLayersUnique.erase(std::unique(enabledLayersUnique.begin(), enabledLayersUnique.end()), enabledLayersUnique.end());
+
   VkInstanceCreateInfo vkInstanceCreateInfo{};
   vkInstanceCreateInfo.sType                    = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
   vkInstanceCreateInfo.pApplicationInfo         = &application;
   vkInstanceCreateInfo.flags                    = flags;
-  vkInstanceCreateInfo.ppEnabledExtensionNames  = enabledExtensions.data();
-  vkInstanceCreateInfo.enabledExtensionCount    = enabledExtensions.size();
+  vkInstanceCreateInfo.ppEnabledExtensionNames  = enabledExtensionsUnique.data();
+  vkInstanceCreateInfo.enabledExtensionCount    = enabledExtensionsUnique.size();
 
   const core::uint32 ebabledLayersCount = enabledLayers.size();
 
@@ -33,8 +39,8 @@ Instance::Instance(
 
   if (ebabledLayersCount > 0u)
   {
-    vkInstanceCreateInfo.ppEnabledLayerNames     = enabledLayers.data();
-    vkInstanceCreateInfo.enabledLayerCount       = enabledLayers.size();
+    vkInstanceCreateInfo.ppEnabledLayerNames     = enabledLayersUnique.data();
+    vkInstanceCreateInfo.enabledLayerCount       = enabledLayersUnique.size();
 
 #ifdef VK_EXT_debug_utils
     void* pDebugNext      = nullptr;

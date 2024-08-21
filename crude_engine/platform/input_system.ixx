@@ -3,6 +3,7 @@ module;
 #include <SDL3/SDL.h>
 #include <flecs.h>
 #include <functional>
+#include <imgui/backends/imgui_impl_sdl3.h>
 
 export module crude.platform.input_system;
 
@@ -26,6 +27,8 @@ void inputSystemProcess(flecs::iter& it)
 
   while (SDL_PollEvent(&inputSystemComponent->inputEvent))
   {
+    ImGui_ImplSDL3_ProcessEvent(&inputSystemComponent->inputEvent);
+
     for (auto& eventSystem : inputSystemComponent->eventSystems)
     {
       eventSystem.run();

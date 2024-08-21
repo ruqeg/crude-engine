@@ -23,10 +23,10 @@ public:
 #ifdef VK_EXT_debug_utils
                     PFN_vkDebugUtilsMessengerCallbackEXT   debugUtilsCallback,
 #endif // VK_EXT_debug_utils
-                    const Application&                    application        = Application(Application::Initialize()),
-                    const core::span<const char* const>&  enabledExtensions  = {},
-                    const core::span<const char* const>&  enabledLayers      = {},
-                    VkInstanceCreateFlags                 flags              = 0u);
+                    const Application&                     application        = Application(Application::Initialize()),
+                    core::span<const char* const>          enabledExtensions  = {},
+                    core::span<const char* const>          enabledLayers      = {},
+                    VkInstanceCreateFlags                  flags              = 0u);
   ~Instance();
   core::vector<core::shared_ptr<Physical_Device>> getPhysicalDevices();
 };

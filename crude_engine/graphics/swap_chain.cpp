@@ -25,8 +25,7 @@ Swap_Chain::Swap_Chain(core::shared_ptr<const Device>   device,
                        VkBool32                         clipped,
                        VkSwapchainCreateFlagsKHR        flags,
                        core::shared_ptr<Swap_Chain>     oldSwapchain)
-  :
-  Swap_Chain(device, surface, surfaceFormat, extent, imageUsage, minImageCount, imageArrayLayers, {},
+  : Swap_Chain(device, surface, surfaceFormat, extent, imageUsage, minImageCount, imageArrayLayers, {},
     preTransform, compositeAlpha, presentMode, clipped, flags, oldSwapchain) 
 {}
 
@@ -44,12 +43,12 @@ Swap_Chain::Swap_Chain(core::shared_ptr<const Device>   device,
                        VkBool32                         clipped,
                        VkSwapchainCreateFlagsKHR        flags,
                        core::shared_ptr<Swap_Chain>     oldSwapchain)
-  :
-  m_device(device),
-  m_surface(surface),
-  m_imageUsage(imageUsage),
-  m_surfaceFormat(surfaceFormat),
-  m_extent(extent)
+  : m_device(device)
+  , m_surface(surface)
+  , m_imageUsage(imageUsage)
+  , m_surfaceFormat(surfaceFormat)
+  , m_extent(extent)
+  , m_presentMode(presentMode)
 {
   // !TODO
   core::vector<core::uint32> uniqueQueueFamilyIndices(queueFamilyIndices.begin(), queueFamilyIndices.end());
@@ -132,21 +131,6 @@ Swap_Chain_Next_Image Swap_Chain::acquireNextImage(const core::optional<core::sh
 
   const Swap_Chain_Next_Image nextImage(imageIndex, result);
   return nextImage;
-}
-
-const VkImageUsageFlags Swap_Chain::getImageUsage() const
-{
-  return m_imageUsage;
-}
-
-const VkSurfaceFormatKHR Swap_Chain::getSurfaceFormat() const
-{
-  return m_surfaceFormat;
-}
-
-const VkExtent2D Swap_Chain::getExtent() const
-{
-  return m_extent;
 }
 
 core::shared_ptr<const Device> Swap_Chain::getDevice()

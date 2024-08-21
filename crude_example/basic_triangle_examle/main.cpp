@@ -8,7 +8,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE      hInstance,
                       _In_ LPWSTR         lpCmdLine,
                       _In_ int            nCmdShow)
 {
-  Application application;
-  application.run();
+  crude::Engine::preinitialize(600000000);
+  {
+    Application application;
+    application.run();
+  }
+  crude::Engine::postdeinitialize();
   return EXIT_SUCCESS;
 }

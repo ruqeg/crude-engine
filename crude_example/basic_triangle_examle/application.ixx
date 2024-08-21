@@ -13,7 +13,7 @@ class Application : public crude::Engine
 {
 public:
   Application();
-  ~Application();
+  ~Application() = default;
   void run();
 };
 

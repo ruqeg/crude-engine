@@ -26,7 +26,7 @@ public:
     m_window(window)
   {
     const SDL_bool result = SDL_Vulkan_CreateSurface(
-      m_window->getWindow().get(), 
+      m_window->getHandle().get(),
       instance->getHandle(), 
       getPVkAllocationCallbacks(), 
       &m_handle);

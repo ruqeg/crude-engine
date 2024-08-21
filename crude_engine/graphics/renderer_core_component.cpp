@@ -42,18 +42,13 @@ void Renderer_Core_Component::initializeInstance()
   const auto surfaceExtensions = Surface::requiredExtensions();
   const auto debugUtilsExtensions = Debug_Utils_Messenger::requiredExtensions();
 
-  core::vector<const char*> enabledExtensions(surfaceExtensions.size() + debugUtilsExtensions.size());
-  for (core::size_t i = 0u; i < surfaceExtensions.size(); ++i)
-  {
-    enabledExtensions[i] = surfaceExtensions[i];
-  }
-  for (core::size_t i = 0u; i < debugUtilsExtensions.size(); ++i)
-  {
-    enabledExtensions[i + surfaceExtensions.size()] = debugUtilsExtensions[i];
-  }
+  core::vector<const char*> enabledExtensions;
+  enabledExtensions.insert(enabledExtensions.end(), surfaceExtensions.begin(), surfaceExtensions.end());
+  enabledExtensions.insert(enabledExtensions.end(), debugUtilsExtensions.begin(), debugUtilsExtensions.end());
 
-
-  auto debugCallback = [](VkDebugUtilsMessageSeverityFlagBitsEXT       messageSeverity,
+  // Set debugCallback
+  auto debugCallback = [](
+    VkDebugUtilsMessageSeverityFlagBitsEXT       messageSeverity,
     VkDebugUtilsMessageTypeFlagsEXT              messageType,
     const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
     void* pUserData) -> VKAPI_ATTR VkBool32 {
@@ -61,7 +56,7 @@ void Renderer_Core_Component::initializeInstance()
       return VK_FALSE;
     };
 
-  // Initialize instance
+  // Set application
   const Application application({
     .pApplicationName = "crude_example",
     .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
@@ -69,6 +64,7 @@ void Renderer_Core_Component::initializeInstance()
     .engineVersion = VK_MAKE_VERSION(1, 0, 0),
     .apiVersion = VK_API_VERSION_1_0 });
 
+  // Initialize instance
   instance = core::allocateShared<Instance>(debugCallback, application, enabledExtensions, cInstanceEnabledLayers);
 
   // Initialize debugCallback

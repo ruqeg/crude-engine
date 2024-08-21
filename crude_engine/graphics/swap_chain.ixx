@@ -71,10 +71,11 @@ public:
   Swap_Chain_Next_Image acquireNextImage(const core::optional<core::shared_ptr<Semaphore>>&  semaphore = core::nullopt,
                                          const core::optional<core::shared_ptr<Fence>>&      fence = core::nullopt,
                                          core::uint64                                        timeout = UINT64_MAX);
-  const VkImageUsageFlags getImageUsage() const;
-  const VkSurfaceFormatKHR getSurfaceFormat() const;
-  const VkExtent2D getExtent() const;
   core::shared_ptr<const Device> getDevice();
+  VkImageUsageFlags getImageUsage() const { return m_imageUsage; }
+  VkSurfaceFormatKHR getSurfaceFormat() const { return m_surfaceFormat; }
+  VkPresentModeKHR getPresentMode() const { return m_presentMode; }
+  const VkExtent2D& getExtent() const { return m_extent; }
 private:
   core::shared_ptr<const Device>                   m_device;
   core::shared_ptr<const Surface>                  m_surface;
@@ -82,6 +83,7 @@ private:
 
   const VkImageUsageFlags  m_imageUsage;
   const VkSurfaceFormatKHR m_surfaceFormat;
+  const VkPresentModeKHR   m_presentMode;
   const VkExtent2D         m_extent;
 };
 
