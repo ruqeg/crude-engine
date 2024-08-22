@@ -1,3 +1,4 @@
+#include <flecs.h>
 #include <vulkan/vulkan.hpp>
 
 module crude.graphics.renderer_core_component;
@@ -21,22 +22,27 @@ namespace crude::graphics
 constexpr core::array<const char* const, 6> cDeviceEnabledExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_KHR_SPIRV_1_4_EXTENSION_NAME, VK_EXT_MESH_SHADER_EXTENSION_NAME, VK_KHR_SHADER_FLOAT_CONTROLS_EXTENSION_NAME, VK_KHR_8BIT_STORAGE_EXTENSION_NAME, VK_KHR_PUSH_DESCRIPTOR_EXTENSION_NAME };
 constexpr core::array<const char*, 1> cInstanceEnabledLayers = { "VK_LAYER_KHRONOS_validation" };
 
-Renderer_Core_Component::Renderer_Core_Component(core::shared_ptr<platform::SDL_Window_Container> windowContainer)
-  : windowContainer(windowContainer)
+void rendererCoreComponentInitialize(flecs::iter& it)
 {
-  initializeInstance();
-  initializeSurface();
-  initializeDevice();
-  initializeSwapchain();
-  initalizeCommandPool();
+  Renderer_Core_Component rendererCoreComponent;
+
+  rendererCoreComponent.windowContainer = *it.world().get_mut<core::shared_ptr<platform::SDL_Window_Container>>();
+
+  initializeInstance(&rendererCoreComponent);
+  initializeSurface(&rendererCoreComponent);
+  initializeDevice(&rendererCoreComponent);
+  initializeSwapchain(&rendererCoreComponent);
+  initalizeCommandPool(&rendererCoreComponent);
+
+  it.world().set<Renderer_Core_Component>(std::move(rendererCoreComponent));
 }
 
-Renderer_Core_Component::~Renderer_Core_Component()
+void rendererCoreComponentDeinitialize(flecs::iter& it)
 {
-  device->waitIdle();
+  it.world().get_mut<Renderer_Core_Component>()->device->waitIdle();
 }
  
-void Renderer_Core_Component::initializeInstance()
+void initializeInstance(Renderer_Core_Component* rendererCoreComponent)
 {
   // Calculate extensions for instance
   const auto surfaceExtensions = Surface::requiredExtensions();
@@ -65,34 +71,34 @@ void Renderer_Core_Component::initializeInstance()
     .apiVersion = VK_API_VERSION_1_0 });
 
   // Initialize instance
-  instance = core::allocateShared<Instance>(debugCallback, application, enabledExtensions, cInstanceEnabledLayers);
+  rendererCoreComponent->instance = core::allocateShared<Instance>(debugCallback, application, enabledExtensions, cInstanceEnabledLayers);
 
   // Initialize debugCallback
-  debugUtilsMessenger = core::allocateShared<Debug_Utils_Messenger>(instance, debugCallback);
+  rendererCoreComponent->debugUtilsMessenger = core::allocateShared<Debug_Utils_Messenger>(rendererCoreComponent->instance, debugCallback);
 }
 
-void Renderer_Core_Component::initializeSurface()
+void initializeSurface(Renderer_Core_Component* rendererCoreComponent)
 {
-  surface = core::allocateShared<Surface>(instance, windowContainer);
+  rendererCoreComponent->surface = core::allocateShared<Surface>(rendererCoreComponent->instance, rendererCoreComponent->windowContainer);
 }
 
-void Renderer_Core_Component::initializeDevice()
+void initializeDevice(Renderer_Core_Component* rendererCoreComponent)
 {
-  core::shared_ptr<Physical_Device> physicalDevice = pickPhysicalDevice();
+  core::shared_ptr<Physical_Device> physicalDevice = pickPhysicalDevice(rendererCoreComponent);
   if (!physicalDevice)
   {
     core::logError(core::Debug::Channel::Graphics, "Failed to find suitable physical device!");
     return;
   }
-  initializeLogicDevice(physicalDevice);
+  initializeLogicDevice(rendererCoreComponent, physicalDevice);
 }
 
-void Renderer_Core_Component::initializeSwapchain()
+void initializeSwapchain(Renderer_Core_Component* rendererCoreComponent)
 {
-  Surface_Capabilities_KHR surfaceCapabilites = device->getPhysicalDevice()->getSurfaceCapabilitis(surface);
-  const VkSurfaceFormatKHR surfaceFormat = device->getPhysicalDevice()->findSurfaceFormat(surface, VK_FORMAT_B8G8R8A8_SRGB, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR);
-  const VkPresentModeKHR presentMode = device->getPhysicalDevice()->findSurfacePresentMode(surface, VK_PRESENT_MODE_MAILBOX_KHR);
-  const VkExtent2D extent = surfaceCapabilites.calculateSurfaceExtentInPixels({ .width = windowContainer->getWidth(), .height = windowContainer->getHeight() });
+  Surface_Capabilities_KHR surfaceCapabilites = rendererCoreComponent->device->getPhysicalDevice()->getSurfaceCapabilitis(rendererCoreComponent->surface);
+  const VkSurfaceFormatKHR surfaceFormat = rendererCoreComponent->device->getPhysicalDevice()->findSurfaceFormat(rendererCoreComponent->surface, VK_FORMAT_B8G8R8A8_SRGB, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR);
+  const VkPresentModeKHR presentMode = rendererCoreComponent->device->getPhysicalDevice()->findSurfacePresentMode(rendererCoreComponent->surface, VK_PRESENT_MODE_MAILBOX_KHR);
+  const VkExtent2D extent = surfaceCapabilites.calculateSurfaceExtentInPixels({ .width = rendererCoreComponent->windowContainer->getWidth(), .height = rendererCoreComponent->windowContainer->getHeight() });
 
   core::uint32 imageCount = surfaceCapabilites.getMinImageCount() + 1u;
   if (surfaceCapabilites.getMinImageCount() > 0u && imageCount > surfaceCapabilites.getMaxImageCount())
@@ -100,11 +106,11 @@ void Renderer_Core_Component::initializeSwapchain()
     imageCount = surfaceCapabilites.getMaxImageCount();
   }
 
-  core::vector<core::uint32> queueFamilyIndices = { graphicsQueue->getFamilyIndex(), graphicsQueue->getFamilyIndex() };
+  core::vector<core::uint32> queueFamilyIndices = { rendererCoreComponent->graphicsQueue->getFamilyIndex(), rendererCoreComponent->graphicsQueue->getFamilyIndex() };
 
-  swapchain = core::allocateShared<Swap_Chain>(
-    device,
-    surface,
+  rendererCoreComponent->swapchain = core::allocateShared<Swap_Chain>(
+    rendererCoreComponent->device,
+    rendererCoreComponent->surface,
     surfaceFormat,
     extent,
     VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
@@ -118,23 +124,23 @@ void Renderer_Core_Component::initializeSwapchain()
     0u,
     nullptr);
 
-  swapchainImages = swapchain->getSwapchainImages();
-  swapchainImagesViews.resize(swapchainImages.size());
-  for (core::uint32 i = 0; i < swapchainImages.size(); ++i)
+  rendererCoreComponent->swapchainImages = rendererCoreComponent->swapchain->getSwapchainImages();
+  rendererCoreComponent->swapchainImagesViews.resize(rendererCoreComponent->swapchainImages.size());
+  for (core::uint32 i = 0; i < rendererCoreComponent->swapchainImages.size(); ++i)
   {
-    swapchainImagesViews[i] = core::allocateShared<Image_View>(swapchainImages[i], surfaceFormat.format, Image_Subresource_Range(swapchainImages[i]));
+    rendererCoreComponent->swapchainImagesViews[i] = core::allocateShared<Image_View>(rendererCoreComponent->swapchainImages[i], surfaceFormat.format, Image_Subresource_Range(rendererCoreComponent->swapchainImages[i]));
   }
 }
 
-void Renderer_Core_Component::initalizeCommandPool()
+void initalizeCommandPool(Renderer_Core_Component* rendererCoreComponent)
 {
-  graphicsCommandPool = core::allocateShared<Command_Pool>(device, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, graphicsQueue->getFamilyIndex());
-  transferCommandPool = graphicsCommandPool; // = core::allocateShared<Command_Pool>(m_device, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, queueIndices.transferFamily.value());
+  rendererCoreComponent->graphicsCommandPool = core::allocateShared<Command_Pool>(rendererCoreComponent->device, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, rendererCoreComponent->graphicsQueue->getFamilyIndex());
+  rendererCoreComponent->transferCommandPool = rendererCoreComponent->graphicsCommandPool; // = core::allocateShared<Command_Pool>(m_device, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, queueIndices.transferFamily.value());
 }
 
-core::shared_ptr<Physical_Device> Renderer_Core_Component::pickPhysicalDevice()
+core::shared_ptr<Physical_Device> pickPhysicalDevice(Renderer_Core_Component* rendererCoreComponent)
 {
-  auto physicalDevices = instance->getPhysicalDevices();
+  auto physicalDevices = rendererCoreComponent->instance->getPhysicalDevices();
   for (auto& physicalDevice : physicalDevices)
   {
     bool supportGraphics = false;
@@ -144,11 +150,11 @@ core::shared_ptr<Physical_Device> Renderer_Core_Component::pickPhysicalDevice()
     for (core::uint32 i = 0; i < physicalDevice->getQueueFamilyProperties().size(); ++i)
     {
       if (physicalDevice->getQueueFamilyProperties()[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) supportGraphics = true;
-      if (physicalDevice->checkPresentSupport(surface, i)) supportPresent = true;
+      if (physicalDevice->checkPresentSupport(rendererCoreComponent->surface, i)) supportPresent = true;
     }
 
     const bool extensionsSupported = physicalDevice->checkExtensionSupport(cDeviceEnabledExtensions);
-    const bool swapChainAdequate = physicalDevice->checkSurfaceSupport(surface);
+    const bool swapChainAdequate = physicalDevice->checkSurfaceSupport(rendererCoreComponent->surface);
     const auto& supportedFeatures = physicalDevice->getFeatures();
 
     if (supportGraphics && supportPresent && extensionsSupported && swapChainAdequate && supportedFeatures.samplerAnisotropy)
@@ -160,7 +166,7 @@ core::shared_ptr<Physical_Device> Renderer_Core_Component::pickPhysicalDevice()
   return nullptr;
 }
 
-void Renderer_Core_Component::initializeLogicDevice(core::shared_ptr<const Physical_Device> physicalDevice)
+void initializeLogicDevice(Renderer_Core_Component* rendererCoreComponent, core::shared_ptr<const Physical_Device> physicalDevice)
 {
   VkPhysicalDeviceFeatures deviceFeatures{};
   deviceFeatures.samplerAnisotropy = VK_TRUE;
@@ -169,20 +175,20 @@ void Renderer_Core_Component::initializeLogicDevice(core::shared_ptr<const Physi
   core::array<Device_Queue_Descriptor, 2> queueInfos =
   {
     Device_Queue_Descriptor(physicalDevice, VK_QUEUE_GRAPHICS_BIT),
-    Device_Queue_Descriptor(physicalDevice, surface),
+    Device_Queue_Descriptor(physicalDevice, rendererCoreComponent->surface),
   };
 
-  device = core::allocateShared<Device>(physicalDevice, queueInfos, deviceFeatures, cDeviceEnabledExtensions, cInstanceEnabledLayers);
+  rendererCoreComponent->device = core::allocateShared<Device>(physicalDevice, queueInfos, deviceFeatures, cDeviceEnabledExtensions, cInstanceEnabledLayers);
 
-  for (auto it = device->getQueueDescriptors().begin(); it != device->getQueueDescriptors().end(); ++it)
+  for (auto it = rendererCoreComponent->device->getQueueDescriptors().begin(); it != rendererCoreComponent->device->getQueueDescriptors().end(); ++it)
   {
     if (it->getDenotation() == DEVICE_QUEUE_DENOTATION_GRAPHICS_BITS)
-      graphicsQueue = device->getQueueByFamily(it->queueFamilyIndex, 0u).value_or(nullptr);
+      rendererCoreComponent->graphicsQueue = rendererCoreComponent->device->getQueueByFamily(it->queueFamilyIndex, 0u).value_or(nullptr);
     if (it->getDenotation() == DEVICE_QUEUE_DENOTATION_PRESENT_BITS)
-      presentQueue = device->getQueueByFamily(it->queueFamilyIndex, 0u).value_or(nullptr);
+      rendererCoreComponent->presentQueue = rendererCoreComponent->device->getQueueByFamily(it->queueFamilyIndex, 0u).value_or(nullptr);
   }
-  if (!presentQueue) presentQueue = graphicsQueue;
-  if (!transferQueue) transferQueue = graphicsQueue;
+  if (!rendererCoreComponent->presentQueue) rendererCoreComponent->presentQueue = rendererCoreComponent->graphicsQueue;
+  if (!rendererCoreComponent->transferQueue) rendererCoreComponent->transferQueue = rendererCoreComponent->graphicsQueue;
 }
 
 }

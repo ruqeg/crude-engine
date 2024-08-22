@@ -206,7 +206,7 @@ void initializeRenderPass(Deferred_GBuffer_Pass_Component* deferredGBufferCompon
       .dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
       .dependencyFlags = 0})
   };
-  deferredGBufferComponent->renderPass = core::allocateShared<Render_Pass>(rendererCoreComponent->device, getSubpassDescriptions(), subpassesDependencies, getAttachmentsDescriptions());
+  deferredGBufferComponent->renderPass = core::allocateShared<Render_Pass>(rendererCoreComponent->device, getSubpassDescriptions(), subpassesDependencies, getAttachmentsDescriptions(deferredGBufferComponent));
 }
 
 void initalizeGraphicsPipeline(Deferred_GBuffer_Pass_Component* deferredGBufferComponent, Renderer_Core_Component* rendererCoreComponent)
@@ -259,7 +259,7 @@ void initalizeGraphicsPipeline(Deferred_GBuffer_Pass_Component* deferredGBufferC
   Dynamic_State_Create_Info dynamicStateInfo(dynamicStates);
 
   core::shared_ptr<Pipeline_Layout> pipelineLayout = core::allocateShared<Pipeline_Layout>(
-    rendererCoreComponent->device, createDescriptorSetLayout(),
+    rendererCoreComponent->device, createDescriptorSetLayout(rendererCoreComponent),
     Push_Constant_Range<Per_Mesh>(VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT));
 
   deferredGBufferComponent->pipeline = core::allocateShared<Pipeline>(
@@ -286,7 +286,7 @@ void initializeFramebuffers(Deferred_GBuffer_Pass_Component* deferredGBufferComp
   for (core::uint32 i = 0; i < rendererCoreComponent->swapchainImages.size(); ++i)
   {
     deferredGBufferComponent->framebuffers.push_back(core::allocateShared<Framebuffer>(
-      rendererCoreComponent->device, deferredGBufferComponent->renderPass, getFramebufferAttachments(), deferredGBufferComponent->gbuffer->getExtent(), 1u));
+      rendererCoreComponent->device, deferredGBufferComponent->renderPass, getFramebufferAttachments(deferredGBufferComponent), deferredGBufferComponent->gbuffer->getExtent(), 1u));
   }
 }
 

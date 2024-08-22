@@ -1,5 +1,6 @@
 module;
 
+#include <flecs.h>
 #include <vulkan/vulkan.hpp>
 
 export module crude.graphics.renderer_core_component;
@@ -9,9 +10,7 @@ export import crude.core.std_containers_stack;
 
 export namespace crude::platform
 {
-
 class SDL_Window_Container;
-
 }
 
 export namespace crude::graphics
@@ -33,21 +32,8 @@ class Command_Pool;
 export namespace crude::graphics
 {
 
-class Renderer_Core_Component
+struct Renderer_Core_Component
 {
-public:
-  Renderer_Core_Component() = default;
-  Renderer_Core_Component(core::shared_ptr<platform::SDL_Window_Container> windowContainer);
-  ~Renderer_Core_Component();
-private:
-  void initializeInstance();
-  void initializeSurface();
-  void initializeDevice();
-  void initializeSwapchain();
-  void initalizeCommandPool();
-  core::shared_ptr<Physical_Device> pickPhysicalDevice();
-  void initializeLogicDevice(core::shared_ptr<const Physical_Device> physicalDevice);
-public:
   core::shared_ptr<Queue>                           graphicsQueue;
   core::shared_ptr<Queue>                           presentQueue;
   core::shared_ptr<Queue>                           transferQueue;
@@ -64,5 +50,21 @@ public:
   core::shared_ptr<Debug_Utils_Messenger>           debugUtilsMessenger;
   core::shared_ptr<platform::SDL_Window_Container>  windowContainer;
 };
+
+void rendererCoreComponentInitialize(flecs::iter& it);
+void rendererCoreComponentDeinitialize(flecs::iter& it);
+
+}
+
+namespace crude::graphics
+{
+
+void initializeInstance(Renderer_Core_Component* rendererCoreComponent);
+void initializeSurface(Renderer_Core_Component* rendererCoreComponent);
+void initializeDevice(Renderer_Core_Component* rendererCoreComponent);
+void initializeSwapchain(Renderer_Core_Component* rendererCoreComponent);
+void initalizeCommandPool(Renderer_Core_Component* rendererCoreComponent);
+core::shared_ptr<Physical_Device> pickPhysicalDevice(Renderer_Core_Component* rendererCoreComponent);
+void initializeLogicDevice(Renderer_Core_Component* rendererCoreComponent, core::shared_ptr<const Physical_Device> physicalDevice);
 
 }

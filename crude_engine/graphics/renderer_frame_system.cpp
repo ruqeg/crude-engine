@@ -17,37 +17,31 @@ import crude.core.logger;
 namespace crude::graphics
 {
 
-Renderer_Frame_Component::Renderer_Frame_Component(core::shared_ptr<Device> device, core::shared_ptr<Command_Pool> graphicsCommandPool)
+void rendererFrameSystemComponentInitiailize(flecs::iter& it)
 {
+  Renderer_Core_Component* rendererCoreComponent = it.world().get_mut<Renderer_Core_Component>();
+  Renderer_Frame_Component rendererFrameComponent;
+
   for (core::uint32 i = 0; i < cFramesCount; ++i)
   {
-    perFrameUniformBuffer[i] = core::allocateShared<Uniform_Buffer<Per_Frame>>(device);
+    rendererFrameComponent.perFrameUniformBuffer[i] = core::allocateShared<Uniform_Buffer<Per_Frame>>(rendererCoreComponent->device);
   }
   for (core::uint32 i = 0; i < cFramesCount; ++i)
   {
-    graphicsCommandBuffers[i] = core::allocateShared<Command_Buffer>(graphicsCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+    rendererFrameComponent.graphicsCommandBuffers[i] = core::allocateShared<Command_Buffer>(rendererCoreComponent->graphicsCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
   }
 
   for (core::uint32 i = 0; i < cFramesCount; i++)
   {
-    imageAvailableSemaphores[i] = core::allocateShared<Semaphore>(device);
-    renderFinishedSemaphores[i] = core::allocateShared<Semaphore>(device);
-    inFlightFences[i] = core::allocateShared<Fence>(device, VK_FENCE_CREATE_SIGNALED_BIT);
+    rendererFrameComponent.imageAvailableSemaphores[i] = core::allocateShared<Semaphore>(rendererCoreComponent->device);
+    rendererFrameComponent.renderFinishedSemaphores[i] = core::allocateShared<Semaphore>(rendererCoreComponent->device);
+    rendererFrameComponent.inFlightFences[i] = core::allocateShared<Fence>(rendererCoreComponent->device, VK_FENCE_CREATE_SIGNALED_BIT);
   }
 
-  currentFrame = 0u;
-}
+  rendererFrameComponent.currentFrame = 0u;
 
-void Renderer_Frame_Component::stepToNextFrame()
-{
-  currentFrame = (currentFrame + 1u) % cFramesCount;
+  it.world().set<Renderer_Frame_Component>(std::move(rendererFrameComponent));
 }
-
-core::shared_ptr<Uniform_Buffer<Per_Frame>> Renderer_Frame_Component::getFramePerFrameUniformBuffer() { return perFrameUniformBuffer[currentFrame]; }
-core::shared_ptr<Command_Buffer> Renderer_Frame_Component::getFrameGraphicsCommandBuffer() { return graphicsCommandBuffers[currentFrame]; }
-core::shared_ptr<Semaphore> Renderer_Frame_Component::getFrameImageAvailableSemaphore() { return imageAvailableSemaphores[currentFrame]; }
-core::shared_ptr<Semaphore> Renderer_Frame_Component::getFrameRenderFinishedSemaphore() { return renderFinishedSemaphores[currentFrame]; }
-core::shared_ptr<Fence> Renderer_Frame_Component::getFrameInFlightFence() { return inFlightFences[currentFrame]; };
 
 void rendererFrameStartSystemProcess(flecs::iter& it)
 {
@@ -121,5 +115,17 @@ void rendererFrameSubmitSystemProcess(flecs::iter& it)
 
   frameComponent->stepToNextFrame();
 }
+
+void Renderer_Frame_Component::stepToNextFrame()
+{
+  currentFrame = (currentFrame + 1u) % cFramesCount;
+}
+
+core::shared_ptr<Uniform_Buffer<Per_Frame>> Renderer_Frame_Component::getFramePerFrameUniformBuffer() { return perFrameUniformBuffer[currentFrame]; }
+core::shared_ptr<Command_Buffer> Renderer_Frame_Component::getFrameGraphicsCommandBuffer() { return graphicsCommandBuffers[currentFrame]; }
+core::shared_ptr<Semaphore> Renderer_Frame_Component::getFrameImageAvailableSemaphore() { return imageAvailableSemaphores[currentFrame]; }
+core::shared_ptr<Semaphore> Renderer_Frame_Component::getFrameRenderFinishedSemaphore() { return renderFinishedSemaphores[currentFrame]; }
+core::shared_ptr<Fence> Renderer_Frame_Component::getFrameInFlightFence() { return inFlightFences[currentFrame]; };
+
 
 }

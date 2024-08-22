@@ -31,18 +31,13 @@ constexpr core::uint32 cFramesCount = 2u;
 
 struct Renderer_Frame_Component
 {
-public:
-  Renderer_Frame_Component() = default;
-  Renderer_Frame_Component(core::shared_ptr<Device> device, core::shared_ptr<Command_Pool> graphicsCommandPool);
-  ~Renderer_Frame_Component() = default;
-public:
   void stepToNextFrame();
   core::shared_ptr<Uniform_Buffer<Per_Frame>> getFramePerFrameUniformBuffer();
   core::shared_ptr<Command_Buffer> getFrameGraphicsCommandBuffer();
   core::shared_ptr<Semaphore> getFrameImageAvailableSemaphore();
   core::shared_ptr<Semaphore> getFrameRenderFinishedSemaphore();
   core::shared_ptr<Fence> getFrameInFlightFence();
-public:
+
   core::array<core::shared_ptr<Uniform_Buffer<Per_Frame>>, cFramesCount>      perFrameUniformBuffer;
   core::array<core::shared_ptr<Command_Buffer>, cFramesCount>                 graphicsCommandBuffers;
   core::array<core::shared_ptr<Semaphore>, cFramesCount>                      imageAvailableSemaphores;
@@ -53,6 +48,7 @@ public:
   core::uint32                                                                swapchainImageIndex;
 };
 
+void rendererFrameSystemComponentInitiailize(flecs::iter& it);
 void rendererFrameStartSystemProcess(flecs::iter& it);
 void rendererFrameSubmitSystemProcess(flecs::iter& it);
 

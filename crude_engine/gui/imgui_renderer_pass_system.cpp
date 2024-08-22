@@ -20,6 +20,7 @@ import crude.graphics.queue;
 import crude.graphics.physical_device;
 import crude.graphics.vulkan_utils;
 import crude.graphics.renderer_frame_system;
+import crude.platform.sdl_window_container;
 
 namespace crude::gui
 {
@@ -66,6 +67,8 @@ void imguiRendererPassSystemInitialize(flecs::iter& it)
   imguiRendererPassSystemInitializeRenderPass(&imguiRendererComponent, rendererCoreComponent);
   imguiRendererPassSystemInitializeDescriptorPool(&imguiRendererComponent, rendererCoreComponent);
   imguiRendererPassSystemInitializeFramebuffers(&imguiRendererComponent, rendererCoreComponent);
+
+  ImGui_ImplSDL3_InitForVulkan(rendererCoreComponent->windowContainer->getHandle().get());
 
   ImGui_ImplVulkan_InitInfo init_info{
     .Instance        = rendererCoreComponent->instance->getHandle(),

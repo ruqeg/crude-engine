@@ -63,31 +63,21 @@ void Engine::initialize(const char* title, core::uint32 width, core::uint32 heig
 {
   registerSystems();
 
-  auto windowContainer = crude::core::allocateShared<crude::platform::SDL_Window_Container>(
-    title, width, height, crude::platform::SDL_WINDOW_CONTAINER_FLAG_VULKAN);
+  m_world.set<core::shared_ptr<platform::SDL_Window_Container>>(crude::core::allocateShared<crude::platform::SDL_Window_Container>(
+    title, width, height, crude::platform::SDL_WINDOW_CONTAINER_FLAG_VULKAN));
 
-  gui::initializeImGuiVulkanSDL(windowContainer);
-
-
-  graphics::Renderer_Core_Component rendererCoreComponent(windowContainer);
-  m_world.set<graphics::Renderer_Core_Component>(rendererCoreComponent);
-
-
+  m_world.query().run(graphics::rendererCoreComponentInitialize);
   m_world.query().run(graphics::deferredGBufferPassSystemComponentInitialize);
-
-  m_world.set<graphics::Fullscreen_PBR_Pass_Component>({
-    m_world.get_mut<graphics::Deferred_GBuffer_Pass_Component>()->gbuffer,
-    rendererCoreComponent.swapchain });
-
-  m_world.set<graphics::Renderer_Frame_Component>({ rendererCoreComponent.device, rendererCoreComponent.graphicsCommandPool });
-
+  m_world.query().run(graphics::fullscreenPBRPassComponentInitialize);
+  m_world.query().run(graphics::rendererFrameSystemComponentInitiailize);
+  
   resources::GLTF_Loader gltfLoader(m_world.get_mut<graphics::Renderer_Core_Component>()->transferCommandPool, m_world);
   m_sceneNode = gltfLoader.loadNodeFromFile("../../crude_example/basic_triangle_examle/resources/sponza.glb");
 
   flecs::entity cameraNode = m_world.entity("camera node");
-  cameraNode.set<scene::Camera>([windowContainer](){
+  cameraNode.set<scene::Camera>([width, height](){
     scene::Camera camera;
-    camera.calculateViewToClipMatrix(DirectX::XM_PIDIV4, windowContainer->getAspect(), 0.05f, 100.0f);
+    camera.calculateViewToClipMatrix(DirectX::XM_PIDIV4, width / (core::float64)height, 0.05f, 100.0f);
     return camera;
   }());
   cameraNode.set<scene::Transform>([&cameraNode]() {
@@ -107,7 +97,6 @@ void Engine::initialize(const char* title, core::uint32 width, core::uint32 heig
 void Engine::deinitialize()
 {
   m_world.query().run(gui::imguiRendererPassSystemDeinitialize);
-  gui::deinitializeImGuiVulkanSDL();
 }
 
 void Engine::mainLoop()

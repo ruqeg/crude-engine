@@ -4,8 +4,6 @@
 
 module crude.gui.imgui_helper;
 
-import crude.platform.sdl_window_container;
-
 namespace crude::gui
 {
 
@@ -20,18 +18,9 @@ void initializeImGuiContext()
   ImGui::StyleColorsDark();
 }
 
-void initializeImGuiVulkanSDL(core::shared_ptr<platform::SDL_Window_Container> windowContainer)
-{
-  ImGui_ImplSDL3_InitForVulkan(windowContainer->getHandle().get());
-}
-
-void deinitializeImGuiVulkanSDL()
-{
-  ImGui_ImplSDL3_Shutdown();
-}
-
 void deinitializeImGuiContext()
 {
+  ImGui_ImplSDL3_Shutdown();
   ImGui::DestroyContext();
 }
 
