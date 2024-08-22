@@ -14,9 +14,6 @@ export namespace crude::platform
 
 struct Input_System_Component
 {
-  Input_System_Component() = default;
-  Input_System_Component(const core::vector<flecs::system>& eventSystems) : eventSystems(eventSystems) {}
-
   core::vector<flecs::system>  eventSystems;
   SDL_Event                    inputEvent;
 };

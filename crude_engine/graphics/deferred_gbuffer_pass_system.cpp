@@ -98,192 +98,6 @@ Deferred_GBuffer_Pass_Component::Deferred_GBuffer_Pass_Component()
   , vertexIndicesBufferDescriptor{ cVertexIndicesBufferDescriptor }
 {}
 
-Deferred_GBuffer_Pass_Component::Deferred_GBuffer_Pass_Component(core::shared_ptr<Device> device, const VkExtent2D& extent, core::uint32 swapchainImagesCount)
-  : Deferred_GBuffer_Pass_Component()
-{
-  gbuffer = core::allocateShared<GBuffer>(device, extent);
-  initializeRenderPass();
-  initalizeGraphicsPipeline();
-  initializeFramebuffers(swapchainImagesCount);
-}
-
-core::shared_ptr<Descriptor_Set_Layout> Deferred_GBuffer_Pass_Component::createDescriptorSetLayout()
-{
-  auto descriptorPool = core::allocateShared<Descriptor_Pool>(gbuffer->getDevice(), cDescriptorPoolSizes);
-  auto descriptorSetLayout = core::allocateShared<Descriptor_Set_Layout>(gbuffer->getDevice(), cDescriptorLayoutBindings, true);
-  return descriptorSetLayout;
-}
-
-void Deferred_GBuffer_Pass_Component::initializeRenderPass()
-{
-  core::array<Subpass_Dependency, 1u> subpassesDependencies =
-  {
-    Subpass_Dependency({
-      .srcSubpass      = VK_SUBPASS_EXTERNAL,
-      .dstSubpass      = 0,
-      .srcStageMask    = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
-      .dstStageMask    = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
-      .srcAccessMask   = 0u,
-      .dstAccessMask   = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
-      .dependencyFlags = 0})
-  };
-  renderPass = core::allocateShared<Render_Pass>(gbuffer->getDevice(), getSubpassDescriptions(), subpassesDependencies, getAttachmentsDescriptions());
-}
-
-void Deferred_GBuffer_Pass_Component::initalizeGraphicsPipeline()
-{
-  core::shared_ptr<Shader_Module> taskShaderModule = core::allocateShared<Shader_Module>(gbuffer->getDevice(), crude::shaders::deferred_gbuffer::task);
-  core::shared_ptr<Shader_Module> meshShaderModule = core::allocateShared<Shader_Module>(gbuffer->getDevice(), crude::shaders::deferred_gbuffer::mesh);
-  core::shared_ptr<Shader_Module> fragShaderModule = core::allocateShared<Shader_Module>(gbuffer->getDevice(), crude::shaders::deferred_gbuffer::frag);
-
-  core::array<Shader_Stage_Create_Info, 3u> shaderStagesInfo =
-  {
-    Task_Shader_Stage_Create_Info(taskShaderModule, "main"),
-    Mesh_Shader_Stage_Create_Info(meshShaderModule, "main"),
-    Fragment_Shader_Stage_Create_Info(fragShaderModule, "main"),
-  };
-
-  Vertex_Input_State_Create_Info vertexInputStateInfo({
-    .bindings = {},
-    .attributes = {} });
-
-  Tessellation_State_Create_Info tesselationInfo(3u);
-
-  Input_Assembly_State_Create_Info inputAssembly({
-    .topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
-    .primitiveRestartEnable = false });
-
-  Viewport_State_Create_Info viewportState(1u, 1u);
-
-  Rasterization_State_Create_Info rasterizer({
-    .depthClampEnable = false,
-    .rasterizerDiscardEnable = false,
-    .polygonMode = VK_POLYGON_MODE_FILL,
-    .cullMode = VK_CULL_MODE_BACK_BIT,
-    .frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE,
-    .depthBiasEnable = false,
-    .depthBiasConstantFactor = 0.0f,
-    .depthBiasClamp = 0.0f,
-    .depthBiasSlopeFactor = 0.0f,
-    .lineWidth = 1.f });
-
-  Multisample_State_Create_Info multisampling({
-    .rasterizationSamples = VK_SAMPLE_COUNT_1_BIT,
-    .sampleShadingEnable = VK_FALSE,
-    .minSampleShading = 0.2f,
-    .alphaToCoverageEnable = false,
-    .alphaToOneEnable = false });
-
-  core::array<VkDynamicState, 2> dynamicStates = {
-    VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR
-  };
-  Dynamic_State_Create_Info dynamicStateInfo(dynamicStates);
-
-  core::shared_ptr<Pipeline_Layout> pipelineLayout = core::allocateShared<Pipeline_Layout>(
-    gbuffer->getDevice(), createDescriptorSetLayout(),
-    Push_Constant_Range<Per_Mesh>(VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT));
-
-  pipeline = core::allocateShared<Pipeline>(
-    gbuffer->getDevice(),
-    renderPass,
-    pipelineLayout,
-    nullptr,
-    shaderStagesInfo,
-    vertexInputStateInfo,
-    tesselationInfo,
-    inputAssembly,
-    viewportState,
-    rasterizer,
-    multisampling,
-    createDepthStencilStateCreateInfo(),
-    createColorBlendStateCreateInfo(),
-    dynamicStateInfo,
-    0u);
-}
-
-void Deferred_GBuffer_Pass_Component::initializeFramebuffers(core::uint32 swapchainImagesCount)
-{
-  framebuffers.reserve(swapchainImagesCount);
-  for (core::uint32 i = 0; i < swapchainImagesCount; ++i)
-  {
-    framebuffers.push_back(core::allocateShared<Framebuffer>(gbuffer->getDevice(), pipeline->getRenderPass(), getFramebufferAttachments(), gbuffer->getExtent(), 1u));
-  }
-}
-
-core::array<Subpass_Description, 1> Deferred_GBuffer_Pass_Component::getSubpassDescriptions()
-{
-  return 
-  {
-    Subpass_Description(Subpass_Description::Initialize_Color_Array_Depth{
-      core::array
-      {
-        VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
-      },
-      VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL })
-  };
-}
-
-core::vector<Attachment_Description> Deferred_GBuffer_Pass_Component::getAttachmentsDescriptions()
-{
-  return 
-  {
-    Attachment_Description({
-      .format        = gbuffer->getAlbedoAttachment()->getFormat(),
-      .samples       = gbuffer->getAlbedoAttachment()->getSampleCount(),
-      .colorOp       = attachment_op::gClearStore,
-      .stenicilOp    = attachment_op::gClearStore,
-      .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-      .finalLayout   = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL }),
-    Attachment_Description({
-      .format        = gbuffer->getDepthStencilAttachment()->getFormat(),
-      .samples       = gbuffer->getDepthStencilAttachment()->getSampleCount(),
-      .colorOp       = attachment_op::gClearStore,
-      .stenicilOp    = attachment_op::gClearStore,
-      .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-      .finalLayout   = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL })
-  };
-}
-
-core::vector<core::shared_ptr<Image_View>> Deferred_GBuffer_Pass_Component::getFramebufferAttachments()
-{
-  return { gbuffer->getAlbedoAttachmentView(), gbuffer->getDepthStencilAttachmentView() };
-}
-
-Color_Blend_State_Create_Info Deferred_GBuffer_Pass_Component::createColorBlendStateCreateInfo()
-{
-  core::array<Pipeline_Color_Blend_Attachment_State, 1u> colorAttachments =
-  {
-    Pipeline_Color_Blend_Attachment_State({
-      .blendEnable = VK_FALSE,
-      .colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT,
-      .srcColorBlendFactor = VK_BLEND_FACTOR_ONE,
-      .dstColorBlendFactor = VK_BLEND_FACTOR_ZERO,
-      .colorBlendOp = VK_BLEND_OP_ADD,
-      .srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE,
-      .dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO,
-      .alphaBlendOp = VK_BLEND_OP_ADD })
-  };
-  return Color_Blend_State_Create_Info({
-    .attachments = colorAttachments,
-    .blendConstants = { 0.f, 0.f, 0.f, 0.f },
-    .logicOpEnable = false,
-    .logicOp = VK_LOGIC_OP_COPY });
-}
-
-Depth_Stencil_State_Create_Info Deferred_GBuffer_Pass_Component::createDepthStencilStateCreateInfo()
-{
-  return Depth_Stencil_State_Create_Info({
-    .depthTestEnable = true,
-    .depthWriteEnable = true,
-    .depthCompareOp = VK_COMPARE_OP_LESS,
-    .depthBoundsTestEnable = false,
-    .stencilTestEnable = false,
-    .front = {},
-    .back = {},
-    .minDepthBounds = 0.0f,
-    .maxDepthBounds = 1.0f });
-}
-
 void deferredGBufferPassSystemProcess(flecs::iter& it)
 {
   Deferred_GBuffer_Pass_Component* deferredGBufferComponent = it.world().get_mut<Deferred_GBuffer_Pass_Component>();
@@ -356,6 +170,198 @@ void deferredGBufferPassSystemProcess(flecs::iter& it)
   }
   
   frameComponent->getFrameGraphicsCommandBuffer()->endRenderPass();
+}
+
+
+void deferredGBufferPassSystemComponentInitialize(flecs::iter& it)
+{
+  Deferred_GBuffer_Pass_Component deferredGBufferComponent;
+  Renderer_Core_Component* coreComponent = it.world().get_mut<Renderer_Core_Component>();
+
+  deferredGBufferComponent.gbuffer = core::allocateShared<GBuffer>(coreComponent->device, coreComponent->swapchain->getExtent());
+  initializeRenderPass(&deferredGBufferComponent, coreComponent);
+  initalizeGraphicsPipeline(&deferredGBufferComponent, coreComponent);
+  initializeFramebuffers(&deferredGBufferComponent, coreComponent);
+
+  it.world().set<Deferred_GBuffer_Pass_Component>(std::move(deferredGBufferComponent));
+}
+
+core::shared_ptr<Descriptor_Set_Layout> createDescriptorSetLayout(Renderer_Core_Component* rendererCoreComponent)
+{
+  auto descriptorPool = core::allocateShared<Descriptor_Pool>(rendererCoreComponent->device, cDescriptorPoolSizes);
+  auto descriptorSetLayout = core::allocateShared<Descriptor_Set_Layout>(rendererCoreComponent->device, cDescriptorLayoutBindings, true);
+  return descriptorSetLayout;
+}
+
+void initializeRenderPass(Deferred_GBuffer_Pass_Component* deferredGBufferComponent, Renderer_Core_Component* rendererCoreComponent)
+{
+  core::array<Subpass_Dependency, 1u> subpassesDependencies =
+  {
+    Subpass_Dependency({
+      .srcSubpass = VK_SUBPASS_EXTERNAL,
+      .dstSubpass = 0,
+      .srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
+      .dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
+      .srcAccessMask = 0u,
+      .dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
+      .dependencyFlags = 0})
+  };
+  deferredGBufferComponent->renderPass = core::allocateShared<Render_Pass>(rendererCoreComponent->device, getSubpassDescriptions(), subpassesDependencies, getAttachmentsDescriptions());
+}
+
+void initalizeGraphicsPipeline(Deferred_GBuffer_Pass_Component* deferredGBufferComponent, Renderer_Core_Component* rendererCoreComponent)
+{
+  core::shared_ptr<Shader_Module> taskShaderModule = core::allocateShared<Shader_Module>(rendererCoreComponent->device, crude::shaders::deferred_gbuffer::task);
+  core::shared_ptr<Shader_Module> meshShaderModule = core::allocateShared<Shader_Module>(rendererCoreComponent->device, crude::shaders::deferred_gbuffer::mesh);
+  core::shared_ptr<Shader_Module> fragShaderModule = core::allocateShared<Shader_Module>(rendererCoreComponent->device, crude::shaders::deferred_gbuffer::frag);
+
+  core::array<Shader_Stage_Create_Info, 3u> shaderStagesInfo =
+  {
+    Task_Shader_Stage_Create_Info(taskShaderModule, "main"),
+    Mesh_Shader_Stage_Create_Info(meshShaderModule, "main"),
+    Fragment_Shader_Stage_Create_Info(fragShaderModule, "main"),
+  };
+
+  Vertex_Input_State_Create_Info vertexInputStateInfo({
+    .bindings = {},
+    .attributes = {} });
+
+  Tessellation_State_Create_Info tesselationInfo(3u);
+
+  Input_Assembly_State_Create_Info inputAssembly({
+    .topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
+    .primitiveRestartEnable = false });
+
+  Viewport_State_Create_Info viewportState(1u, 1u);
+
+  Rasterization_State_Create_Info rasterizer({
+    .depthClampEnable = false,
+    .rasterizerDiscardEnable = false,
+    .polygonMode = VK_POLYGON_MODE_FILL,
+    .cullMode = VK_CULL_MODE_BACK_BIT,
+    .frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE,
+    .depthBiasEnable = false,
+    .depthBiasConstantFactor = 0.0f,
+    .depthBiasClamp = 0.0f,
+    .depthBiasSlopeFactor = 0.0f,
+    .lineWidth = 1.f });
+
+  Multisample_State_Create_Info multisampling({
+    .rasterizationSamples = VK_SAMPLE_COUNT_1_BIT,
+    .sampleShadingEnable = VK_FALSE,
+    .minSampleShading = 0.2f,
+    .alphaToCoverageEnable = false,
+    .alphaToOneEnable = false });
+
+  core::array<VkDynamicState, 2> dynamicStates = {
+    VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR
+  };
+  Dynamic_State_Create_Info dynamicStateInfo(dynamicStates);
+
+  core::shared_ptr<Pipeline_Layout> pipelineLayout = core::allocateShared<Pipeline_Layout>(
+    rendererCoreComponent->device, createDescriptorSetLayout(),
+    Push_Constant_Range<Per_Mesh>(VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT));
+
+  deferredGBufferComponent->pipeline = core::allocateShared<Pipeline>(
+    rendererCoreComponent->device,
+    deferredGBufferComponent->renderPass,
+    pipelineLayout,
+    nullptr,
+    shaderStagesInfo,
+    vertexInputStateInfo,
+    tesselationInfo,
+    inputAssembly,
+    viewportState,
+    rasterizer,
+    multisampling,
+    createDepthStencilStateCreateInfo(),
+    createColorBlendStateCreateInfo(),
+    dynamicStateInfo,
+    0u);
+}
+
+void initializeFramebuffers(Deferred_GBuffer_Pass_Component* deferredGBufferComponent, Renderer_Core_Component* rendererCoreComponent)
+{
+  deferredGBufferComponent->framebuffers.reserve(rendererCoreComponent->swapchainImages.size());
+  for (core::uint32 i = 0; i < rendererCoreComponent->swapchainImages.size(); ++i)
+  {
+    deferredGBufferComponent->framebuffers.push_back(core::allocateShared<Framebuffer>(
+      rendererCoreComponent->device, deferredGBufferComponent->renderPass, getFramebufferAttachments(), deferredGBufferComponent->gbuffer->getExtent(), 1u));
+  }
+}
+
+core::array<Subpass_Description, 1> getSubpassDescriptions()
+{
+  return
+  {
+    Subpass_Description(Subpass_Description::Initialize_Color_Array_Depth{
+      core::array
+      {
+        VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+      },
+      VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL })
+  };
+}
+
+core::vector<Attachment_Description> getAttachmentsDescriptions(Deferred_GBuffer_Pass_Component* deferredGBufferComponent)
+{
+  return
+  {
+    Attachment_Description({
+      .format        = deferredGBufferComponent->gbuffer->getAlbedoAttachment()->getFormat(),
+      .samples       = deferredGBufferComponent->gbuffer->getAlbedoAttachment()->getSampleCount(),
+      .colorOp       = attachment_op::gClearStore,
+      .stenicilOp    = attachment_op::gClearStore,
+      .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+      .finalLayout   = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL }),
+    Attachment_Description({
+      .format        = deferredGBufferComponent->gbuffer->getDepthStencilAttachment()->getFormat(),
+      .samples       = deferredGBufferComponent->gbuffer->getDepthStencilAttachment()->getSampleCount(),
+      .colorOp       = attachment_op::gClearStore,
+      .stenicilOp    = attachment_op::gClearStore,
+      .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+      .finalLayout   = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL })
+  };
+}
+
+core::vector<core::shared_ptr<Image_View>> getFramebufferAttachments(Deferred_GBuffer_Pass_Component* deferredGBufferComponent)
+{
+  return { deferredGBufferComponent->gbuffer->getAlbedoAttachmentView(), deferredGBufferComponent->gbuffer->getDepthStencilAttachmentView() };
+}
+
+Color_Blend_State_Create_Info createColorBlendStateCreateInfo()
+{
+  core::array<Pipeline_Color_Blend_Attachment_State, 1u> colorAttachments =
+  {
+    Pipeline_Color_Blend_Attachment_State({
+      .blendEnable         = VK_FALSE,
+      .colorWriteMask      = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT,
+      .srcColorBlendFactor = VK_BLEND_FACTOR_ONE,
+      .dstColorBlendFactor = VK_BLEND_FACTOR_ZERO,
+      .colorBlendOp        = VK_BLEND_OP_ADD,
+      .srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE,
+      .dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO,
+      .alphaBlendOp        = VK_BLEND_OP_ADD })
+  };
+  return Color_Blend_State_Create_Info({
+    .attachments = colorAttachments,
+    .blendConstants = { 0.f, 0.f, 0.f, 0.f },
+    .logicOpEnable = false,
+    .logicOp = VK_LOGIC_OP_COPY });
+}
+
+Depth_Stencil_State_Create_Info createDepthStencilStateCreateInfo()
+{
+  return Depth_Stencil_State_Create_Info({
+    .depthTestEnable       = true,
+    .depthWriteEnable      = true,
+    .depthCompareOp        = VK_COMPARE_OP_LESS,
+    .depthBoundsTestEnable = false,
+    .stencilTestEnable     = false,
+    .front                 = {},
+    .back                  = {},
+    .minDepthBounds        = 0.0f,
+    .maxDepthBounds        = 1.0f });
 }
 
 }

@@ -68,12 +68,12 @@ void Engine::initialize(const char* title, core::uint32 width, core::uint32 heig
 
   gui::initializeImGuiVulkanSDL(windowContainer);
 
+
   graphics::Renderer_Core_Component rendererCoreComponent(windowContainer);
   m_world.set<graphics::Renderer_Core_Component>(rendererCoreComponent);
-  m_world.set<graphics::Deferred_GBuffer_Pass_Component>({ 
-    rendererCoreComponent.device, 
-    rendererCoreComponent.swapchain->getExtent(), 
-    static_cast<core::uint32>(rendererCoreComponent.swapchainImagesViews.size()) });
+
+
+  m_world.query().run(graphics::deferredGBufferPassSystemComponentInitialize);
 
   m_world.set<graphics::Fullscreen_PBR_Pass_Component>({
     m_world.get_mut<graphics::Deferred_GBuffer_Pass_Component>()->gbuffer,
