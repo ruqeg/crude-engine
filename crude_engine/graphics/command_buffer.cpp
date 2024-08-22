@@ -115,13 +115,20 @@ bool Command_Buffer::reset(VkCommandBufferResetFlags flags)
 
 void Command_Buffer::beginRenderPass(core::shared_ptr<Render_Pass>  renderPass,
                                      core::shared_ptr<Framebuffer>  framebuffer,
+                                     const VkRect2D&                renderArea, 
+                                     VkSubpassContents              contents)
+{
+  beginRenderPass(renderPass, framebuffer, {}, renderArea, contents);
+}
+
+void Command_Buffer::beginRenderPass(core::shared_ptr<Render_Pass>  renderPass,
+                                     core::shared_ptr<Framebuffer>  framebuffer,
                                      core::span<VkClearValue>       clearValues,
                                      const VkRect2D&                renderArea, 
                                      VkSubpassContents              contents)
 {
   core::assert(renderPass.get());
   core::assert(framebuffer.get());
-  core::assert(clearValues.data());
 
   VkRenderPassBeginInfo renderPassInfo{};
   renderPassInfo.sType            = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;

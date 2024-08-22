@@ -47,6 +47,10 @@ public:
   bool reset(VkCommandBufferResetFlags flags = VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
   void beginRenderPass(core::shared_ptr<Render_Pass>  renderPass,
                        core::shared_ptr<Framebuffer>  framebuffer,
+                       const VkRect2D&                renderArea = {0, 0, 0, 0}, 
+                       VkSubpassContents              contents = VK_SUBPASS_CONTENTS_INLINE);
+  void beginRenderPass(core::shared_ptr<Render_Pass>  renderPass,
+                       core::shared_ptr<Framebuffer>  framebuffer,
                        core::span<VkClearValue>       clearValues,
                        const VkRect2D&                renderArea = {0, 0, 0, 0}, 
                        VkSubpassContents              contents = VK_SUBPASS_CONTENTS_INLINE);

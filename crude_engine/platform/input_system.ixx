@@ -27,8 +27,6 @@ void inputSystemProcess(flecs::iter& it)
 
   while (SDL_PollEvent(&inputSystemComponent->inputEvent))
   {
-    ImGui_ImplSDL3_ProcessEvent(&inputSystemComponent->inputEvent);
-
     for (auto& eventSystem : inputSystemComponent->eventSystems)
     {
       eventSystem.run();
