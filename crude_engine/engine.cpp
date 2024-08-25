@@ -66,11 +66,13 @@ void Engine::initialize(const char* title, core::uint32 width, core::uint32 heig
   m_world.set<core::shared_ptr<platform::SDL_Window_Container>>(crude::core::allocateShared<crude::platform::SDL_Window_Container>(
     title, width, height, crude::platform::SDL_WINDOW_CONTAINER_FLAG_VULKAN));
 
-  m_world.query().run(graphics::rendererCoreComponentInitialize);
-  m_world.query().run(graphics::deferredGBufferPassSystemComponentInitialize);
-  m_world.query().run(graphics::fullscreenPBRPassComponentInitialize);
-  m_world.query().run(graphics::rendererFrameSystemComponentInitiailize);
+  m_world.system().run(graphics::rendererCoreComponentInitialize).run();
+  m_world.system().run(graphics::deferredGBufferPassSystemComponentInitialize).run();
+  m_world.system().run(graphics::fullscreenPBRPassComponentInitialize).run();
+  m_world.system().run(graphics::rendererFrameSystemComponentInitiailize).run();
+  m_world.system().run(gui::imguiRendererPassSystemInitialize).run();
   
+  graphics::Renderer_Core_Component* s = m_world.get_mut<graphics::Renderer_Core_Component>();
   resources::GLTF_Loader gltfLoader(m_world.get_mut<graphics::Renderer_Core_Component>()->transferCommandPool, m_world);
   m_sceneNode = gltfLoader.loadNodeFromFile("../../crude_example/basic_triangle_examle/resources/sponza.glb");
 
@@ -88,15 +90,14 @@ void Engine::initialize(const char* title, core::uint32 width, core::uint32 heig
   cameraNode.set<scene::script::Free_Camera_Component>(scene::script::Free_Camera_Component());
   cameraNode.child_of(m_sceneNode);
   m_world.get_mut<graphics::Renderer_Frame_Component>()->cameraNode = cameraNode;
-  
-  m_world.query().run(gui::imguiRendererPassSystemInitialize);
 
   m_timer.setFrameRate(60);
 }
 
 void Engine::deinitialize()
 {
-  m_world.query().run(gui::imguiRendererPassSystemDeinitialize);
+  m_world.system().run(graphics::rendererCoreComponentDeinitialize).run();
+  m_world.system().run(gui::imguiRendererPassSystemDeinitialize).run();
 }
 
 void Engine::mainLoop()

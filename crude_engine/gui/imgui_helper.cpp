@@ -20,7 +20,6 @@ void initializeImGuiContext()
 
 void deinitializeImGuiContext()
 {
-  ImGui_ImplSDL3_Shutdown();
   ImGui::DestroyContext();
 }
 

@@ -14,7 +14,7 @@ Descriptor_Pool::Descriptor_Pool(core::shared_ptr<const Device>           device
                                  bool                                     freeDescriptorSet)
   :
   m_device(device),
-  m_freeDescriptorSet(m_freeDescriptorSet)
+  m_freeDescriptorSet(freeDescriptorSet)
 {
   core::uint32 maxSets = 0u;
   for (auto& poolSize : poolSizes)

@@ -96,6 +96,7 @@ void imguiRendererPassSystemInitialize(flecs::iter& it)
 void imguiRendererPassSystemDeinitialize(flecs::iter& it)
 {
   ImGui_ImplVulkan_Shutdown();
+  ImGui_ImplSDL3_Shutdown();
 }
 
 void imguiRendererPassSystemInitializeRenderPass(ImGui_Renderer_Component* imguiRendererComponent, graphics::Renderer_Core_Component* rendererCoreComponent)
@@ -138,7 +139,7 @@ void imguiRendererPassSystemInitializeDescriptorPool(ImGui_Renderer_Component* i
       graphics::Descriptor_Pool_Size(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1u)
   };
 
-  imguiRendererComponent->descriptorPool = core::allocateShared<graphics::Descriptor_Pool>(rendererCoreComponent->device, poolSizes);
+  imguiRendererComponent->descriptorPool = core::allocateShared<graphics::Descriptor_Pool>(rendererCoreComponent->device, poolSizes, true);
 }
 
 void imguiRendererPassSystemInitializeFramebuffers(ImGui_Renderer_Component* imguiRendererComponent, graphics::Renderer_Core_Component* rendererCoreComponent)
