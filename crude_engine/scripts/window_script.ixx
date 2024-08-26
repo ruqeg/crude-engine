@@ -3,12 +3,12 @@ module;
 #include <flecs.h>
 #include <SDL3/SDL.h>
 
-export module crude.scene.window_script;
+export module crude.scripts.window_script;
 
 export import crude.core.std_containers_heap;
 import crude.platform.input_system;
 
-export namespace crude::scene::script
+export namespace crude::scripts
 {
 
 struct Window_Component

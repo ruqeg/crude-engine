@@ -17,7 +17,6 @@ import crude.graphics.generate_mipmaps;
 import crude.graphics.flush;
 import crude.graphics.mesh_buffer;
 import crude.scene.mesh;
-import crude.scene.free_camera_script;
 import crude.resources.gltf_loader;
 import crude.graphics.render_pass;
 import crude.graphics.command_buffer;

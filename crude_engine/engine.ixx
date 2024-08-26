@@ -4,7 +4,6 @@ module;
 
 export module crude.engine;
 
-export import crude.core.timer;
 export import crude.core.std_containers_heap;
 
 export namespace crude

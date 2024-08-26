@@ -2,12 +2,12 @@
 #include <DirectXMath.h>
 #include <flecs.h>
 
-module crude.scene.free_camera_script;
+module crude.scripts.free_camera_script;
 
 import crude.core.logger;
 import crude.platform.input_system;
 
-namespace crude::scene::script
+namespace crude::scripts
 {
 
 void freeCameraUpdateSystemProcess(flecs::iter& it)
@@ -15,7 +15,7 @@ void freeCameraUpdateSystemProcess(flecs::iter& it)
   while (it.next())
   {
     auto freeCameras = it.field<Free_Camera_Component>(0);
-    auto transforms = it.field<Transform>(1);
+    auto transforms = it.field<scene::Transform>(1);
 
     for (auto i : it)
     {

@@ -4,12 +4,12 @@ module;
 #include <SDL3/SDL.h>
 #include <flecs.h>
 
-export module crude.scene.free_camera_script;
+export module crude.scripts.free_camera_script;
 
 export import crude.core.std_containers_heap;
 export import crude.scene.transform;
 
-export namespace crude::scene::script
+export namespace crude::scripts
 {
 
 struct Free_Camera_Component

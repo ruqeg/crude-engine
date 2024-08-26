@@ -8,38 +8,18 @@ module crude.engine;
 
 import crude.core.logger;
 import crude.core.memory;
-import crude.scene.free_camera_script;
-import crude.scene.window_script;
-import crude.scene.camera;
+import crude.scripts.window_script;
 import crude.platform.sdl_helper;
 import crude.platform.sdl_window_container;
 import crude.platform.input_system;
-import crude.resources.gltf_loader;
 import crude.graphics.renderer_core_component;
 import crude.graphics.deferred_gbuffer_pass_system;
 import crude.graphics.fullscreen_pbr_pass_system;
 import crude.graphics.renderer_frame_system;
-import crude.graphics.device;
-import crude.graphics.physical_device;
-import crude.graphics.swap_chain;
-import crude.graphics.swap_chain_image;
-import crude.graphics.image_attachment;
-import crude.graphics.queue;
-import crude.graphics.surface;
-import crude.graphics.instance;
-import crude.graphics.render_pass;
-import crude.graphics.subpass_dependency;
-import crude.graphics.descriptor_pool;
-import crude.graphics.format_helper;
-import crude.graphics.framebuffer;
-import crude.graphics.command_buffer;
-import crude.network.network_system;
-import crude.graphics.vulkan_utils;
 import crude.gui.imgui_helper;
-
 import crude.gui.imgui_renderer_pass_system;
 import crude.gui.imgui_input_system;
-import crude.gui.imgui_demo_layout_draw_system;
+import crude.scene.mesh;
 
 namespace crude
 {
@@ -75,7 +55,7 @@ void Engine::deinitialize()
 
 void Engine::mainLoop()
 {
-  const auto windowComponent = m_world.get<scene::script::Window_Component>();
+  const auto windowComponent = m_world.get<scripts::Window_Component>();
   while (!windowComponent->shouldClose)
   {
     m_world.progress();
@@ -90,11 +70,11 @@ void Engine::initializeWindow(const Initialize_Window& initialize)
 
 void Engine::initializeInputSystem(const Initialize_Systems& initialize)
 {
-  m_world.set<scene::script::Window_Component>({});
+  m_world.set<scripts::Window_Component>({});
 
   core::vector<flecs::system> inputSystems = {
    m_world.system("WindowUpdateEvent").kind(0)
-     .run(scene::script::windowUpdateEventSystemProcess),
+     .run(scripts::windowUpdateEventSystemProcess),
    m_world.system("ImguiUpdateEvent").kind(0)
      .run(gui::imguiUpdateEventSystemProcess)
   };

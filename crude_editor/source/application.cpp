@@ -4,7 +4,7 @@
 module application;
 
 import crude.gui.imgui_demo_layout_draw_system;
-import crude.scene.free_camera_script;
+import crude.scripts.free_camera_script;
 import crude.scene.camera;
 import crude.resources.gltf_loader;
 import crude.graphics.renderer_frame_system;
@@ -19,9 +19,9 @@ void Application::initialize()
     },
     .systems = {
       .inputSystems = {
-        m_world.system<crude::scene::script::Free_Camera_Component>("FreeCameraUpdateEvent")
+        m_world.system<crude::scripts::Free_Camera_Component>("FreeCameraUpdateEvent")
           .kind(0)
-          .run(crude::scene::script::freeCameraUpdateEventSystemProcess),
+          .run(crude::scripts::freeCameraUpdateEventSystemProcess),
       },
       .imguiLayoutSystems = {
         m_world.system("ImguiDemoLayoutDrawSystemProcess")
@@ -31,9 +31,9 @@ void Application::initialize()
     }
   });
 
-  m_freeCameraUpdateSystem = m_world.system<crude::scene::script::Free_Camera_Component, crude::scene::Transform>("FreeCameraUpdateSystem")
+  m_freeCameraUpdateSystem = m_world.system<crude::scripts::Free_Camera_Component, crude::scene::Transform>("FreeCameraUpdateSystem")
     .kind(flecs::OnUpdate)
-    .run(crude::scene::script::freeCameraUpdateSystemProcess);
+    .run(crude::scripts::freeCameraUpdateSystemProcess);
 
   initializeScene(1000.0 / 800.0);
 }
@@ -68,7 +68,7 @@ void Application::initializeCamera(crude::core::float32 aspectRatio)
     transform.setTranslation(0.0, 0.0, -2.0);
     return transform;
     }());
-  cameraNode.set<crude::scene::script::Free_Camera_Component>(crude::scene::script::Free_Camera_Component());
+  cameraNode.set<crude::scripts::Free_Camera_Component>(crude::scripts::Free_Camera_Component());
   cameraNode.child_of(m_sceneNode);
   m_world.get_mut<crude::graphics::Renderer_Frame_Component>()->cameraNode = cameraNode;
 }
