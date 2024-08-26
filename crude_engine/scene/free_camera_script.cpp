@@ -4,7 +4,6 @@
 
 module crude.scene.free_camera_script;
 
-import crude.scene.transform;
 import crude.core.logger;
 import crude.platform.input_system;
 

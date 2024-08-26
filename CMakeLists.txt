@@ -15,4 +15,4 @@ add_subdirectory(crude_extlibs)
 add_subdirectory(crude_shaders)
 add_subdirectory(crude_engine)
 # !TODO crude_test
-add_subdirectory(crude_example)
+add_subdirectory(crude_editor)

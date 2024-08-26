@@ -25,13 +25,15 @@ public:
     m_instance(instance),
     m_window(window)
   {
-    const SDL_bool result = SDL_Vulkan_CreateSurface(
+    const int result = SDL_Vulkan_CreateSurface(
       m_window->getHandle().get(),
       instance->getHandle(), 
       getPVkAllocationCallbacks(), 
       &m_handle);
-    vulkanHandleResult(result ? VK_SUCCESS : VK_ERROR_UNKNOWN, "failed to create surface");
-    
+    if (result != 0)
+    {
+      vulkanHandleError("Failed to create surface");
+    }
   }
   ~Surface()
   {

@@ -58,7 +58,12 @@ void initializeInstance(Renderer_Core_Component* rendererCoreComponent)
     VkDebugUtilsMessageTypeFlagsEXT              messageType,
     const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
     void* pUserData) -> VKAPI_ATTR VkBool32 {
-      core::log(core::Debug::Channel::Graphics, "validation layer: %s", pCallbackData->pMessage);
+      if (messageSeverity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT) {
+        core::logError(core::Debug::Channel::Graphics, "validation layer: %s", pCallbackData->pMessage);
+      }
+      else if (messageSeverity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT) {
+        core::logWarning(core::Debug::Channel::Graphics, "validation layer: %s", pCallbackData->pMessage);
+      }
       return VK_FALSE;
     };
 

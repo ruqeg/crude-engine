@@ -59,45 +59,18 @@ void Engine::postdeinitialize()
   platform::deinitializeSDL();
 }
 
-void Engine::initialize(const char* title, core::uint32 width, core::uint32 height)
+void Engine::initialize(const Initialize& initialize)
 {
-  registerSystems();
-
-  m_world.set<core::shared_ptr<platform::SDL_Window_Container>>(crude::core::allocateShared<crude::platform::SDL_Window_Container>(
-    title, width, height, crude::platform::SDL_WINDOW_CONTAINER_FLAG_VULKAN));
-
-  m_world.system().run(graphics::rendererCoreComponentInitialize).run();
-  m_world.system().run(graphics::deferredGBufferPassSystemComponentInitialize).run();
-  m_world.system().run(graphics::fullscreenPBRPassComponentInitialize).run();
-  m_world.system().run(graphics::rendererFrameSystemComponentInitiailize).run();
-  m_world.system().run(gui::imguiRendererPassSystemInitialize).run();
-  
-  graphics::Renderer_Core_Component* s = m_world.get_mut<graphics::Renderer_Core_Component>();
-  resources::GLTF_Loader gltfLoader(m_world.get_mut<graphics::Renderer_Core_Component>()->transferCommandPool, m_world);
-  m_sceneNode = gltfLoader.loadNodeFromFile("../../crude_example/basic_triangle_examle/resources/sponza.glb");
-
-  flecs::entity cameraNode = m_world.entity("camera node");
-  cameraNode.set<scene::Camera>([width, height](){
-    scene::Camera camera;
-    camera.calculateViewToClipMatrix(DirectX::XM_PIDIV4, width / (core::float64)height, 0.05f, 100.0f);
-    return camera;
-  }());
-  cameraNode.set<scene::Transform>([&cameraNode]() {
-    scene::Transform transform(cameraNode);
-    transform.setTranslation(0.0, 0.0, -2.0);
-    return transform;
-  }());
-  cameraNode.set<scene::script::Free_Camera_Component>(scene::script::Free_Camera_Component());
-  cameraNode.child_of(m_sceneNode);
-  m_world.get_mut<graphics::Renderer_Frame_Component>()->cameraNode = cameraNode;
-
-  m_timer.setFrameRate(60);
+  initializeWindow(initialize.window);
+  initializeInputSystem(initialize.systems);
+  initializeRendererSystem(initialize.systems);
+  initializeRendererComponents();
 }
 
 void Engine::deinitialize()
 {
-  m_world.system().run(graphics::rendererCoreComponentDeinitialize).run();
-  m_world.system().run(gui::imguiRendererPassSystemDeinitialize).run();
+  m_world.system().kind(0).run(graphics::rendererCoreComponentDeinitialize).run();
+  m_world.system().kind(0).run(gui::imguiRendererPassSystemDeinitialize).run();
 }
 
 void Engine::mainLoop()
@@ -105,81 +78,60 @@ void Engine::mainLoop()
   const auto windowComponent = m_world.get<scene::script::Window_Component>();
   while (!windowComponent->shouldClose)
   {
-    m_inputSystem.run();
-
-    core::float64 elapsed;
-    if (m_timer.frameElasped(elapsed))
-    {
-      update(elapsed);
-      render();
-    }
+    m_world.progress();
   }
-  deinitialize();
 }
 
-void Engine::registerSystems()
+void Engine::initializeWindow(const Initialize_Window& initialize)
+{
+  m_world.set<core::shared_ptr<platform::SDL_Window_Container>>(crude::core::allocateShared<crude::platform::SDL_Window_Container>(
+    initialize.title, initialize.width, initialize.height, crude::platform::SDL_WINDOW_CONTAINER_FLAG_VULKAN));
+}
+
+void Engine::initializeInputSystem(const Initialize_Systems& initialize)
 {
   m_world.set<scene::script::Window_Component>({});
 
-  m_world.set<platform::Input_System_Component>(platform::Input_System_Component({ 
-    m_world.system<scene::script::Free_Camera_Component>("FreeCameraUpdateEvent")
-      .kind(flecs::OnUpdate)
-      .run(scene::script::freeCameraUpdateEventSystemProcess),
-    m_world.system("WindowUpdateEvent")
-      .kind(flecs::OnUpdate)
-      .run(scene::script::windowUpdateEventSystemProcess),
-    m_world.system("ImguiUpdateEvent")
-      .kind(flecs::OnUpdate)
-      .run(gui::imguiUpdateEventSystemProcess)
-  }));
+  core::vector<flecs::system> inputSystems = {
+   m_world.system("WindowUpdateEvent").kind(0)
+     .run(scene::script::windowUpdateEventSystemProcess),
+   m_world.system("ImguiUpdateEvent").kind(0)
+     .run(gui::imguiUpdateEventSystemProcess)
+  };
+  inputSystems.insert(inputSystems.end(), initialize.inputSystems.begin(), initialize.inputSystems.end());
 
-  m_world.set<gui::ImGui_Layout_Component>(gui::ImGui_Layout_Component({
-    m_world.system("ImguiDemoLayoutDrawSystemProcess")
-      .kind(flecs::PreStore)
-      .run(gui::imguiDemoLayoutDrawSystemProcess),
-  }));
-
+  m_world.set<platform::Input_System_Component>(platform::Input_System_Component(inputSystems));
+  
   m_inputSystem = m_world.system("InputSystem")
     .kind(flecs::PreUpdate)
     .run(platform::inputSystemProcess);
+}
 
-  m_freeCameraUpdateSystem = m_world.system<scene::script::Free_Camera_Component, scene::Transform>("FreeCameraUpdateSystem")
-    .kind(flecs::OnUpdate)
-    .run(scene::script::freeCameraUpdateSystemProcess);
+void Engine::initializeRendererSystem(const Initialize_Systems& initialize)
+{
+  m_world.set<gui::ImGui_Layout_Component>(gui::ImGui_Layout_Component(initialize.imguiLayoutSystems));
 
-  m_deferredGBufferPassSystem = m_world.system<core::shared_ptr<graphics::Mesh_Buffer>, core::shared_ptr<scene::Mesh>>("DeferredGBufferPassSystem")
-    .kind(flecs::PreStore)
+  flecs::system deferredGBufferPassSystem = m_world.system<core::shared_ptr<graphics::Mesh_Buffer>, core::shared_ptr<scene::Mesh>>("DeferredGBufferPassSystem").kind(0)
     .run(graphics::deferredGBufferPassSystemProcess);
 
-  m_fullscreenPBRPassSystem = m_world.system("FullscreenPBRPassSystem")
+ m_rendererSystem = m_world.system("RendererFrameSubmitSystem")
     .kind(flecs::PreStore)
-    .run(graphics::fullscreenPBRPassSystemProcess);
-
-  m_imguiRendererPassSystem = m_world.system("ImguiRendererPassSystem")
-    .kind(flecs::PreStore)
-    .run(gui::imguiRendererPassSystemProcess);
-
-  m_rendererFrameStartSystem = m_world.system("RendererFrameStartSystem")
-    .kind(flecs::PreStore)
-    .run(graphics::rendererFrameStartSystemProcess);
-
-  m_rendererFrameSubmitSystem = m_world.system("RendererFrameSubmitSystem")
-    .kind(flecs::OnStore)
-    .run(graphics::rendererFrameSubmitSystemProcess);
+    .run([deferredGBufferPassSystem](flecs::iter& it) {
+      graphics::rendererFrameStartSystemProcess(it);
+      deferredGBufferPassSystem.run();
+      graphics::fullscreenPBRPassSystemProcess(it);
+      gui::imguiRendererPassSystemProcess(it);
+      graphics::rendererFrameSubmitSystemProcess(it);
+    });
 }
 
-void Engine::update(core::float64 elapsed)
+void Engine::initializeRendererComponents()
 {
-  m_freeCameraUpdateSystem.run(elapsed);
-}
-
-void Engine::render()
-{
-  m_rendererFrameStartSystem.run();
-  m_deferredGBufferPassSystem.run();
-  m_fullscreenPBRPassSystem.run();
-  m_imguiRendererPassSystem.run();
-  m_rendererFrameSubmitSystem.run();
+  m_world.system().kind(0).run(graphics::rendererCoreComponentInitialize).run();
+  m_world.system().kind(0).run(graphics::deferredGBufferPassSystemComponentInitialize).run();
+  m_world.system().kind(0).run(graphics::fullscreenPBRPassComponentInitialize).run();
+  m_world.system().kind(0).run(graphics::rendererFrameSystemComponentInitiailize).run();
+  m_world.system().kind(0).run(gui::imguiRendererPassSystemInitialize).run();
 }
 
 }
