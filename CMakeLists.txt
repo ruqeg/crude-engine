@@ -16,3 +16,5 @@ add_subdirectory(crude_shaders)
 add_subdirectory(crude_engine)
 # !TODO crude_test
 add_subdirectory(crude_editor)
+
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT crude_editor)
