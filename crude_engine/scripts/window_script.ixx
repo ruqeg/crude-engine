@@ -11,18 +11,17 @@ import crude.platform.input_system;
 export namespace crude::scripts
 {
 
-struct Window_Component
+struct Window_Script_Component
 {
   bool shouldClose;
 };
 
-void windowUpdateEventSystemProcess(flecs::iter& it)
+void windowScriptInputSystemProcess(flecs::iter& it)
 {
-  const auto inputSystemComponent = it.world().get<platform::Input_System_Component>();
-  const SDL_Event& inputEvent = inputSystemComponent->inputEvent;
+  const SDL_Event& inputEvent = it.ctx<platform::Input_System_Context>()->inputEvent;
   if (inputEvent.type == SDL_EVENT_QUIT)
   {
-    auto* windowComponent = it.world().get_mut<Window_Component>();
+    auto* windowComponent = it.world().get_mut<Window_Script_Component>();
     windowComponent->shouldClose = true;
   }
 }

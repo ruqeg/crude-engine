@@ -10,9 +10,9 @@ import crude.platform.input_system;
 export namespace crude::gui
 {
 
-void imguiUpdateEventSystemProcess(flecs::iter& it)
+void imguiInputSystemProcess(flecs::iter& it)
 {
-  const SDL_Event& inputEvent = it.world().get<platform::Input_System_Component>()->inputEvent;
+  const SDL_Event& inputEvent = it.ctx<platform::Input_System_Context>()->inputEvent;
   ImGui_ImplSDL3_ProcessEvent(&inputEvent);
 }
 

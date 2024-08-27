@@ -10,11 +10,11 @@ import crude.platform.input_system;
 namespace crude::scripts
 {
 
-void freeCameraUpdateSystemProcess(flecs::iter& it)
+void freeCameraScriptUpdateSystemProcess(flecs::iter& it)
 {
   while (it.next())
   {
-    auto freeCameras = it.field<Free_Camera_Component>(0);
+    auto freeCameras = it.field<Free_Camera_Script_Component>(0);
     auto transforms = it.field<scene::Transform>(1);
 
     for (auto i : it)
@@ -39,13 +39,13 @@ void freeCameraUpdateSystemProcess(flecs::iter& it)
   }
 }
 
-void freeCameraUpdateEventSystemProcess(flecs::iter& it)
+void freeCameraScriptInputSystemProcess(flecs::iter& it)
 {
-  const SDL_Event& inputEvent = it.world().get<platform::Input_System_Component>()->inputEvent;
+  const SDL_Event& inputEvent = it.ctx<platform::Input_System_Context>()->inputEvent;
 
   while (it.next())
   {
-    auto freeCameras = it.field<Free_Camera_Component>(0);
+    auto freeCameras = it.field<Free_Camera_Script_Component>(0);
 
     for (auto i : it)
     {

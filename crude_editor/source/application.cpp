@@ -8,32 +8,33 @@ import crude.scripts.free_camera_script;
 import crude.scene.camera;
 import crude.resources.gltf_loader;
 import crude.graphics.renderer_frame_system;
+import gui.imgui_editor_layout_draw_system;
 
 void Application::initialize()
 {
-  Engine::initialize({
-    .window = {
-      .title  = "TEST",
-      .width  = 1000,
-      .height = 800
+  Engine::initialize();
+  Engine::initializeWindow({
+    .title = "TEST",
+    .width = 1000,
+    .height = 800
+  });
+  Engine::initializeSystems({
+    .inputSystems = {
+      m_world.system<crude::scripts::Free_Camera_Script_Component>("FreeCameraScriptInputSystem")
+        .ctx(m_inputSystemCtx.get())
+        .kind(0)
+        .run(crude::scripts::freeCameraScriptInputSystemProcess),
     },
-    .systems = {
-      .inputSystems = {
-        m_world.system<crude::scripts::Free_Camera_Component>("FreeCameraUpdateEvent")
-          .kind(0)
-          .run(crude::scripts::freeCameraUpdateEventSystemProcess),
-      },
-      .imguiLayoutSystems = {
-        m_world.system("ImguiDemoLayoutDrawSystemProcess")
-          .kind(0)
-          .run(crude::gui::imguiDemoLayoutDrawSystemProcess),
-      }
+    .imguiLayoutSystems = {
+      m_world.system("ImguiEditorLayoutDrawSystem")
+        .kind(0)
+        .run(gui::imguiEditorLayoutDrawSystemProcess),
     }
   });
 
-  m_freeCameraUpdateSystem = m_world.system<crude::scripts::Free_Camera_Component, crude::scene::Transform>("FreeCameraUpdateSystem")
+  m_freeCameraUpdateSystem = m_world.system<crude::scripts::Free_Camera_Script_Component, crude::scene::Transform>("FreeCameraScriptUpdateSystem")
     .kind(flecs::OnUpdate)
-    .run(crude::scripts::freeCameraUpdateSystemProcess);
+    .run(crude::scripts::freeCameraScriptUpdateSystemProcess);
 
   initializeScene(1000.0 / 800.0);
 }
@@ -68,7 +69,7 @@ void Application::initializeCamera(crude::core::float32 aspectRatio)
     transform.setTranslation(0.0, 0.0, -2.0);
     return transform;
     }());
-  cameraNode.set<crude::scripts::Free_Camera_Component>(crude::scripts::Free_Camera_Component());
+  cameraNode.set<crude::scripts::Free_Camera_Script_Component>(crude::scripts::Free_Camera_Script_Component());
   cameraNode.child_of(m_sceneNode);
   m_world.get_mut<crude::graphics::Renderer_Frame_Component>()->cameraNode = cameraNode;
 }

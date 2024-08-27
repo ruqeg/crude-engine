@@ -12,7 +12,7 @@ export import crude.scene.transform;
 export namespace crude::scripts
 {
 
-struct Free_Camera_Component
+struct Free_Camera_Script_Component
 {
   DirectX::XMFLOAT3  movingSpeedMultiplier{ 7.f, 7.f, 7.f };
   DirectX::XMFLOAT2  rotatingSpeedMultiplier{ -0.15f, -0.15f };
@@ -23,9 +23,9 @@ struct Free_Camera_Component
 
 // 0 component - Free_Camera_Component
 // 1 component - Transform
-void freeCameraUpdateSystemProcess(flecs::iter& it);
+void freeCameraScriptUpdateSystemProcess(flecs::iter& it);
 
 // 0 component - Free_Camera_Component
-void freeCameraUpdateEventSystemProcess(flecs::iter& it);
+void freeCameraScriptInputSystemProcess(flecs::iter& it);
 
 }

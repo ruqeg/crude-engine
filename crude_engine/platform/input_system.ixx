@@ -12,21 +12,21 @@ export import crude.core.std_containers_heap;
 export namespace crude::platform
 {
 
-struct Input_System_Component
+struct Input_System_Context
 {
-  core::vector<flecs::system>  eventSystems;
+  core::vector<flecs::system>  inputSystems;
   SDL_Event                    inputEvent;
 };
 
 void inputSystemProcess(flecs::iter& it)
 {
-  Input_System_Component* inputSystemComponent = it.world().get_mut<Input_System_Component>();
+  Input_System_Context* inputSystemCtx = it.ctx<platform::Input_System_Context>();
 
-  while (SDL_PollEvent(&inputSystemComponent->inputEvent))
+  while (SDL_PollEvent(&inputSystemCtx->inputEvent))
   {
-    for (auto& eventSystem : inputSystemComponent->eventSystems)
+    for (auto& inputSystem : inputSystemCtx->inputSystems)
     {
-      eventSystem.run();
+      inputSystem.run();
     }
   }
 }
