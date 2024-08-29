@@ -8,7 +8,7 @@
 #include <crude_shaders/deferred_gbuffer.task.inl>
 #include <functional>
 
-module crude.graphics.deferred_gbuffer_pass_system;
+module crude.graphics.renderer_deferred_gbuffer_pass_system;
 
 import crude.core.logger;
 import crude.scene.image;
@@ -42,7 +42,8 @@ import crude.graphics.image_view;
 import crude.graphics.command_pool;
 import crude.graphics.image_attachment;
 import crude.graphics.shader_module;
-import crude.graphics.renderer_core_component;
+import crude.graphics.renderer_core_system;
+import crude.graphics.renderer_frame_system;
 import crude.graphics.storage_buffer;
 import crude.graphics.attachment_description;
 import crude.graphics.gbuffer;
@@ -58,7 +59,7 @@ const Storage_Buffer_Descriptor          cMeshletBufferDescriptor{ 2u, VK_SHADER
 const Storage_Buffer_Descriptor          cPrimitiveIndicesBufferDescriptor{ 4u, VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT };
 const Storage_Buffer_Descriptor          cVertexIndicesBufferDescriptor{ 5u, VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT };
 
-core::array<Descriptor_Set_Layout_Binding, 7u> cDescriptorLayoutBindings = 
+core::array<Descriptor_Set_Layout_Binding, 7u> cDescriptorLayoutBindings =
 {
   cPerFrameUniformBufferDescriptor,
   cSubmeshTextureDescriptor,
@@ -87,8 +88,8 @@ struct Per_Mesh
   core::uint32         submeshIndex;
 };
 
-Deferred_GBuffer_Pass_Component::Deferred_GBuffer_Pass_Component()
-  : perFrameBufferDescriptors{ cPerFrameUniformBufferDescriptor, cPerFrameUniformBufferDescriptor }
+Renderer_Deferred_GBuffer_Pass_Systen_Ctx::Renderer_Deferred_GBuffer_Pass_Systen_Ctx()
+  : perFrameBufferDescriptors{cPerFrameUniformBufferDescriptor, cPerFrameUniformBufferDescriptor}
   , submeshTextureDescriptors{ cSubmeshTextureDescriptor, cSubmeshTextureDescriptor }
   , submeshesDrawsBufferDescriptor{ cSubmeshesDrawsBufferDescriptor }
   , vertexBufferDescriptor{ cVertexBufferDescriptor }
@@ -97,34 +98,34 @@ Deferred_GBuffer_Pass_Component::Deferred_GBuffer_Pass_Component()
   , vertexIndicesBufferDescriptor{ cVertexIndicesBufferDescriptor }
 {}
 
-void deferredGBufferPassSystemProcess(flecs::iter& it)
+void rendererDeferredGBufferPassSystemProcess(flecs::iter& it)
 {
-  Deferred_GBuffer_Pass_Component* deferredGBufferComponent = it.world().get_mut<Deferred_GBuffer_Pass_Component>();
-  Renderer_Frame_Component* frameComponent = it.world().get_mut<Renderer_Frame_Component>();
-  Renderer_Core_Component* coreComponent = it.world().get_mut<Renderer_Core_Component>();
+  Renderer_Deferred_GBuffer_Pass_Systen_Ctx* deferredGBufferCtx = it.ctx<Renderer_Deferred_GBuffer_Pass_Systen_Ctx>();
+  Renderer_Frame_System_Ctx* frameCtx = deferredGBufferCtx->frameCtx;
+  Renderer_Core_System_Ctx* coreCtx = frameCtx->coreCtx;
   
   core::array<VkClearValue, 2u> clearValues;;
   clearValues[0].color = { {0.0f, 0.0f, 0.0f, 1.0f} };
   clearValues[1].depthStencil = { 1.0f, 0 };
 
   VkRect2D renderArea;
-  renderArea.extent = coreComponent->swapchain->getExtent();
+  renderArea.extent = coreCtx->swapchain->getExtent();
   renderArea.offset = VkOffset2D { 0, 0 };
 
-  frameComponent->getFrameGraphicsCommandBuffer()->setViewport(Viewport({
+  frameCtx->getFrameGraphicsCommandBuffer()->setViewport(Viewport({
     .x = 0.0f, .y = 0.0f,
-    .width = static_cast<core::float32>(coreComponent->swapchain->getExtent().width),
-    .height = static_cast<core::float32>(coreComponent->swapchain->getExtent().height),
+    .width = static_cast<core::float32>(coreCtx->swapchain->getExtent().width),
+    .height = static_cast<core::float32>(coreCtx->swapchain->getExtent().height),
     .minDepth = 0.0f, .maxDepth = 1.0f }));
 
-  frameComponent->getFrameGraphicsCommandBuffer()->setScissor(Scissor({
+  frameCtx->getFrameGraphicsCommandBuffer()->setScissor(Scissor({
     .offset = { 0, 0 },
-    .extent = coreComponent->swapchain->getExtent() }));
+    .extent = coreCtx->swapchain->getExtent() }));
 
-  frameComponent->getFrameGraphicsCommandBuffer()->beginRenderPass(deferredGBufferComponent->pipeline->getRenderPass(), deferredGBufferComponent->framebuffers[frameComponent->swapchainImageIndex], clearValues, renderArea);
-  frameComponent->getFrameGraphicsCommandBuffer()->bindPipeline(deferredGBufferComponent->pipeline);
+  frameCtx->getFrameGraphicsCommandBuffer()->beginRenderPass(deferredGBufferCtx->pipeline->getRenderPass(), deferredGBufferCtx->framebuffers[frameCtx->swapchainImageIndex], clearValues, renderArea);
+  frameCtx->getFrameGraphicsCommandBuffer()->bindPipeline(deferredGBufferCtx->pipeline);
 
-  deferredGBufferComponent->perFrameBufferDescriptors[frameComponent->currentFrame].update(frameComponent->getFramePerFrameUniformBuffer());
+  deferredGBufferCtx->perFrameBufferDescriptors[frameCtx->currentFrame].update(frameCtx->getFramePerFrameUniformBuffer());
 
   while (it.next())
   {
@@ -133,11 +134,11 @@ void deferredGBufferPassSystemProcess(flecs::iter& it)
 
     for (auto i : it)
     {
-      deferredGBufferComponent->submeshesDrawsBufferDescriptor.update(meshBuffers[i]->getSubmeshesDrawsBuffer(), meshBuffers[i]->getSubmeshesDrawsBuffer()->getSize());
-      deferredGBufferComponent->vertexBufferDescriptor.update(meshBuffers[i]->getVerticesBuffer(), meshBuffers[i]->getVerticesBuffer()->getSize());
-      deferredGBufferComponent->meshletBufferDescriptor.update(meshBuffers[i]->getMeshletsBuffer(), meshBuffers[i]->getMeshletsBuffer()->getSize());
-      deferredGBufferComponent->primitiveIndicesBufferDescriptor.update(meshBuffers[i]->getPrimitiveIndicesBuffer(), meshBuffers[i]->getPrimitiveIndicesBuffer()->getSize());
-      deferredGBufferComponent->vertexIndicesBufferDescriptor.update(meshBuffers[i]->getVertexIndicesBuffer(), meshBuffers[i]->getVertexIndicesBuffer()->getSize());
+      deferredGBufferCtx->submeshesDrawsBufferDescriptor.update(meshBuffers[i]->getSubmeshesDrawsBuffer(), meshBuffers[i]->getSubmeshesDrawsBuffer()->getSize());
+      deferredGBufferCtx->vertexBufferDescriptor.update(meshBuffers[i]->getVerticesBuffer(), meshBuffers[i]->getVerticesBuffer()->getSize());
+      deferredGBufferCtx->meshletBufferDescriptor.update(meshBuffers[i]->getMeshletsBuffer(), meshBuffers[i]->getMeshletsBuffer()->getSize());
+      deferredGBufferCtx->primitiveIndicesBufferDescriptor.update(meshBuffers[i]->getPrimitiveIndicesBuffer(), meshBuffers[i]->getPrimitiveIndicesBuffer()->getSize());
+      deferredGBufferCtx->vertexIndicesBufferDescriptor.update(meshBuffers[i]->getVertexIndicesBuffer(), meshBuffers[i]->getVertexIndicesBuffer()->getSize());
 
       Per_Mesh perMesh;
       if (it.entity(i).has<scene::Transform>())
@@ -149,51 +150,54 @@ void deferredGBufferPassSystemProcess(flecs::iter& it)
       for (core::uint32 submeshIndex = 0u; submeshIndex < meshes[i]->submeshes.size(); ++submeshIndex)
       {
         const scene::Sub_Mesh& submesh = meshes[i]->submeshes[submeshIndex];
-        deferredGBufferComponent->submeshTextureDescriptors[frameComponent->currentFrame].update(submesh.texture->getImageView(), submesh.texture->getSampler());
+        deferredGBufferCtx->submeshTextureDescriptors[frameCtx->currentFrame].update(submesh.texture->getImageView(), submesh.texture->getSampler());
 
         core::array<VkWriteDescriptorSet, 7u> descriptorWrites;
-        deferredGBufferComponent->perFrameBufferDescriptors[frameComponent->currentFrame].write(descriptorWrites[0]);
-        deferredGBufferComponent->submeshTextureDescriptors[frameComponent->currentFrame].write(descriptorWrites[1]);
-        deferredGBufferComponent->submeshesDrawsBufferDescriptor.write(descriptorWrites[2]);
-        deferredGBufferComponent->vertexBufferDescriptor.write(descriptorWrites[3]);
-        deferredGBufferComponent->meshletBufferDescriptor.write(descriptorWrites[4]);
-        deferredGBufferComponent->primitiveIndicesBufferDescriptor.write(descriptorWrites[5]);
-        deferredGBufferComponent->vertexIndicesBufferDescriptor.write(descriptorWrites[6]);
+        deferredGBufferCtx->perFrameBufferDescriptors[frameCtx->currentFrame].write(descriptorWrites[0]);
+        deferredGBufferCtx->submeshTextureDescriptors[frameCtx->currentFrame].write(descriptorWrites[1]);
+        deferredGBufferCtx->submeshesDrawsBufferDescriptor.write(descriptorWrites[2]);
+        deferredGBufferCtx->vertexBufferDescriptor.write(descriptorWrites[3]);
+        deferredGBufferCtx->meshletBufferDescriptor.write(descriptorWrites[4]);
+        deferredGBufferCtx->primitiveIndicesBufferDescriptor.write(descriptorWrites[5]);
+        deferredGBufferCtx->vertexIndicesBufferDescriptor.write(descriptorWrites[6]);
 
-        frameComponent->getFrameGraphicsCommandBuffer()->pushDescriptorSet(deferredGBufferComponent->pipeline, descriptorWrites);
+        frameCtx->getFrameGraphicsCommandBuffer()->pushDescriptorSet(deferredGBufferCtx->pipeline, descriptorWrites);
         perMesh.submeshIndex = submeshIndex;
-        frameComponent->getFrameGraphicsCommandBuffer()->pushConstant(deferredGBufferComponent->pipeline->getPipelineLayout(), perMesh);
-        frameComponent->getFrameGraphicsCommandBuffer()->drawMeshTasks(1u);
+        frameCtx->getFrameGraphicsCommandBuffer()->pushConstant(deferredGBufferCtx->pipeline->getPipelineLayout(), perMesh);
+        frameCtx->getFrameGraphicsCommandBuffer()->drawMeshTasks(1u);
       }
     }
   }
   
-  frameComponent->getFrameGraphicsCommandBuffer()->endRenderPass();
+  frameCtx->getFrameGraphicsCommandBuffer()->endRenderPass();
 }
 
-
-void deferredGBufferPassSystemComponentInitialize(flecs::iter& it)
+void rendererDeferredGBufferPassSystemInitialize(flecs::iter& it)
 {
-  Deferred_GBuffer_Pass_Component deferredGBufferComponent;
-  Renderer_Core_Component* coreComponent = it.world().get_mut<Renderer_Core_Component>();
+  Renderer_Deferred_GBuffer_Pass_Systen_Ctx* deferredGBufferCtx = it.ctx<Renderer_Deferred_GBuffer_Pass_Systen_Ctx>();
+  Renderer_Frame_System_Ctx* frameCtx = deferredGBufferCtx->frameCtx;
+  Renderer_Core_System_Ctx* coreCtx = frameCtx->coreCtx;
 
-  deferredGBufferComponent.gbuffer = core::allocateShared<GBuffer>(coreComponent->device, coreComponent->swapchain->getExtent());
-  initializeRenderPass(&deferredGBufferComponent, coreComponent);
-  initalizeGraphicsPipeline(&deferredGBufferComponent, coreComponent);
-  initializeFramebuffers(&deferredGBufferComponent, coreComponent);
+  deferredGBufferCtx->gbuffer = core::allocateShared<GBuffer>(coreCtx->device, coreCtx->swapchain->getExtent());
 
-  it.world().set<Deferred_GBuffer_Pass_Component>(std::move(deferredGBufferComponent));
+  initializeRenderPass(deferredGBufferCtx);
+  initalizeGraphicsPipeline(deferredGBufferCtx);
+  initializeFramebuffers(deferredGBufferCtx);
 }
 
-core::shared_ptr<Descriptor_Set_Layout> createDescriptorSetLayout(Renderer_Core_Component* rendererCoreComponent)
+core::shared_ptr<Descriptor_Set_Layout> createDescriptorSetLayout(Renderer_Deferred_GBuffer_Pass_Systen_Ctx* deferredGBufferCtx)
 {
-  auto descriptorPool = core::allocateShared<Descriptor_Pool>(rendererCoreComponent->device, cDescriptorPoolSizes);
-  auto descriptorSetLayout = core::allocateShared<Descriptor_Set_Layout>(rendererCoreComponent->device, cDescriptorLayoutBindings, true);
+  Renderer_Core_System_Ctx* coreCtx = deferredGBufferCtx->frameCtx->coreCtx;
+
+  auto descriptorPool = core::allocateShared<Descriptor_Pool>(coreCtx->device, cDescriptorPoolSizes);
+  auto descriptorSetLayout = core::allocateShared<Descriptor_Set_Layout>(coreCtx->device, cDescriptorLayoutBindings, true);
   return descriptorSetLayout;
 }
 
-void initializeRenderPass(Deferred_GBuffer_Pass_Component* deferredGBufferComponent, Renderer_Core_Component* rendererCoreComponent)
+void initializeRenderPass(Renderer_Deferred_GBuffer_Pass_Systen_Ctx* deferredGBufferCtx)
 {
+  Renderer_Core_System_Ctx* coreCtx = deferredGBufferCtx->frameCtx->coreCtx;
+  
   core::array<Subpass_Dependency, 1u> subpassesDependencies =
   {
     Subpass_Dependency({
@@ -205,14 +209,16 @@ void initializeRenderPass(Deferred_GBuffer_Pass_Component* deferredGBufferCompon
       .dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
       .dependencyFlags = 0})
   };
-  deferredGBufferComponent->renderPass = core::allocateShared<Render_Pass>(rendererCoreComponent->device, getSubpassDescriptions(), subpassesDependencies, getAttachmentsDescriptions(deferredGBufferComponent));
+  deferredGBufferCtx->renderPass = core::allocateShared<Render_Pass>(coreCtx->device, getSubpassDescriptions(), subpassesDependencies, getAttachmentsDescriptions(deferredGBufferCtx));
 }
 
-void initalizeGraphicsPipeline(Deferred_GBuffer_Pass_Component* deferredGBufferComponent, Renderer_Core_Component* rendererCoreComponent)
+void initalizeGraphicsPipeline(Renderer_Deferred_GBuffer_Pass_Systen_Ctx* deferredGBufferCtx)
 {
-  core::shared_ptr<Shader_Module> taskShaderModule = core::allocateShared<Shader_Module>(rendererCoreComponent->device, crude::shaders::deferred_gbuffer::task);
-  core::shared_ptr<Shader_Module> meshShaderModule = core::allocateShared<Shader_Module>(rendererCoreComponent->device, crude::shaders::deferred_gbuffer::mesh);
-  core::shared_ptr<Shader_Module> fragShaderModule = core::allocateShared<Shader_Module>(rendererCoreComponent->device, crude::shaders::deferred_gbuffer::frag);
+  Renderer_Core_System_Ctx* coreCtx = deferredGBufferCtx->frameCtx->coreCtx;
+
+  core::shared_ptr<Shader_Module> taskShaderModule = core::allocateShared<Shader_Module>(coreCtx->device, crude::shaders::deferred_gbuffer::task);
+  core::shared_ptr<Shader_Module> meshShaderModule = core::allocateShared<Shader_Module>(coreCtx->device, crude::shaders::deferred_gbuffer::mesh);
+  core::shared_ptr<Shader_Module> fragShaderModule = core::allocateShared<Shader_Module>(coreCtx->device, crude::shaders::deferred_gbuffer::frag);
 
   core::array<Shader_Stage_Create_Info, 3u> shaderStagesInfo =
   {
@@ -258,12 +264,12 @@ void initalizeGraphicsPipeline(Deferred_GBuffer_Pass_Component* deferredGBufferC
   Dynamic_State_Create_Info dynamicStateInfo(dynamicStates);
 
   core::shared_ptr<Pipeline_Layout> pipelineLayout = core::allocateShared<Pipeline_Layout>(
-    rendererCoreComponent->device, createDescriptorSetLayout(rendererCoreComponent),
+    coreCtx->device, createDescriptorSetLayout(deferredGBufferCtx),
     Push_Constant_Range<Per_Mesh>(VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT));
 
-  deferredGBufferComponent->pipeline = core::allocateShared<Pipeline>(
-    rendererCoreComponent->device,
-    deferredGBufferComponent->renderPass,
+  deferredGBufferCtx->pipeline = core::allocateShared<Pipeline>(
+    coreCtx->device,
+    deferredGBufferCtx->renderPass,
     pipelineLayout,
     nullptr,
     shaderStagesInfo,
@@ -279,13 +285,15 @@ void initalizeGraphicsPipeline(Deferred_GBuffer_Pass_Component* deferredGBufferC
     0u);
 }
 
-void initializeFramebuffers(Deferred_GBuffer_Pass_Component* deferredGBufferComponent, Renderer_Core_Component* rendererCoreComponent)
+void initializeFramebuffers(Renderer_Deferred_GBuffer_Pass_Systen_Ctx* deferredGBufferCtx)
 {
-  deferredGBufferComponent->framebuffers.reserve(rendererCoreComponent->swapchainImages.size());
-  for (core::uint32 i = 0; i < rendererCoreComponent->swapchainImages.size(); ++i)
+  Renderer_Core_System_Ctx* coreCtx = deferredGBufferCtx->frameCtx->coreCtx;
+
+  deferredGBufferCtx->framebuffers.reserve(coreCtx->swapchainImages.size());
+  for (core::uint32 i = 0; i < coreCtx->swapchainImages.size(); ++i)
   {
-    deferredGBufferComponent->framebuffers.push_back(core::allocateShared<Framebuffer>(
-      rendererCoreComponent->device, deferredGBufferComponent->renderPass, getFramebufferAttachments(deferredGBufferComponent), deferredGBufferComponent->gbuffer->getExtent(), 1u));
+    deferredGBufferCtx->framebuffers.push_back(core::allocateShared<Framebuffer>(
+      coreCtx->device, deferredGBufferCtx->renderPass, getFramebufferAttachments(deferredGBufferCtx), deferredGBufferCtx->gbuffer->getExtent(), 1u));
   }
 }
 
@@ -302,20 +310,20 @@ core::array<Subpass_Description, 1> getSubpassDescriptions()
   };
 }
 
-core::vector<Attachment_Description> getAttachmentsDescriptions(Deferred_GBuffer_Pass_Component* deferredGBufferComponent)
+core::vector<Attachment_Description> getAttachmentsDescriptions(Renderer_Deferred_GBuffer_Pass_Systen_Ctx* deferredGBufferCtx)
 {
   return
   {
     Attachment_Description({
-      .format        = deferredGBufferComponent->gbuffer->getAlbedoAttachment()->getFormat(),
-      .samples       = deferredGBufferComponent->gbuffer->getAlbedoAttachment()->getSampleCount(),
+      .format        = deferredGBufferCtx->gbuffer->getAlbedoAttachment()->getFormat(),
+      .samples       = deferredGBufferCtx->gbuffer->getAlbedoAttachment()->getSampleCount(),
       .colorOp       = attachment_op::gClearStore,
       .stenicilOp    = attachment_op::gClearStore,
       .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
       .finalLayout   = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL }),
     Attachment_Description({
-      .format        = deferredGBufferComponent->gbuffer->getDepthStencilAttachment()->getFormat(),
-      .samples       = deferredGBufferComponent->gbuffer->getDepthStencilAttachment()->getSampleCount(),
+      .format        = deferredGBufferCtx->gbuffer->getDepthStencilAttachment()->getFormat(),
+      .samples       = deferredGBufferCtx->gbuffer->getDepthStencilAttachment()->getSampleCount(),
       .colorOp       = attachment_op::gClearStore,
       .stenicilOp    = attachment_op::gClearStore,
       .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
@@ -323,9 +331,9 @@ core::vector<Attachment_Description> getAttachmentsDescriptions(Deferred_GBuffer
   };
 }
 
-core::vector<core::shared_ptr<Image_View>> getFramebufferAttachments(Deferred_GBuffer_Pass_Component* deferredGBufferComponent)
+core::vector<core::shared_ptr<Image_View>> getFramebufferAttachments(Renderer_Deferred_GBuffer_Pass_Systen_Ctx* deferredGBufferCtx)
 {
-  return { deferredGBufferComponent->gbuffer->getAlbedoAttachmentView(), deferredGBufferComponent->gbuffer->getDepthStencilAttachmentView() };
+  return { deferredGBufferCtx->gbuffer->getAlbedoAttachmentView(), deferredGBufferCtx->gbuffer->getDepthStencilAttachmentView() };
 }
 
 Color_Blend_State_Create_Info createColorBlendStateCreateInfo()

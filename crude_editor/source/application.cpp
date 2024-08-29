@@ -8,27 +8,30 @@ import crude.scripts.free_camera_script;
 import crude.scene.camera;
 import crude.resources.gltf_loader;
 import crude.graphics.renderer_frame_system;
+import crude.graphics.renderer_core_system;
+import crude.graphics.command_pool;
 import gui.imgui_editor_layout_draw_system;
 
 void Application::initialize()
 {
-  Engine::initialize();
-  Engine::initializeWindow({
-    .title = "TEST",
-    .width = 1000,
-    .height = 800
-  });
-  Engine::initializeSystems({
-    .inputSystems = {
-      m_world.system<crude::scripts::Free_Camera_Script_Component>("FreeCameraScriptInputSystem")
-        .ctx(m_inputSystemCtx.get())
-        .kind(0)
-        .run(crude::scripts::freeCameraScriptInputSystemProcess),
+  Engine::initialize({
+    .window = {
+      .title = "TEST",
+      .width = 1000,
+      .height = 800
     },
-    .imguiLayoutSystems = {
-      m_world.system("ImguiEditorLayoutDrawSystem")
-        .kind(0)
-        .run(gui::imguiEditorLayoutDrawSystemProcess),
+    .systems = {
+      .inputSystems = {
+        m_world.system<crude::scripts::Free_Camera_Script_Component>("FreeCameraScriptInputSystem")
+          .ctx(&m_inputSystemCtx)
+          .kind(0)
+          .run(crude::scripts::freeCameraScriptInputSystemProcess),
+      },
+      .imguiLayoutSystems = {
+        m_world.system("ImguiEditorLayoutDrawSystem")
+          .kind(0)
+          .run(gui::imguiEditorLayoutDrawSystemProcess),
+      }
     }
   });
 
@@ -51,7 +54,7 @@ void Application::deinitialize()
 
 void Application::initializeScene(crude::core::float32 aspectRatio)
 {
-  crude::resources::GLTF_Loader gltfLoader(m_world);
+  crude::resources::GLTF_Loader gltfLoader(m_world, m_rendererSystemCtx.coreCtx.transferCommandPool);
   m_sceneNode = gltfLoader.loadNodeFromFile("../../../crude_editor/resources/sponza.glb");
   initializeCamera(aspectRatio);
 }
@@ -71,5 +74,5 @@ void Application::initializeCamera(crude::core::float32 aspectRatio)
     }());
   cameraNode.set<crude::scripts::Free_Camera_Script_Component>(crude::scripts::Free_Camera_Script_Component());
   cameraNode.child_of(m_sceneNode);
-  m_world.get_mut<crude::graphics::Renderer_Frame_Component>()->cameraNode = cameraNode;
+  m_rendererSystemCtx.frameCtx.cameraNode = cameraNode;
 }

@@ -9,7 +9,7 @@ import crude.graphics.fence;
 import crude.graphics.swap_chain;
 import crude.graphics.uniform_buffer;
 import crude.graphics.semaphore;
-import crude.graphics.renderer_core_component;
+import crude.graphics.renderer_core_system;
 import crude.graphics.queue;
 import crude.graphics.device;
 import crude.core.logger;
@@ -17,40 +17,38 @@ import crude.core.logger;
 namespace crude::graphics
 {
 
-void rendererFrameSystemComponentInitiailize(flecs::iter& it)
+void rendererFrameSystemInitiailize(flecs::iter& it)
 {
-  Renderer_Core_Component* rendererCoreComponent = it.world().get_mut<Renderer_Core_Component>();
-  Renderer_Frame_Component rendererFrameComponent;
+  Renderer_Frame_System_Ctx* frameCtx = it.ctx<Renderer_Frame_System_Ctx>();
+  Renderer_Core_System_Ctx* coreCtx = frameCtx->coreCtx;
 
   for (core::uint32 i = 0; i < cFramesCount; ++i)
   {
-    rendererFrameComponent.perFrameUniformBuffer[i] = core::allocateShared<Uniform_Buffer<Per_Frame>>(rendererCoreComponent->device);
+    frameCtx->perFrameUniformBuffer[i] = core::allocateShared<Uniform_Buffer<Per_Frame>>(coreCtx->device);
   }
   for (core::uint32 i = 0; i < cFramesCount; ++i)
   {
-    rendererFrameComponent.graphicsCommandBuffers[i] = core::allocateShared<Command_Buffer>(rendererCoreComponent->graphicsCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+    frameCtx->graphicsCommandBuffers[i] = core::allocateShared<Command_Buffer>(coreCtx->graphicsCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
   }
 
   for (core::uint32 i = 0; i < cFramesCount; i++)
   {
-    rendererFrameComponent.imageAvailableSemaphores[i] = core::allocateShared<Semaphore>(rendererCoreComponent->device);
-    rendererFrameComponent.renderFinishedSemaphores[i] = core::allocateShared<Semaphore>(rendererCoreComponent->device);
-    rendererFrameComponent.inFlightFences[i] = core::allocateShared<Fence>(rendererCoreComponent->device, VK_FENCE_CREATE_SIGNALED_BIT);
+    frameCtx->imageAvailableSemaphores[i] = core::allocateShared<Semaphore>(coreCtx->device);
+    frameCtx->renderFinishedSemaphores[i] = core::allocateShared<Semaphore>(coreCtx->device);
+    frameCtx->inFlightFences[i] = core::allocateShared<Fence>(coreCtx->device, VK_FENCE_CREATE_SIGNALED_BIT);
   }
 
-  rendererFrameComponent.currentFrame = 0u;
-
-  it.world().set<Renderer_Frame_Component>(std::move(rendererFrameComponent));
+  frameCtx->currentFrame = 0u;
 }
 
 void rendererFrameStartSystemProcess(flecs::iter& it)
 {
-  Renderer_Core_Component* coreComponent = it.world().get_mut<Renderer_Core_Component>();
-  Renderer_Frame_Component* frameComponent = it.world().get_mut<Renderer_Frame_Component>();
+  Renderer_Frame_System_Ctx* frameCtx = it.ctx<Renderer_Frame_System_Ctx>();
+  Renderer_Core_System_Ctx* coreCtx = frameCtx->coreCtx;
 
-  frameComponent->getFrameInFlightFence()->wait();
+  frameCtx->getFrameInFlightFence()->wait();
 
-  const Swap_Chain_Next_Image acquireNextImageResult = coreComponent->swapchain->acquireNextImage(frameComponent->getFrameImageAvailableSemaphore());
+  const Swap_Chain_Next_Image acquireNextImageResult = coreCtx->swapchain->acquireNextImage(frameCtx->getFrameImageAvailableSemaphore());
 
   if (acquireNextImageResult.outOfDate())
   {
@@ -62,14 +60,14 @@ void rendererFrameStartSystemProcess(flecs::iter& it)
     core::logError(core::Debug::Channel::Graphics, "Failed to acquire swap chain image!");
   }
 
-  frameComponent->swapchainImageIndex = acquireNextImageResult.getImageIndex().value();
+  frameCtx->swapchainImageIndex = acquireNextImageResult.getImageIndex().value();
 
-  Per_Frame* data = frameComponent->getFramePerFrameUniformBuffer()->mapUnsafe();
-  data->camera = Camera_UBO(frameComponent->cameraNode);
-  frameComponent->getFramePerFrameUniformBuffer()->unmap();
+  Per_Frame* data = frameCtx->getFramePerFrameUniformBuffer()->mapUnsafe();
+  data->camera = Camera_UBO(frameCtx->cameraNode);
+  frameCtx->getFramePerFrameUniformBuffer()->unmap();
 
-  frameComponent->getFrameInFlightFence()->reset();
-  if (!frameComponent->getFrameGraphicsCommandBuffer()->begin())
+  frameCtx->getFrameInFlightFence()->reset();
+  if (!frameCtx->getFrameGraphicsCommandBuffer()->begin())
   {
     core::logError(core::Debug::Channel::Graphics, "Failed to begin recording command buffer!");
   }
@@ -77,31 +75,31 @@ void rendererFrameStartSystemProcess(flecs::iter& it)
 
 void rendererFrameSubmitSystemProcess(flecs::iter& it)
 {
-  Renderer_Core_Component* coreComponent = it.world().get_mut<Renderer_Core_Component>();
-  Renderer_Frame_Component* frameComponent = it.world().get_mut<Renderer_Frame_Component>();
+  Renderer_Frame_System_Ctx* frameCtx = it.ctx<Renderer_Frame_System_Ctx>();
+  Renderer_Core_System_Ctx* coreCtx = frameCtx->coreCtx;
 
-  if (!frameComponent->getFrameGraphicsCommandBuffer()->end())
+  if (!frameCtx->getFrameGraphicsCommandBuffer()->end())
   {
     core::logError(core::Debug::Channel::Graphics, "Failed to record command buffer!");
   }
 
   core::uint32 waitStageMasks[1] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
-  const bool graphicsQueueSubmited = coreComponent->graphicsQueue->sumbit(
-    core::array{ frameComponent->getFrameGraphicsCommandBuffer() },
+  const bool graphicsQueueSubmited = coreCtx->graphicsQueue->sumbit(
+    core::array{ frameCtx->getFrameGraphicsCommandBuffer() },
     waitStageMasks,
-    core::array{ frameComponent->getFrameImageAvailableSemaphore() },
-    core::array{ frameComponent->getFrameRenderFinishedSemaphore() },
-    frameComponent->getFrameInFlightFence());
+    core::array{ frameCtx->getFrameImageAvailableSemaphore() },
+    core::array{ frameCtx->getFrameRenderFinishedSemaphore() },
+    frameCtx->getFrameInFlightFence());
 
   if (!graphicsQueueSubmited)
   {
     core::logError(core::Debug::Channel::Graphics, "Failed to submit draw command buffer!");
   }
 
-  const Queue_Present_Result presentResult = coreComponent->presentQueue->present(
-    core::array{ coreComponent->swapchain },
-    core::array{ frameComponent->swapchainImageIndex },
-    core::array{ frameComponent->getFrameRenderFinishedSemaphore() });
+  const Queue_Present_Result presentResult = coreCtx->presentQueue->present(
+    core::array{ coreCtx->swapchain },
+    core::array{ frameCtx->swapchainImageIndex },
+    core::array{ frameCtx->getFrameRenderFinishedSemaphore() });
 
   bool framebufferResized = false;
   if (presentResult.outOfDate() || presentResult.suboptimal() || framebufferResized)
@@ -113,19 +111,19 @@ void rendererFrameSubmitSystemProcess(flecs::iter& it)
     core::logError(core::Debug::Channel::Graphics, "Failed to present swap chain image!");
   }
 
-  frameComponent->stepToNextFrame();
+  frameCtx->stepToNextFrame();
 }
 
-void Renderer_Frame_Component::stepToNextFrame()
+void Renderer_Frame_System_Ctx::stepToNextFrame()
 {
   currentFrame = (currentFrame + 1u) % cFramesCount;
 }
 
-core::shared_ptr<Uniform_Buffer<Per_Frame>> Renderer_Frame_Component::getFramePerFrameUniformBuffer() { return perFrameUniformBuffer[currentFrame]; }
-core::shared_ptr<Command_Buffer> Renderer_Frame_Component::getFrameGraphicsCommandBuffer() { return graphicsCommandBuffers[currentFrame]; }
-core::shared_ptr<Semaphore> Renderer_Frame_Component::getFrameImageAvailableSemaphore() { return imageAvailableSemaphores[currentFrame]; }
-core::shared_ptr<Semaphore> Renderer_Frame_Component::getFrameRenderFinishedSemaphore() { return renderFinishedSemaphores[currentFrame]; }
-core::shared_ptr<Fence> Renderer_Frame_Component::getFrameInFlightFence() { return inFlightFences[currentFrame]; };
+core::shared_ptr<Uniform_Buffer<Per_Frame>> Renderer_Frame_System_Ctx::getFramePerFrameUniformBuffer() { return perFrameUniformBuffer[currentFrame]; }
+core::shared_ptr<Command_Buffer> Renderer_Frame_System_Ctx::getFrameGraphicsCommandBuffer() { return graphicsCommandBuffers[currentFrame]; }
+core::shared_ptr<Semaphore> Renderer_Frame_System_Ctx::getFrameImageAvailableSemaphore() { return imageAvailableSemaphores[currentFrame]; }
+core::shared_ptr<Semaphore> Renderer_Frame_System_Ctx::getFrameRenderFinishedSemaphore() { return renderFinishedSemaphores[currentFrame]; }
+core::shared_ptr<Fence> Renderer_Frame_System_Ctx::getFrameInFlightFence() { return inFlightFences[currentFrame]; };
 
 
 }

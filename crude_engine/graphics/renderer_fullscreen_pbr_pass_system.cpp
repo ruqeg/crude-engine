@@ -7,7 +7,7 @@
 #include <crude_shaders/fullscreen.mesh.inl>
 #include <functional>
 
-module crude.graphics.fullscreen_pbr_pass_system;
+module crude.graphics.renderer_fullscreen_pbr_pass_system;
 
 import crude.core.logger;
 import crude.scene.image;
@@ -41,13 +41,13 @@ import crude.graphics.image_view;
 import crude.graphics.command_pool;
 import crude.graphics.image_attachment;
 import crude.graphics.shader_module;
-import crude.graphics.renderer_core_component;
+import crude.graphics.renderer_core_system;
+import crude.graphics.renderer_frame_system;
 import crude.graphics.storage_buffer;
 import crude.graphics.attachment_description;
 import crude.graphics.gbuffer;
 import crude.graphics.sampler_state;
 import crude.graphics.sampler;
-import crude.graphics.deferred_gbuffer_pass_system;
 
 namespace crude::graphics
 {
@@ -67,77 +67,75 @@ core::array<Descriptor_Pool_Size, 2u> cDescriptorPoolSizes
   Combined_Image_Sampler_Pool_Size(cFramesCount),
 };
 
-Fullscreen_PBR_Pass_Component::Fullscreen_PBR_Pass_Component()
-  : albedoTextureDescriptors{ cAlbedoTextureDescriptor, cAlbedoTextureDescriptor }
+Renderer_Fullscreen_PBR_Pass_Ctx::Renderer_Fullscreen_PBR_Pass_Ctx()
+  : albedoTextureDescriptors{cAlbedoTextureDescriptor, cAlbedoTextureDescriptor}
   , depthTextureDescriptors{ cDepthTextureDescriptor, cDepthTextureDescriptor }
 {}
 
-void fullscreenPBRPassSystemProcess(flecs::iter& it)
+void rendererFullscreenPBRPassSystemProcess(flecs::iter& it)
 {
-  Fullscreen_PBR_Pass_Component* fullscreenPBRComponent = it.world().get_mut<Fullscreen_PBR_Pass_Component>();
-  Renderer_Frame_Component* frameComponent = it.world().get_mut<Renderer_Frame_Component>();
-  Renderer_Core_Component* coreComponent = it.world().get_mut<Renderer_Core_Component>();
+  Renderer_Fullscreen_PBR_Pass_Ctx* fullscreenPbrCtx = it.ctx<Renderer_Fullscreen_PBR_Pass_Ctx>();
+  Renderer_Frame_System_Ctx* frameCtx = fullscreenPbrCtx->frameCtx;
+  Renderer_Core_System_Ctx* coreCtx = frameCtx->coreCtx;
 
   core::array<VkClearValue, 2u> clearValues;;
   clearValues[0].color = { {0.0f, 0.0f, 0.0f, 1.0f} };
   clearValues[1].depthStencil = { 1.0f, 0 };
 
   VkRect2D renderArea;
-  renderArea.extent = coreComponent->swapchain->getExtent();
+  renderArea.extent = coreCtx->swapchain->getExtent();
   renderArea.offset = VkOffset2D{ 0, 0 };
 
-  frameComponent->getFrameGraphicsCommandBuffer()->setViewport(Viewport({
+  frameCtx->getFrameGraphicsCommandBuffer()->setViewport(Viewport({
     .x = 0.0f, .y = 0.0f,
-    .width = static_cast<core::float32>(coreComponent->swapchain->getExtent().width),
-    .height = static_cast<core::float32>(coreComponent->swapchain->getExtent().height),
+    .width = static_cast<core::float32>(coreCtx->swapchain->getExtent().width),
+    .height = static_cast<core::float32>(coreCtx->swapchain->getExtent().height),
     .minDepth = 0.0f, .maxDepth = 1.0f }));
 
-  frameComponent->getFrameGraphicsCommandBuffer()->setScissor(Scissor({
+  frameCtx->getFrameGraphicsCommandBuffer()->setScissor(Scissor({
     .offset = { 0, 0 },
-    .extent = coreComponent->swapchain->getExtent() }));
+    .extent = coreCtx->swapchain->getExtent() }));
 
-  frameComponent->getFrameGraphicsCommandBuffer()->beginRenderPass(fullscreenPBRComponent->pipeline->getRenderPass(), fullscreenPBRComponent->framebuffers[frameComponent->swapchainImageIndex], clearValues, renderArea);
-  frameComponent->getFrameGraphicsCommandBuffer()->bindPipeline(fullscreenPBRComponent->pipeline);
+  frameCtx->getFrameGraphicsCommandBuffer()->beginRenderPass(fullscreenPbrCtx->pipeline->getRenderPass(), fullscreenPbrCtx->framebuffers[frameCtx->swapchainImageIndex], clearValues, renderArea);
+  frameCtx->getFrameGraphicsCommandBuffer()->bindPipeline(fullscreenPbrCtx->pipeline);
 
-  fullscreenPBRComponent->albedoTextureDescriptors[frameComponent->currentFrame].update(fullscreenPBRComponent->gbuffer->getAlbedoAttachmentView(), fullscreenPBRComponent->sampler);
-  fullscreenPBRComponent->depthTextureDescriptors[frameComponent->currentFrame].update(fullscreenPBRComponent->gbuffer->getDepthStencilAttachmentView(), fullscreenPBRComponent->sampler);
+  fullscreenPbrCtx->albedoTextureDescriptors[frameCtx->currentFrame].update(fullscreenPbrCtx->gbuffer->getAlbedoAttachmentView(), fullscreenPbrCtx->sampler);
+  fullscreenPbrCtx->depthTextureDescriptors[frameCtx->currentFrame].update(fullscreenPbrCtx->gbuffer->getDepthStencilAttachmentView(), fullscreenPbrCtx->sampler);
 
   core::array<VkWriteDescriptorSet, 2u> descriptorWrites;
-  fullscreenPBRComponent->albedoTextureDescriptors[frameComponent->currentFrame].write(descriptorWrites[0]);
-  fullscreenPBRComponent->depthTextureDescriptors[frameComponent->currentFrame].write(descriptorWrites[1]);
+  fullscreenPbrCtx->albedoTextureDescriptors[frameCtx->currentFrame].write(descriptorWrites[0]);
+  fullscreenPbrCtx->depthTextureDescriptors[frameCtx->currentFrame].write(descriptorWrites[1]);
 
-  frameComponent->getFrameGraphicsCommandBuffer()->pushDescriptorSet(fullscreenPBRComponent->pipeline, descriptorWrites);
-  frameComponent->getFrameGraphicsCommandBuffer()->drawMeshTasks(1u);
+  frameCtx->getFrameGraphicsCommandBuffer()->pushDescriptorSet(fullscreenPbrCtx->pipeline, descriptorWrites);
+  frameCtx->getFrameGraphicsCommandBuffer()->drawMeshTasks(1u);
 
-  frameComponent->getFrameGraphicsCommandBuffer()->endRenderPass();
+  frameCtx->getFrameGraphicsCommandBuffer()->endRenderPass();
 }
 
-void fullscreenPBRPassComponentInitialize(flecs::iter& it)
+void rendererFullscreenPBRPassSystemInitialize(flecs::iter& it)
 {
-  Fullscreen_PBR_Pass_Component fullscreenPbrPassComponent;
-  Renderer_Core_Component* rendererCoreComponent = it.world().get_mut<Renderer_Core_Component>();
-  Deferred_GBuffer_Pass_Component* deferredGBufferComponent = it.world().get_mut<Deferred_GBuffer_Pass_Component>();
-  
-  fullscreenPbrPassComponent.gbuffer = deferredGBufferComponent->gbuffer;
+  Renderer_Fullscreen_PBR_Pass_Ctx* fullscreenPbrCtx = it.ctx<Renderer_Fullscreen_PBR_Pass_Ctx>();
+  Renderer_Frame_System_Ctx* frameCtx = fullscreenPbrCtx->frameCtx;
+  Renderer_Core_System_Ctx* coreCtx = frameCtx->coreCtx;
 
-  fullscreenPbrPassComponent.sampler = core::allocateShared<graphics::Sampler>(rendererCoreComponent->device, graphics::csamlper_state::gMagMinMipLinearRepeat);
+  fullscreenPbrCtx->sampler = core::allocateShared<graphics::Sampler>(coreCtx->device, graphics::csamlper_state::gMagMinMipLinearRepeat);
 
-  initializeRenderPass(&fullscreenPbrPassComponent, rendererCoreComponent);
-  initalizeGraphicsPipeline(&fullscreenPbrPassComponent, rendererCoreComponent);
-  initializeFramebuffers(&fullscreenPbrPassComponent, rendererCoreComponent);
-
-  it.world().set<Fullscreen_PBR_Pass_Component>(std::move(fullscreenPbrPassComponent));
+  initializeRenderPass(fullscreenPbrCtx);
+  initalizeGraphicsPipeline(fullscreenPbrCtx);
+  initializeFramebuffers(fullscreenPbrCtx);
 }
 
-core::shared_ptr<Descriptor_Set_Layout> createDescriptorSetLayout(Renderer_Core_Component* rendererCoreComponent)
+core::shared_ptr<Descriptor_Set_Layout> createDescriptorSetLayout(Renderer_Fullscreen_PBR_Pass_Ctx* fullscreenPbrCtx)
 {
-  auto descriptorPool = core::allocateShared<Descriptor_Pool>(rendererCoreComponent->device, cDescriptorPoolSizes);
-  auto descriptorSetLayout = core::allocateShared<Descriptor_Set_Layout>(rendererCoreComponent->device, cDescriptorLayoutBindings, true);
+  Renderer_Core_System_Ctx* coreCtx = fullscreenPbrCtx->frameCtx->coreCtx;
+  auto descriptorPool = core::allocateShared<Descriptor_Pool>(coreCtx->device, cDescriptorPoolSizes);
+  auto descriptorSetLayout = core::allocateShared<Descriptor_Set_Layout>(coreCtx->device, cDescriptorLayoutBindings, true);
   return descriptorSetLayout;
 }
 
-void initializeRenderPass(Fullscreen_PBR_Pass_Component* fullscreenPbrPassComponent, Renderer_Core_Component* rendererCoreComponent)
+void initializeRenderPass(Renderer_Fullscreen_PBR_Pass_Ctx* fullscreenPbrCtx)
 {
+  Renderer_Core_System_Ctx* coreCtx = fullscreenPbrCtx->frameCtx->coreCtx;
   core::array<Subpass_Dependency, 1u> subpassesDependencies =
   {
     Subpass_Dependency({
@@ -149,13 +147,15 @@ void initializeRenderPass(Fullscreen_PBR_Pass_Component* fullscreenPbrPassCompon
       .dstAccessMask   = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
       .dependencyFlags = 0})
   };
-  fullscreenPbrPassComponent->renderPass = core::allocateShared<Render_Pass>(rendererCoreComponent->device, getSubpassDescriptions(), subpassesDependencies, getAttachmentsDescriptions(rendererCoreComponent));
+  fullscreenPbrCtx->renderPass = core::allocateShared<Render_Pass>(coreCtx->device, getSubpassDescriptions(), subpassesDependencies, getAttachmentsDescriptions(fullscreenPbrCtx));
 }
 
-void initalizeGraphicsPipeline(Fullscreen_PBR_Pass_Component* fullscreenPbrPassComponent, Renderer_Core_Component* rendererCoreComponent)
+void initalizeGraphicsPipeline(Renderer_Fullscreen_PBR_Pass_Ctx* fullscreenPbrCtx)
 {
-  core::shared_ptr<Shader_Module> meshShaderModule = core::allocateShared<Shader_Module>(rendererCoreComponent->device, crude::shaders::fullscreen::mesh);
-  core::shared_ptr<Shader_Module> fragShaderModule = core::allocateShared<Shader_Module>(rendererCoreComponent->device, crude::shaders::fullscreen_pbr::frag);
+  Renderer_Core_System_Ctx* coreCtx = fullscreenPbrCtx->frameCtx->coreCtx;
+
+  core::shared_ptr<Shader_Module> meshShaderModule = core::allocateShared<Shader_Module>(coreCtx->device, crude::shaders::fullscreen::mesh);
+  core::shared_ptr<Shader_Module> fragShaderModule = core::allocateShared<Shader_Module>(coreCtx->device, crude::shaders::fullscreen_pbr::frag);
 
   core::array<Shader_Stage_Create_Info, 2u> shaderStagesInfo =
   {
@@ -200,11 +200,11 @@ void initalizeGraphicsPipeline(Fullscreen_PBR_Pass_Component* fullscreenPbrPassC
   Dynamic_State_Create_Info dynamicStateInfo(dynamicStates);
 
   core::shared_ptr<Pipeline_Layout> pipelineLayout = core::allocateShared<Pipeline_Layout>(
-    rendererCoreComponent->device, createDescriptorSetLayout(rendererCoreComponent));
+    coreCtx->device, createDescriptorSetLayout(fullscreenPbrCtx));
 
-  fullscreenPbrPassComponent->pipeline = core::allocateShared<Pipeline>(
-    rendererCoreComponent->device,
-    fullscreenPbrPassComponent->renderPass,
+  fullscreenPbrCtx->pipeline = core::allocateShared<Pipeline>(
+    coreCtx->device,
+    fullscreenPbrCtx->renderPass,
     pipelineLayout,
     nullptr,
     shaderStagesInfo,
@@ -220,17 +220,18 @@ void initalizeGraphicsPipeline(Fullscreen_PBR_Pass_Component* fullscreenPbrPassC
     0u);
 }
 
-void initializeFramebuffers(Fullscreen_PBR_Pass_Component* fullscreenPbrPassComponent, Renderer_Core_Component* rendererCoreComponent)
+void initializeFramebuffers(Renderer_Fullscreen_PBR_Pass_Ctx* fullscreenPbrCtx)
 {
-  fullscreenPbrPassComponent->framebuffers.reserve(rendererCoreComponent->swapchain->getSwapchainImages().size());
-  for (auto& swapchainImage : rendererCoreComponent->swapchain->getSwapchainImages())
+  Renderer_Core_System_Ctx* coreCtx = fullscreenPbrCtx->frameCtx->coreCtx;
+  fullscreenPbrCtx->framebuffers.reserve(coreCtx->swapchain->getSwapchainImages().size());
+  for (auto& swapchainImage : coreCtx->swapchain->getSwapchainImages())
   {
     auto swapchainImageView = core::allocateShared<Image_View>(swapchainImage);
-    fullscreenPbrPassComponent->framebuffers.push_back(core::allocateShared<Framebuffer>(
-      rendererCoreComponent->device,
-      fullscreenPbrPassComponent->pipeline->getRenderPass(),
+    fullscreenPbrCtx->framebuffers.push_back(core::allocateShared<Framebuffer>(
+      coreCtx->device,
+      fullscreenPbrCtx->pipeline->getRenderPass(),
       getFramebufferAttachments(swapchainImageView),
-      fullscreenPbrPassComponent->gbuffer->getExtent(),
+      fullscreenPbrCtx->gbuffer->getExtent(),
       1u));
   }
 }
@@ -244,12 +245,12 @@ core::array<Subpass_Description, 1> getSubpassDescriptions()
   };
 }
 
-core::vector<Attachment_Description> getAttachmentsDescriptions(Renderer_Core_Component* rendererCoreComponent)
+core::vector<Attachment_Description> getAttachmentsDescriptions(Renderer_Fullscreen_PBR_Pass_Ctx* fullscreenPbrCtx)
 {
   return
   {
     Attachment_Description({
-      .format        = rendererCoreComponent->swapchain->getSurfaceFormat().format,
+      .format        = fullscreenPbrCtx->frameCtx->coreCtx->swapchain->getSurfaceFormat().format,
       .samples       = VK_SAMPLE_COUNT_1_BIT,
       .colorOp       = attachment_op::gClearStore,
       .stenicilOp    = attachment_op::gDontCare,

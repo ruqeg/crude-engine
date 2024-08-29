@@ -28,7 +28,7 @@ export namespace crude::resources
 class GLTF_Loader
 {
 public:
-  explicit GLTF_Loader(flecs::world world);
+  explicit GLTF_Loader(flecs::world world, core::shared_ptr<graphics::Command_Pool> commandPool);
 public:
   flecs::entity loadNodeFromFile(const char* path);
   core::shared_ptr<graphics::Sampler> parseSampler(const tinygltf::Sampler& tinySampler);

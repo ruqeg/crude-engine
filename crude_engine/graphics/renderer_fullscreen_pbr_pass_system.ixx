@@ -4,7 +4,7 @@ module;
 #include <DirectXMath.h>
 #include <flecs.h>
 
-export module crude.graphics.fullscreen_pbr_pass_system;
+export module crude.graphics.renderer_fullscreen_pbr_pass_system;
 
 export import crude.core.std_containers_stack;
 export import crude.core.std_containers_heap;
@@ -37,11 +37,13 @@ class Mesh_Buffer;
 class Swap_Chain_Image;
 class GBuffer;
 class Sampler;
-class Renderer_Core_Component;
+class Renderer_Frame_System_Ctx;
 
-struct Fullscreen_PBR_Pass_Component
+struct Renderer_Fullscreen_PBR_Pass_Ctx
 {
-  Fullscreen_PBR_Pass_Component();
+  Renderer_Fullscreen_PBR_Pass_Ctx();
+  
+  Renderer_Frame_System_Ctx*                   frameCtx;
   core::shared_ptr<Sampler>                    sampler;
   core::shared_ptr<Render_Pass>                renderPass;
   core::shared_ptr<Pipeline>                   pipeline;
@@ -52,21 +54,21 @@ struct Fullscreen_PBR_Pass_Component
   core::array<Combined_Image_Sampler_Descriptor, cFramesCount>  depthTextureDescriptors;
 };
 
-void fullscreenPBRPassComponentInitialize(flecs::iter& it);
+void rendererFullscreenPBRPassSystemInitialize(flecs::iter& it);
 
-void fullscreenPBRPassSystemProcess(flecs::iter& it);
+void rendererFullscreenPBRPassSystemProcess(flecs::iter& it);
 
 }
 
 namespace crude::graphics
 {
 
-core::shared_ptr<Descriptor_Set_Layout> createDescriptorSetLayout(Renderer_Core_Component* rendererCoreComponent);
-void initializeRenderPass(Fullscreen_PBR_Pass_Component* fullscreenPbrPassComponent, Renderer_Core_Component* rendererCoreComponent);
-void initalizeGraphicsPipeline(Fullscreen_PBR_Pass_Component* fullscreenPbrPassComponent, Renderer_Core_Component* rendererCoreComponent);
-void initializeFramebuffers(Fullscreen_PBR_Pass_Component* fullscreenPbrPassComponent, Renderer_Core_Component* rendererCoreComponent);
+core::shared_ptr<Descriptor_Set_Layout> createDescriptorSetLayout(Renderer_Fullscreen_PBR_Pass_Ctx* fullscreenPbrCtx);
+void initializeRenderPass(Renderer_Fullscreen_PBR_Pass_Ctx* fullscreenPbrCtx);
+void initalizeGraphicsPipeline(Renderer_Fullscreen_PBR_Pass_Ctx* fullscreenPbrCtx);
+void initializeFramebuffers(Renderer_Fullscreen_PBR_Pass_Ctx* fullscreenPbrCtx);
 core::array<Subpass_Description, 1> getSubpassDescriptions();
-core::vector<Attachment_Description> getAttachmentsDescriptions(Renderer_Core_Component* rendererCoreComponent);
+core::vector<Attachment_Description> getAttachmentsDescriptions(Renderer_Fullscreen_PBR_Pass_Ctx* fullscreenPbrCtx);
 core::vector<core::shared_ptr<Image_View>> getFramebufferAttachments(core::shared_ptr<Image_View> swapchainImageView);
 Color_Blend_State_Create_Info createColorBlendStateCreateInfo();
 

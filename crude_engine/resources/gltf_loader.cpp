@@ -21,18 +21,17 @@ import crude.graphics.image_2d;
 import crude.graphics.image_view;
 import crude.graphics.texture;
 import crude.graphics.mesh_buffer;
-import crude.graphics.renderer_core_component;
+import crude.graphics.renderer_core_system;
 import crude.scene.transform;
 
 namespace crude::resources
 {
 
-GLTF_Loader::GLTF_Loader(flecs::world world)
+GLTF_Loader::GLTF_Loader(flecs::world world, core::shared_ptr<graphics::Command_Pool> commandPool)
   : m_world(world)
-{
-  m_commandPool = world.get_mut<crude::graphics::Renderer_Core_Component>()->transferCommandPool;
-  m_device = m_commandPool->getDevice();
-}
+  , m_commandPool(commandPool)
+  , m_device(commandPool->getDevice())
+{}
 
 flecs::entity GLTF_Loader::loadNodeFromFile(const char* path)
 {

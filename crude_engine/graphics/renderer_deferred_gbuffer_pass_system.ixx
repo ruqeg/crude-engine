@@ -4,7 +4,7 @@ module;
 #include <DirectXMath.h>
 #include <flecs.h>
 
-export module crude.graphics.deferred_gbuffer_pass_system;
+export module crude.graphics.renderer_deferred_gbuffer_pass_system;
 
 export import crude.core.std_containers_stack;
 export import crude.core.std_containers_heap;
@@ -34,11 +34,12 @@ class Device;
 class Mesh_Buffer;
 class Swap_Chain_Image;
 class GBuffer;
-class Renderer_Core_Component;
+class Renderer_Frame_System_Ctx;
 
-struct Deferred_GBuffer_Pass_Component
+struct Renderer_Deferred_GBuffer_Pass_Systen_Ctx
 {
-  Deferred_GBuffer_Pass_Component();
+  Renderer_Deferred_GBuffer_Pass_Systen_Ctx();
+  Renderer_Frame_System_Ctx*                                    frameCtx;
   core::shared_ptr<Render_Pass>                                 renderPass;
   core::shared_ptr<Pipeline>                                    pipeline;
   core::vector<core::shared_ptr<Framebuffer>>                   framebuffers;
@@ -52,23 +53,23 @@ struct Deferred_GBuffer_Pass_Component
   graphics::Storage_Buffer_Descriptor                           vertexIndicesBufferDescriptor;
 };
 
-void deferredGBufferPassSystemComponentInitialize(flecs::iter& it);
+void rendererDeferredGBufferPassSystemInitialize(flecs::iter& it);
 
 // 0 component - core::shared_ptr<Mesh_Buffer>
 // 1 component - core::shared_ptr<scene::Mesh>
-void deferredGBufferPassSystemProcess(flecs::iter& it);
+void rendererDeferredGBufferPassSystemProcess(flecs::iter& it);
 
 }
 
 namespace crude::graphics
 {
 
-void initializeRenderPass(Deferred_GBuffer_Pass_Component* deferredGBufferComponent, Renderer_Core_Component* rendererCoreComponent);
-void initalizeGraphicsPipeline(Deferred_GBuffer_Pass_Component* deferredGBufferComponent, Renderer_Core_Component* rendererCoreComponent);
-void initializeFramebuffers(Deferred_GBuffer_Pass_Component* deferredGBufferComponent, Renderer_Core_Component* rendererCoreComponent);
-core::shared_ptr<Descriptor_Set_Layout> createDescriptorSetLayout(Renderer_Core_Component* rendererCoreComponent);
-core::vector<Attachment_Description> getAttachmentsDescriptions(Deferred_GBuffer_Pass_Component* deferredGBufferComponent);
-core::vector<core::shared_ptr<Image_View>> getFramebufferAttachments(Deferred_GBuffer_Pass_Component* deferredGBufferComponent);
+void initializeRenderPass(Renderer_Deferred_GBuffer_Pass_Systen_Ctx* deferredGBufferCtx);
+void initalizeGraphicsPipeline(Renderer_Deferred_GBuffer_Pass_Systen_Ctx* deferredGBufferCtx);
+void initializeFramebuffers(Renderer_Deferred_GBuffer_Pass_Systen_Ctx* deferredGBufferCtx);
+core::shared_ptr<Descriptor_Set_Layout> createDescriptorSetLayout(Renderer_Deferred_GBuffer_Pass_Systen_Ctx* deferredGBufferCtx);
+core::vector<Attachment_Description> getAttachmentsDescriptions(Renderer_Deferred_GBuffer_Pass_Systen_Ctx* deferredGBufferCtx);
+core::vector<core::shared_ptr<Image_View>> getFramebufferAttachments(Renderer_Deferred_GBuffer_Pass_Systen_Ctx* deferredGBufferCtx);
 core::array<Subpass_Description, 1> getSubpassDescriptions();
 Color_Blend_State_Create_Info createColorBlendStateCreateInfo();
 Depth_Stencil_State_Create_Info createDepthStencilStateCreateInfo();

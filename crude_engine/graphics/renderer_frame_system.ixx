@@ -21,6 +21,7 @@ class Semaphore;
 class Fence;
 class Command_Pool;
 class Mesh_Buffer;
+class Renderer_Core_System_Ctx;
 
 struct Per_Frame
 {
@@ -29,7 +30,7 @@ struct Per_Frame
 
 constexpr core::uint32 cFramesCount = 2u;
 
-struct Renderer_Frame_Component
+struct Renderer_Frame_System_Ctx
 {
   void stepToNextFrame();
   core::shared_ptr<Uniform_Buffer<Per_Frame>> getFramePerFrameUniformBuffer();
@@ -38,6 +39,7 @@ struct Renderer_Frame_Component
   core::shared_ptr<Semaphore> getFrameRenderFinishedSemaphore();
   core::shared_ptr<Fence> getFrameInFlightFence();
 
+  Renderer_Core_System_Ctx*                                                   coreCtx;
   core::array<core::shared_ptr<Uniform_Buffer<Per_Frame>>, cFramesCount>      perFrameUniformBuffer;
   core::array<core::shared_ptr<Command_Buffer>, cFramesCount>                 graphicsCommandBuffers;
   core::array<core::shared_ptr<Semaphore>, cFramesCount>                      imageAvailableSemaphores;
@@ -48,7 +50,7 @@ struct Renderer_Frame_Component
   core::uint32                                                                swapchainImageIndex;
 };
 
-void rendererFrameSystemComponentInitiailize(flecs::iter& it);
+void rendererFrameSystemInitiailize(flecs::iter& it);
 void rendererFrameStartSystemProcess(flecs::iter& it);
 void rendererFrameSubmitSystemProcess(flecs::iter& it);
 
