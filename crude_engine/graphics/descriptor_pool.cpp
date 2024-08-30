@@ -11,15 +11,12 @@ namespace crude::graphics
 
 Descriptor_Pool::Descriptor_Pool(core::shared_ptr<const Device>           device,
                                  const core::span<Descriptor_Pool_Size>&  poolSizes,
+                                 core::uint32                             maxSets,
                                  bool                                     freeDescriptorSet)
   :
   m_device(device),
   m_freeDescriptorSet(freeDescriptorSet)
 {
-  core::uint32 maxSets = 0u;
-  for (auto& poolSize : poolSizes)
-    maxSets = std::max(poolSize.descriptorCount, maxSets);
-
   VkDescriptorPoolCreateInfo vkCreateInfo{};
   vkCreateInfo.sType          = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
   vkCreateInfo.pNext          = nullptr;

@@ -169,6 +169,12 @@ VkImageLayout Image::getMipLayout(core::uint32 mipLevel) const
   return m_layouts[mipLevel];
 }
 
+VkImageLayout Image::getLayout() const
+{
+  // !TODO
+  return m_layouts[0];
+}
+
 void Image::copyMipFromBuffer(core::shared_ptr<Command_Buffer>        commandBuffer,
                               core::shared_ptr<const Staging_Buffer>  srcBuffer,
                               const Copy_Layout&                      bufferLayout,

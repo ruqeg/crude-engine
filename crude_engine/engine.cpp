@@ -159,6 +159,7 @@ void Engine::initializeRendererSystems(const Initialize_Systems& initialize)
     .kind(0)
     .run(graphics::rendererFrameSystemInitiailize)
     .run();
+  m_rendererSystemCtx.imguiPassCtx.layoutsDrawSystems = initialize.imguiLayoutSystems;
   m_world.system()
     .ctx(&m_rendererSystemCtx.imguiPassCtx)
     .kind(0)

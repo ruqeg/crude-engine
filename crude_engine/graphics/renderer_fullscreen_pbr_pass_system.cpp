@@ -68,7 +68,7 @@ core::array<Descriptor_Pool_Size, 2u> cDescriptorPoolSizes
 };
 
 Renderer_Fullscreen_PBR_Pass_Ctx::Renderer_Fullscreen_PBR_Pass_Ctx()
-  : albedoTextureDescriptors{cAlbedoTextureDescriptor, cAlbedoTextureDescriptor}
+  : albedoTextureDescriptors{ cAlbedoTextureDescriptor, cAlbedoTextureDescriptor }
   , depthTextureDescriptors{ cDepthTextureDescriptor, cDepthTextureDescriptor }
 {}
 
@@ -83,18 +83,18 @@ void rendererFullscreenPBRPassSystemProcess(flecs::iter& it)
   clearValues[1].depthStencil = { 1.0f, 0 };
 
   VkRect2D renderArea;
-  renderArea.extent = coreCtx->swapchain->getExtent();
+  renderArea.extent = fullscreenPbrCtx->colorAttachment->getExtent2D();
   renderArea.offset = VkOffset2D{ 0, 0 };
 
   frameCtx->getFrameGraphicsCommandBuffer()->setViewport(Viewport({
     .x = 0.0f, .y = 0.0f,
-    .width = static_cast<core::float32>(coreCtx->swapchain->getExtent().width),
-    .height = static_cast<core::float32>(coreCtx->swapchain->getExtent().height),
+    .width = static_cast<core::float32>(fullscreenPbrCtx->colorAttachment->getExtent().width),
+    .height = static_cast<core::float32>(fullscreenPbrCtx->colorAttachment->getExtent().height),
     .minDepth = 0.0f, .maxDepth = 1.0f }));
 
   frameCtx->getFrameGraphicsCommandBuffer()->setScissor(Scissor({
     .offset = { 0, 0 },
-    .extent = coreCtx->swapchain->getExtent() }));
+    .extent = fullscreenPbrCtx->colorAttachment->getExtent2D() }));
 
   frameCtx->getFrameGraphicsCommandBuffer()->beginRenderPass(fullscreenPbrCtx->pipeline->getRenderPass(), fullscreenPbrCtx->framebuffers[frameCtx->swapchainImageIndex], clearValues, renderArea);
   frameCtx->getFrameGraphicsCommandBuffer()->bindPipeline(fullscreenPbrCtx->pipeline);
@@ -120,6 +120,15 @@ void rendererFullscreenPBRPassSystemInitialize(flecs::iter& it)
 
   fullscreenPbrCtx->sampler = core::allocateShared<graphics::Sampler>(coreCtx->device, graphics::csamlper_state::gMagMinMipLinearRepeat);
 
+  fullscreenPbrCtx->colorAttachment = core::allocateShared<Color_Attachment>(Color_Attachment::Initialize{
+    .device          = coreCtx->device,
+    .format          = VK_FORMAT_B8G8R8A8_SRGB,
+    .extent          = fullscreenPbrCtx->gbuffer->getExtent(),
+    .sampled         = true,
+    .explicitResolve = false,
+    .mipLevelsCount  = 1u,
+    .samples         = VK_SAMPLE_COUNT_1_BIT });
+
   initializeRenderPass(fullscreenPbrCtx);
   initalizeGraphicsPipeline(fullscreenPbrCtx);
   initializeFramebuffers(fullscreenPbrCtx);
@@ -128,7 +137,7 @@ void rendererFullscreenPBRPassSystemInitialize(flecs::iter& it)
 core::shared_ptr<Descriptor_Set_Layout> createDescriptorSetLayout(Renderer_Fullscreen_PBR_Pass_Ctx* fullscreenPbrCtx)
 {
   Renderer_Core_System_Ctx* coreCtx = fullscreenPbrCtx->frameCtx->coreCtx;
-  auto descriptorPool = core::allocateShared<Descriptor_Pool>(coreCtx->device, cDescriptorPoolSizes);
+  auto descriptorPool = core::allocateShared<Descriptor_Pool>(coreCtx->device, cDescriptorPoolSizes, 2);
   auto descriptorSetLayout = core::allocateShared<Descriptor_Set_Layout>(coreCtx->device, cDescriptorLayoutBindings, true);
   return descriptorSetLayout;
 }
@@ -224,14 +233,14 @@ void initializeFramebuffers(Renderer_Fullscreen_PBR_Pass_Ctx* fullscreenPbrCtx)
 {
   Renderer_Core_System_Ctx* coreCtx = fullscreenPbrCtx->frameCtx->coreCtx;
   fullscreenPbrCtx->framebuffers.reserve(coreCtx->swapchain->getSwapchainImages().size());
-  for (auto& swapchainImage : coreCtx->swapchain->getSwapchainImages())
+  for (core::size_t i = 0; i < coreCtx->swapchain->getSwapchainImages().size(); ++i)
   {
-    auto swapchainImageView = core::allocateShared<Image_View>(swapchainImage);
+    auto colorAttachmentView = core::allocateShared<Image_View>(fullscreenPbrCtx->colorAttachment);
     fullscreenPbrCtx->framebuffers.push_back(core::allocateShared<Framebuffer>(
       coreCtx->device,
       fullscreenPbrCtx->pipeline->getRenderPass(),
-      getFramebufferAttachments(swapchainImageView),
-      fullscreenPbrCtx->gbuffer->getExtent(),
+      core::vector<core::shared_ptr<Image_View>>{ colorAttachmentView },
+      fullscreenPbrCtx->colorAttachment->getExtent2D(),
       1u));
   }
 }
@@ -250,18 +259,13 @@ core::vector<Attachment_Description> getAttachmentsDescriptions(Renderer_Fullscr
   return
   {
     Attachment_Description({
-      .format        = fullscreenPbrCtx->frameCtx->coreCtx->swapchain->getSurfaceFormat().format,
+      .format        = fullscreenPbrCtx->colorAttachment->getFormat(),
       .samples       = VK_SAMPLE_COUNT_1_BIT,
       .colorOp       = attachment_op::gClearStore,
       .stenicilOp    = attachment_op::gDontCare,
       .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-      .finalLayout   = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR})
+      .finalLayout   = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL})
   };
-}
-
-core::vector<core::shared_ptr<Image_View>> getFramebufferAttachments(core::shared_ptr<Image_View> swapchainImageView)
-{
-  return { swapchainImageView };
 }
 
 Color_Blend_State_Create_Info createColorBlendStateCreateInfo()

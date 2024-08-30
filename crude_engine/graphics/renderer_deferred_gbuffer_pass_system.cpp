@@ -189,7 +189,7 @@ core::shared_ptr<Descriptor_Set_Layout> createDescriptorSetLayout(Renderer_Defer
 {
   Renderer_Core_System_Ctx* coreCtx = deferredGBufferCtx->frameCtx->coreCtx;
 
-  auto descriptorPool = core::allocateShared<Descriptor_Pool>(coreCtx->device, cDescriptorPoolSizes);
+  auto descriptorPool = core::allocateShared<Descriptor_Pool>(coreCtx->device, cDescriptorPoolSizes, 2);
   auto descriptorSetLayout = core::allocateShared<Descriptor_Set_Layout>(coreCtx->device, cDescriptorLayoutBindings, true);
   return descriptorSetLayout;
 }

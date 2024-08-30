@@ -64,6 +64,7 @@ public:
                     VkPipelineStageFlags              dstStageMask);
   void setMipLayout(core::uint32 mipLevel, VkImageLayout layout);
   VkImageLayout getMipLayout(core::uint32 mipLevel) const;
+  VkImageLayout getLayout() const;
   VkImageType getType() const { return m_type; }
   VkFormat getFormat() const { return m_format; }
   core::uint32 getMipLevelsCount() const { return m_mipLevelsCount; }

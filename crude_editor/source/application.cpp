@@ -11,6 +11,11 @@ import crude.graphics.renderer_frame_system;
 import crude.graphics.renderer_core_system;
 import crude.graphics.command_pool;
 import gui.imgui_editor_layout_draw_system;
+import crude.graphics.renderer_core_system;
+import crude.graphics.sampler_state;
+import crude.graphics.image_view;
+import crude.graphics.sampler;
+import crude.gui.imgui_texture_descriptor_set;
 
 void Application::initialize()
 {
@@ -29,11 +34,17 @@ void Application::initialize()
       },
       .imguiLayoutSystems = {
         m_world.system("ImguiEditorLayoutDrawSystem")
+          .ctx(&m_editorLayoutCtx)
           .kind(0)
-          .run(gui::imguiEditorLayoutDrawSystemProcess),
+          .run(gui::imguiEditorLayoutDrawSystemProcess)
       }
     }
   });
+
+  m_editorLayoutCtx.sceneImguiTextureDescriptorSet = crude::core::allocateShared<crude::gui::ImGui_Texture_Descriptor_Set>(
+    crude::core::allocateShared<crude::graphics::Texture>(
+      crude::core::allocateShared<crude::graphics::Image_View>(m_rendererSystemCtx.fullscreenPbrPassCtx.colorAttachment),
+      crude::core::allocateShared<crude::graphics::Sampler>(m_rendererSystemCtx.coreCtx.device, crude::graphics::csamlper_state::gMagMinMipLinearRepeat)));
 
   m_freeCameraUpdateSystem = m_world.system<crude::scripts::Free_Camera_Script_Component, crude::scene::Transform>("FreeCameraScriptUpdateSystem")
     .kind(flecs::OnUpdate)
@@ -49,6 +60,7 @@ void Application::run()
 
 void Application::deinitialize()
 {
+  m_editorLayoutCtx.sceneImguiTextureDescriptorSet.reset();
   Engine::deinitialize();
 }
 

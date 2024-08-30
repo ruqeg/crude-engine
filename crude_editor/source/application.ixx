@@ -5,6 +5,7 @@ module;
 export module application;
 
 export import crude.engine;
+export import gui.imgui_editor_layout_draw_system;
 
 export
 {
@@ -19,7 +20,8 @@ private:
   void initializeScene(crude::core::float32 aspectRatio);
   void initializeCamera(crude::core::float32 aspectRatio);
 private:
-  flecs::system  m_freeCameraUpdateSystem;
+  flecs::system                     m_freeCameraUpdateSystem;
+  gui::Imgui_Editor_Layout_Draw_Ctx m_editorLayoutCtx;
 };
 
 }

@@ -47,11 +47,15 @@ void rendererImguiPassSystemProcess(flecs::iter& it)
   const bool isMinimized = (drawData->DisplaySize.x <= 0.0f || drawData->DisplaySize.y <= 0.0f);
   if (!isMinimized)
   {
+    core::array<VkClearValue, 2u> clearValues;
+    clearValues[0].color = { {0.0f, 0.0f, 0.0f, 1.0f} };
+    clearValues[1].depthStencil = { 1.0f, 0 };
+
     VkRect2D renderArea;
     renderArea.extent = coreCtx->swapchain->getExtent();
     renderArea.offset = VkOffset2D{ 0, 0 };
 
-    frameCtx->getFrameGraphicsCommandBuffer()->beginRenderPass(imguiPassCtx->renderPass, imguiPassCtx->framebuffers[frameCtx->swapchainImageIndex], renderArea);
+    frameCtx->getFrameGraphicsCommandBuffer()->beginRenderPass(imguiPassCtx->renderPass, imguiPassCtx->framebuffers[frameCtx->swapchainImageIndex], clearValues, renderArea);
 
     ImGui_ImplVulkan_RenderDrawData(drawData, frameCtx->getFrameGraphicsCommandBuffer()->getHandle());
 
@@ -112,7 +116,7 @@ void initializeRenderPass(Renderer_ImGui_Pass_System_Ctx* imguiPassCtx)
     graphics::Attachment_Description({
       .format        = coreCtx->swapchain->getSurfaceFormat().format,
       .samples       = VK_SAMPLE_COUNT_1_BIT,
-      .colorOp       = graphics::attachment_op::gDontCareStore,
+      .colorOp       = graphics::attachment_op::gClearStore,
       .stenicilOp    = graphics::attachment_op::gDontCare,
       .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
       .finalLayout   = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR })
@@ -142,7 +146,7 @@ void initializeDescriptorPool(Renderer_ImGui_Pass_System_Ctx* imguiPassCtx)
       graphics::Descriptor_Pool_Size(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1u)
   };
 
-  imguiPassCtx->descriptorPool = core::allocateShared<graphics::Descriptor_Pool>(coreCtx->device, poolSizes, true);
+  imguiPassCtx->descriptorPool = core::allocateShared<graphics::Descriptor_Pool>(coreCtx->device, poolSizes, 4, true);
 }
 
 void initializeFramebuffers(Renderer_ImGui_Pass_System_Ctx* imguiPassCtx)

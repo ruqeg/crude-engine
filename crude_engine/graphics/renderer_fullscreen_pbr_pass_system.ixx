@@ -49,6 +49,7 @@ struct Renderer_Fullscreen_PBR_Pass_Ctx
   core::shared_ptr<Pipeline>                   pipeline;
   core::vector<core::shared_ptr<Framebuffer>>  framebuffers;
   core::shared_ptr<GBuffer>                    gbuffer;
+  core::shared_ptr<Color_Attachment>           colorAttachment;
 
   core::array<Combined_Image_Sampler_Descriptor, cFramesCount>  albedoTextureDescriptors;
   core::array<Combined_Image_Sampler_Descriptor, cFramesCount>  depthTextureDescriptors;
@@ -68,8 +69,7 @@ void initializeRenderPass(Renderer_Fullscreen_PBR_Pass_Ctx* fullscreenPbrCtx);
 void initalizeGraphicsPipeline(Renderer_Fullscreen_PBR_Pass_Ctx* fullscreenPbrCtx);
 void initializeFramebuffers(Renderer_Fullscreen_PBR_Pass_Ctx* fullscreenPbrCtx);
 core::array<Subpass_Description, 1> getSubpassDescriptions();
-core::vector<Attachment_Description> getAttachmentsDescriptions(Renderer_Fullscreen_PBR_Pass_Ctx* fullscreenPbrCtx);
-core::vector<core::shared_ptr<Image_View>> getFramebufferAttachments(core::shared_ptr<Image_View> swapchainImageView);
+core::vector<Attachment_Description> getAttachmentsDescriptions(Renderer_Fullscreen_PBR_Pass_Ctx* fullscreenPbrCtx);\
 Color_Blend_State_Create_Info createColorBlendStateCreateInfo();
 
 }
