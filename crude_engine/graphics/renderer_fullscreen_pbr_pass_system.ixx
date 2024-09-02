@@ -14,7 +14,7 @@ export import crude.graphics.image_descriptor;
 export import crude.graphics.subpass_description;
 export import crude.graphics.attachment_description;
 export import crude.graphics.image_attachment;
-import crude.graphics.renderer_frame_system;
+export import crude.graphics.renderer_frame_system;
 import crude.graphics.color_blend_state_create_info;
 import crude.graphics.depth_stencil_state_create_info;
 import crude.graphics.depth_stencil_state_create_info;
@@ -37,13 +37,21 @@ class Mesh_Buffer;
 class Swap_Chain_Image;
 class GBuffer;
 class Sampler;
-class Renderer_Frame_System_Ctx;
 
 struct Renderer_Fullscreen_PBR_Pass_Ctx
 {
-  Renderer_Fullscreen_PBR_Pass_Ctx();
-  
-  Renderer_Frame_System_Ctx*                   frameCtx;
+public:
+  explicit Renderer_Fullscreen_PBR_Pass_Ctx(core::shared_ptr<Renderer_Frame_System_Ctx> frameCtx, core::shared_ptr<GBuffer> gbuffer);
+private:
+  core::shared_ptr<Descriptor_Set_Layout> createDescriptorSetLayout();
+  void initializeRenderPass();
+  void initalizeGraphicsPipeline();
+  void initializeFramebuffers();
+  core::array<Subpass_Description, 1> getSubpassDescriptions();
+  core::vector<Attachment_Description> getAttachmentsDescriptions();
+    Color_Blend_State_Create_Info createColorBlendStateCreateInfo();
+public:
+  core::shared_ptr<Renderer_Frame_System_Ctx>  frameCtx;
   core::shared_ptr<Sampler>                    sampler;
   core::shared_ptr<Render_Pass>                renderPass;
   core::shared_ptr<Pipeline>                   pipeline;
@@ -55,21 +63,6 @@ struct Renderer_Fullscreen_PBR_Pass_Ctx
   core::array<Combined_Image_Sampler_Descriptor, cFramesCount>  depthTextureDescriptors;
 };
 
-void rendererFullscreenPBRPassSystemInitialize(flecs::iter& it);
-
 void rendererFullscreenPBRPassSystemProcess(flecs::iter& it);
-
-}
-
-namespace crude::graphics
-{
-
-core::shared_ptr<Descriptor_Set_Layout> createDescriptorSetLayout(Renderer_Fullscreen_PBR_Pass_Ctx* fullscreenPbrCtx);
-void initializeRenderPass(Renderer_Fullscreen_PBR_Pass_Ctx* fullscreenPbrCtx);
-void initalizeGraphicsPipeline(Renderer_Fullscreen_PBR_Pass_Ctx* fullscreenPbrCtx);
-void initializeFramebuffers(Renderer_Fullscreen_PBR_Pass_Ctx* fullscreenPbrCtx);
-core::array<Subpass_Description, 1> getSubpassDescriptions();
-core::vector<Attachment_Description> getAttachmentsDescriptions(Renderer_Fullscreen_PBR_Pass_Ctx* fullscreenPbrCtx);\
-Color_Blend_State_Create_Info createColorBlendStateCreateInfo();
 
 }

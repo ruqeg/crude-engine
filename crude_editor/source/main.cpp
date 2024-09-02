@@ -10,10 +10,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE      hInstance,
                       _In_ int            nCmdShow)
 {
   crude::Engine::preinitialize(600000000);
-  Application application;
-  application.initialize();
-  application.run();
-  application.deinitialize();
+  {
+    Application application;
+    application.initialize();
+    application.run();
+    application.deinitialize();
+  }
   crude::Engine::postdeinitialize();
   return EXIT_SUCCESS;
 }

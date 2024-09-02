@@ -11,6 +11,10 @@ import crude.gui.imgui_texture_descriptor_set;
 namespace gui
 {
 
+Imgui_Editor_Layout_Draw_Ctx::Imgui_Editor_Layout_Draw_Ctx(crude::core::shared_ptr<crude::gui::ImGui_Texture_Descriptor_Set> sceneImguiTextureDescriptorSet)
+  : sceneImguiTextureDescriptorSet{ sceneImguiTextureDescriptorSet }
+{}
+
 void imguiEditorLayoutDrawSystemProcess(flecs::iter& it)
 {
   Imgui_Editor_Layout_Draw_Ctx* editorLayoutCtx = it.ctx<Imgui_Editor_Layout_Draw_Ctx>();

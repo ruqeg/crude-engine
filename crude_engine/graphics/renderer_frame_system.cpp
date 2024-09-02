@@ -9,7 +9,6 @@ import crude.graphics.fence;
 import crude.graphics.swap_chain;
 import crude.graphics.uniform_buffer;
 import crude.graphics.semaphore;
-import crude.graphics.renderer_core_system;
 import crude.graphics.queue;
 import crude.graphics.device;
 import crude.core.logger;
@@ -17,34 +16,10 @@ import crude.core.logger;
 namespace crude::graphics
 {
 
-void rendererFrameSystemInitiailize(flecs::iter& it)
-{
-  Renderer_Frame_System_Ctx* frameCtx = it.ctx<Renderer_Frame_System_Ctx>();
-  Renderer_Core_System_Ctx* coreCtx = frameCtx->coreCtx;
-
-  for (core::uint32 i = 0; i < cFramesCount; ++i)
-  {
-    frameCtx->perFrameUniformBuffer[i] = core::allocateShared<Uniform_Buffer<Per_Frame>>(coreCtx->device);
-  }
-  for (core::uint32 i = 0; i < cFramesCount; ++i)
-  {
-    frameCtx->graphicsCommandBuffers[i] = core::allocateShared<Command_Buffer>(coreCtx->graphicsCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
-  }
-
-  for (core::uint32 i = 0; i < cFramesCount; i++)
-  {
-    frameCtx->imageAvailableSemaphores[i] = core::allocateShared<Semaphore>(coreCtx->device);
-    frameCtx->renderFinishedSemaphores[i] = core::allocateShared<Semaphore>(coreCtx->device);
-    frameCtx->inFlightFences[i] = core::allocateShared<Fence>(coreCtx->device, VK_FENCE_CREATE_SIGNALED_BIT);
-  }
-
-  frameCtx->currentFrame = 0u;
-}
-
 void rendererFrameStartSystemProcess(flecs::iter& it)
 {
   Renderer_Frame_System_Ctx* frameCtx = it.ctx<Renderer_Frame_System_Ctx>();
-  Renderer_Core_System_Ctx* coreCtx = frameCtx->coreCtx;
+  core::shared_ptr<Renderer_Core_System_Ctx> coreCtx = frameCtx->coreCtx;
 
   frameCtx->getFrameInFlightFence()->wait();
 
@@ -76,7 +51,7 @@ void rendererFrameStartSystemProcess(flecs::iter& it)
 void rendererFrameSubmitSystemProcess(flecs::iter& it)
 {
   Renderer_Frame_System_Ctx* frameCtx = it.ctx<Renderer_Frame_System_Ctx>();
-  Renderer_Core_System_Ctx* coreCtx = frameCtx->coreCtx;
+  core::shared_ptr<Renderer_Core_System_Ctx> coreCtx = frameCtx->coreCtx;
 
   if (!frameCtx->getFrameGraphicsCommandBuffer()->end())
   {
@@ -112,6 +87,28 @@ void rendererFrameSubmitSystemProcess(flecs::iter& it)
   }
 
   frameCtx->stepToNextFrame();
+}
+
+Renderer_Frame_System_Ctx::Renderer_Frame_System_Ctx(core::shared_ptr<Renderer_Core_System_Ctx> coreCtx)
+  : coreCtx{ coreCtx }
+{
+  for (core::uint32 i = 0; i < cFramesCount; ++i)
+  {
+    perFrameUniformBuffer[i] = core::allocateShared<Uniform_Buffer<Per_Frame>>(coreCtx->device);
+  }
+  for (core::uint32 i = 0; i < cFramesCount; ++i)
+  {
+    graphicsCommandBuffers[i] = core::allocateShared<Command_Buffer>(coreCtx->graphicsCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+  }
+
+  for (core::uint32 i = 0; i < cFramesCount; i++)
+  {
+    imageAvailableSemaphores[i] = core::allocateShared<Semaphore>(coreCtx->device);
+    renderFinishedSemaphores[i] = core::allocateShared<Semaphore>(coreCtx->device);
+    inFlightFences[i] = core::allocateShared<Fence>(coreCtx->device, VK_FENCE_CREATE_SIGNALED_BIT);
+  }
+
+  currentFrame = 0u;
 }
 
 void Renderer_Frame_System_Ctx::stepToNextFrame()

@@ -42,8 +42,6 @@ import crude.graphics.image_view;
 import crude.graphics.command_pool;
 import crude.graphics.image_attachment;
 import crude.graphics.shader_module;
-import crude.graphics.renderer_core_system;
-import crude.graphics.renderer_frame_system;
 import crude.graphics.storage_buffer;
 import crude.graphics.attachment_description;
 import crude.graphics.gbuffer;
@@ -88,21 +86,11 @@ struct Per_Mesh
   core::uint32         submeshIndex;
 };
 
-Renderer_Deferred_GBuffer_Pass_Systen_Ctx::Renderer_Deferred_GBuffer_Pass_Systen_Ctx()
-  : perFrameBufferDescriptors{cPerFrameUniformBufferDescriptor, cPerFrameUniformBufferDescriptor}
-  , submeshTextureDescriptors{ cSubmeshTextureDescriptor, cSubmeshTextureDescriptor }
-  , submeshesDrawsBufferDescriptor{ cSubmeshesDrawsBufferDescriptor }
-  , vertexBufferDescriptor{ cVertexBufferDescriptor }
-  , meshletBufferDescriptor{ cMeshletBufferDescriptor }
-  , primitiveIndicesBufferDescriptor{ cPrimitiveIndicesBufferDescriptor }
-  , vertexIndicesBufferDescriptor{ cVertexIndicesBufferDescriptor }
-{}
-
 void rendererDeferredGBufferPassSystemProcess(flecs::iter& it)
 {
   Renderer_Deferred_GBuffer_Pass_Systen_Ctx* deferredGBufferCtx = it.ctx<Renderer_Deferred_GBuffer_Pass_Systen_Ctx>();
-  Renderer_Frame_System_Ctx* frameCtx = deferredGBufferCtx->frameCtx;
-  Renderer_Core_System_Ctx* coreCtx = frameCtx->coreCtx;
+  core::shared_ptr<Renderer_Frame_System_Ctx> frameCtx = deferredGBufferCtx->frameCtx;
+  core::shared_ptr<Renderer_Core_System_Ctx> coreCtx = frameCtx->coreCtx;
   
   core::array<VkClearValue, 2u> clearValues;;
   clearValues[0].color = { {0.0f, 0.0f, 0.0f, 1.0f} };
@@ -172,32 +160,37 @@ void rendererDeferredGBufferPassSystemProcess(flecs::iter& it)
   frameCtx->getFrameGraphicsCommandBuffer()->endRenderPass();
 }
 
-void rendererDeferredGBufferPassSystemInitialize(flecs::iter& it)
+Renderer_Deferred_GBuffer_Pass_Systen_Ctx::Renderer_Deferred_GBuffer_Pass_Systen_Ctx(core::shared_ptr<Renderer_Frame_System_Ctx> frameCtx)
+  : perFrameBufferDescriptors{ cPerFrameUniformBufferDescriptor, cPerFrameUniformBufferDescriptor }
+  , submeshTextureDescriptors{ cSubmeshTextureDescriptor, cSubmeshTextureDescriptor }
+  , submeshesDrawsBufferDescriptor{ cSubmeshesDrawsBufferDescriptor }
+  , vertexBufferDescriptor{ cVertexBufferDescriptor }
+  , meshletBufferDescriptor{ cMeshletBufferDescriptor }
+  , primitiveIndicesBufferDescriptor{ cPrimitiveIndicesBufferDescriptor }
+  , vertexIndicesBufferDescriptor{ cVertexIndicesBufferDescriptor }
+  , frameCtx{ frameCtx }
 {
-  Renderer_Deferred_GBuffer_Pass_Systen_Ctx* deferredGBufferCtx = it.ctx<Renderer_Deferred_GBuffer_Pass_Systen_Ctx>();
-  Renderer_Frame_System_Ctx* frameCtx = deferredGBufferCtx->frameCtx;
-  Renderer_Core_System_Ctx* coreCtx = frameCtx->coreCtx;
+  core::shared_ptr<Renderer_Core_System_Ctx> coreCtx = frameCtx->coreCtx;
 
-  deferredGBufferCtx->gbuffer = core::allocateShared<GBuffer>(coreCtx->device, coreCtx->swapchain->getExtent());
+  gbuffer = core::allocateShared<GBuffer>(coreCtx->device, coreCtx->swapchain->getExtent());
 
-  initializeRenderPass(deferredGBufferCtx);
-  initalizeGraphicsPipeline(deferredGBufferCtx);
-  initializeFramebuffers(deferredGBufferCtx);
+  initializeRenderPass();
+  initalizeGraphicsPipeline();
+  initializeFramebuffers();
 }
 
-core::shared_ptr<Descriptor_Set_Layout> createDescriptorSetLayout(Renderer_Deferred_GBuffer_Pass_Systen_Ctx* deferredGBufferCtx)
-{
-  Renderer_Core_System_Ctx* coreCtx = deferredGBufferCtx->frameCtx->coreCtx;
 
+core::shared_ptr<Descriptor_Set_Layout> Renderer_Deferred_GBuffer_Pass_Systen_Ctx::createDescriptorSetLayout()
+{
+  core::shared_ptr<Renderer_Core_System_Ctx> coreCtx = frameCtx->coreCtx;
   auto descriptorPool = core::allocateShared<Descriptor_Pool>(coreCtx->device, cDescriptorPoolSizes, 2);
   auto descriptorSetLayout = core::allocateShared<Descriptor_Set_Layout>(coreCtx->device, cDescriptorLayoutBindings, true);
   return descriptorSetLayout;
 }
 
-void initializeRenderPass(Renderer_Deferred_GBuffer_Pass_Systen_Ctx* deferredGBufferCtx)
+void Renderer_Deferred_GBuffer_Pass_Systen_Ctx::initializeRenderPass()
 {
-  Renderer_Core_System_Ctx* coreCtx = deferredGBufferCtx->frameCtx->coreCtx;
-  
+  core::shared_ptr<Renderer_Core_System_Ctx> coreCtx = frameCtx->coreCtx;
   core::array<Subpass_Dependency, 1u> subpassesDependencies =
   {
     Subpass_Dependency({
@@ -209,13 +202,12 @@ void initializeRenderPass(Renderer_Deferred_GBuffer_Pass_Systen_Ctx* deferredGBu
       .dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
       .dependencyFlags = 0})
   };
-  deferredGBufferCtx->renderPass = core::allocateShared<Render_Pass>(coreCtx->device, getSubpassDescriptions(), subpassesDependencies, getAttachmentsDescriptions(deferredGBufferCtx));
+  renderPass = core::allocateShared<Render_Pass>(coreCtx->device, getSubpassDescriptions(), subpassesDependencies, getAttachmentsDescriptions());
 }
 
-void initalizeGraphicsPipeline(Renderer_Deferred_GBuffer_Pass_Systen_Ctx* deferredGBufferCtx)
+void Renderer_Deferred_GBuffer_Pass_Systen_Ctx::initalizeGraphicsPipeline()
 {
-  Renderer_Core_System_Ctx* coreCtx = deferredGBufferCtx->frameCtx->coreCtx;
-
+  core::shared_ptr<Renderer_Core_System_Ctx> coreCtx = frameCtx->coreCtx;
   core::shared_ptr<Shader_Module> taskShaderModule = core::allocateShared<Shader_Module>(coreCtx->device, crude::shaders::deferred_gbuffer::task);
   core::shared_ptr<Shader_Module> meshShaderModule = core::allocateShared<Shader_Module>(coreCtx->device, crude::shaders::deferred_gbuffer::mesh);
   core::shared_ptr<Shader_Module> fragShaderModule = core::allocateShared<Shader_Module>(coreCtx->device, crude::shaders::deferred_gbuffer::frag);
@@ -264,12 +256,12 @@ void initalizeGraphicsPipeline(Renderer_Deferred_GBuffer_Pass_Systen_Ctx* deferr
   Dynamic_State_Create_Info dynamicStateInfo(dynamicStates);
 
   core::shared_ptr<Pipeline_Layout> pipelineLayout = core::allocateShared<Pipeline_Layout>(
-    coreCtx->device, createDescriptorSetLayout(deferredGBufferCtx),
+    coreCtx->device, createDescriptorSetLayout(),
     Push_Constant_Range<Per_Mesh>(VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT));
 
-  deferredGBufferCtx->pipeline = core::allocateShared<Pipeline>(
+  pipeline = core::allocateShared<Pipeline>(
     coreCtx->device,
-    deferredGBufferCtx->renderPass,
+    renderPass,
     pipelineLayout,
     nullptr,
     shaderStagesInfo,
@@ -285,19 +277,18 @@ void initalizeGraphicsPipeline(Renderer_Deferred_GBuffer_Pass_Systen_Ctx* deferr
     0u);
 }
 
-void initializeFramebuffers(Renderer_Deferred_GBuffer_Pass_Systen_Ctx* deferredGBufferCtx)
+void Renderer_Deferred_GBuffer_Pass_Systen_Ctx::initializeFramebuffers()
 {
-  Renderer_Core_System_Ctx* coreCtx = deferredGBufferCtx->frameCtx->coreCtx;
-
-  deferredGBufferCtx->framebuffers.reserve(coreCtx->swapchainImages.size());
+  core::shared_ptr<Renderer_Core_System_Ctx> coreCtx = frameCtx->coreCtx;
+  framebuffers.reserve(coreCtx->swapchainImages.size());
   for (core::uint32 i = 0; i < coreCtx->swapchainImages.size(); ++i)
   {
-    deferredGBufferCtx->framebuffers.push_back(core::allocateShared<Framebuffer>(
-      coreCtx->device, deferredGBufferCtx->renderPass, getFramebufferAttachments(deferredGBufferCtx), deferredGBufferCtx->gbuffer->getExtent(), 1u));
+    framebuffers.push_back(core::allocateShared<Framebuffer>(
+      coreCtx->device, renderPass, getFramebufferAttachments(), gbuffer->getExtent(), 1u));
   }
 }
 
-core::array<Subpass_Description, 1> getSubpassDescriptions()
+core::array<Subpass_Description, 1> Renderer_Deferred_GBuffer_Pass_Systen_Ctx::getSubpassDescriptions()
 {
   return
   {
@@ -310,20 +301,20 @@ core::array<Subpass_Description, 1> getSubpassDescriptions()
   };
 }
 
-core::vector<Attachment_Description> getAttachmentsDescriptions(Renderer_Deferred_GBuffer_Pass_Systen_Ctx* deferredGBufferCtx)
+core::vector<Attachment_Description> Renderer_Deferred_GBuffer_Pass_Systen_Ctx::getAttachmentsDescriptions()
 {
   return
   {
     Attachment_Description({
-      .format        = deferredGBufferCtx->gbuffer->getAlbedoAttachment()->getFormat(),
-      .samples       = deferredGBufferCtx->gbuffer->getAlbedoAttachment()->getSampleCount(),
+      .format        = gbuffer->getAlbedoAttachment()->getFormat(),
+      .samples       = gbuffer->getAlbedoAttachment()->getSampleCount(),
       .colorOp       = attachment_op::gClearStore,
       .stenicilOp    = attachment_op::gClearStore,
       .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
       .finalLayout   = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL }),
     Attachment_Description({
-      .format        = deferredGBufferCtx->gbuffer->getDepthStencilAttachment()->getFormat(),
-      .samples       = deferredGBufferCtx->gbuffer->getDepthStencilAttachment()->getSampleCount(),
+      .format        = gbuffer->getDepthStencilAttachment()->getFormat(),
+      .samples       = gbuffer->getDepthStencilAttachment()->getSampleCount(),
       .colorOp       = attachment_op::gClearStore,
       .stenicilOp    = attachment_op::gClearStore,
       .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
@@ -331,12 +322,12 @@ core::vector<Attachment_Description> getAttachmentsDescriptions(Renderer_Deferre
   };
 }
 
-core::vector<core::shared_ptr<Image_View>> getFramebufferAttachments(Renderer_Deferred_GBuffer_Pass_Systen_Ctx* deferredGBufferCtx)
+core::vector<core::shared_ptr<Image_View>> Renderer_Deferred_GBuffer_Pass_Systen_Ctx::getFramebufferAttachments()
 {
-  return { deferredGBufferCtx->gbuffer->getAlbedoAttachmentView(), deferredGBufferCtx->gbuffer->getDepthStencilAttachmentView() };
+  return { gbuffer->getAlbedoAttachmentView(), gbuffer->getDepthStencilAttachmentView() };
 }
 
-Color_Blend_State_Create_Info createColorBlendStateCreateInfo()
+Color_Blend_State_Create_Info Renderer_Deferred_GBuffer_Pass_Systen_Ctx::createColorBlendStateCreateInfo()
 {
   core::array<Pipeline_Color_Blend_Attachment_State, 1u> colorAttachments =
   {
@@ -357,7 +348,7 @@ Color_Blend_State_Create_Info createColorBlendStateCreateInfo()
     .logicOp = VK_LOGIC_OP_COPY });
 }
 
-Depth_Stencil_State_Create_Info createDepthStencilStateCreateInfo()
+Depth_Stencil_State_Create_Info Renderer_Deferred_GBuffer_Pass_Systen_Ctx::createDepthStencilStateCreateInfo()
 {
   return Depth_Stencil_State_Create_Info({
     .depthTestEnable       = true,

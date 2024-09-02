@@ -21,7 +21,6 @@ import crude.graphics.image_2d;
 import crude.graphics.image_view;
 import crude.graphics.texture;
 import crude.graphics.mesh_buffer;
-import crude.graphics.renderer_core_system;
 import crude.scene.transform;
 
 namespace crude::resources

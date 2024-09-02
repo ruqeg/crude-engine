@@ -14,7 +14,7 @@ export namespace crude::platform
 
 struct Input_System_Context
 {
-  core::vector<flecs::system>  inputSystems;
+  core::vector<flecs::system>  handleEventSystems;
   SDL_Event                    inputEvent;
 };
 
@@ -24,9 +24,9 @@ void inputSystemProcess(flecs::iter& it)
 
   while (SDL_PollEvent(&inputSystemCtx->inputEvent))
   {
-    for (auto& inputSystem : inputSystemCtx->inputSystems)
+    for (auto& handleEventSystem : inputSystemCtx->handleEventSystems)
     {
-      inputSystem.run();
+      handleEventSystem.run();
     }
   }
 }

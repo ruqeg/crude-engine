@@ -41,8 +41,6 @@ import crude.graphics.image_view;
 import crude.graphics.command_pool;
 import crude.graphics.image_attachment;
 import crude.graphics.shader_module;
-import crude.graphics.renderer_core_system;
-import crude.graphics.renderer_frame_system;
 import crude.graphics.storage_buffer;
 import crude.graphics.attachment_description;
 import crude.graphics.gbuffer;
@@ -67,16 +65,11 @@ core::array<Descriptor_Pool_Size, 2u> cDescriptorPoolSizes
   Combined_Image_Sampler_Pool_Size(cFramesCount),
 };
 
-Renderer_Fullscreen_PBR_Pass_Ctx::Renderer_Fullscreen_PBR_Pass_Ctx()
-  : albedoTextureDescriptors{ cAlbedoTextureDescriptor, cAlbedoTextureDescriptor }
-  , depthTextureDescriptors{ cDepthTextureDescriptor, cDepthTextureDescriptor }
-{}
-
 void rendererFullscreenPBRPassSystemProcess(flecs::iter& it)
 {
   Renderer_Fullscreen_PBR_Pass_Ctx* fullscreenPbrCtx = it.ctx<Renderer_Fullscreen_PBR_Pass_Ctx>();
-  Renderer_Frame_System_Ctx* frameCtx = fullscreenPbrCtx->frameCtx;
-  Renderer_Core_System_Ctx* coreCtx = frameCtx->coreCtx;
+  core::shared_ptr<Renderer_Frame_System_Ctx> frameCtx = fullscreenPbrCtx->frameCtx;
+  core::shared_ptr<Renderer_Core_System_Ctx> coreCtx = frameCtx->coreCtx;
 
   core::array<VkClearValue, 2u> clearValues;;
   clearValues[0].color = { {0.0f, 0.0f, 0.0f, 1.0f} };
@@ -112,39 +105,41 @@ void rendererFullscreenPBRPassSystemProcess(flecs::iter& it)
   frameCtx->getFrameGraphicsCommandBuffer()->endRenderPass();
 }
 
-void rendererFullscreenPBRPassSystemInitialize(flecs::iter& it)
+Renderer_Fullscreen_PBR_Pass_Ctx::Renderer_Fullscreen_PBR_Pass_Ctx(core::shared_ptr<Renderer_Frame_System_Ctx> frameCtx, core::shared_ptr<GBuffer> gbuffer)
+  : albedoTextureDescriptors{ cAlbedoTextureDescriptor, cAlbedoTextureDescriptor }
+  , depthTextureDescriptors{ cDepthTextureDescriptor, cDepthTextureDescriptor }
+  , frameCtx{ frameCtx }
+  , gbuffer{ gbuffer }
 {
-  Renderer_Fullscreen_PBR_Pass_Ctx* fullscreenPbrCtx = it.ctx<Renderer_Fullscreen_PBR_Pass_Ctx>();
-  Renderer_Frame_System_Ctx* frameCtx = fullscreenPbrCtx->frameCtx;
-  Renderer_Core_System_Ctx* coreCtx = frameCtx->coreCtx;
+  core::shared_ptr<Renderer_Core_System_Ctx> coreCtx = frameCtx->coreCtx;
 
-  fullscreenPbrCtx->sampler = core::allocateShared<graphics::Sampler>(coreCtx->device, graphics::csamlper_state::gMagMinMipLinearRepeat);
+  sampler = core::allocateShared<graphics::Sampler>(coreCtx->device, graphics::csamlper_state::gMagMinMipLinearRepeat);
 
-  fullscreenPbrCtx->colorAttachment = core::allocateShared<Color_Attachment>(Color_Attachment::Initialize{
-    .device          = coreCtx->device,
-    .format          = VK_FORMAT_B8G8R8A8_SRGB,
-    .extent          = fullscreenPbrCtx->gbuffer->getExtent(),
-    .sampled         = true,
+  colorAttachment = core::allocateShared<Color_Attachment>(Color_Attachment::Initialize{
+    .device = coreCtx->device,
+    .format = VK_FORMAT_B8G8R8A8_SRGB,
+    .extent = gbuffer->getExtent(),
+    .sampled = true,
     .explicitResolve = false,
-    .mipLevelsCount  = 1u,
-    .samples         = VK_SAMPLE_COUNT_1_BIT });
+    .mipLevelsCount = 1u,
+    .samples = VK_SAMPLE_COUNT_1_BIT });
 
-  initializeRenderPass(fullscreenPbrCtx);
-  initalizeGraphicsPipeline(fullscreenPbrCtx);
-  initializeFramebuffers(fullscreenPbrCtx);
+  initializeRenderPass();
+  initalizeGraphicsPipeline();
+  initializeFramebuffers();
 }
 
-core::shared_ptr<Descriptor_Set_Layout> createDescriptorSetLayout(Renderer_Fullscreen_PBR_Pass_Ctx* fullscreenPbrCtx)
+core::shared_ptr<Descriptor_Set_Layout> Renderer_Fullscreen_PBR_Pass_Ctx::createDescriptorSetLayout()
 {
-  Renderer_Core_System_Ctx* coreCtx = fullscreenPbrCtx->frameCtx->coreCtx;
+  core::shared_ptr<Renderer_Core_System_Ctx> coreCtx = frameCtx->coreCtx;
   auto descriptorPool = core::allocateShared<Descriptor_Pool>(coreCtx->device, cDescriptorPoolSizes, 2);
   auto descriptorSetLayout = core::allocateShared<Descriptor_Set_Layout>(coreCtx->device, cDescriptorLayoutBindings, true);
   return descriptorSetLayout;
 }
 
-void initializeRenderPass(Renderer_Fullscreen_PBR_Pass_Ctx* fullscreenPbrCtx)
+void Renderer_Fullscreen_PBR_Pass_Ctx::initializeRenderPass()
 {
-  Renderer_Core_System_Ctx* coreCtx = fullscreenPbrCtx->frameCtx->coreCtx;
+  core::shared_ptr<Renderer_Core_System_Ctx> coreCtx = frameCtx->coreCtx;
   core::array<Subpass_Dependency, 1u> subpassesDependencies =
   {
     Subpass_Dependency({
@@ -156,12 +151,12 @@ void initializeRenderPass(Renderer_Fullscreen_PBR_Pass_Ctx* fullscreenPbrCtx)
       .dstAccessMask   = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
       .dependencyFlags = 0})
   };
-  fullscreenPbrCtx->renderPass = core::allocateShared<Render_Pass>(coreCtx->device, getSubpassDescriptions(), subpassesDependencies, getAttachmentsDescriptions(fullscreenPbrCtx));
+  renderPass = core::allocateShared<Render_Pass>(coreCtx->device, getSubpassDescriptions(), subpassesDependencies, getAttachmentsDescriptions());
 }
 
-void initalizeGraphicsPipeline(Renderer_Fullscreen_PBR_Pass_Ctx* fullscreenPbrCtx)
+void Renderer_Fullscreen_PBR_Pass_Ctx::initalizeGraphicsPipeline()
 {
-  Renderer_Core_System_Ctx* coreCtx = fullscreenPbrCtx->frameCtx->coreCtx;
+  core::shared_ptr<Renderer_Core_System_Ctx> coreCtx = frameCtx->coreCtx;
 
   core::shared_ptr<Shader_Module> meshShaderModule = core::allocateShared<Shader_Module>(coreCtx->device, crude::shaders::fullscreen::mesh);
   core::shared_ptr<Shader_Module> fragShaderModule = core::allocateShared<Shader_Module>(coreCtx->device, crude::shaders::fullscreen_pbr::frag);
@@ -209,11 +204,11 @@ void initalizeGraphicsPipeline(Renderer_Fullscreen_PBR_Pass_Ctx* fullscreenPbrCt
   Dynamic_State_Create_Info dynamicStateInfo(dynamicStates);
 
   core::shared_ptr<Pipeline_Layout> pipelineLayout = core::allocateShared<Pipeline_Layout>(
-    coreCtx->device, createDescriptorSetLayout(fullscreenPbrCtx));
+    coreCtx->device, createDescriptorSetLayout());
 
-  fullscreenPbrCtx->pipeline = core::allocateShared<Pipeline>(
+  pipeline = core::allocateShared<Pipeline>(
     coreCtx->device,
-    fullscreenPbrCtx->renderPass,
+    renderPass,
     pipelineLayout,
     nullptr,
     shaderStagesInfo,
@@ -229,23 +224,23 @@ void initalizeGraphicsPipeline(Renderer_Fullscreen_PBR_Pass_Ctx* fullscreenPbrCt
     0u);
 }
 
-void initializeFramebuffers(Renderer_Fullscreen_PBR_Pass_Ctx* fullscreenPbrCtx)
+void Renderer_Fullscreen_PBR_Pass_Ctx::initializeFramebuffers()
 {
-  Renderer_Core_System_Ctx* coreCtx = fullscreenPbrCtx->frameCtx->coreCtx;
-  fullscreenPbrCtx->framebuffers.reserve(coreCtx->swapchain->getSwapchainImages().size());
+  core::shared_ptr<Renderer_Core_System_Ctx> coreCtx = frameCtx->coreCtx;
+  framebuffers.reserve(coreCtx->swapchain->getSwapchainImages().size());
   for (core::size_t i = 0; i < coreCtx->swapchain->getSwapchainImages().size(); ++i)
   {
-    auto colorAttachmentView = core::allocateShared<Image_View>(fullscreenPbrCtx->colorAttachment);
-    fullscreenPbrCtx->framebuffers.push_back(core::allocateShared<Framebuffer>(
+    auto colorAttachmentView = core::allocateShared<Image_View>(colorAttachment);
+    framebuffers.push_back(core::allocateShared<Framebuffer>(
       coreCtx->device,
-      fullscreenPbrCtx->pipeline->getRenderPass(),
+      pipeline->getRenderPass(),
       core::vector<core::shared_ptr<Image_View>>{ colorAttachmentView },
-      fullscreenPbrCtx->colorAttachment->getExtent2D(),
+      colorAttachment->getExtent2D(),
       1u));
   }
 }
 
-core::array<Subpass_Description, 1> getSubpassDescriptions()
+core::array<Subpass_Description, 1> Renderer_Fullscreen_PBR_Pass_Ctx::getSubpassDescriptions()
 {
   return
   {
@@ -254,12 +249,12 @@ core::array<Subpass_Description, 1> getSubpassDescriptions()
   };
 }
 
-core::vector<Attachment_Description> getAttachmentsDescriptions(Renderer_Fullscreen_PBR_Pass_Ctx* fullscreenPbrCtx)
+core::vector<Attachment_Description> Renderer_Fullscreen_PBR_Pass_Ctx::getAttachmentsDescriptions()
 {
   return
   {
     Attachment_Description({
-      .format        = fullscreenPbrCtx->colorAttachment->getFormat(),
+      .format        = colorAttachment->getFormat(),
       .samples       = VK_SAMPLE_COUNT_1_BIT,
       .colorOp       = attachment_op::gClearStore,
       .stenicilOp    = attachment_op::gDontCare,
@@ -268,7 +263,7 @@ core::vector<Attachment_Description> getAttachmentsDescriptions(Renderer_Fullscr
   };
 }
 
-Color_Blend_State_Create_Info createColorBlendStateCreateInfo()
+Color_Blend_State_Create_Info Renderer_Fullscreen_PBR_Pass_Ctx::createColorBlendStateCreateInfo()
 {
   core::array<Pipeline_Color_Blend_Attachment_State, 1u> colorAttachments =
   {

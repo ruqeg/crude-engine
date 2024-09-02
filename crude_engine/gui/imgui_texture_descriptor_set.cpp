@@ -13,8 +13,9 @@ import crude.graphics.texture;
 namespace crude::gui
 {
 
-ImGui_Texture_Descriptor_Set::ImGui_Texture_Descriptor_Set(core::shared_ptr<graphics::Texture> texture)
+ImGui_Texture_Descriptor_Set::ImGui_Texture_Descriptor_Set(core::shared_ptr<Renderer_ImGui_Pass_System_Ctx> rendererImguiPassContext, core::shared_ptr<graphics::Texture> texture)
   : m_texture{ texture }
+  , m_rendererImguiPassContext{ rendererImguiPassContext }
 {
   m_descriptorSetHandle = ImGui_ImplVulkan_AddTexture(
     m_texture->getSampler()->getHandle(),

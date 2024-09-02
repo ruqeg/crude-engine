@@ -11,6 +11,7 @@ export module crude.gui.renderer_imgui_pass_system;
 
 export import crude.core.std_containers_stack;
 export import crude.core.std_containers_heap;
+export import crude.graphics.renderer_frame_system;
 
 export namespace crude::graphics
 {
@@ -26,23 +27,20 @@ export namespace crude::gui
 
 struct Renderer_ImGui_Pass_System_Ctx
 {
-  graphics::Renderer_Frame_System_Ctx*                   frameCtx;
+public:
+  explicit Renderer_ImGui_Pass_System_Ctx(core::shared_ptr<graphics::Renderer_Frame_System_Ctx> frameCtx);
+  ~Renderer_ImGui_Pass_System_Ctx();
+  core::shared_ptr<graphics::Renderer_Frame_System_Ctx>  frameCtx;
   core::vector<flecs::system>                            layoutsDrawSystems;
   core::shared_ptr<graphics::Render_Pass>                renderPass;
   core::shared_ptr<graphics::Descriptor_Pool>            descriptorPool;
   core::vector<core::shared_ptr<graphics::Framebuffer>>  framebuffers;
+private:
+  void initializeRenderPass();
+  void initializeDescriptorPool();
+  void initializeFramebuffers();
 };
 
-void rendererImguiPassSystemInitialize(flecs::iter& it);
-void rendererImguiPassSystemDeinitialize(flecs::iter& it);
 void rendererImguiPassSystemProcess(flecs::iter& it);
-
-}
-
-namespace crude::gui
-{
-void initializeRenderPass(Renderer_ImGui_Pass_System_Ctx* imguiPassCtx);
-void initializeDescriptorPool(Renderer_ImGui_Pass_System_Ctx* imguiPassCtx);
-void initializeFramebuffers(Renderer_ImGui_Pass_System_Ctx* imguiPassCtx);
 
 }

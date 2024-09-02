@@ -9,6 +9,7 @@ module crude.engine;
 import crude.core.logger;
 import crude.core.memory;
 import crude.scripts.window_script;
+import crude.graphics.device;
 import crude.platform.sdl_helper;
 import crude.platform.sdl_window_container;
 import crude.gui.imgui_helper;
@@ -17,14 +18,6 @@ import crude.scene.mesh;
 
 namespace crude
 {
-
-Renderer_System_Ctx::Renderer_System_Ctx()
-{
-  frameCtx.coreCtx                = &coreCtx;
-  deferredGBufferPassCtx.frameCtx = &frameCtx;
-  fullscreenPbrPassCtx.frameCtx   = &frameCtx;
-  imguiPassCtx.frameCtx           = &frameCtx;
-}
 
 void Engine::preinitialize(core::uint32 defaultFreeRBTCapacity)
 {
@@ -37,26 +30,18 @@ void Engine::preinitialize(core::uint32 defaultFreeRBTCapacity)
 void Engine::postdeinitialize()
 {
   gui::deinitializeImGuiContext();
-  platform::unloadSDLVulkan();
   platform::deinitializeSDL();
+  platform::unloadSDLVulkan();
 }
 
 void Engine::initialize(const Initialize& initialize)
 {
   initializeWindow(initialize.window);
-  initializeSystems(initialize.systems);
+  initializeSystems();
 }
 
 void Engine::deinitialize()
 {
-  m_world.system()
-    .ctx(&m_rendererSystemCtx.coreCtx)
-    .kind(0)
-    .run(graphics::rendererCoreSystemDeinitialize).run();
-  m_world.system()
-    .ctx(&m_rendererSystemCtx.imguiPassCtx)
-    .kind(0)
-    .run(gui::rendererImguiPassSystemDeinitialize).run();
 }
 
 void Engine::mainLoop()
@@ -66,6 +51,7 @@ void Engine::mainLoop()
   {
     m_world.progress();
   }
+  m_rendererCoreCtx->device->waitIdle();
 }
 
 void Engine::initializeWindow(const Initialize_Window& initialize)
@@ -74,59 +60,64 @@ void Engine::initializeWindow(const Initialize_Window& initialize)
     initialize.title, initialize.width, initialize.height, crude::platform::SDL_WINDOW_CONTAINER_FLAG_VULKAN);
 }
 
-void Engine::initializeSystems(const Initialize_Systems& initialize)
+void Engine::initializeSystems()
 {
-  initializeInputSystems(initialize);
-  initializeRendererSystems(initialize);
+  initializeInputSystems();
+  initializeRendererSystems();
 }
 
-void Engine::initializeInputSystems(const Initialize_Systems& initialize)
+void Engine::initializeInputSystems()
 {
   m_world.set<scripts::Window_Script_Component>({});
 
-  core::vector<flecs::system> inputSystems = {
+  m_inputSystemCtx = core::allocateShared<platform::Input_System_Context>();
+  m_inputSystemCtx->handleEventSystems = {
     m_world.system("WindowInputSystem")
       .kind(0)
-      .ctx(&m_inputSystemCtx)
+      .ctx(m_inputSystemCtx.get())
       .run(scripts::windowScriptInputSystemProcess),
     m_world.system("ImguiUpdateEvent")
       .kind(0)
-      .ctx(&m_inputSystemCtx)
+      .ctx(m_inputSystemCtx.get())
       .run(gui::imguiInputSystemProcess)
   };
-  inputSystems.insert(inputSystems.end(), initialize.inputSystems.begin(), initialize.inputSystems.end());
-  m_inputSystemCtx.inputSystems = inputSystems;
 
   m_inputSystem = m_world.system("InputSystem")
-    .ctx(&m_inputSystemCtx)
+    .ctx(m_inputSystemCtx.get())
     .kind(flecs::PreUpdate)
     .run(platform::inputSystemProcess);
 }
 
-void Engine::initializeRendererSystems(const Initialize_Systems& initialize)
+void Engine::initializeRendererSystems()
 {
+  m_rendererCoreCtx = core::allocateShared<graphics::Renderer_Core_System_Ctx>(m_windowContainer);
+  m_rendererFrameCtx = core::allocateShared<graphics::Renderer_Frame_System_Ctx>(m_rendererCoreCtx);
+  m_rendererDeferredGBufferPassCtx = core::allocateShared<graphics::Renderer_Deferred_GBuffer_Pass_Systen_Ctx>(m_rendererFrameCtx);
+  m_rendererFullscreenPbrPassCtx = core::allocateShared<graphics::Renderer_Fullscreen_PBR_Pass_Ctx>(m_rendererFrameCtx, m_rendererDeferredGBufferPassCtx->gbuffer);
+  m_rendererImguiPassCtx = core::allocateShared<gui::Renderer_ImGui_Pass_System_Ctx>(m_rendererFrameCtx);
+
   flecs::system deferredGBufferPassSystem = m_world.system<core::shared_ptr<graphics::Mesh_Buffer>, core::shared_ptr<scene::Mesh>>("DeferredGBufferPassSystem")
-    .ctx(&m_rendererSystemCtx.deferredGBufferPassCtx)
+    .ctx(m_rendererDeferredGBufferPassCtx.get())
     .kind(0)
     .run(graphics::rendererDeferredGBufferPassSystemProcess);
 
   flecs::system frameStartSystem = m_world.system("FrameStartSystem")
-    .ctx(&m_rendererSystemCtx.frameCtx)
+    .ctx(m_rendererFrameCtx.get())
     .kind(0)
     .run(graphics::rendererFrameStartSystemProcess);
 
   flecs::system fullscreenPBRPassSystem = m_world.system("FullscreenPBRPassSystem")
-    .ctx(&m_rendererSystemCtx.fullscreenPbrPassCtx)
+    .ctx(m_rendererFullscreenPbrPassCtx.get())
     .kind(0)
     .run(graphics::rendererFullscreenPBRPassSystemProcess);
 
   flecs::system imguiPassSystem = m_world.system("ImguiPassSystem")
-    .ctx(&m_rendererSystemCtx.imguiPassCtx)
+    .ctx(m_rendererImguiPassCtx.get())
     .kind(0)
     .run(gui::rendererImguiPassSystemProcess);
 
   flecs::system frameSubmitSystem = m_world.system("FrameSubmitSystem")
-    .ctx(&m_rendererSystemCtx.frameCtx)
+    .ctx(m_rendererFrameCtx.get())
     .kind(0)
     .run(graphics::rendererFrameSubmitSystemProcess);
 
@@ -139,32 +130,6 @@ void Engine::initializeRendererSystems(const Initialize_Systems& initialize)
       imguiPassSystem.run();
       frameSubmitSystem.run();
     });
-
-  m_rendererSystemCtx.coreCtx.windowContainer = m_windowContainer;
-  m_world.system()
-    .ctx(&m_rendererSystemCtx.coreCtx)
-    .kind(0)
-    .run(graphics::rendererCoreSystemInitialize).run();
-  m_world.system()
-    .ctx(&m_rendererSystemCtx.deferredGBufferPassCtx)
-    .kind(0)
-    .run(graphics::rendererDeferredGBufferPassSystemInitialize).run();
-  m_rendererSystemCtx.fullscreenPbrPassCtx.gbuffer = m_rendererSystemCtx.deferredGBufferPassCtx.gbuffer;
-  m_world.system()
-    .ctx(&m_rendererSystemCtx.fullscreenPbrPassCtx)
-    .kind(0)
-    .run(graphics::rendererFullscreenPBRPassSystemInitialize).run();
-  m_world.system()
-    .ctx(&m_rendererSystemCtx.frameCtx)
-    .kind(0)
-    .run(graphics::rendererFrameSystemInitiailize)
-    .run();
-  m_rendererSystemCtx.imguiPassCtx.layoutsDrawSystems = initialize.imguiLayoutSystems;
-  m_world.system()
-    .ctx(&m_rendererSystemCtx.imguiPassCtx)
-    .kind(0)
-    .run(gui::rendererImguiPassSystemInitialize)
-    .run();
 }
 
 }

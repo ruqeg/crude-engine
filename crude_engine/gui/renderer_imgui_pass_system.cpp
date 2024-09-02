@@ -10,8 +10,6 @@ import crude.graphics.device;
 import crude.graphics.render_pass;
 import crude.graphics.framebuffer;
 import crude.graphics.descriptor_pool;
-import crude.graphics.renderer_core_system;
-import crude.graphics.renderer_frame_system;
 import crude.graphics.swap_chain;
 import crude.graphics.swap_chain_image;
 import crude.graphics.image_view;
@@ -20,7 +18,6 @@ import crude.graphics.instance;
 import crude.graphics.queue;
 import crude.graphics.physical_device;
 import crude.graphics.vulkan_utils;
-import crude.graphics.renderer_frame_system;
 import crude.platform.sdl_window_container;
 
 namespace crude::gui
@@ -29,8 +26,8 @@ namespace crude::gui
 void rendererImguiPassSystemProcess(flecs::iter& it)
 {
   Renderer_ImGui_Pass_System_Ctx* imguiPassCtx = it.ctx<Renderer_ImGui_Pass_System_Ctx>();
-  graphics::Renderer_Frame_System_Ctx* frameCtx = imguiPassCtx->frameCtx;
-  graphics::Renderer_Core_System_Ctx* coreCtx = frameCtx->coreCtx;
+  core::shared_ptr<graphics::Renderer_Frame_System_Ctx> frameCtx = imguiPassCtx->frameCtx;
+  core::shared_ptr<graphics::Renderer_Core_System_Ctx> coreCtx = frameCtx->coreCtx;
 
   ImGui_ImplVulkan_NewFrame();
   ImGui_ImplSDL3_NewFrame();
@@ -42,7 +39,7 @@ void rendererImguiPassSystemProcess(flecs::iter& it)
   }
 
   ImGui::Render();
-  
+
   ImDrawData* drawData = ImGui::GetDrawData();
   const bool isMinimized = (drawData->DisplaySize.x <= 0.0f || drawData->DisplaySize.y <= 0.0f);
   if (!isMinimized)
@@ -63,15 +60,14 @@ void rendererImguiPassSystemProcess(flecs::iter& it)
   }
 }
 
-void rendererImguiPassSystemInitialize(flecs::iter& it)
+Renderer_ImGui_Pass_System_Ctx::Renderer_ImGui_Pass_System_Ctx(core::shared_ptr<graphics::Renderer_Frame_System_Ctx> frameCtx)
+  : frameCtx(frameCtx)
 {
-  Renderer_ImGui_Pass_System_Ctx* imguiPassCtx = it.ctx<Renderer_ImGui_Pass_System_Ctx>();
-  graphics::Renderer_Frame_System_Ctx* frameCtx = imguiPassCtx->frameCtx;
-  graphics::Renderer_Core_System_Ctx* coreCtx = frameCtx->coreCtx;
+  core::shared_ptr<graphics::Renderer_Core_System_Ctx> coreCtx = frameCtx->coreCtx;
 
-  initializeRenderPass(imguiPassCtx);
-  initializeDescriptorPool(imguiPassCtx);
-  initializeFramebuffers(imguiPassCtx);
+  initializeRenderPass();
+  initializeDescriptorPool();
+  initializeFramebuffers();
 
   ImGui_ImplSDL3_InitForVulkan(coreCtx->windowContainer->getHandle().get());
 
@@ -81,8 +77,8 @@ void rendererImguiPassSystemInitialize(flecs::iter& it)
     .Device          = coreCtx->device->getHandle(),
     .QueueFamily     = coreCtx->graphicsQueue->getFamilyIndex(),
     .Queue           = coreCtx->graphicsQueue->getHandle(),
-    .DescriptorPool  = imguiPassCtx->descriptorPool->getHandle(),
-    .RenderPass      = imguiPassCtx->renderPass->getHandle(),
+    .DescriptorPool  = descriptorPool->getHandle(),
+    .RenderPass      = renderPass->getHandle(),
     .MinImageCount   = 3,
     .ImageCount      = 3,
     .MSAASamples     = VK_SAMPLE_COUNT_1_BIT,
@@ -96,15 +92,15 @@ void rendererImguiPassSystemInitialize(flecs::iter& it)
   ImGui_ImplVulkan_Init(&init_info);
 }
 
-void rendererImguiPassSystemDeinitialize(flecs::iter& it)
+Renderer_ImGui_Pass_System_Ctx::~Renderer_ImGui_Pass_System_Ctx()
 {
   ImGui_ImplVulkan_Shutdown();
   ImGui_ImplSDL3_Shutdown();
 }
 
-void initializeRenderPass(Renderer_ImGui_Pass_System_Ctx* imguiPassCtx)
+void Renderer_ImGui_Pass_System_Ctx::initializeRenderPass()
 {
-  graphics::Renderer_Core_System_Ctx* coreCtx = imguiPassCtx->frameCtx->coreCtx;
+  core::shared_ptr<graphics::Renderer_Core_System_Ctx> coreCtx = frameCtx->coreCtx;
 
   core::array<graphics::Subpass_Description, 1> subpassDescriptions =
   {
@@ -134,31 +130,31 @@ void initializeRenderPass(Renderer_ImGui_Pass_System_Ctx* imguiPassCtx)
       .dependencyFlags = 0})
   };
 
-  imguiPassCtx->renderPass = core::allocateShared<graphics::Render_Pass>(coreCtx->device, subpassDescriptions, subpassesDependencies, attachmentsDescriptions);
+  renderPass = core::allocateShared<graphics::Render_Pass>(coreCtx->device, subpassDescriptions, subpassesDependencies, attachmentsDescriptions);
 }
 
-void initializeDescriptorPool(Renderer_ImGui_Pass_System_Ctx* imguiPassCtx)
+void Renderer_ImGui_Pass_System_Ctx::initializeDescriptorPool()
 {
-  graphics::Renderer_Core_System_Ctx* coreCtx = imguiPassCtx->frameCtx->coreCtx;
+  core::shared_ptr<graphics::Renderer_Core_System_Ctx> coreCtx = frameCtx->coreCtx;
 
   core::array<graphics::Descriptor_Pool_Size, 1> poolSizes =
   {
       graphics::Descriptor_Pool_Size(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1u)
   };
 
-  imguiPassCtx->descriptorPool = core::allocateShared<graphics::Descriptor_Pool>(coreCtx->device, poolSizes, 4, true);
+  descriptorPool = core::allocateShared<graphics::Descriptor_Pool>(coreCtx->device, poolSizes, 4, true);
 }
 
-void initializeFramebuffers(Renderer_ImGui_Pass_System_Ctx* imguiPassCtx)
+void Renderer_ImGui_Pass_System_Ctx::initializeFramebuffers()
 {
-  graphics::Renderer_Core_System_Ctx* coreCtx = imguiPassCtx->frameCtx->coreCtx;
+  core::shared_ptr<graphics::Renderer_Core_System_Ctx> coreCtx = frameCtx->coreCtx;
 
-  imguiPassCtx->framebuffers.reserve(coreCtx->swapchainImages.size());
+  framebuffers.reserve(coreCtx->swapchainImages.size());
   for (core::uint32 i = 0; i < coreCtx->swapchainImages.size(); ++i)
   {
-    imguiPassCtx->framebuffers.push_back(core::allocateShared<graphics::Framebuffer>(
+    framebuffers.push_back(core::allocateShared<graphics::Framebuffer>(
       coreCtx->device,
-      imguiPassCtx->renderPass,
+      renderPass,
       core::vector{ coreCtx->swapchainImagesViews[i] },
       coreCtx->swapchainImages[i]->getExtent2D(),
       1u));
