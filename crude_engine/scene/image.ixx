@@ -1,6 +1,7 @@
 module;
 
 #include <cmath>
+#include <algorithm>
 
 export module crude.scene.image;
 

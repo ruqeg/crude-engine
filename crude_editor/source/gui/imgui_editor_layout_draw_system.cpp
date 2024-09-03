@@ -2,6 +2,7 @@
 #include <imgui/imgui.h>
 #include <imgui/backends/imgui_impl_sdl3.h>
 #include <imgui/backends/imgui_impl_vulkan.h>
+#include <functional>
 
 module gui.imgui_editor_layout_draw_system;
 
@@ -20,9 +21,19 @@ void imguiEditorLayoutDrawSystemProcess(flecs::iter& it)
   Imgui_Editor_Layout_Draw_Ctx* editorLayoutCtx = it.ctx<Imgui_Editor_Layout_Draw_Ctx>();
 
   ImGui::Begin("Viewport");
-  ImGui::Text("RED BALL SOON 0_0 !!!!!!!!!!!!");
   ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
-  ImGui::Image(editorLayoutCtx->sceneImguiTextureDescriptorSet->getHandle(), ImVec2{viewportPanelSize.x, viewportPanelSize.y});
+  ImGui::Image(editorLayoutCtx->sceneImguiTextureDescriptorSet->getHandle(), ImVec2{ viewportPanelSize.x, viewportPanelSize.y });
+  ImGui::End();
+
+  ImGui::Begin("Scene Inspector");
+  auto drawNode = [](this const auto& drawNode, flecs::entity node) {
+    if (ImGui::TreeNode(node.name()))
+    {
+      node.children(drawNode);
+      ImGui::TreePop();
+    }
+  };
+  drawNode(editorLayoutCtx->sceneNode);
   ImGui::End();
 }
 
