@@ -25,7 +25,7 @@ void imguiEditorLayoutDrawSystemProcess(flecs::iter& it)
 {
   Imgui_Editor_Layout_Draw_Ctx* editorLayoutCtx = it.ctx<Imgui_Editor_Layout_Draw_Ctx>();
 
-  ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+  ImGui::DockSpaceOverViewport(0u, ImGui::GetMainViewport());
 
   ImGui::Begin("Scene");
   crude::core::size_t nodeIndex = 0;
