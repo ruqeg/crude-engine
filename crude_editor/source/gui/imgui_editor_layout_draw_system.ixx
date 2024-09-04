@@ -23,6 +23,8 @@ struct Imgui_Editor_Layout_Draw_Ctx
   explicit Imgui_Editor_Layout_Draw_Ctx(crude::core::shared_ptr<crude::gui::ImGui_Texture_Descriptor_Set> sceneImguiTextureDescriptorSet);
   crude::core::shared_ptr<crude::gui::ImGui_Texture_Descriptor_Set> sceneImguiTextureDescriptorSet;
   flecs::entity                                                     sceneNode;
+  crude::core::int32                                                nodeClickedIndex;
+  flecs::entity                                                     selectedNode;
 };
 
 void imguiEditorLayoutDrawSystemProcess(flecs::iter& it);

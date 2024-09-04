@@ -193,7 +193,7 @@ bool GLTF_Loader::loadModelFromFile(const char* path)
 flecs::entity GLTF_Loader::parseNode(const tinygltf::Node& tinyNode, flecs::entity_view parent, const core::vector<core::shared_ptr<scene::Mesh>>& meshes, const core::vector<core::shared_ptr<graphics::Mesh_Buffer>>& meshBuffers)
 {
   static core::uint32 uniqueNodeID = 0u;
-  flecs::entity node(m_world, tinyNode.name.empty() ? std::to_string(uniqueNodeID++).c_str() : tinyNode.name.c_str());
+  flecs::entity node(m_world, tinyNode.name.empty() ? ("Node " + std::to_string(uniqueNodeID++)).c_str() : tinyNode.name.c_str());
 
   if (tinyNode.matrix.size() > 0)
   {

@@ -44,8 +44,8 @@ public:
   const DirectX::XMFLOAT4X4& getNodeToWorldFloat4x4();
   const DirectX::XMFLOAT4X4& getWorldToNodeFloat4x4();
   const DirectX::XMFLOAT3& getTranslationFloat3() const { return m_translationFloat3; }
-  const DirectX::XMFLOAT4& getRotationFloat3() const { return m_rotationFloat4; }
-  const DirectX::XMFLOAT3& getScaleFloat4() const { return m_scaleFloat3; }
+  const DirectX::XMFLOAT4& getRotationFloat4() const { return m_rotationFloat4; }
+  const DirectX::XMFLOAT3& getScaleFloat3() const { return m_scaleFloat3; }
   DirectX::XMVECTOR getTranslationVector() const { return DirectX::XMLoadFloat3(&m_translationFloat3); }
   DirectX::XMVECTOR getRotationQuaternion() const { return DirectX::XMLoadFloat4(&m_rotationFloat4); }
   DirectX::XMVECTOR getScaleVector() const { return DirectX::XMLoadFloat3(&m_scaleFloat3); }

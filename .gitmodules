@@ -19,6 +19,7 @@
 [submodule "crude_extlibs/imgui_cmake/imgui"]
 	path = crude_extlibs/imgui_cmake/imgui
 	url = https://github.com/ocornut/imgui.git
+  branch = docking
 [submodule "crude_extlibs/stb_cmake/stb"]
 	path = crude_extlibs/stb_cmake/stb
 	url = https://github.com/nothings/stb.git
