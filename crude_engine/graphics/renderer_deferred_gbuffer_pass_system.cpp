@@ -37,8 +37,9 @@ import crude.graphics.swap_chain;
 import crude.graphics.swap_chain_image;
 import crude.graphics.image_view;
 import crude.graphics.uniform_buffer;
+import crude.graphics.material;
+import crude.graphics.texture;
 import crude.graphics.debug_utils_messenger;
-import crude.graphics.image_view;
 import crude.graphics.command_pool;
 import crude.graphics.image_attachment;
 import crude.graphics.shader_module;
@@ -50,17 +51,22 @@ namespace crude::graphics
 {
 
 const Uniform_Buffer_Descriptor          cPerFrameUniformBufferDescriptor(0u, VK_SHADER_STAGE_MESH_BIT_EXT);
-const Combined_Image_Sampler_Descriptor  cSubmeshTextureDescriptor(6u, VK_SHADER_STAGE_FRAGMENT_BIT);
 const Storage_Buffer_Descriptor          cSubmeshesDrawsBufferDescriptor{ 1u, VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT };
 const Storage_Buffer_Descriptor          cVertexBufferDescriptor{ 3u, VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT };
 const Storage_Buffer_Descriptor          cMeshletBufferDescriptor{ 2u, VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT };
 const Storage_Buffer_Descriptor          cPrimitiveIndicesBufferDescriptor{ 4u, VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT };
 const Storage_Buffer_Descriptor          cVertexIndicesBufferDescriptor{ 5u, VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT };
 
-core::array<Descriptor_Set_Layout_Binding, 7u> cDescriptorLayoutBindings =
+const Combined_Image_Sampler_Descriptor  cSubmeshAlbedoDescriptor(6u, VK_SHADER_STAGE_FRAGMENT_BIT);
+const Combined_Image_Sampler_Descriptor  cSubmeshMetallicRoughnessDescriptor(7u, VK_SHADER_STAGE_FRAGMENT_BIT);
+const Combined_Image_Sampler_Descriptor  cSubmeshNormalDescriptor(8u, VK_SHADER_STAGE_FRAGMENT_BIT);
+
+core::array<Descriptor_Set_Layout_Binding, 9u> cDescriptorLayoutBindings =
 {
   cPerFrameUniformBufferDescriptor,
-  cSubmeshTextureDescriptor,
+  cSubmeshAlbedoDescriptor,
+  cSubmeshMetallicRoughnessDescriptor,
+  cSubmeshNormalDescriptor,
   cSubmeshesDrawsBufferDescriptor,
   cVertexBufferDescriptor,
   cMeshletBufferDescriptor,
@@ -68,9 +74,11 @@ core::array<Descriptor_Set_Layout_Binding, 7u> cDescriptorLayoutBindings =
   cVertexIndicesBufferDescriptor
 };
 
-core::array<Descriptor_Pool_Size, 7u> cDescriptorPoolSizes
+core::array<Descriptor_Pool_Size, 9u> cDescriptorPoolSizes
 {
   Uniform_Buffer_Pool_Size(cFramesCount),
+  Combined_Image_Sampler_Pool_Size(cFramesCount),
+  Combined_Image_Sampler_Pool_Size(cFramesCount),
   Combined_Image_Sampler_Pool_Size(cFramesCount),
   Storage_Buffer_Pool_Size(1u),
   Storage_Buffer_Pool_Size(1u),
@@ -138,16 +146,21 @@ void rendererDeferredGBufferPassSystemProcess(flecs::iter& it)
       for (core::uint32 submeshIndex = 0u; submeshIndex < meshes[i]->submeshes.size(); ++submeshIndex)
       {
         const scene::Sub_Mesh& submesh = meshes[i]->submeshes[submeshIndex];
-        deferredGBufferCtx->submeshTextureDescriptors[frameCtx->currentFrame].update(submesh.texture->getImageView(), submesh.texture->getSampler());
 
-        core::array<VkWriteDescriptorSet, 7u> descriptorWrites;
+        deferredGBufferCtx->submeshAlbedoDescriptors[frameCtx->currentFrame].update(submesh.material->albedo->getImageView(), submesh.material->albedo->getSampler());
+        deferredGBufferCtx->submeshMetallicRoughnessDescriptors[frameCtx->currentFrame].update(submesh.material->normal->getImageView(), submesh.material->normal->getSampler());
+        deferredGBufferCtx->submeshNormalDescriptors[frameCtx->currentFrame].update(submesh.material->metallicRoughness->getImageView(), submesh.material->metallicRoughness->getSampler());
+
+        core::array<VkWriteDescriptorSet, 9u> descriptorWrites;
         deferredGBufferCtx->perFrameBufferDescriptors[frameCtx->currentFrame].write(descriptorWrites[0]);
-        deferredGBufferCtx->submeshTextureDescriptors[frameCtx->currentFrame].write(descriptorWrites[1]);
-        deferredGBufferCtx->submeshesDrawsBufferDescriptor.write(descriptorWrites[2]);
-        deferredGBufferCtx->vertexBufferDescriptor.write(descriptorWrites[3]);
-        deferredGBufferCtx->meshletBufferDescriptor.write(descriptorWrites[4]);
-        deferredGBufferCtx->primitiveIndicesBufferDescriptor.write(descriptorWrites[5]);
-        deferredGBufferCtx->vertexIndicesBufferDescriptor.write(descriptorWrites[6]);
+        deferredGBufferCtx->submeshAlbedoDescriptors[frameCtx->currentFrame].write(descriptorWrites[1]);
+        deferredGBufferCtx->submeshMetallicRoughnessDescriptors[frameCtx->currentFrame].write(descriptorWrites[2]);
+        deferredGBufferCtx->submeshNormalDescriptors[frameCtx->currentFrame].write(descriptorWrites[3]);
+        deferredGBufferCtx->submeshesDrawsBufferDescriptor.write(descriptorWrites[4]);
+        deferredGBufferCtx->vertexBufferDescriptor.write(descriptorWrites[5]);
+        deferredGBufferCtx->meshletBufferDescriptor.write(descriptorWrites[6]);
+        deferredGBufferCtx->primitiveIndicesBufferDescriptor.write(descriptorWrites[7]);
+        deferredGBufferCtx->vertexIndicesBufferDescriptor.write(descriptorWrites[8]);
 
         frameCtx->getFrameGraphicsCommandBuffer()->pushDescriptorSet(deferredGBufferCtx->pipeline, descriptorWrites);
         perMesh.submeshIndex = submeshIndex;
@@ -162,7 +175,9 @@ void rendererDeferredGBufferPassSystemProcess(flecs::iter& it)
 
 Renderer_Deferred_GBuffer_Pass_Systen_Ctx::Renderer_Deferred_GBuffer_Pass_Systen_Ctx(core::shared_ptr<Renderer_Frame_System_Ctx> frameCtx)
   : perFrameBufferDescriptors{ cPerFrameUniformBufferDescriptor, cPerFrameUniformBufferDescriptor }
-  , submeshTextureDescriptors{ cSubmeshTextureDescriptor, cSubmeshTextureDescriptor }
+  , submeshAlbedoDescriptors{ cSubmeshAlbedoDescriptor, cSubmeshAlbedoDescriptor }
+  , submeshMetallicRoughnessDescriptors{ cSubmeshMetallicRoughnessDescriptor, cSubmeshMetallicRoughnessDescriptor }
+  , submeshNormalDescriptors{ cSubmeshNormalDescriptor, cSubmeshNormalDescriptor }
   , submeshesDrawsBufferDescriptor{ cSubmeshesDrawsBufferDescriptor }
   , vertexBufferDescriptor{ cVertexBufferDescriptor }
   , meshletBufferDescriptor{ cMeshletBufferDescriptor }

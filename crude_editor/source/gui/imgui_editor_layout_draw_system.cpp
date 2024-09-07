@@ -34,9 +34,7 @@ void imguiEditorLayoutDrawSystemProcess(flecs::iter& it)
       ImGuiTreeNodeFlags_OpenOnArrow |
       ImGuiTreeNodeFlags_OpenOnDoubleClick |
       ImGuiTreeNodeFlags_SpanAvailWidth;
-    //ImGuiTreeNodeFlags_Leaf | 
-    //ImGuiTreeNodeFlags_NoTreePushOnOpen;
-
+    
     if (editorLayoutCtx->nodeClickedIndex == nodeIndex)
     {
       treeNodeFlags |= ImGuiTreeNodeFlags_Selected;
@@ -65,7 +63,6 @@ void imguiEditorLayoutDrawSystemProcess(flecs::iter& it)
   ImGui::End();
 
   ImGui::Begin("Inspector");
-  crude::core::logInfo(crude::core::Debug::Channel::GUI, "editorLayoutCtx->inspectorWindowSize %f", ImGui::GetWindowSize().x);
   if (editorLayoutCtx->selectedNode.is_valid())
   {
     ImGui::Text(editorLayoutCtx->selectedNode.name());

@@ -1,6 +1,8 @@
 #version 450
 
-layout(binding=6) uniform sampler2D texSampler;
+layout(binding=6) uniform sampler2D albedo;
+layout(binding=7) uniform sampler2D metallicRoughness;
+layout(binding=8) uniform sampler2D normal;
 
 layout (location=0) in PerVertexData
 {
@@ -12,5 +14,5 @@ layout(location=0) out vec4 outColor;
 
 void main()
 {
-  outColor = texture(texSampler, texCoord);
+  outColor = texture(albedo, texCoord);
 }

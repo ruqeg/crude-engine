@@ -7,6 +7,7 @@ import crude.graphics.command_pool;
 import crude.graphics.sampler_state;
 import crude.graphics.image_view;
 import crude.graphics.sampler;
+import crude.graphics.texture;
 import crude.gui.imgui_texture_descriptor_set;
 import crude.resources.gltf_loader;
 import crude.scene.camera;

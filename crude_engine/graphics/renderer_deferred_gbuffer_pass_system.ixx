@@ -56,7 +56,9 @@ public:
   core::vector<core::shared_ptr<Framebuffer>>                   framebuffers;
   core::shared_ptr<GBuffer>                                     gbuffer;
   core::array<Uniform_Buffer_Descriptor, cFramesCount>          perFrameBufferDescriptors;
-  core::array<Combined_Image_Sampler_Descriptor, cFramesCount>  submeshTextureDescriptors;
+  core::array<Combined_Image_Sampler_Descriptor, cFramesCount>  submeshAlbedoDescriptors;
+  core::array<Combined_Image_Sampler_Descriptor, cFramesCount>  submeshMetallicRoughnessDescriptors;
+  core::array<Combined_Image_Sampler_Descriptor, cFramesCount>  submeshNormalDescriptors;
   graphics::Storage_Buffer_Descriptor                           submeshesDrawsBufferDescriptor;
   graphics::Storage_Buffer_Descriptor                           vertexBufferDescriptor;
   graphics::Storage_Buffer_Descriptor                           meshletBufferDescriptor;

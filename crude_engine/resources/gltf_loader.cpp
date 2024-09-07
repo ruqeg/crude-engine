@@ -20,6 +20,7 @@ import crude.graphics.flush;
 import crude.graphics.image_2d;
 import crude.graphics.image_view;
 import crude.graphics.texture;
+import crude.graphics.material;
 import crude.graphics.mesh_buffer;
 import crude.scene.transform;
 
@@ -92,10 +93,44 @@ flecs::entity GLTF_Loader::loadNodeFromFile(const char* path)
       buildMeshlets(primtiveVertices, primitiveVertexIndices, mesh->vertexIndices, mesh->primitiveIndices, mesh->meshlets);
       mesh->vertices.insert(mesh->vertices.end(), primtiveVertices.begin(), primtiveVertices.end());
 
-      core::shared_ptr<graphics::Texture> submeshTexture;
+      core::shared_ptr<graphics::Material> submeshMaterial = core::allocateShared<graphics::Material>();
       if (tinyPrimitive.material != -1)
       {
-        submeshTexture = textures[m_tinyModel.materials[tinyPrimitive.material].pbrMetallicRoughness.baseColorTexture.index];
+        const tinygltf::Material& tinyMaterial = m_tinyModel.materials[tinyPrimitive.material];
+        submeshMaterial->albedo = textures[tinyMaterial.pbrMetallicRoughness.baseColorTexture.index];
+        if (tinyMaterial.pbrMetallicRoughness.metallicRoughnessTexture.index == -1)
+        {
+          auto commandBuffer = core::allocateShared<graphics::Command_Buffer>(m_commandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+          core::shared_ptr<graphics::Image> image = core::allocateShared<graphics::Image_2D>(
+            commandBuffer,
+            VK_FORMAT_R8G8_SNORM,
+            graphics::Image::Mip_Data(VkExtent3D{ 1, 1, 1 }, core::array<core::byte, 2>{0, 100}),
+            VK_SHARING_MODE_EXCLUSIVE);
+          core::shared_ptr<graphics::Sampler> sampler = core::allocateShared<graphics::Sampler>(m_device, graphics::csamlper_state::gMagMinMipLinearRepeat);
+
+          submeshMaterial->metallicRoughness = core::allocateShared<graphics::Texture>(core::allocateShared<graphics::Image_View>(image, graphics::Image_Subresource_Range(image)), sampler);
+        }
+        else
+        {
+          submeshMaterial->metallicRoughness = textures[tinyMaterial.pbrMetallicRoughness.metallicRoughnessTexture.index];
+        }
+
+        if (tinyMaterial.normalTexture.index == -1)
+        {
+          auto commandBuffer = core::allocateShared<graphics::Command_Buffer>(m_commandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+          core::shared_ptr<graphics::Image> image = core::allocateShared<graphics::Image_2D>(
+            commandBuffer,
+            VK_FORMAT_R8G8B8A8_SNORM,
+            graphics::Image::Mip_Data(VkExtent3D{ 1, 1, 1 }, core::array<core::byte, 4>{0, 255, 0, 255}),
+            VK_SHARING_MODE_EXCLUSIVE);
+          core::shared_ptr<graphics::Sampler> sampler = core::allocateShared<graphics::Sampler>(m_device, graphics::csamlper_state::gMagMinMipLinearRepeat);
+
+          submeshMaterial->normal = core::allocateShared<graphics::Texture>(core::allocateShared<graphics::Image_View>(image, graphics::Image_Subresource_Range(image)), sampler);
+        }
+        else
+        {
+          submeshMaterial->normal = textures[tinyMaterial.normalTexture.index];
+        }
       }
 
       mesh->submeshes.push_back(scene::Sub_Mesh{
@@ -108,7 +143,7 @@ flecs::entity GLTF_Loader::loadNodeFromFile(const char* path)
           .meshletOffset = meshletsOffset,
           .meshletCount = static_cast<core::uint32>(mesh->meshlets.size() - meshletsOffset),
         } },
-        .texture = submeshTexture
+        .material = submeshMaterial
         });
     }
 
@@ -147,9 +182,21 @@ core::shared_ptr<graphics::Image> GLTF_Loader::parseImage(const tinygltf::Image&
   extent.height = tinyImage.height;
   extent.depth  = 1u;
   
+  VkFormat format;
+  switch (tinyImage.component)
+  {
+  case 1: format = VK_FORMAT_R8_SRGB; break;
+  case 2: format = VK_FORMAT_R8G8_SRGB; break;
+  case 3: format = VK_FORMAT_R8G8B8_SRGB; break;
+  case 4: format = VK_FORMAT_R8G8B8A8_SRGB; break;
+  default:
+    core::logError(core::Debug::Channel::FileIO, "Failed to parse image from gltf");
+    core::assert(false);
+  }
+  
   core::shared_ptr<graphics::Image> image = core::allocateShared<graphics::Image_2D>(
     commandBuffer,
-    VK_FORMAT_R8G8B8A8_SRGB,
+    format,
     graphics::Image::Mip_Data(extent, core::span<const core::byte>(tinyImage.image)),
     scene::calculateMaximumMipLevelsCount(tinyImage.width, tinyImage.height),
     VK_SHARING_MODE_EXCLUSIVE);

@@ -47,6 +47,7 @@ target_sources(crude_engine
 target_sources(crude_engine
     PUBLIC
     FILE_SET cxx_modules_graphics TYPE CXX_MODULES FILES
+    material.ixx
     gbuffer.ixx
     renderer_fullscreen_pbr_pass_system.ixx
     renderer_deferred_gbuffer_pass_system.ixx

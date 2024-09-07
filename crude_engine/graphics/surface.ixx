@@ -30,7 +30,7 @@ public:
       instance->getHandle(), 
       getPVkAllocationCallbacks(), 
       &m_handle);
-    if (result != 0)
+    if (result != SDL_TRUE)
     {
       vulkanHandleError("Failed to create surface");
     }

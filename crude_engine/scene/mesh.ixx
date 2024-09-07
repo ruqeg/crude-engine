@@ -8,17 +8,21 @@ export module crude.scene.mesh;
 export import crude.scene.image;
 export import crude.core.std_containers_heap;
 export import crude.core.std_containers_stack;
-export import crude.graphics.texture;
+
+export namespace crude::graphics
+{
+class Material;
+}
 
 export namespace crude::scene
 {
 
 struct Meshlet
 {
-  core::uint8  vertexCount;
-  core::uint8  primitiveCount;
-  core::uint32   vertexOffset;
-  core::uint32   primitiveOffest;
+  core::uint8   vertexCount;
+  core::uint8   primitiveCount;
+  core::uint32  vertexOffset;
+  core::uint32  primitiveOffest;
 };
 
 struct Vertex
@@ -38,11 +42,11 @@ struct Sub_Mesh_Lod
 
 struct Sub_Mesh
 {
-  core::uint32                         vertexOffset;
-  core::uint32                         vertexCount;
-  core::uint32                         lodCount;
-  core::array<Sub_Mesh_Lod, 8>         lods;
-  core::shared_ptr<graphics::Texture>  texture;
+  core::uint32                          vertexOffset;
+  core::uint32                          vertexCount;
+  core::uint32                          lodCount;
+  core::array<Sub_Mesh_Lod, 8>          lods;
+  core::shared_ptr<graphics::Material>  material;
 };
 
 struct Sub_Mesh_Draw
