@@ -209,7 +209,7 @@ Subpass_Description::Subpass_Description(const Initialize_Color_Array_Depth& ini
   VkAttachmentReference* depthStencilReference = core::defaultCxxAllocate<VkAttachmentReference>();
   if (depthStencilReference)
   {
-    depthStencilReference->attachment = 1;
+    depthStencilReference->attachment = this->colorAttachmentCount;
     depthStencilReference->layout = initialize.depthStencilLayout;
   }
   this->pDepthStencilAttachment = depthStencilReference;

@@ -293,6 +293,18 @@ core::vector<scene::Vertex> GLTF_Loader::loadVerticesFromPrimitive(const tinyglt
       core::assert(tinyAccessor.type == TINYGLTF_TYPE_VEC3);
       loadBufferFromAccessor(tinyAccessor, reinterpret_cast<core::byte*>(&primitiveVertices[0].normal.x), sizeof(DirectX::XMFLOAT3), sizeof(primitiveVertices[0]));
     }
+    else if (attribute.first == "TANGENT")
+    {
+      core::assert(tinyAccessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT);
+      //core::assert(tinyAccessor.type == TINYGLTF_TYPE_VEC3);
+      loadBufferFromAccessor(tinyAccessor, reinterpret_cast<core::byte*>(&primitiveVertices[0].tangent.x), sizeof(DirectX::XMFLOAT3), sizeof(primitiveVertices[0]));
+    }
+    else if (attribute.first == "BITANGENT")
+    {
+      core::assert(tinyAccessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT);
+      //core::assert(tinyAccessor.type == TINYGLTF_TYPE_VEC3);
+      loadBufferFromAccessor(tinyAccessor, reinterpret_cast<core::byte*>(&primitiveVertices[0].bitangent.x), sizeof(DirectX::XMFLOAT3), sizeof(primitiveVertices[0]));
+    }
   }
   return primitiveVertices;
 }

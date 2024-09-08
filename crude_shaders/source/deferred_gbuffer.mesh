@@ -4,7 +4,7 @@
 #extension GL_EXT_shader_8bit_storage: require
 #extension GL_GOOGLE_include_directive: require
 
-#include "mesh.h"
+#include "crude/mesh.h"
 
 layout(local_size_x=cMaxMeshWorkGroupSize, local_size_y=1, local_size_z=1) in;
 layout(triangles) out;
@@ -47,9 +47,12 @@ layout(binding=5) readonly buffer VertexIndices
   uint vertexIndices[];
 };
 
-layout(location=0) out PerVertexData {
-  vec3 color;
+layout(location=0) out PerVertexData 
+{
   vec2 texCoord;
+  vec3 worldTangent;
+  vec3 worldBitangent;
+  vec3 worldNormal;
 } v_out[];
 
 void main()
@@ -75,9 +78,18 @@ void main()
     const uint vertexIndex = submeshDraw.vertexOffset + vertexIndices[groupThreadIndex + vertexOffset];
     
     const vec4 submeshPosition = vec4(vertices[vertexIndex].position, 1.0);
-    gl_MeshVerticesEXT[groupThreadIndex].gl_Position = submeshPosition * perSubmesh.meshToWorld * camera.worldToView * camera.viewToClip;
-    v_out[groupThreadIndex].color = vec3(1.0, 1.0, 1.0);
+    const vec4 worldPosition   = submeshPosition * perSubmesh.meshToWorld;
+    const vec4 clipPosition    = worldPosition * camera.worldToView * camera.viewToClip;
+    
+    const vec3 worldNormal    = normalize((vec4(vertices[vertexIndex].normal, 0.0) * perSubmesh.meshToWorld).xyz);
+    const vec3 worldTangent   = normalize((vec4(vertices[vertexIndex].tangent, 0.0) * perSubmesh.meshToWorld).xyz);
+    const vec3 worldBitangent = normalize((vec4(vertices[vertexIndex].bitangent, 0.0) * perSubmesh.meshToWorld).xyz);
+    
+    gl_MeshVerticesEXT[groupThreadIndex].gl_Position = clipPosition;
     v_out[groupThreadIndex].texCoord = vertices[vertexIndex].texCoord;
+    v_out[groupThreadIndex].worldNormal = worldNormal;
+    v_out[groupThreadIndex].worldTangent = worldTangent;
+    v_out[groupThreadIndex].worldBitangent = worldBitangent;
   }
 
   if (groupThreadIndex < primitiveCount)

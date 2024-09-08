@@ -60,6 +60,8 @@ public:
   core::shared_ptr<Color_Attachment>           colorAttachment;
 
   core::array<Combined_Image_Sampler_Descriptor, cFramesCount>  albedoTextureDescriptors;
+  core::array<Combined_Image_Sampler_Descriptor, cFramesCount>  metallicRoughnessTextureDescriptors;
+  core::array<Combined_Image_Sampler_Descriptor, cFramesCount>  normalTextureDescriptors;
   core::array<Combined_Image_Sampler_Descriptor, cFramesCount>  depthTextureDescriptors;
 };
 

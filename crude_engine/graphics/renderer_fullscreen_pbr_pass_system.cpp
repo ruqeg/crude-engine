@@ -51,16 +51,22 @@ namespace crude::graphics
 {
 
 const Combined_Image_Sampler_Descriptor cAlbedoTextureDescriptor(0u, VK_SHADER_STAGE_FRAGMENT_BIT);
-const Combined_Image_Sampler_Descriptor cDepthTextureDescriptor(1u, VK_SHADER_STAGE_FRAGMENT_BIT);
+const Combined_Image_Sampler_Descriptor cMetallicRoughnessTextureDescriptor(1u, VK_SHADER_STAGE_FRAGMENT_BIT);
+const Combined_Image_Sampler_Descriptor cNormalTextureDescriptor(2u, VK_SHADER_STAGE_FRAGMENT_BIT);
+const Combined_Image_Sampler_Descriptor cDepthTextureDescriptor(3u, VK_SHADER_STAGE_FRAGMENT_BIT);
 
-core::array<Descriptor_Set_Layout_Binding, 2u> cDescriptorLayoutBindings =
+core::array<Descriptor_Set_Layout_Binding, 4u> cDescriptorLayoutBindings =
 {
   cAlbedoTextureDescriptor,
+  cMetallicRoughnessTextureDescriptor,
+  cNormalTextureDescriptor,
   cDepthTextureDescriptor,
 };
 
-core::array<Descriptor_Pool_Size, 2u> cDescriptorPoolSizes
+core::array<Descriptor_Pool_Size, 4u> cDescriptorPoolSizes
 {
+  Combined_Image_Sampler_Pool_Size(cFramesCount),
+  Combined_Image_Sampler_Pool_Size(cFramesCount),
   Combined_Image_Sampler_Pool_Size(cFramesCount),
   Combined_Image_Sampler_Pool_Size(cFramesCount),
 };
@@ -93,11 +99,15 @@ void rendererFullscreenPBRPassSystemProcess(flecs::iter& it)
   frameCtx->getFrameGraphicsCommandBuffer()->bindPipeline(fullscreenPbrCtx->pipeline);
 
   fullscreenPbrCtx->albedoTextureDescriptors[frameCtx->currentFrame].update(fullscreenPbrCtx->gbuffer->getAlbedoAttachmentView(), fullscreenPbrCtx->sampler);
+  fullscreenPbrCtx->metallicRoughnessTextureDescriptors[frameCtx->currentFrame].update(fullscreenPbrCtx->gbuffer->getMetallicRoughnessAttachmentView(), fullscreenPbrCtx->sampler);
+  fullscreenPbrCtx->normalTextureDescriptors[frameCtx->currentFrame].update(fullscreenPbrCtx->gbuffer->getNormalAttachmentView(), fullscreenPbrCtx->sampler);
   fullscreenPbrCtx->depthTextureDescriptors[frameCtx->currentFrame].update(fullscreenPbrCtx->gbuffer->getDepthStencilAttachmentView(), fullscreenPbrCtx->sampler);
 
-  core::array<VkWriteDescriptorSet, 2u> descriptorWrites;
+  core::array<VkWriteDescriptorSet, 4u> descriptorWrites;
   fullscreenPbrCtx->albedoTextureDescriptors[frameCtx->currentFrame].write(descriptorWrites[0]);
-  fullscreenPbrCtx->depthTextureDescriptors[frameCtx->currentFrame].write(descriptorWrites[1]);
+  fullscreenPbrCtx->metallicRoughnessTextureDescriptors[frameCtx->currentFrame].write(descriptorWrites[1]);
+  fullscreenPbrCtx->normalTextureDescriptors[frameCtx->currentFrame].write(descriptorWrites[2]);
+  fullscreenPbrCtx->depthTextureDescriptors[frameCtx->currentFrame].write(descriptorWrites[3]);
 
   frameCtx->getFrameGraphicsCommandBuffer()->pushDescriptorSet(fullscreenPbrCtx->pipeline, descriptorWrites);
   frameCtx->getFrameGraphicsCommandBuffer()->drawMeshTasks(1u);
@@ -107,6 +117,8 @@ void rendererFullscreenPBRPassSystemProcess(flecs::iter& it)
 
 Renderer_Fullscreen_PBR_Pass_Ctx::Renderer_Fullscreen_PBR_Pass_Ctx(core::shared_ptr<Renderer_Frame_System_Ctx> frameCtx, core::shared_ptr<GBuffer> gbuffer)
   : albedoTextureDescriptors{ cAlbedoTextureDescriptor, cAlbedoTextureDescriptor }
+  , metallicRoughnessTextureDescriptors{ cMetallicRoughnessTextureDescriptor, cMetallicRoughnessTextureDescriptor }
+  , normalTextureDescriptors{ cNormalTextureDescriptor, cNormalTextureDescriptor }
   , depthTextureDescriptors{ cDepthTextureDescriptor, cDepthTextureDescriptor }
   , frameCtx{ frameCtx }
   , gbuffer{ gbuffer }

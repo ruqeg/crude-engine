@@ -1,3 +1,6 @@
+#ifndef CRUDE_SHADERS_MESH_H
+#define CRUDE_SHADERS_MESH_H
+
 #include "config.h"
 
 struct Meshlet
@@ -12,6 +15,8 @@ struct Vertex
 {
   vec3 position;
   vec3 normal;
+  vec3 tangent;
+  vec3 bitangent;
   vec2 texCoord;
 };
 
@@ -54,3 +59,5 @@ struct SubMeshDraw
   uint        lodCount;
   SubMeshLod  lods[8];
 };
+
+#endif // CRUDE_SHADERS_MESH_H

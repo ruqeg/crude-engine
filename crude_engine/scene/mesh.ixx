@@ -29,6 +29,8 @@ struct Vertex
 {
   DirectX::XMFLOAT3A position;
   DirectX::XMFLOAT3A normal;
+  DirectX::XMFLOAT3A tangent;
+  DirectX::XMFLOAT3A bitangent;
   DirectX::XMFLOAT2A texcoord;
 };
 

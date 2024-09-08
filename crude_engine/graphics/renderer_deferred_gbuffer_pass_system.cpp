@@ -100,9 +100,11 @@ void rendererDeferredGBufferPassSystemProcess(flecs::iter& it)
   core::shared_ptr<Renderer_Frame_System_Ctx> frameCtx = deferredGBufferCtx->frameCtx;
   core::shared_ptr<Renderer_Core_System_Ctx> coreCtx = frameCtx->coreCtx;
   
-  core::array<VkClearValue, 2u> clearValues;;
+  core::array<VkClearValue, 4u> clearValues;
   clearValues[0].color = { {0.0f, 0.0f, 0.0f, 1.0f} };
-  clearValues[1].depthStencil = { 1.0f, 0 };
+  clearValues[1].color = { {0.0f, 0.5f, 0.0f, 1.0f} };
+  clearValues[2].color = { {0.0f, 1.0f, 0.0f, 1.0f} };
+  clearValues[3].depthStencil = { 1.0f, 0 };
 
   VkRect2D renderArea;
   renderArea.extent = coreCtx->swapchain->getExtent();
@@ -308,9 +310,11 @@ core::array<Subpass_Description, 1> Renderer_Deferred_GBuffer_Pass_Systen_Ctx::g
   return
   {
     Subpass_Description(Subpass_Description::Initialize_Color_Array_Depth{
-      core::array
+      core::array<VkImageLayout,3>
       {
-        VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+        VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+        VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+        VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
       },
       VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL })
   };
@@ -328,6 +332,20 @@ core::vector<Attachment_Description> Renderer_Deferred_GBuffer_Pass_Systen_Ctx::
       .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
       .finalLayout   = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL }),
     Attachment_Description({
+      .format        = gbuffer->getMetallicRoughnessAttachment()->getFormat(),
+      .samples       = gbuffer->getMetallicRoughnessAttachment()->getSampleCount(),
+      .colorOp       = attachment_op::gClearStore,
+      .stenicilOp    = attachment_op::gClearStore,
+      .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+      .finalLayout   = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL }),
+    Attachment_Description({
+      .format        = gbuffer->getNormalAttachment()->getFormat(),
+      .samples       = gbuffer->getNormalAttachment()->getSampleCount(),
+      .colorOp       = attachment_op::gClearStore,
+      .stenicilOp    = attachment_op::gClearStore,
+      .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+      .finalLayout   = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL }),
+    Attachment_Description({
       .format        = gbuffer->getDepthStencilAttachment()->getFormat(),
       .samples       = gbuffer->getDepthStencilAttachment()->getSampleCount(),
       .colorOp       = attachment_op::gClearStore,
@@ -339,13 +357,31 @@ core::vector<Attachment_Description> Renderer_Deferred_GBuffer_Pass_Systen_Ctx::
 
 core::vector<core::shared_ptr<Image_View>> Renderer_Deferred_GBuffer_Pass_Systen_Ctx::getFramebufferAttachments()
 {
-  return { gbuffer->getAlbedoAttachmentView(), gbuffer->getDepthStencilAttachmentView() };
+  return { gbuffer->getAlbedoAttachmentView(), gbuffer->getMetallicRoughnessAttachmentView(), gbuffer->getNormalAttachmentView(), gbuffer->getDepthStencilAttachmentView() };
 }
 
 Color_Blend_State_Create_Info Renderer_Deferred_GBuffer_Pass_Systen_Ctx::createColorBlendStateCreateInfo()
 {
-  core::array<Pipeline_Color_Blend_Attachment_State, 1u> colorAttachments =
+  core::array<Pipeline_Color_Blend_Attachment_State, 3u> colorAttachments =
   {
+    Pipeline_Color_Blend_Attachment_State({
+      .blendEnable         = VK_FALSE,
+      .colorWriteMask      = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT,
+      .srcColorBlendFactor = VK_BLEND_FACTOR_ONE,
+      .dstColorBlendFactor = VK_BLEND_FACTOR_ZERO,
+      .colorBlendOp        = VK_BLEND_OP_ADD,
+      .srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE,
+      .dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO,
+      .alphaBlendOp        = VK_BLEND_OP_ADD }),
+    Pipeline_Color_Blend_Attachment_State({
+      .blendEnable         = VK_FALSE,
+      .colorWriteMask      = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT,
+      .srcColorBlendFactor = VK_BLEND_FACTOR_ONE,
+      .dstColorBlendFactor = VK_BLEND_FACTOR_ZERO,
+      .colorBlendOp        = VK_BLEND_OP_ADD,
+      .srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE,
+      .dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO,
+      .alphaBlendOp        = VK_BLEND_OP_ADD }),
     Pipeline_Color_Blend_Attachment_State({
       .blendEnable         = VK_FALSE,
       .colorWriteMask      = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT,
