@@ -1,0 +1,7 @@
+#ifndef CRUDE_SHADERS_MATH_H
+#define CRUDE_SHADERS_MATH_H
+
+#define PI     3.141592653
+#define INV_PI 0.318309886
+
+#endif // CRUDE_SHADERS_MATH_H

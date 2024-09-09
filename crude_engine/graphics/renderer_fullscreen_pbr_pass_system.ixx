@@ -22,6 +22,26 @@ import crude.graphics.depth_stencil_state_create_info;
 export namespace crude::graphics
 {
 
+struct PBRDebug
+{
+  core::float32       ndfConstant;
+  core::float32       gsConstant;
+  core::int32         ndfIndex;
+  core::int32         gsIndex;
+  core::int32         fsIndex;
+  DirectX::XMFLOAT3A  fsConstant;
+  DirectX::XMFLOAT3A  diffCoeff;
+  DirectX::XMFLOAT3A  specCoeff;
+};
+
+struct Point_Light
+{
+  DirectX::XMFLOAT3A  position;
+  DirectX::XMFLOAT3A  intensity;
+  core::float32       sourceRadius;
+};
+
+
 class Render_Pass;
 class Command_Buffer;
 class Framebuffer;
@@ -59,10 +79,16 @@ public:
   core::shared_ptr<GBuffer>                    gbuffer;
   core::shared_ptr<Color_Attachment>           colorAttachment;
 
+  core::array<Uniform_Buffer_Descriptor, cFramesCount>          perFrameBufferDescriptors;
   core::array<Combined_Image_Sampler_Descriptor, cFramesCount>  albedoTextureDescriptors;
   core::array<Combined_Image_Sampler_Descriptor, cFramesCount>  metallicRoughnessTextureDescriptors;
   core::array<Combined_Image_Sampler_Descriptor, cFramesCount>  normalTextureDescriptors;
   core::array<Combined_Image_Sampler_Descriptor, cFramesCount>  depthTextureDescriptors;
+  graphics::Storage_Buffer_Descriptor                           pointLightsBufferDescriptor;
+  core::array<Uniform_Buffer_Descriptor, cFramesCount>          pbrDebugBufferDescriptors;
+
+  core::shared_ptr<graphics::Storage_Buffer>                    pointLightsBuffer;
+  core::array<core::shared_ptr<graphics::Uniform_Buffer<PBRDebug>>, cFramesCount>          pbrDebugBuffers;
 };
 
 void rendererFullscreenPBRPassSystemProcess(flecs::iter& it);

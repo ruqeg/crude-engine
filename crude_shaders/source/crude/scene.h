@@ -15,8 +15,6 @@ struct Vertex
 {
   vec3 position;
   vec3 normal;
-  vec3 tangent;
-  vec3 bitangent;
   vec2 texCoord;
 };
 
@@ -38,6 +36,7 @@ struct Mesh
 
 struct Camera
 {
+  vec3 position;
   mat4 worldToView;
   mat4 viewToClip;
   mat4 clipToView;
@@ -58,6 +57,15 @@ struct SubMeshDraw
   uint        vertexCount;
   uint        lodCount;
   SubMeshLod  lods[8];
+};
+
+struct PointLight
+{
+  vec3  position;
+  float _pad1;
+  vec3  intensity;
+  float _pad2;
+  float sourceRadius;
 };
 
 #endif // CRUDE_SHADERS_MESH_H

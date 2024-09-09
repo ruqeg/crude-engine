@@ -16,6 +16,10 @@ public:
   explicit Storage_Buffer(core::shared_ptr<Command_Buffer> commandBuffer, const core::vector<T>& data)
     : Storage_Buffer(commandBuffer, core::span<const T>(data))
   {}
+  template<class T, core::size_t N>
+  explicit Storage_Buffer(core::shared_ptr<Command_Buffer> commandBuffer, const core::array<T, N>& data)
+    : Storage_Buffer(commandBuffer, core::span<const T>(data))
+  {}
   template<class T>
   explicit Storage_Buffer(core::shared_ptr<Command_Buffer> commandBuffer, core::span<const T> data)
     : Buffer({

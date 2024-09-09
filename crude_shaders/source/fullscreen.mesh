@@ -6,7 +6,7 @@ layout(triangles) out;
 layout(max_vertices=3, max_primitives=1) out;
 
 layout(location=0) out PerVertexData {
-  vec2 texCoord;
+  vec2 screenUV;
 } v_out[];
 
 const vec4 cFullscreenPosition[3] =
@@ -35,7 +35,7 @@ void main()
   if (groupThreadIndex < vertexCount)
   {
     gl_MeshVerticesEXT[groupThreadIndex].gl_Position = cFullscreenPosition[groupThreadIndex];
-    v_out[groupThreadIndex].texCoord = cFullScreenTexcoord[groupThreadIndex];
+    v_out[groupThreadIndex].screenUV = cFullScreenTexcoord[groupThreadIndex];
   }
 
   if (groupThreadIndex < primitiveCount)

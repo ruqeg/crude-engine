@@ -50,7 +50,7 @@ import crude.graphics.gbuffer;
 namespace crude::graphics
 {
 
-const Uniform_Buffer_Descriptor          cPerFrameUniformBufferDescriptor(0u, VK_SHADER_STAGE_MESH_BIT_EXT);
+const Uniform_Buffer_Descriptor          cPerFrameUniformBufferDescriptor{ 0u, VK_SHADER_STAGE_MESH_BIT_EXT };
 const Storage_Buffer_Descriptor          cSubmeshesDrawsBufferDescriptor{ 1u, VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT };
 const Storage_Buffer_Descriptor          cVertexBufferDescriptor{ 3u, VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT };
 const Storage_Buffer_Descriptor          cMeshletBufferDescriptor{ 2u, VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT };
@@ -150,8 +150,8 @@ void rendererDeferredGBufferPassSystemProcess(flecs::iter& it)
         const scene::Sub_Mesh& submesh = meshes[i]->submeshes[submeshIndex];
 
         deferredGBufferCtx->submeshAlbedoDescriptors[frameCtx->currentFrame].update(submesh.material->albedo->getImageView(), submesh.material->albedo->getSampler());
-        deferredGBufferCtx->submeshMetallicRoughnessDescriptors[frameCtx->currentFrame].update(submesh.material->normal->getImageView(), submesh.material->normal->getSampler());
-        deferredGBufferCtx->submeshNormalDescriptors[frameCtx->currentFrame].update(submesh.material->metallicRoughness->getImageView(), submesh.material->metallicRoughness->getSampler());
+        deferredGBufferCtx->submeshMetallicRoughnessDescriptors[frameCtx->currentFrame].update(submesh.material->metallicRoughness->getImageView(), submesh.material->metallicRoughness->getSampler());
+        deferredGBufferCtx->submeshNormalDescriptors[frameCtx->currentFrame].update(submesh.material->normal->getImageView(), submesh.material->normal->getSampler());
 
         core::array<VkWriteDescriptorSet, 9u> descriptorWrites;
         deferredGBufferCtx->perFrameBufferDescriptors[frameCtx->currentFrame].write(descriptorWrites[0]);

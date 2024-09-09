@@ -10,14 +10,13 @@ layout(binding=8) uniform sampler2D inNormalMap;
 layout (location=0) in PerVertexData
 {
   vec2 texCoord;
-  vec3 worldTangent;
-  vec3 worldBitangent;
-  vec3 worldNormal;
+  vec3 surfaceNormal;
+  vec3 worldPosition;
 };
 
 layout(location=0) out vec4 outAlbedo;
 layout(location=1) out vec2 outMetallicRoughness;
-layout(location=2) out vec4 outGeometryNormalTextureNormal;
+layout(location=2) out vec4 outPackedSurfaceNormalTextureNormal;
 
 void main()
 {
@@ -25,12 +24,12 @@ void main()
   const vec2 metallicRoughness = texture(inMetallicRoughness, texCoord).xy;
   const vec3 normalMapTexel = texture(inNormalMap, texCoord).xyz;
 
-  const vec3 textureNormal = normalFromNormalMap(normalMapTexel, worldTangent, worldBitangent, worldNormal);
-  
-  const vec2 packedTextureNormal = packOctahedron(textureNormal);
-  const vec2 packedGeometryNormal = packOctahedron(worldNormal);
+  const vec3 textureNormal = normalFromNormalMap(normalMapTexel, tbnFromNormalAndUV(worldPosition, normalize(surfaceNormal), texCoord));
 
+  const vec2 packedTextureNormal = packOctahedron(textureNormal);
+  const vec2 packedSurfaceNormal = packOctahedron(surfaceNormal);
+  
   outAlbedo = albedo;
   outMetallicRoughness = metallicRoughness;
-  outGeometryNormalTextureNormal = vec4(packedGeometryNormal, packedTextureNormal);
+  outPackedSurfaceNormalTextureNormal = vec4(packedSurfaceNormal, packedTextureNormal);
 }

@@ -50,25 +50,34 @@ import crude.graphics.sampler;
 namespace crude::graphics
 {
 
-const Combined_Image_Sampler_Descriptor cAlbedoTextureDescriptor(0u, VK_SHADER_STAGE_FRAGMENT_BIT);
-const Combined_Image_Sampler_Descriptor cMetallicRoughnessTextureDescriptor(1u, VK_SHADER_STAGE_FRAGMENT_BIT);
-const Combined_Image_Sampler_Descriptor cNormalTextureDescriptor(2u, VK_SHADER_STAGE_FRAGMENT_BIT);
-const Combined_Image_Sampler_Descriptor cDepthTextureDescriptor(3u, VK_SHADER_STAGE_FRAGMENT_BIT);
+const Uniform_Buffer_Descriptor         cPerFrameUniformBufferDescriptor2{ 0u, VK_SHADER_STAGE_FRAGMENT_BIT };
+const Combined_Image_Sampler_Descriptor cAlbedoTextureDescriptor{ 1u, VK_SHADER_STAGE_FRAGMENT_BIT };
+const Combined_Image_Sampler_Descriptor cMetallicRoughnessTextureDescriptor{ 2u, VK_SHADER_STAGE_FRAGMENT_BIT };
+const Combined_Image_Sampler_Descriptor cNormalTextureDescriptor{ 3u, VK_SHADER_STAGE_FRAGMENT_BIT };
+const Combined_Image_Sampler_Descriptor cDepthTextureDescriptor{ 4u, VK_SHADER_STAGE_FRAGMENT_BIT };
+const Storage_Buffer_Descriptor         cPointLightsBufferDescriptor{ 5u, VK_SHADER_STAGE_FRAGMENT_BIT };
+const Uniform_Buffer_Descriptor         cPbrDebugBufferDescriptor{ 6u, VK_SHADER_STAGE_FRAGMENT_BIT };
 
-core::array<Descriptor_Set_Layout_Binding, 4u> cDescriptorLayoutBindings =
+core::array<Descriptor_Set_Layout_Binding, 7u> cDescriptorLayoutBindings =
 {
+  cPerFrameUniformBufferDescriptor2,
   cAlbedoTextureDescriptor,
   cMetallicRoughnessTextureDescriptor,
   cNormalTextureDescriptor,
   cDepthTextureDescriptor,
+  cPointLightsBufferDescriptor,
+  cPbrDebugBufferDescriptor
 };
 
-core::array<Descriptor_Pool_Size, 4u> cDescriptorPoolSizes
+core::array<Descriptor_Pool_Size, 7u> cDescriptorPoolSizes
 {
+  Uniform_Buffer_Pool_Size(cFramesCount),
   Combined_Image_Sampler_Pool_Size(cFramesCount),
   Combined_Image_Sampler_Pool_Size(cFramesCount),
   Combined_Image_Sampler_Pool_Size(cFramesCount),
   Combined_Image_Sampler_Pool_Size(cFramesCount),
+  Storage_Buffer_Pool_Size(1u),
+  Uniform_Buffer_Pool_Size(cFramesCount),
 };
 
 void rendererFullscreenPBRPassSystemProcess(flecs::iter& it)
@@ -98,16 +107,33 @@ void rendererFullscreenPBRPassSystemProcess(flecs::iter& it)
   frameCtx->getFrameGraphicsCommandBuffer()->beginRenderPass(fullscreenPbrCtx->pipeline->getRenderPass(), fullscreenPbrCtx->framebuffers[frameCtx->swapchainImageIndex], clearValues, renderArea);
   frameCtx->getFrameGraphicsCommandBuffer()->bindPipeline(fullscreenPbrCtx->pipeline);
 
+  PBRDebug* data = fullscreenPbrCtx->pbrDebugBuffers[frameCtx->currentFrame]->mapUnsafe();
+  data->ndfConstant;
+  data->gsConstant;
+  data->ndfIndex = 0;
+  data->gsIndex = 0;
+  data->fsIndex = 0;
+  data->fsConstant;
+  DirectX::XMStoreFloat3(&data->diffCoeff, DirectX::XMVectorSet(1, 1, 1, 1));
+  DirectX::XMStoreFloat3(&data->specCoeff, DirectX::XMVectorSet(1, 1, 1, 1));
+  fullscreenPbrCtx->pbrDebugBuffers[frameCtx->currentFrame]->unmap();
+
+  fullscreenPbrCtx->perFrameBufferDescriptors[frameCtx->currentFrame].update(frameCtx->getFramePerFrameUniformBuffer());
   fullscreenPbrCtx->albedoTextureDescriptors[frameCtx->currentFrame].update(fullscreenPbrCtx->gbuffer->getAlbedoAttachmentView(), fullscreenPbrCtx->sampler);
   fullscreenPbrCtx->metallicRoughnessTextureDescriptors[frameCtx->currentFrame].update(fullscreenPbrCtx->gbuffer->getMetallicRoughnessAttachmentView(), fullscreenPbrCtx->sampler);
   fullscreenPbrCtx->normalTextureDescriptors[frameCtx->currentFrame].update(fullscreenPbrCtx->gbuffer->getNormalAttachmentView(), fullscreenPbrCtx->sampler);
   fullscreenPbrCtx->depthTextureDescriptors[frameCtx->currentFrame].update(fullscreenPbrCtx->gbuffer->getDepthStencilAttachmentView(), fullscreenPbrCtx->sampler);
+  fullscreenPbrCtx->pointLightsBufferDescriptor.update(fullscreenPbrCtx->pointLightsBuffer, fullscreenPbrCtx->pointLightsBuffer->getSize());
+  fullscreenPbrCtx->pbrDebugBufferDescriptors[frameCtx->currentFrame].update(fullscreenPbrCtx->pbrDebugBuffers[frameCtx->currentFrame]);
 
-  core::array<VkWriteDescriptorSet, 4u> descriptorWrites;
-  fullscreenPbrCtx->albedoTextureDescriptors[frameCtx->currentFrame].write(descriptorWrites[0]);
-  fullscreenPbrCtx->metallicRoughnessTextureDescriptors[frameCtx->currentFrame].write(descriptorWrites[1]);
-  fullscreenPbrCtx->normalTextureDescriptors[frameCtx->currentFrame].write(descriptorWrites[2]);
-  fullscreenPbrCtx->depthTextureDescriptors[frameCtx->currentFrame].write(descriptorWrites[3]);
+  core::array<VkWriteDescriptorSet, 7u> descriptorWrites;
+  fullscreenPbrCtx->perFrameBufferDescriptors[frameCtx->currentFrame].write(descriptorWrites[0]);
+  fullscreenPbrCtx->albedoTextureDescriptors[frameCtx->currentFrame].write(descriptorWrites[1]);
+  fullscreenPbrCtx->metallicRoughnessTextureDescriptors[frameCtx->currentFrame].write(descriptorWrites[2]);
+  fullscreenPbrCtx->normalTextureDescriptors[frameCtx->currentFrame].write(descriptorWrites[3]);
+  fullscreenPbrCtx->depthTextureDescriptors[frameCtx->currentFrame].write(descriptorWrites[4]);
+  fullscreenPbrCtx->pointLightsBufferDescriptor.write(descriptorWrites[5]);
+  fullscreenPbrCtx->pbrDebugBufferDescriptors[frameCtx->currentFrame].write(descriptorWrites[6]);
 
   frameCtx->getFrameGraphicsCommandBuffer()->pushDescriptorSet(fullscreenPbrCtx->pipeline, descriptorWrites);
   frameCtx->getFrameGraphicsCommandBuffer()->drawMeshTasks(1u);
@@ -116,10 +142,13 @@ void rendererFullscreenPBRPassSystemProcess(flecs::iter& it)
 }
 
 Renderer_Fullscreen_PBR_Pass_Ctx::Renderer_Fullscreen_PBR_Pass_Ctx(core::shared_ptr<Renderer_Frame_System_Ctx> frameCtx, core::shared_ptr<GBuffer> gbuffer)
-  : albedoTextureDescriptors{ cAlbedoTextureDescriptor, cAlbedoTextureDescriptor }
+  : perFrameBufferDescriptors{ cPerFrameUniformBufferDescriptor2, cPerFrameUniformBufferDescriptor2 }
+  , albedoTextureDescriptors{ cAlbedoTextureDescriptor, cAlbedoTextureDescriptor }
   , metallicRoughnessTextureDescriptors{ cMetallicRoughnessTextureDescriptor, cMetallicRoughnessTextureDescriptor }
   , normalTextureDescriptors{ cNormalTextureDescriptor, cNormalTextureDescriptor }
   , depthTextureDescriptors{ cDepthTextureDescriptor, cDepthTextureDescriptor }
+  , pointLightsBufferDescriptor{ cPointLightsBufferDescriptor }
+  , pbrDebugBufferDescriptors { cPbrDebugBufferDescriptor, cPbrDebugBufferDescriptor }
   , frameCtx{ frameCtx }
   , gbuffer{ gbuffer }
 {
@@ -139,6 +168,19 @@ Renderer_Fullscreen_PBR_Pass_Ctx::Renderer_Fullscreen_PBR_Pass_Ctx(core::shared_
   initializeRenderPass();
   initalizeGraphicsPipeline();
   initializeFramebuffers();
+
+  core::array<Point_Light, 1> pointLights;
+  DirectX::XMStoreFloat3(&pointLights[0].intensity, DirectX::XMVectorSet(1, 1, 1, 1));;
+  DirectX::XMStoreFloat3(&pointLights[0].position, DirectX::XMVectorSet(0, 5, 0, 1));
+  pointLights[0].sourceRadius = 0.2;
+
+  auto commandBuffer = core::allocateShared<graphics::Command_Buffer>(coreCtx->graphicsCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+  pointLightsBuffer = core::allocateShared<graphics::Storage_Buffer>(commandBuffer, pointLights);
+
+  for (core::uint32 i = 0; i < cFramesCount; ++i)
+  {
+    pbrDebugBuffers[i] = core::allocateShared<Uniform_Buffer<PBRDebug>>(coreCtx->device);
+  }
 }
 
 core::shared_ptr<Descriptor_Set_Layout> Renderer_Fullscreen_PBR_Pass_Ctx::createDescriptorSetLayout()

@@ -27,8 +27,10 @@ struct Camera_UBO
       scene::Transform* transform = cameraNode.get_mut<scene::Transform>();
       worldToView = transform->getWorldToNodeFloat4x4();
       viewToWorld = transform->getNodeToWorldFloat4x4();
+      DirectX::XMStoreFloat3A(&position, DirectX::XMLoadFloat3(&transform->getTranslationFloat3()));
     }
   }
+  DirectX::XMFLOAT3A  position;
   DirectX::XMFLOAT4X4 worldToView;
   DirectX::XMFLOAT4X4 viewToClip;
   DirectX::XMFLOAT4X4 clipToView;
