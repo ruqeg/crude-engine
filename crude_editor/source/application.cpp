@@ -54,6 +54,8 @@ void Application::initialize()
 
   initializeScene(1000.0 / 800.0);
 
+  m_lightUpdateSystem.run();
+
   m_editorLayoutCtx->sceneNode = m_sceneNode;
 }
 
@@ -69,7 +71,7 @@ void Application::deinitialize()
 void Application::initializeScene(crude::core::float32 aspectRatio)
 {
   crude::resources::GLTF_Loader gltfLoader(m_world, m_rendererCoreCtx->transferCommandPool);
-  m_sceneNode = gltfLoader.loadNodeFromFile("../../../crude_editor/resources/sponza.glb");
+  m_sceneNode = gltfLoader.loadNodeFromFile("../../../crude_editor/resources/sponza2.glb");
   initializeCamera(aspectRatio);
 }
 

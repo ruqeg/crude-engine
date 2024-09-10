@@ -15,6 +15,7 @@ export import crude.graphics.subpass_description;
 export import crude.graphics.attachment_description;
 export import crude.graphics.image_attachment;
 export import crude.graphics.renderer_frame_system;
+export import crude.graphics.renderer_light_system;
 import crude.graphics.color_blend_state_create_info;
 import crude.graphics.depth_stencil_state_create_info;
 import crude.graphics.depth_stencil_state_create_info;
@@ -33,14 +34,6 @@ struct PBRDebug
   DirectX::XMFLOAT3A  diffCoeff;
   DirectX::XMFLOAT3A  specCoeff;
 };
-
-struct Point_Light
-{
-  DirectX::XMFLOAT3A  position;
-  DirectX::XMFLOAT3A  intensity;
-  core::float32       sourceRadius;
-};
-
 
 class Render_Pass;
 class Command_Buffer;
@@ -61,7 +54,7 @@ class Sampler;
 struct Renderer_Fullscreen_PBR_Pass_Ctx
 {
 public:
-  explicit Renderer_Fullscreen_PBR_Pass_Ctx(core::shared_ptr<Renderer_Frame_System_Ctx> frameCtx, core::shared_ptr<GBuffer> gbuffer);
+  explicit Renderer_Fullscreen_PBR_Pass_Ctx(core::shared_ptr<Renderer_Frame_System_Ctx> frameCtx, core::shared_ptr<Renderer_Light_Ctx> lightCtx, core::shared_ptr<GBuffer> gbuffer);
 private:
   core::shared_ptr<Descriptor_Set_Layout> createDescriptorSetLayout();
   void initializeRenderPass();
@@ -71,6 +64,7 @@ private:
   core::vector<Attachment_Description> getAttachmentsDescriptions();
     Color_Blend_State_Create_Info createColorBlendStateCreateInfo();
 public:
+  core::shared_ptr<Renderer_Light_Ctx>         lightCtx;
   core::shared_ptr<Renderer_Frame_System_Ctx>  frameCtx;
   core::shared_ptr<Sampler>                    sampler;
   core::shared_ptr<Render_Pass>                renderPass;
@@ -87,7 +81,6 @@ public:
   graphics::Storage_Buffer_Descriptor                           pointLightsBufferDescriptor;
   core::array<Uniform_Buffer_Descriptor, cFramesCount>          pbrDebugBufferDescriptors;
 
-  core::shared_ptr<graphics::Storage_Buffer>                    pointLightsBuffer;
   core::array<core::shared_ptr<graphics::Uniform_Buffer<PBRDebug>>, cFramesCount>          pbrDebugBuffers;
 };
 

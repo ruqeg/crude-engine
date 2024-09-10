@@ -21,11 +21,13 @@ public:
   core::float32 getFovRadians() const { return m_fovRadians; }
   core::float32 getNearZ() const { return m_nearZ;  }
   core::float32 getFarZ() const { return m_farZ; }
+  core::float32 getAspectRatio() const { return m_aspectRatio; }
 private:
   DirectX::XMFLOAT4X4     m_viewToClipFloat4x4;
   DirectX::XMFLOAT4X4     m_clipToViewFloat4x4;
   core::float32           m_fovRadians;
   core::float32           m_nearZ;
   core::float32           m_farZ;
+  core::float32           m_aspectRatio;
 };
 }

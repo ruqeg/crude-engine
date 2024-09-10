@@ -10,6 +10,8 @@ import crude.core.logger;
 import crude.core.alias;
 import crude.graphics.texture;
 import crude.scene.transform;
+import crude.scene.camera;
+import crude.scene.light;
 import crude.gui.imgui_texture_descriptor_set;
 import crude.scripts.free_camera_script;
 
@@ -84,6 +86,30 @@ void imguiEditorLayoutDrawSystemProcess(flecs::iter& it)
     {
       ImGui::DragFloat3("Moving Speed", &freeCameraScript->movingSpeedMultiplier.x);
       ImGui::DragFloat2("Rotating Speed", &freeCameraScript->rotatingSpeedMultiplier.x);
+    }
+
+    // !TODO :D
+    auto camera = editorLayoutCtx->selectedNode.get_mut<crude::scene::Camera>();
+    if (camera && ImGui::CollapsingHeader("Camera"))
+    {
+      crude::core::float32 farZ = camera->getFarZ();
+      crude::core::float32 nearZ = camera->getNearZ();
+      crude::core::float32 fov = camera->getFovRadians();
+      ImGui::InputFloat("Far Z", &farZ);
+      ImGui::InputFloat("Near Z", &nearZ);
+      ImGui::DragFloat3("FOV", &fov);
+      if (farZ != camera->getFarZ() || nearZ != camera->getNearZ() || fov != camera->getFovRadians())
+      {
+        camera->calculateViewToClipMatrix(fov, camera->getAspectRatio(), nearZ, farZ);
+      }
+    }
+
+    // !TODO :D
+    auto pointLightCPU = editorLayoutCtx->selectedNode.get_mut<crude::scene::Point_Light_CPU>();
+    if (pointLightCPU && ImGui::CollapsingHeader("Point Light"))
+    {
+      ImGui::DragFloat3("Intensity", &pointLightCPU->intensity.x);
+      ImGui::InputFloat("Source Radius", &pointLightCPU->sourceRadius);
     }
   }
   ImGui::End();

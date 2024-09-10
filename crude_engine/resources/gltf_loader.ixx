@@ -8,6 +8,7 @@ module;
 export module crude.resources.gltf_loader;
 
 export import crude.scene.mesh;
+export import crude.scene.light;
 export import crude.core.std_containers_heap;
 export import crude.core.std_containers_stack;
 import crude.core.logger;
@@ -33,7 +34,12 @@ public:
   flecs::entity loadNodeFromFile(const char* path);
   core::shared_ptr<graphics::Sampler> parseSampler(const tinygltf::Sampler& tinySampler);
   core::shared_ptr<graphics::Image> parseImage(const tinygltf::Image& tinyImage);
-  flecs::entity parseNode(const tinygltf::Node& tinyNode, flecs::entity_view parent, const core::vector<core::shared_ptr<scene::Mesh>>& meshes, const core::vector<core::shared_ptr<graphics::Mesh_Buffer>>& meshBuffers);
+  scene::Point_Light_CPU parsePointLight(const tinygltf::Light& tinyLight);
+  flecs::entity parseNode(const tinygltf::Node&                                         tinyNode, 
+                          flecs::entity_view                                            parent, 
+                          const core::vector<scene::Point_Light_CPU>&                   pointLights,
+                          const core::vector<core::shared_ptr<scene::Mesh>>&            meshes, 
+                          const core::vector<core::shared_ptr<graphics::Mesh_Buffer>>&  meshBuffers);
   core::vector<scene::Vertex> loadVerticesFromPrimitive(const tinygltf::Primitive& tinyPrimitive);
   core::vector<core::uint32> loadVertexIndicesFromPrimitive(const tinygltf::Primitive& tinyPrimitive);
   void loadBufferFromAccessor(const tinygltf::Accessor& tinyAccessor, core::byte* data, core::size_t elementSize, core::size_t byteStride);

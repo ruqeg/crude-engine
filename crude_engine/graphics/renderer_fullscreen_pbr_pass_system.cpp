@@ -85,6 +85,7 @@ void rendererFullscreenPBRPassSystemProcess(flecs::iter& it)
   Renderer_Fullscreen_PBR_Pass_Ctx* fullscreenPbrCtx = it.ctx<Renderer_Fullscreen_PBR_Pass_Ctx>();
   core::shared_ptr<Renderer_Frame_System_Ctx> frameCtx = fullscreenPbrCtx->frameCtx;
   core::shared_ptr<Renderer_Core_System_Ctx> coreCtx = frameCtx->coreCtx;
+  core::shared_ptr<Renderer_Light_Ctx> lightCtx = fullscreenPbrCtx->lightCtx;
 
   core::array<VkClearValue, 2u> clearValues;;
   clearValues[0].color = { {0.0f, 0.0f, 0.0f, 1.0f} };
@@ -123,7 +124,7 @@ void rendererFullscreenPBRPassSystemProcess(flecs::iter& it)
   fullscreenPbrCtx->metallicRoughnessTextureDescriptors[frameCtx->currentFrame].update(fullscreenPbrCtx->gbuffer->getMetallicRoughnessAttachmentView(), fullscreenPbrCtx->sampler);
   fullscreenPbrCtx->normalTextureDescriptors[frameCtx->currentFrame].update(fullscreenPbrCtx->gbuffer->getNormalAttachmentView(), fullscreenPbrCtx->sampler);
   fullscreenPbrCtx->depthTextureDescriptors[frameCtx->currentFrame].update(fullscreenPbrCtx->gbuffer->getDepthStencilAttachmentView(), fullscreenPbrCtx->sampler);
-  fullscreenPbrCtx->pointLightsBufferDescriptor.update(fullscreenPbrCtx->pointLightsBuffer, fullscreenPbrCtx->pointLightsBuffer->getSize());
+  fullscreenPbrCtx->pointLightsBufferDescriptor.update(fullscreenPbrCtx->lightCtx->pointLightsBuffer, fullscreenPbrCtx->lightCtx->pointLightsBuffer->getSize());
   fullscreenPbrCtx->pbrDebugBufferDescriptors[frameCtx->currentFrame].update(fullscreenPbrCtx->pbrDebugBuffers[frameCtx->currentFrame]);
 
   core::array<VkWriteDescriptorSet, 7u> descriptorWrites;
@@ -141,7 +142,7 @@ void rendererFullscreenPBRPassSystemProcess(flecs::iter& it)
   frameCtx->getFrameGraphicsCommandBuffer()->endRenderPass();
 }
 
-Renderer_Fullscreen_PBR_Pass_Ctx::Renderer_Fullscreen_PBR_Pass_Ctx(core::shared_ptr<Renderer_Frame_System_Ctx> frameCtx, core::shared_ptr<GBuffer> gbuffer)
+Renderer_Fullscreen_PBR_Pass_Ctx::Renderer_Fullscreen_PBR_Pass_Ctx(core::shared_ptr<Renderer_Frame_System_Ctx> frameCtx, core::shared_ptr<Renderer_Light_Ctx> lightCtx, core::shared_ptr<GBuffer> gbuffer)
   : perFrameBufferDescriptors{ cPerFrameUniformBufferDescriptor2, cPerFrameUniformBufferDescriptor2 }
   , albedoTextureDescriptors{ cAlbedoTextureDescriptor, cAlbedoTextureDescriptor }
   , metallicRoughnessTextureDescriptors{ cMetallicRoughnessTextureDescriptor, cMetallicRoughnessTextureDescriptor }
@@ -151,6 +152,7 @@ Renderer_Fullscreen_PBR_Pass_Ctx::Renderer_Fullscreen_PBR_Pass_Ctx(core::shared_
   , pbrDebugBufferDescriptors { cPbrDebugBufferDescriptor, cPbrDebugBufferDescriptor }
   , frameCtx{ frameCtx }
   , gbuffer{ gbuffer }
+  , lightCtx{ lightCtx }
 {
   core::shared_ptr<Renderer_Core_System_Ctx> coreCtx = frameCtx->coreCtx;
 
@@ -168,14 +170,6 @@ Renderer_Fullscreen_PBR_Pass_Ctx::Renderer_Fullscreen_PBR_Pass_Ctx(core::shared_
   initializeRenderPass();
   initalizeGraphicsPipeline();
   initializeFramebuffers();
-
-  core::array<Point_Light, 1> pointLights;
-  DirectX::XMStoreFloat3(&pointLights[0].intensity, DirectX::XMVectorSet(1, 1, 1, 1));;
-  DirectX::XMStoreFloat3(&pointLights[0].position, DirectX::XMVectorSet(0, 5, 0, 1));
-  pointLights[0].sourceRadius = 0.2;
-
-  auto commandBuffer = core::allocateShared<graphics::Command_Buffer>(coreCtx->graphicsCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
-  pointLightsBuffer = core::allocateShared<graphics::Storage_Buffer>(commandBuffer, pointLights);
 
   for (core::uint32 i = 0; i < cFramesCount; ++i)
   {

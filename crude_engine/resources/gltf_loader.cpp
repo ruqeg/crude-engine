@@ -75,7 +75,7 @@ flecs::entity GLTF_Loader::loadNodeFromFile(const char* path)
   // Load meshes
   core::vector<core::shared_ptr<scene::Mesh>> meshes;
   meshes.reserve(m_tinyModel.meshes.size());
-
+  
   for (const tinygltf::Mesh& tinyMesh : m_tinyModel.meshes)
   {
     core::shared_ptr<scene::Mesh> mesh = core::allocateShared<scene::Mesh>();
@@ -158,10 +158,20 @@ flecs::entity GLTF_Loader::loadNodeFromFile(const char* path)
     meshBuffers.push_back(core::allocateShared<graphics::Mesh_Buffer>(commandBuffer, *mesh));
   }
 
+  // Load lights
+  core::vector<scene::Point_Light_CPU> pointLights;
+  for (const tinygltf::Light& tinyLight : m_tinyModel.lights)
+  {
+    if (tinyLight.type == "point")
+    {
+      pointLights.push_back(parsePointLight(tinyLight));
+    }
+  }
+
   // Load nodes
   for (const tinygltf::Node& tinyNode : m_tinyModel.nodes)
   {
-    flecs::entity child = parseNode(tinyNode, node, meshes, meshBuffers);
+    flecs::entity child = parseNode(tinyNode, node, pointLights, meshes, meshBuffers);
     child.child_of(node);
   }
 
@@ -209,6 +219,15 @@ core::shared_ptr<graphics::Image> GLTF_Loader::parseImage(const tinygltf::Image&
   return image;
 }
 
+scene::Point_Light_CPU GLTF_Loader::parsePointLight(const tinygltf::Light& tinyLight)
+{
+  scene::Point_Light_CPU pointLight;
+  const DirectX::XMVECTOR color = tinyLight.color.size() > 0 ? DirectX::XMVectorSet(tinyLight.color[0], tinyLight.color[1], tinyLight.color[2], tinyLight.color[3]) : DirectX::XMVectorSplatOne();
+  DirectX::XMStoreFloat3(&pointLight.intensity, DirectX::XMVectorScale(color, tinyLight.intensity));
+  pointLight.sourceRadius = 0.5;
+  return pointLight;
+}
+
 bool GLTF_Loader::loadModelFromFile(const char* path)
 {
   tinygltf::TinyGLTF tinyLoader;
@@ -237,10 +256,20 @@ bool GLTF_Loader::loadModelFromFile(const char* path)
   return true;
 }
 
-flecs::entity GLTF_Loader::parseNode(const tinygltf::Node& tinyNode, flecs::entity_view parent, const core::vector<core::shared_ptr<scene::Mesh>>& meshes, const core::vector<core::shared_ptr<graphics::Mesh_Buffer>>& meshBuffers)
+
+flecs::entity GLTF_Loader::parseNode(const tinygltf::Node&                                         tinyNode,
+                                     flecs::entity_view                                            parent, 
+                                     const core::vector<scene::Point_Light_CPU>&                   pointLights,
+                                     const core::vector<core::shared_ptr<scene::Mesh>>&            meshes, 
+                                     const core::vector<core::shared_ptr<graphics::Mesh_Buffer>>&  meshBuffers)
 {
   static core::uint32 uniqueNodeID = 0u;
   flecs::entity node(m_world, tinyNode.name.empty() ? ("Node " + std::to_string(uniqueNodeID++)).c_str() : tinyNode.name.c_str());
+  
+  if (tinyNode.light != -1)
+  {
+    node.set<scene::Point_Light_CPU>(pointLights[tinyNode.light]);
+  }
 
   if (tinyNode.matrix.size() > 0)
   {
@@ -261,7 +290,7 @@ flecs::entity GLTF_Loader::parseNode(const tinygltf::Node& tinyNode, flecs::enti
 
   for (core::uint32 childIndex : tinyNode.children)
   {
-    flecs::entity child = parseNode(m_tinyModel.nodes[childIndex], node, meshes, meshBuffers);
+    flecs::entity child = parseNode(m_tinyModel.nodes[childIndex], node, pointLights, meshes, meshBuffers);
     child.child_of(node);
   }
   return node;

@@ -15,6 +15,7 @@ import crude.platform.sdl_window_container;
 import crude.gui.imgui_helper;
 import crude.gui.imgui_input_system;
 import crude.scene.mesh;
+import crude.scene.light;
 
 namespace crude
 {
@@ -93,13 +94,19 @@ void Engine::initializeRendererSystems()
   m_rendererCoreCtx = core::allocateShared<graphics::Renderer_Core_System_Ctx>(m_windowContainer);
   m_rendererFrameCtx = core::allocateShared<graphics::Renderer_Frame_System_Ctx>(m_rendererCoreCtx);
   m_rendererDeferredGBufferPassCtx = core::allocateShared<graphics::Renderer_Deferred_GBuffer_Pass_Systen_Ctx>(m_rendererFrameCtx);
-  m_rendererFullscreenPbrPassCtx = core::allocateShared<graphics::Renderer_Fullscreen_PBR_Pass_Ctx>(m_rendererFrameCtx, m_rendererDeferredGBufferPassCtx->gbuffer);
+  m_rendererLightCtx = core::allocateShared<graphics::Renderer_Light_Ctx>(m_rendererCoreCtx);
+  m_rendererFullscreenPbrPassCtx = core::allocateShared<graphics::Renderer_Fullscreen_PBR_Pass_Ctx>(m_rendererFrameCtx, m_rendererLightCtx, m_rendererDeferredGBufferPassCtx->gbuffer);
   m_rendererImguiPassCtx = core::allocateShared<gui::Renderer_ImGui_Pass_System_Ctx>(m_rendererFrameCtx);
 
   flecs::system deferredGBufferPassSystem = m_world.system<core::shared_ptr<graphics::Mesh_Buffer>, core::shared_ptr<scene::Mesh>>("DeferredGBufferPassSystem")
     .ctx(m_rendererDeferredGBufferPassCtx.get())
     .kind(0)
     .run(graphics::rendererDeferredGBufferPassSystemProcess);
+
+  m_lightUpdateSystem = m_world.system<scene::Point_Light_CPU>("LightUpdateSystem")
+    .ctx(m_rendererLightCtx.get())
+    .kind(0)
+    .run(graphics::rendererLightUpdateSystemProcess);
 
   flecs::system frameStartSystem = m_world.system("FrameStartSystem")
     .ctx(m_rendererFrameCtx.get())

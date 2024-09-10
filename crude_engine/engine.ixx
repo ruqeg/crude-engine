@@ -36,10 +36,13 @@ protected:
   flecs::system                                                          m_rendererSystem;
   flecs::entity                                                          m_sceneNode;
 
+  flecs::system                                                          m_lightUpdateSystem;
+
   core::shared_ptr<platform::Input_System_Context>                       m_inputSystemCtx;
   core::shared_ptr<graphics::Renderer_Core_System_Ctx>                   m_rendererCoreCtx;
   core::shared_ptr<graphics::Renderer_Frame_System_Ctx>                  m_rendererFrameCtx;
   core::shared_ptr<graphics::Renderer_Deferred_GBuffer_Pass_Systen_Ctx>  m_rendererDeferredGBufferPassCtx;
+  core::shared_ptr<graphics::Renderer_Light_Ctx>                         m_rendererLightCtx;
   core::shared_ptr<graphics::Renderer_Fullscreen_PBR_Pass_Ctx>           m_rendererFullscreenPbrPassCtx;
   core::shared_ptr<gui::Renderer_ImGui_Pass_System_Ctx>                  m_rendererImguiPassCtx;
   core::shared_ptr<platform::SDL_Window_Container>                       m_windowContainer;

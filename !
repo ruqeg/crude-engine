@@ -1,0 +1,32 @@
+simple draft light system
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# Date:      Tue Sep 10 11:27:19 2024 +0200
+#
+# On branch main
+# Your branch is ahead of 'origin/main' by 2 commits.
+#   (use "git push" to publish your local commits)
+#
+# Changes to be committed:
+#	new file:   crude_editor/resources/sponza2.glb
+#	modified:   crude_editor/source/application.cpp
+#	modified:   crude_editor/source/gui/imgui_editor_layout_draw_system.cpp
+#	modified:   crude_engine/engine.cpp
+#	modified:   crude_engine/engine.ixx
+#	modified:   crude_engine/graphics/CMakeLists.txt
+#	modified:   crude_engine/graphics/renderer_fullscreen_pbr_pass_system.cpp
+#	modified:   crude_engine/graphics/renderer_fullscreen_pbr_pass_system.ixx
+#	new file:   crude_engine/graphics/renderer_light_system.cpp
+#	new file:   crude_engine/graphics/renderer_light_system.ixx
+#	modified:   crude_engine/resources/gltf_loader.cpp
+#	modified:   crude_engine/resources/gltf_loader.ixx
+#	modified:   crude_engine/scene/CMakeLists.txt
+#	modified:   crude_engine/scene/camera.cpp
+#	modified:   crude_engine/scene/camera.ixx
+#	new file:   crude_engine/scene/light.ixx
+#
+# Changes not staged for commit:
+#	modified:   crude_editor/source/gui/imgui_editor_layout_draw_system.cpp
+#
