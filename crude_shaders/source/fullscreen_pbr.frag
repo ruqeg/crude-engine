@@ -87,8 +87,8 @@ void main()
   const vec3 textureNormal  = unpackOctahedron(packedSurfaceNormalTextureNormal.zw);
   
   const vec4 viewPosition  = viewFromDepth(screenUV, depth, camera.clipToView);
-  const vec4 worldPosition = camera.viewToWorld * viewPosition;
+  const vec4 worldPosition = viewPosition * camera.viewToWorld;
   
   const vec3 lightOut = pbrSceneLightOut(worldPosition.xyz, textureNormal, albedo.rgb, metalness, roughness);
-  outColor = vec4(lightOut, 1);
+  outColor = vec4(lightOut.xyz / 5, 1);
 }

@@ -54,7 +54,7 @@ vec4 viewFromDepth(vec2 texCoord, float depth, mat4x4 clipToView)
 {
   const float z = depth;
   const float x = texCoord.x * 2.f - 1.f;
-  const float y = (1 - texCoord.y) * 2.f - 1.f;
+  const float y = texCoord.y * 2.f - 1.f;
   const vec4 projPosition = vec4(x, y, z, 1.f);
   const vec4 positonVS = projPosition * clipToView;
   const vec4 viewPosition = positonVS / positonVS.w;
