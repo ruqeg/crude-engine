@@ -105,7 +105,7 @@ void Engine::initializeRendererSystems()
 
   m_lightUpdateSystem = m_world.system<scene::Point_Light_CPU>("LightUpdateSystem")
     .ctx(m_rendererLightCtx.get())
-    .kind(0)
+    .kind(flecs::OnUpdate)
     .run(graphics::rendererLightUpdateSystemProcess);
 
   flecs::system frameStartSystem = m_world.system("FrameStartSystem")

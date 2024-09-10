@@ -3,6 +3,7 @@
 #include <imgui/backends/imgui_impl_sdl3.h>
 #include <imgui/backends/imgui_impl_vulkan.h>
 #include <functional>
+#include <DirectXMath.h>
 
 module gui.imgui_editor_layout_draw_system;
 
@@ -74,8 +75,8 @@ void imguiEditorLayoutDrawSystemProcess(flecs::iter& it)
     {
       auto translation = transform->getTranslationFloat3();
       auto scale = transform->getScaleFloat3();
-      ImGui::DragFloat3("Translation", &translation.x);
-      ImGui::DragFloat3("Scale", &scale.x);
+      ImGui::DragFloat3("Translation", &translation.x, .1);
+      ImGui::DragFloat3("Scale", &scale.x, .1);
       transform->setTranslation(translation);
       transform->setScale(scale);
     }
@@ -84,8 +85,8 @@ void imguiEditorLayoutDrawSystemProcess(flecs::iter& it)
     auto freeCameraScript = editorLayoutCtx->selectedNode.get_mut<crude::scripts::Free_Camera_Script_Component>();
     if (freeCameraScript && ImGui::CollapsingHeader("Free Camera Script"))
     {
-      ImGui::DragFloat3("Moving Speed", &freeCameraScript->movingSpeedMultiplier.x);
-      ImGui::DragFloat2("Rotating Speed", &freeCameraScript->rotatingSpeedMultiplier.x);
+      ImGui::DragFloat3("Moving Speed", &freeCameraScript->movingSpeedMultiplier.x, .1);
+      ImGui::DragFloat2("Rotating Speed", &freeCameraScript->rotatingSpeedMultiplier.x, .1);
     }
 
     // !TODO :D
@@ -97,7 +98,7 @@ void imguiEditorLayoutDrawSystemProcess(flecs::iter& it)
       crude::core::float32 fov = camera->getFovRadians();
       ImGui::InputFloat("Far Z", &farZ);
       ImGui::InputFloat("Near Z", &nearZ);
-      ImGui::DragFloat3("FOV", &fov);
+      ImGui::SliderAngle("FOV", &fov);
       if (farZ != camera->getFarZ() || nearZ != camera->getNearZ() || fov != camera->getFovRadians())
       {
         camera->calculateViewToClipMatrix(fov, camera->getAspectRatio(), nearZ, farZ);
@@ -108,8 +109,10 @@ void imguiEditorLayoutDrawSystemProcess(flecs::iter& it)
     auto pointLightCPU = editorLayoutCtx->selectedNode.get_mut<crude::scene::Point_Light_CPU>();
     if (pointLightCPU && ImGui::CollapsingHeader("Point Light"))
     {
-      ImGui::DragFloat3("Intensity", &pointLightCPU->intensity.x);
-      ImGui::InputFloat("Source Radius", &pointLightCPU->sourceRadius);
+      // !TODO :D
+      ImGui::ColorEdit4("Color", &pointLightCPU->intensity.x);
+      ImGui::DragFloat3("Intensity", &pointLightCPU->intensity.x, .1);
+      ImGui::InputFloat("Source Radius", &pointLightCPU->sourceRadius, .1);
     }
   }
   ImGui::End();
