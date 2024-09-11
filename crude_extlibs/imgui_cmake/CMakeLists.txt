@@ -18,7 +18,7 @@ endif()
 set(IMGUI_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/imgui")
 set(IMGUI_BACKENDS_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/imgui/backends")
 
-target_include_directories(imgui PRIVATE ${IMGUI_SOURCE_DIR})
+target_include_directories(imgui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${IMGUI_SOURCE_DIR})
 
 target_sources(imgui PRIVATE
   ${IMGUI_SOURCE_DIR}/imgui.cpp
@@ -36,9 +36,6 @@ target_sources(imgui PRIVATE
   ${IMGUI_BACKENDS_SOURCE_DIR}/imgui_impl_vulkan.cpp
   ${IMGUI_BACKENDS_SOURCE_DIR}/imgui_impl_sdl3.h
   ${IMGUI_BACKENDS_SOURCE_DIR}/imgui_impl_vulkan.h)
-
-# !TODO
-target_include_directories(imgui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${IMGUI_SOURCE_DIR})
 
 install(TARGETS imgui
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

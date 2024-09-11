@@ -4,7 +4,7 @@ project(crude_editor CXX)
 
 add_executable(crude_editor WIN32)
 
-target_link_libraries(crude_editor PUBLIC crude_engine)
+target_link_libraries(crude_editor PUBLIC crude_engine imguizmo)
 
 if(MSVC)
  target_compile_options(crude_editor PRIVATE "/MP")

@@ -57,6 +57,8 @@ void Application::initialize()
   m_lightUpdateSystem.run();
 
   m_editorLayoutCtx->sceneNode = m_sceneNode;
+  m_editorLayoutCtx->cameraNode = m_rendererFrameCtx->cameraNode;
+  m_editorLayoutCtx->selectedNode = m_editorLayoutCtx->cameraNode;
 }
 
 void Application::run()
