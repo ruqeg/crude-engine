@@ -18,7 +18,7 @@ public:
   void deinitialize();
 private:
   void initializeScene(crude::core::float32 aspectRatio);
-  void initializeCamera(crude::core::float32 aspectRatio);
+  void initializeEditorCamera(crude::core::float32 aspectRatio);
 private:
   flecs::system                                               m_freeCameraUpdateSystem;
   crude::core::shared_ptr<gui::Imgui_Editor_Layout_Draw_Ctx>  m_editorLayoutCtx;

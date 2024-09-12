@@ -175,6 +175,7 @@ flecs::entity GLTF_Loader::loadNodeFromFile(const char* path)
     child.child_of(node);
   }
 
+  node.set<scene::Transform>(scene::Transform(node));
   return node;
 }
 

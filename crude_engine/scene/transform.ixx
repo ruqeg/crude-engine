@@ -49,6 +49,7 @@ public:
   DirectX::XMVECTOR getTranslationVector() const { return DirectX::XMLoadFloat3(&m_translationFloat3); }
   DirectX::XMVECTOR getRotationQuaternion() const { return DirectX::XMLoadFloat4(&m_rotationFloat4); }
   DirectX::XMVECTOR getScaleVector() const { return DirectX::XMLoadFloat3(&m_scaleFloat3); }
+  DirectX::XMFLOAT4X4 getNodeToParentFloat4x4() const;
   DirectX::XMVECTOR getWorldBasisUpVector();
   DirectX::XMVECTOR getWorldBasisRightVector();
   DirectX::XMVECTOR getWorldBasisForwardVector();

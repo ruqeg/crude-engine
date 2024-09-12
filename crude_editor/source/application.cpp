@@ -53,12 +53,13 @@ void Application::initialize()
     .run(crude::scripts::freeCameraScriptUpdateSystemProcess);
 
   initializeScene(1000.0 / 800.0);
+  initializeEditorCamera(1000.0 / 800.0);
 
   m_lightUpdateSystem.run();
 
   m_editorLayoutCtx->sceneNode = m_sceneNode;
   m_editorLayoutCtx->cameraNode = m_rendererFrameCtx->cameraNode;
-  m_editorLayoutCtx->selectedNode = m_editorLayoutCtx->cameraNode;
+  m_editorLayoutCtx->selectedNode = m_sceneNode;
 }
 
 void Application::run()
@@ -74,12 +75,11 @@ void Application::initializeScene(crude::core::float32 aspectRatio)
 {
   crude::resources::GLTF_Loader gltfLoader(m_world, m_rendererCoreCtx->transferCommandPool);
   m_sceneNode = gltfLoader.loadNodeFromFile("../../../crude_editor/resources/sponza2.glb");
-  initializeCamera(aspectRatio);
 }
 
-void Application::initializeCamera(crude::core::float32 aspectRatio)
+void Application::initializeEditorCamera(crude::core::float32 aspectRatio)
 {
-  flecs::entity cameraNode = m_world.entity("Camera Node");
+  flecs::entity cameraNode = m_world.entity("Editor Camera");
   cameraNode.set<crude::scene::Camera>([aspectRatio]() {
     crude::scene::Camera camera;
     camera.calculateViewToClipMatrix(DirectX::XM_PIDIV4, aspectRatio, 0.05f, 100.0f);
@@ -91,6 +91,5 @@ void Application::initializeCamera(crude::core::float32 aspectRatio)
     return transform;
     }());
   cameraNode.set<crude::scripts::Free_Camera_Script_Component>(crude::scripts::Free_Camera_Script_Component());
-  cameraNode.child_of(m_sceneNode);
   m_rendererFrameCtx->cameraNode = cameraNode;
 }

@@ -198,6 +198,13 @@ const DirectX::XMFLOAT4X4& Transform::getWorldToNodeFloat4x4()
   return m_worldToNodeFloat4x4;
 }
 
+DirectX::XMFLOAT4X4 Transform::getNodeToParentFloat4x4() const
+{
+  DirectX::XMFLOAT4X4 nodeToParent;
+  DirectX::XMStoreFloat4x4(&nodeToParent, getNodeToParentMatrix());
+  return nodeToParent;
+}
+
 // !TODO
 DirectX::XMVECTOR Transform::getWorldBasisUpVector()
 {

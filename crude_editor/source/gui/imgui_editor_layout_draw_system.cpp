@@ -6,6 +6,7 @@
 #include <functional>
 #include <DirectXMath.h>
 #include <ImGuizmo/ImGuizmo.h>
+#include <algorithm>
 
 module gui.imgui_editor_layout_draw_system;
 
@@ -116,31 +117,31 @@ void imguiEditorLayoutDrawSystemProcess(flecs::iter& it)
     auto camera = editorLayoutCtx->cameraNode.get_mut<crude::scene::Camera>();
     auto cameraTransform = editorLayoutCtx->cameraNode.get_mut<crude::scene::Transform>();
     auto selectedNodeTransform = editorLayoutCtx->selectedNode.get_mut<crude::scene::Transform>();
-    DirectX::XMFLOAT4X4 cameraViewToClip = camera->getViewToClipFloat4x4();
-    DirectX::XMFLOAT4X4 cameraWorldToView = cameraTransform->getWorldToNodeFloat4x4();
+    const DirectX::XMFLOAT4X4 cameraViewToClip = camera->getViewToClipFloat4x4();
+    const DirectX::XMFLOAT4X4 cameraWorldToView = cameraTransform->getWorldToNodeFloat4x4();
     DirectX::XMFLOAT4X4 selectedNodeToWorld = selectedNodeTransform->getNodeToWorldFloat4x4();
 
     ImGuizmo::SetID(0);
     ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, ImGui::GetWindowWidth(), ImGui::GetWindowHeight());
     ImGuizmo::Manipulate(&cameraWorldToView._11, &cameraViewToClip._11, currentGizmoOperation, currentGizmoMode, &selectedNodeToWorld._11, NULL, NULL);
 
-    DirectX::XMFLOAT3 newTranslation, newRotation, newScale;
-    ImGuizmo::DecomposeMatrixToComponents(&selectedNodeToWorld.m[0][0], &newTranslation.x, &newRotation.x, &newScale.x);
-    DirectX::XMVECTOR newQuaternion = DirectX::XMQuaternionRotationRollPitchYaw(newRotation.x, newRotation.y, newRotation.z);
-
-    if (DirectX::XMVector3NotEqual(selectedNodeTransform->getTranslationVector(), DirectX::XMLoadFloat3(&newTranslation)))
+    // !TODO just use !=
+    bool selectedNodeToWorldNotEqual = false;
+    for (size_t i = 0; i < 4; ++i)
     {
-      selectedNodeTransform->setTranslation(newTranslation);
+      for (size_t k = 0; k < 4; ++k)
+      {
+        if (std::abs(selectedNodeTransform->getNodeToWorldFloat4x4().m[i][k] - selectedNodeToWorld.m[i][k]) > 0.0001f)
+        {
+          selectedNodeToWorldNotEqual = true;
+          break;
+        }
+      }
     }
-    else if (DirectX::XMQuaternionNotEqual(selectedNodeTransform->getRotationQuaternion(), newQuaternion))
+    if (selectedNodeToWorldNotEqual)
     {
-      selectedNodeTransform->setRotationQuaternion(newQuaternion);
+      selectedNodeTransform->setNodeToParent(selectedNodeToWorld);
     }
-    else if (DirectX::XMVector3NotEqual(selectedNodeTransform->getScaleVector(), DirectX::XMLoadFloat3(&newScale)))
-    {
-      selectedNodeTransform->setScale(newScale);
-    }
-
     ImGui::End();
     };
 
