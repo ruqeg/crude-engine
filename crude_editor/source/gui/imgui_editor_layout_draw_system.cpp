@@ -7,6 +7,7 @@
 #include <DirectXMath.h>
 #include <ImGuizmo/ImGuizmo.h>
 #include <algorithm>
+#include <format>
 
 module gui.imgui_editor_layout_draw_system;
 
@@ -18,9 +19,73 @@ import crude.scene.camera;
 import crude.scene.light;
 import crude.gui.imgui_texture_descriptor_set;
 import crude.scripts.free_camera_script;
+import crude.core.std_containers_heap;
+
+// TODO refactore this code in some day, but for now...
 
 namespace gui
 {
+
+enum class ComponentType
+{
+  Transform,
+  FreeCameraScript,
+  Camera,
+  PointLight
+};
+
+constexpr crude::core::array<ComponentType, 4> cComponentsTypes =
+{
+  ComponentType::Transform,
+  ComponentType::FreeCameraScript,
+  ComponentType::Camera,
+  ComponentType::PointLight
+};
+
+const char* componentTypeToStr(ComponentType componentType)
+{
+  switch (componentType)
+  {
+  case ComponentType::Transform: return "Transform";
+  case ComponentType::FreeCameraScript: return "Free Camera Script";
+  case ComponentType::PointLight: return "Point Light";
+  case ComponentType::Camera: return "Camera";
+  default: return "Unkown";
+  };
+}
+
+void addComponentToNode(flecs::entity node, ComponentType componentType)
+{
+  switch (componentType)
+  {
+  case ComponentType::Transform:
+    if (!node.has<crude::scene::Transform>())
+    {
+      node.set<crude::scene::Transform>(crude::scene::Transform{ node });
+    }
+    break;
+  case ComponentType::FreeCameraScript:
+    if (!node.has<crude::scripts::Free_Camera_Script_Component>())
+    {
+      node.set<crude::scripts::Free_Camera_Script_Component>(crude::scripts::Free_Camera_Script_Component());
+    }
+    break;
+  case ComponentType::PointLight:
+    if (!node.has<crude::scene::Point_Light_CPU>())
+    {
+      node.set<crude::scene::Point_Light_CPU>(crude::scene::Point_Light_CPU());
+    }
+    break;
+  case ComponentType::Camera:
+    if (!node.has<crude::scene::Camera>())
+    {
+      node.set<crude::scene::Camera>(crude::scene::Camera());
+    }
+    break;
+  default:
+    break;
+  };
+}
 
 Imgui_Editor_Layout_Draw_Ctx::Imgui_Editor_Layout_Draw_Ctx(crude::core::shared_ptr<crude::gui::ImGui_Texture_Descriptor_Set> sceneImguiTextureDescriptorSet)
   : sceneImguiTextureDescriptorSet{ sceneImguiTextureDescriptorSet }
@@ -63,6 +128,57 @@ void imguiEditorLayoutDrawSystemProcess(flecs::iter& it)
         editorLayoutCtx->nodeClickedIndex = nodeIndex;
       }
 
+      if (ImGui::BeginDragDropSource())
+      {
+        ImGui::SetDragDropPayload(node.name(), NULL, 0);
+        ImGui::Text(node.name());
+        ImGui::EndDragDropSource();
+      }
+
+     /* if (ImGui::Button("Select.."))
+        ImGui::OpenPopup("my_select_popup");
+      ImGui::SameLine();
+      ImGui::TextUnformatted(selected_fish == -1 ? "<None>" : names[selected_fish]);
+      if (ImGui::BeginPopup("my_select_popup"))
+      {
+        ImGui::SeparatorText("Aquarium");
+        for (int i = 0; i < IM_ARRAYSIZE(names); i++)
+          if (ImGui::Selectable(names[i]))
+            selected_fish = i;
+        ImGui::EndPopup();
+      }*/
+
+      std::string popupID = std::format("NodePopUp {}", node.name().c_str());
+
+      if (ImGui::IsItemClicked(1) && !ImGui::IsItemToggledOpen())
+      {
+        ImGui::OpenPopup(popupID.c_str());
+      }
+
+      if (ImGui::BeginPopup(popupID.c_str()))
+      {
+        if (ImGui::BeginMenu("Add Component"))
+        {
+          for (ComponentType componentType : cComponentsTypes)
+          {
+            if (ImGui::MenuItem(componentTypeToStr(componentType)))
+            {
+              addComponentToNode(node, componentType);
+            }
+          }
+          ImGui::EndMenu();
+        }
+
+        if (ImGui::MenuItem("Add Node"))
+        {
+          static crude::core::uint16 uniqueIndex = 0;
+          flecs::entity newEntity = node.world().entity(std::format("Added Node {}", uniqueIndex++).c_str());
+          newEntity.set<crude::scene::Transform>(crude::scene::Transform(newEntity));
+          newEntity.child_of(node);
+        }
+        ImGui::EndPopup();
+      }
+
       nodeIndex++;
       if (nodeOpen)
       {
@@ -71,6 +187,7 @@ void imguiEditorLayoutDrawSystemProcess(flecs::iter& it)
       }
       };
     drawNode(editorLayoutCtx->sceneNode);
+
     ImGui::End();
     };
 
