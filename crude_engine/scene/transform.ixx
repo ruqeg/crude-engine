@@ -38,6 +38,7 @@ public:
   void addRotationAxis(DirectX::FXMVECTOR vector, core::float32 rotation);
   void setNodeToParent(const DirectX::XMFLOAT4X4& nodeToParent);
   void setNodeToParent(DirectX::FXMMATRIX nodeToParent);
+  DirectX::XMMATRIX getParentToWorldMatrix();
   DirectX::XMMATRIX getNodeToParentMatrix() const;
   DirectX::XMMATRIX getNodeToWorldMatrix();
   DirectX::XMMATRIX getWorldToNodeMatrix();

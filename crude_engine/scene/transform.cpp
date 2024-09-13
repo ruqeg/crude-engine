@@ -171,6 +171,19 @@ void Transform::setNodeToParent(DirectX::FXMMATRIX nodeToParent)
   decomposeNodeToParent(nodeToParent);
 }
 
+DirectX::XMMATRIX Transform::getParentToWorldMatrix()
+{
+  flecs::entity parent = m_node.parent();
+  
+  if (!parent.is_valid() || !parent.has<scene::Transform>())
+  {
+    return DirectX::XMMatrixIdentity();
+  }
+
+  Transform* transform = parent.get_mut<Transform>();
+  return transform->getNodeToWorldMatrix();
+}
+
 DirectX::XMMATRIX Transform::getNodeToParentMatrix() const
 {
   return DirectX::XMMatrixAffineTransformation(getScaleVector(), DirectX::XMVectorZero(), getRotationQuaternion(), getTranslationVector());

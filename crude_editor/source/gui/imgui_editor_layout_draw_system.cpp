@@ -235,12 +235,13 @@ void imguiEditorLayoutDrawSystemProcess(flecs::iter& it)
     auto cameraTransform = editorLayoutCtx->cameraNode.get_mut<crude::scene::Transform>();
     auto selectedNodeTransform = editorLayoutCtx->selectedNode.get_mut<crude::scene::Transform>();
     const DirectX::XMFLOAT4X4 cameraViewToClip = camera->getViewToClipFloat4x4();
-    const DirectX::XMFLOAT4X4 cameraWorldToView = cameraTransform->getWorldToNodeFloat4x4();
-    DirectX::XMFLOAT4X4 selectedNodeToWorld = selectedNodeTransform->getNodeToWorldFloat4x4();
+    DirectX::XMFLOAT4X4 selectedNodeToParent = selectedNodeTransform->getNodeToParentFloat4x4();
+    DirectX::XMFLOAT4X4 selectedParentToCameraView;
+    DirectX::XMStoreFloat4x4(&selectedParentToCameraView, DirectX::XMMatrixMultiply(selectedNodeTransform->getParentToWorldMatrix(), cameraTransform->getWorldToNodeMatrix()));
 
     ImGuizmo::SetID(0);
     ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, ImGui::GetWindowWidth(), ImGui::GetWindowHeight());
-    ImGuizmo::Manipulate(&cameraWorldToView._11, &cameraViewToClip._11, currentGizmoOperation, currentGizmoMode, &selectedNodeToWorld._11, NULL, NULL);
+    ImGuizmo::Manipulate(&selectedParentToCameraView._11, &cameraViewToClip._11, currentGizmoOperation, currentGizmoMode, &selectedNodeToParent._11, NULL, NULL);
 
     // !TODO just use !=
     bool selectedNodeToWorldNotEqual = false;
@@ -248,7 +249,7 @@ void imguiEditorLayoutDrawSystemProcess(flecs::iter& it)
     {
       for (size_t k = 0; k < 4; ++k)
       {
-        if (std::abs(selectedNodeTransform->getNodeToWorldFloat4x4().m[i][k] - selectedNodeToWorld.m[i][k]) > 0.0001f)
+        if (std::abs(selectedNodeTransform->getNodeToParentFloat4x4().m[i][k] - selectedNodeToParent.m[i][k]) > 0.0001f)
         {
           selectedNodeToWorldNotEqual = true;
           break;
@@ -257,7 +258,7 @@ void imguiEditorLayoutDrawSystemProcess(flecs::iter& it)
     }
     if (selectedNodeToWorldNotEqual)
     {
-      selectedNodeTransform->setNodeToParent(selectedNodeToWorld);
+      selectedNodeTransform->setNodeToParent(selectedNodeToParent);
     }
     ImGui::End();
     };
