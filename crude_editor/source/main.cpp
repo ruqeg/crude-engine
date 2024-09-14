@@ -2,7 +2,7 @@
 #define VK_USE_PLATFORM_WIN32_KHR
 #include <Windows.h>
 
-import application;
+import crude.editor.application;
 
 int APIENTRY wWinMain(_In_ HINSTANCE      hInstance,
                       _In_opt_ HINSTANCE  hPrevInstance,
@@ -11,7 +11,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE      hInstance,
 {
   crude::Engine::preinitialize(600000000);
   {
-    Application application;
+    crude::editor::Application application;
     application.initialize();
     application.run();
     application.deinitialize();

@@ -6,7 +6,7 @@ module;
 #include <imgui/backends/imgui_impl_sdl3.h>
 #include <imgui/backends/imgui_impl_vulkan.h>
 
-export module gui.imgui_editor_layout_draw_system;
+export module crude.editor.gui.imgui_editor_layout_draw_system;
 
 export import crude.core.std_containers_heap;
 
@@ -15,19 +15,26 @@ export namespace crude::gui
 class ImGui_Texture_Descriptor_Set;
 }
 
-export namespace gui
+export namespace crude::editor::gui
 {
 
 struct Imgui_Editor_Layout_Draw_Ctx
 {
-  explicit Imgui_Editor_Layout_Draw_Ctx(crude::core::shared_ptr<crude::gui::ImGui_Texture_Descriptor_Set> sceneImguiTextureDescriptorSet);
-  crude::core::shared_ptr<crude::gui::ImGui_Texture_Descriptor_Set> sceneImguiTextureDescriptorSet;
-  flecs::entity                                                     sceneNode;
-  flecs::entity                                                     cameraNode;
-  crude::core::int32                                                nodeClickedIndex;
-  flecs::entity                                                     selectedNode;
+  core::shared_ptr<crude::gui::ImGui_Texture_Descriptor_Set> viewportImguiTexture;
+  flecs::entity                                              sceneNode;
+  flecs::entity                                              editorCameraNode;
+  flecs::entity                                              editorSelectedNode;
 };
 
 void imguiEditorLayoutDrawSystemProcess(flecs::iter& it);
 
+}
+
+namespace crude::editor::gui
+{
+void preDraw(Imgui_Editor_Layout_Draw_Ctx* layoutCtx);
+void drawMainMenuBar(Imgui_Editor_Layout_Draw_Ctx* layoutCtx);
+void drawInspectorWindow(flecs::entity editorSelectedNode);
+void drawViewportWindow(Imgui_Editor_Layout_Draw_Ctx* layoutCtx);
+void drawSceneWindow(Imgui_Editor_Layout_Draw_Ctx* layoutCtx);
 }

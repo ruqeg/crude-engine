@@ -26,3 +26,12 @@
 [submodule "crude_extlibs/imguizmo_cmake/ImGuizmo"]
 	path = crude_extlibs/imguizmo_cmake/ImGuizmo
 	url = https://github.com/CedricGuillemet/ImGuizmo.git
+[submodule "crude_extlibs/json"]
+	path = crude_extlibs/json
+	url = https://github.com/nlohmann/json.git
+[submodule "crude_extlibs/nativefiledialog_cmake/nativefiledialog"]
+	path = crude_extlibs/nativefiledialog_cmake/nativefiledialog
+	url = https://github.com/mlabbe/nativefiledialog.git
+[submodule "crude_extlibs/nativefiledialog-extended"]
+	path = crude_extlibs/nativefiledialog-extended
+	url = https://github.com/btzy/nativefiledialog-extended.git

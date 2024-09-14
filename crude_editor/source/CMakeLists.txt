@@ -4,7 +4,7 @@ project(crude_editor CXX)
 
 add_executable(crude_editor WIN32)
 
-target_link_libraries(crude_editor PUBLIC crude_engine imguizmo)
+target_link_libraries(crude_editor PUBLIC crude_engine imguizmo nlohmann_json nfd)
 
 if(MSVC)
  target_compile_options(crude_editor PRIVATE "/MP")
@@ -21,6 +21,8 @@ target_sources(crude_editor
   application.ixx)
 
 add_subdirectory(gui)
+add_subdirectory(resources)
 
 source_group(crude_editor FILES application.cpp application.ixx main.cpp)
 source_group(gui REGULAR_EXPRESSION "${CMAKE_CURRENT_SOURCE_DIR}/gui/*")
+source_group(resources REGULAR_EXPRESSION "${CMAKE_CURRENT_SOURCE_DIR}/resources/*")
