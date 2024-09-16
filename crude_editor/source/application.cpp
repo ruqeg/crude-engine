@@ -14,6 +14,7 @@ import crude.resources.gltf_loader;
 import crude.scene.camera;
 import crude.scripts.free_camera_script;
 import crude.gui.imgui_demo_layout_draw_system;
+import crude.editor.resources.scene_to_json;
 
 import crude.editor.gui.imgui_editor_layout_draw_system;
 
@@ -67,6 +68,8 @@ void Application::initialize()
     core::allocateShared<graphics::Texture>(
       core::allocateShared<graphics::Image_View>(m_rendererFullscreenPbrPassCtx->colorAttachment),
       core::allocateShared<graphics::Sampler>(m_rendererCoreCtx->device, graphics::csamlper_state::gMagMinMipLinearRepeat)));
+
+  resources::registerComponentsSerialization(m_world);
 }
 
 void Application::run()
@@ -81,8 +84,8 @@ void Application::deinitialize()
 
 void Application::initializeScene(core::float32 aspectRatio)
 {
-  resources::GLTF_Loader gltfLoader(m_world, m_rendererCoreCtx->transferCommandPool);
-  m_sceneNode = gltfLoader.loadNodeFromFile("../../../crude_editor/resources/sponza2.glb");
+  crude::resources::GLTF_Loader gltfLoader(m_world, m_rendererCoreCtx->transferCommandPool);
+  m_sceneNode = m_world.entity("SSSSSSSSSS"); //gltfLoader.loadNodeFromFile("../../../crude_editor/resources/sponza2.glb");
 }
 
 void Application::initializeEditorCamera(core::float32 aspectRatio)

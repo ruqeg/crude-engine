@@ -17,8 +17,8 @@ class Storage_Buffer;
 struct Renderer_Light_Ctx
 {
   explicit Renderer_Light_Ctx(core::shared_ptr<Renderer_Core_System_Ctx> coreCtx);
-  core::shared_ptr<Renderer_Core_System_Ctx>  coreCtx;
-  core::shared_ptr<graphics::Storage_Buffer>  pointLightsBuffer;
+  core::shared_ptr<Renderer_Core_System_Ctx>                  coreCtx;
+  core::optional<core::shared_ptr<graphics::Storage_Buffer>>  pointLightsBuffer;
 };
 
 // !TODO

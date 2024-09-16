@@ -38,8 +38,12 @@ void rendererLightUpdateSystemProcess(flecs::iter& it)
       visiblePointLightsGPU.push_back(pointLightGPU);
     }
   }
-  auto commandBuffer = core::allocateShared<graphics::Command_Buffer>(lightCtx->coreCtx->graphicsCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
-  lightCtx->pointLightsBuffer = core::allocateShared<graphics::Storage_Buffer>(commandBuffer, visiblePointLightsGPU);
+
+  if (!visiblePointLightsGPU.empty())
+  {
+    auto commandBuffer = core::allocateShared<graphics::Command_Buffer>(lightCtx->coreCtx->graphicsCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+    lightCtx->pointLightsBuffer = core::allocateShared<graphics::Storage_Buffer>(commandBuffer, visiblePointLightsGPU);
+  }
 }
 
 }

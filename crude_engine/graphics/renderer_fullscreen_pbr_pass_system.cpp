@@ -124,7 +124,10 @@ void rendererFullscreenPBRPassSystemProcess(flecs::iter& it)
   fullscreenPbrCtx->metallicRoughnessTextureDescriptors[frameCtx->currentFrame].update(fullscreenPbrCtx->gbuffer->getMetallicRoughnessAttachmentView(), fullscreenPbrCtx->sampler);
   fullscreenPbrCtx->normalTextureDescriptors[frameCtx->currentFrame].update(fullscreenPbrCtx->gbuffer->getNormalAttachmentView(), fullscreenPbrCtx->sampler);
   fullscreenPbrCtx->depthTextureDescriptors[frameCtx->currentFrame].update(fullscreenPbrCtx->gbuffer->getDepthStencilAttachmentView(), fullscreenPbrCtx->sampler);
-  fullscreenPbrCtx->pointLightsBufferDescriptor.update(fullscreenPbrCtx->lightCtx->pointLightsBuffer, fullscreenPbrCtx->lightCtx->pointLightsBuffer->getSize());
+  if (fullscreenPbrCtx->lightCtx->pointLightsBuffer.has_value())
+    fullscreenPbrCtx->pointLightsBufferDescriptor.update(fullscreenPbrCtx->lightCtx->pointLightsBuffer.value(), fullscreenPbrCtx->lightCtx->pointLightsBuffer.value()->getSize());
+  else
+    fullscreenPbrCtx->pointLightsBufferDescriptor.clear();
   fullscreenPbrCtx->pbrDebugBufferDescriptors[frameCtx->currentFrame].update(fullscreenPbrCtx->pbrDebugBuffers[frameCtx->currentFrame]);
 
   core::array<VkWriteDescriptorSet, 7u> descriptorWrites;

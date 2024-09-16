@@ -23,6 +23,7 @@ import crude.scene.light;
 import crude.gui.imgui_texture_descriptor_set;
 import crude.scripts.free_camera_script;
 import crude.core.std_containers_heap;
+import crude.editor.resources.scene_to_json;
 
 // TODO refactor this code in some day, but for now...
 
@@ -132,24 +133,8 @@ void drawMainMenuBar(Imgui_Editor_Layout_Draw_Ctx* layoutCtx)
         nfdresult_t result = NFD_SaveDialogU8_With(&outPath, &args);
         if (result == NFD_OKAY)
         {
-          nlohmann::json* pParentJson;
-          auto parseNodeToJson = [&pParentJson](this const auto& parseSceneToJson, flecs::entity node) {
-            auto b = node.to_json();
-            nlohmann::json* s = pParentJson;
-            (*pParentJson)["node"] = node.to_json();
-
-            nlohmann::json childrenJson;
-            nlohmann::json* nodeJson = pParentJson;
-            pParentJson = &childrenJson;
-            node.children(parseSceneToJson);
-            pParentJson = nodeJson;
-            (*pParentJson)["children"] = childrenJson;
-            };
-          nlohmann::json sceneJson;
-          pParentJson = &sceneJson;
-          parseNodeToJson(layoutCtx->sceneNode);
           std::ofstream otf(outPath);
-          otf << std::setw(4) << sceneJson << std::endl;
+          otf << std::setw(4) << resources::sceneToJson(layoutCtx->sceneNode) << std::endl;
           NFD_FreePathU8(outPath);
         }
         else if (result == NFD_CANCEL)
@@ -170,7 +155,6 @@ void drawMainMenuBar(Imgui_Editor_Layout_Draw_Ctx* layoutCtx)
 void drawInspectorWindow(flecs::entity editorSelectedNode)
 {
   // !TODO
-
   ImGui::Begin("Inspector");
   if (editorSelectedNode.is_valid())
   {
@@ -237,62 +221,66 @@ void drawViewportWindow(Imgui_Editor_Layout_Draw_Ctx* layoutCtx)
   ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
   ImGui::Image(layoutCtx->viewportImguiTexture->getHandle(), ImVec2{ viewportPanelSize.x, viewportPanelSize.y });
 
-  // settings manipulate
-  ImGui::SetCursorPos(ImGui::GetWindowContentRegionMin());
-  if (ImGui::IsKeyPressed(ImGuiKey_Z))
-    currentGizmoOperation = ImGuizmo::TRANSLATE;
-  if (ImGui::IsKeyPressed(ImGuiKey_X))
-    currentGizmoOperation = ImGuizmo::ROTATE;
-  if (ImGui::IsKeyPressed(ImGuiKey_C)) // r Key
-    currentGizmoOperation = ImGuizmo::SCALE;
-  if (ImGui::RadioButton("Translate", currentGizmoOperation == ImGuizmo::TRANSLATE))
-    currentGizmoOperation = ImGuizmo::TRANSLATE;
-  ImGui::SameLine();
-  if (ImGui::RadioButton("Rotate", currentGizmoOperation == ImGuizmo::ROTATE))
-    currentGizmoOperation = ImGuizmo::ROTATE;
-  ImGui::SameLine();
-  if (ImGui::RadioButton("Scale", currentGizmoOperation == ImGuizmo::SCALE))
-    currentGizmoOperation = ImGuizmo::SCALE;
-
-  if (currentGizmoOperation != ImGuizmo::SCALE)
-  {
-    if (ImGui::RadioButton("Local", currentGizmoMode == ImGuizmo::LOCAL))
-      currentGizmoMode = ImGuizmo::LOCAL;
-    ImGui::SameLine();
-    if (ImGui::RadioButton("World", currentGizmoMode == ImGuizmo::WORLD))
-      currentGizmoMode = ImGuizmo::WORLD;
-  }
-
-  // imguizmo manipulate
-  ImGui::SetCursorPos(ImGui::GetWindowContentRegionMin());
   auto camera = layoutCtx->editorCameraNode.get_mut<crude::scene::Camera>();
   auto cameraTransform = layoutCtx->editorCameraNode.get_mut<crude::scene::Transform>();
   auto selectedNodeTransform = layoutCtx->editorSelectedNode.get_mut<crude::scene::Transform>();
-  const DirectX::XMFLOAT4X4 cameraViewToClip = camera->getViewToClipFloat4x4();
-  DirectX::XMFLOAT4X4 selectedNodeToParent = selectedNodeTransform->getNodeToParentFloat4x4();
-  DirectX::XMFLOAT4X4 selectedParentToCameraView;
-  DirectX::XMStoreFloat4x4(&selectedParentToCameraView, DirectX::XMMatrixMultiply(selectedNodeTransform->getParentToWorldMatrix(), cameraTransform->getWorldToNodeMatrix()));
 
-  ImGuizmo::SetID(0);
-  ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, ImGui::GetWindowWidth(), ImGui::GetWindowHeight());
-  ImGuizmo::Manipulate(&selectedParentToCameraView._11, &cameraViewToClip._11, currentGizmoOperation, currentGizmoMode, &selectedNodeToParent._11, NULL, NULL);
-
-  // !TODO just use !=
-  bool selectedNodeToWorldNotEqual = false;
-  for (size_t i = 0; i < 4; ++i)
+  if (layoutCtx->editorSelectedNode.is_valid() && camera && cameraTransform && selectedNodeTransform)
   {
-    for (size_t k = 0; k < 4; ++k)
+    // settings manipulate
+    ImGui::SetCursorPos(ImGui::GetWindowContentRegionMin());
+    if (ImGui::IsKeyPressed(ImGuiKey_Z))
+      currentGizmoOperation = ImGuizmo::TRANSLATE;
+    if (ImGui::IsKeyPressed(ImGuiKey_X))
+      currentGizmoOperation = ImGuizmo::ROTATE;
+    if (ImGui::IsKeyPressed(ImGuiKey_C)) // r Key
+      currentGizmoOperation = ImGuizmo::SCALE;
+    if (ImGui::RadioButton("Translate", currentGizmoOperation == ImGuizmo::TRANSLATE))
+      currentGizmoOperation = ImGuizmo::TRANSLATE;
+    ImGui::SameLine();
+    if (ImGui::RadioButton("Rotate", currentGizmoOperation == ImGuizmo::ROTATE))
+      currentGizmoOperation = ImGuizmo::ROTATE;
+    ImGui::SameLine();
+    if (ImGui::RadioButton("Scale", currentGizmoOperation == ImGuizmo::SCALE))
+      currentGizmoOperation = ImGuizmo::SCALE;
+
+    if (currentGizmoOperation != ImGuizmo::SCALE)
     {
-      if (std::abs(selectedNodeTransform->getNodeToParentFloat4x4().m[i][k] - selectedNodeToParent.m[i][k]) > 0.0001f)
+      if (ImGui::RadioButton("Local", currentGizmoMode == ImGuizmo::LOCAL))
+        currentGizmoMode = ImGuizmo::LOCAL;
+      ImGui::SameLine();
+      if (ImGui::RadioButton("World", currentGizmoMode == ImGuizmo::WORLD))
+        currentGizmoMode = ImGuizmo::WORLD;
+    }
+
+    // imguizmo manipulate
+    ImGui::SetCursorPos(ImGui::GetWindowContentRegionMin());
+    const DirectX::XMFLOAT4X4 cameraViewToClip = camera->getViewToClipFloat4x4();
+    DirectX::XMFLOAT4X4 selectedNodeToParent = selectedNodeTransform->getNodeToParentFloat4x4();
+    DirectX::XMFLOAT4X4 selectedParentToCameraView;
+    DirectX::XMStoreFloat4x4(&selectedParentToCameraView, DirectX::XMMatrixMultiply(selectedNodeTransform->getParentToWorldMatrix(), cameraTransform->getWorldToNodeMatrix()));
+
+    ImGuizmo::SetID(0);
+    ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, ImGui::GetWindowWidth(), ImGui::GetWindowHeight());
+    ImGuizmo::Manipulate(&selectedParentToCameraView._11, &cameraViewToClip._11, currentGizmoOperation, currentGizmoMode, &selectedNodeToParent._11, NULL, NULL);
+
+    // !TODO just use !=
+    bool selectedNodeToWorldNotEqual = false;
+    for (size_t i = 0; i < 4; ++i)
+    {
+      for (size_t k = 0; k < 4; ++k)
       {
-        selectedNodeToWorldNotEqual = true;
-        break;
+        if (std::abs(selectedNodeTransform->getNodeToParentFloat4x4().m[i][k] - selectedNodeToParent.m[i][k]) > 0.0001f)
+        {
+          selectedNodeToWorldNotEqual = true;
+          break;
+        }
       }
     }
-  }
-  if (selectedNodeToWorldNotEqual)
-  {
-    selectedNodeTransform->setNodeToParent(selectedNodeToParent);
+    if (selectedNodeToWorldNotEqual)
+    {
+      selectedNodeTransform->setNodeToParent(selectedNodeToParent);
+    }
   }
   ImGui::End();
 }

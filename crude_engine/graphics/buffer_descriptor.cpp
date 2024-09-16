@@ -26,7 +26,14 @@ void Buffer_Descriptor::updateBase(core::shared_ptr<const Buffer> buffer, VkDevi
 {
   m_descriptoBuferInfo.buffer = buffer->getHandle();
   m_descriptoBuferInfo.offset = offset;
-  m_descriptoBuferInfo.range = range;
+  m_descriptoBuferInfo.range  = range;
+}
+
+void Buffer_Descriptor::clear()
+{
+  m_descriptoBuferInfo.buffer = VK_NULL_HANDLE;
+  m_descriptoBuferInfo.offset = 0u;
+  m_descriptoBuferInfo.range  = VK_WHOLE_SIZE;
 }
 
 Storage_Buffer_Descriptor::Storage_Buffer_Descriptor(core::uint32 binding, VkShaderStageFlags stageFlags)

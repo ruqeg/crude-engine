@@ -30,7 +30,7 @@ bool Physical_Device::checkSurfaceSupport(core::shared_ptr<const Surface> surfac
 {
   return !getSurfaceFormats(surface).empty() && !getSurfacePresentModes(surface).empty();
 }
-  
+
 Surface_Capabilities_KHR Physical_Device::getSurfaceCapabilitis(core::shared_ptr<const Surface> surface) const
 {
   VkSurfaceCapabilitiesKHR capabilities;
