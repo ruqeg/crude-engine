@@ -33,12 +33,12 @@ GLTF_Loader::GLTF_Loader(flecs::world world, core::shared_ptr<graphics::Command_
   , m_device(commandPool->getDevice())
 {}
 
-flecs::entity GLTF_Loader::loadNodeFromFile(const char* path)
+void GLTF_Loader::loadToNodeFromFile(flecs::entity node, const char* path)
 {
-  flecs::entity node = m_world.entity(path);
+  node.set<GLTF_Model>(GLTF_Model{ .path = core::string(path)});
   
   if (!loadModelFromFile(path))
-    return node;
+    return;
 
   // Load samples
   core::vector<core::shared_ptr<graphics::Sampler>> samplers;
@@ -174,9 +174,9 @@ flecs::entity GLTF_Loader::loadNodeFromFile(const char* path)
     flecs::entity child = parseNode(tinyNode, node, pointLights, meshes, meshBuffers);
     child.child_of(node);
   }
-
-  node.set<scene::Transform>(scene::Transform(node));
-  return node;
+  
+  if (!node.has<scene::Transform>())
+    node.set<scene::Transform>(scene::Transform(node));
 }
 
 core::shared_ptr<graphics::Sampler> GLTF_Loader::parseSampler(const tinygltf::Sampler& tinySampler)

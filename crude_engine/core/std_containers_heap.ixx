@@ -31,6 +31,9 @@ using deque = std::deque<T, Allocator>;
 template<class T, class Allocator = STD_Allocator<T>>
 using queue = std::queue<T, deque<T,  Allocator>>;
 
+static_assert(sizeof(char) == sizeof(core::char8));
+
+using string = std::basic_string<char, std::char_traits<char>, STD_Allocator<char>>;
 using u8string = std::basic_string<core::char8, std::char_traits<core::char8>, STD_Allocator<core::char8>>;
 using u16string = std::basic_string<core::char16, std::char_traits<core::char16>, STD_Allocator<core::char16>>;
 using u32string = std::basic_string<core::char32, std::char_traits<core::char32>, STD_Allocator<core::char32>>;

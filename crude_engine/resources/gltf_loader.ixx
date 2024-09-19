@@ -26,12 +26,18 @@ class Mesh_Buffer;
 export namespace crude::resources
 {
 
+struct GLTF_Model
+{
+  core::string path;
+};
+
 class GLTF_Loader
 {
 public:
   explicit GLTF_Loader(flecs::world world, core::shared_ptr<graphics::Command_Pool> commandPool);
 public:
-  flecs::entity loadNodeFromFile(const char* path);
+  void loadToNodeFromFile(flecs::entity node, const char* path);
+private:
   core::shared_ptr<graphics::Sampler> parseSampler(const tinygltf::Sampler& tinySampler);
   core::shared_ptr<graphics::Image> parseImage(const tinygltf::Image& tinyImage);
   scene::Point_Light_CPU parsePointLight(const tinygltf::Light& tinyLight);
@@ -48,8 +54,6 @@ public:
                      core::vector<core::uint32>&         meshVertexIndices, 
                      core::vector<core::uint8>&          meshPrimitiveIndices,
                      core::vector<scene::Meshlet>&       meshMeshlets);
-
-private:
   bool loadModelFromFile(const char* path);
 private:
   core::shared_ptr<const graphics::Device>  m_device;

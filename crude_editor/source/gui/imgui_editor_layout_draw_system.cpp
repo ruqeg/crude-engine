@@ -23,7 +23,7 @@ import crude.scene.light;
 import crude.gui.imgui_texture_descriptor_set;
 import crude.scripts.free_camera_script;
 import crude.core.std_containers_heap;
-import crude.editor.resources.scene_to_json;
+import crude.editor.resources.scene_file_io;
 
 // TODO refactor this code in some day, but for now...
 
@@ -120,7 +120,33 @@ void drawMainMenuBar(Imgui_Editor_Layout_Draw_Ctx* layoutCtx)
     if (ImGui::BeginMenu("Scene"))
     {
       if (ImGui::MenuItem("New")) {}
-      if (ImGui::MenuItem("Open", "Ctrl+O")) {}
+      if (ImGui::MenuItem("Open", "Ctrl+O"))
+      {
+        nfdu8char_t* outPath;
+        crude::core::array<nfdu8filteritem_t, 1> filters = { { "Crude Scene", "crude" } };
+        nfdopendialogu8args_t args = {
+          .filterList = filters.data(),
+          .filterCount = filters.size(),
+        };
+
+        nfdresult_t result = NFD_OpenDialogU8_With(&outPath, &args);
+        if (result == NFD_OKAY)
+        {
+          flecs::world world = layoutCtx->sceneNode.world();
+          layoutCtx->sceneNode.destruct();
+          resources::Scene_File_IO sceneFileIO(layoutCtx->transferCommandPool);
+          layoutCtx->sceneLoadedCallback(world.entity("SDFSDFSDF")/*sceneFileIO.load(world, outPath)*/);
+          NFD_FreePathU8(outPath);
+        }
+        else if (result == NFD_CANCEL)
+        {
+          //
+        }
+        else
+        {
+          //NFD_GetError();
+        }
+      }
       if (ImGui::MenuItem("Save", "Ctrl+S"))
       {
         nfdu8char_t* outPath;
@@ -133,8 +159,8 @@ void drawMainMenuBar(Imgui_Editor_Layout_Draw_Ctx* layoutCtx)
         nfdresult_t result = NFD_SaveDialogU8_With(&outPath, &args);
         if (result == NFD_OKAY)
         {
-          std::ofstream otf(outPath);
-          otf << std::setw(4) << resources::sceneToJson(layoutCtx->sceneNode) << std::endl;
+          resources::Scene_File_IO sceneFileIO(layoutCtx->transferCommandPool);
+          sceneFileIO.save(layoutCtx->sceneNode, outPath);
           NFD_FreePathU8(outPath);
         }
         else if (result == NFD_CANCEL)

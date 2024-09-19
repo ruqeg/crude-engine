@@ -14,7 +14,7 @@ import crude.resources.gltf_loader;
 import crude.scene.camera;
 import crude.scripts.free_camera_script;
 import crude.gui.imgui_demo_layout_draw_system;
-import crude.editor.resources.scene_to_json;
+import crude.editor.resources.scene_file_io;
 
 import crude.editor.gui.imgui_editor_layout_draw_system;
 
@@ -60,16 +60,20 @@ void Application::initialize()
 
   m_lightUpdateSystem.run();
 
-  m_editorLayoutCtx->sceneNode = m_sceneNode;
-  m_editorLayoutCtx->editorCameraNode = m_rendererFrameCtx->cameraNode;
-  m_editorLayoutCtx->editorSelectedNode = m_sceneNode;
+  m_editorLayoutCtx->transferCommandPool = m_rendererCoreCtx->transferCommandPool;
+  m_editorLayoutCtx->sceneNode            = m_sceneNode;
+  m_editorLayoutCtx->editorCameraNode     = m_rendererFrameCtx->cameraNode;
+  m_editorLayoutCtx->editorSelectedNode   = m_sceneNode;
   m_editorLayoutCtx->viewportImguiTexture = core::allocateShared<crude::gui::ImGui_Texture_Descriptor_Set>(
     m_rendererImguiPassCtx,
     core::allocateShared<graphics::Texture>(
       core::allocateShared<graphics::Image_View>(m_rendererFullscreenPbrPassCtx->colorAttachment),
       core::allocateShared<graphics::Sampler>(m_rendererCoreCtx->device, graphics::csamlper_state::gMagMinMipLinearRepeat)));
-
-  resources::registerComponentsSerialization(m_world);
+  m_editorLayoutCtx->sceneLoadedCallback = [this](flecs::entity newSceneNode) {
+    m_sceneNode                           = newSceneNode;
+    m_editorLayoutCtx->sceneNode          = m_sceneNode;
+    m_editorLayoutCtx->editorSelectedNode = m_sceneNode;
+    };
 }
 
 void Application::run()
@@ -84,8 +88,9 @@ void Application::deinitialize()
 
 void Application::initializeScene(core::float32 aspectRatio)
 {
+  m_sceneNode = m_world.entity("scene 1");
   crude::resources::GLTF_Loader gltfLoader(m_world, m_rendererCoreCtx->transferCommandPool);
-  m_sceneNode = m_world.entity("SSSSSSSSSS"); //gltfLoader.loadNodeFromFile("../../../crude_editor/resources/sponza2.glb");
+  gltfLoader.loadToNodeFromFile(m_sceneNode, "../../../crude_editor/resources/sponza2.glb");
 }
 
 void Application::initializeEditorCamera(core::float32 aspectRatio)

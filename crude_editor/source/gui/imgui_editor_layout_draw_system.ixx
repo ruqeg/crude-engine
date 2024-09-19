@@ -5,10 +5,16 @@ module;
 #include <imgui/imgui.h>
 #include <imgui/backends/imgui_impl_sdl3.h>
 #include <imgui/backends/imgui_impl_vulkan.h>
+#include <functional>
 
 export module crude.editor.gui.imgui_editor_layout_draw_system;
 
 export import crude.core.std_containers_heap;
+
+export namespace crude::graphics
+{
+class Command_Pool;
+}
 
 export namespace crude::gui
 {
@@ -24,6 +30,8 @@ struct Imgui_Editor_Layout_Draw_Ctx
   flecs::entity                                              sceneNode;
   flecs::entity                                              editorCameraNode;
   flecs::entity                                              editorSelectedNode;
+  std::function<void(flecs::entity)>                         sceneLoadedCallback;
+  core::shared_ptr< crude::graphics::Command_Pool>           transferCommandPool;
 };
 
 void imguiEditorLayoutDrawSystemProcess(flecs::iter& it);

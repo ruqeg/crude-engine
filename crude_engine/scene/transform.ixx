@@ -16,6 +16,7 @@ class Transform
 public:
   Transform() = default;
   Transform(flecs::entity_view node);
+  void setNode(flecs::entity_view node) { m_node = node; }
   void setTranslation(const DirectX::XMFLOAT3& translatio);
   void setTranslation(DirectX::FXMVECTOR translation);
   void setTranslation(core::float32 x, core::float32 y, core::float32 z);
