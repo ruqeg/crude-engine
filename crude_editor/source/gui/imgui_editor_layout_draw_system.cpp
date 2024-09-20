@@ -135,7 +135,7 @@ void drawMainMenuBar(Imgui_Editor_Layout_Draw_Ctx* layoutCtx)
           flecs::world world = layoutCtx->sceneNode.world();
           layoutCtx->sceneNode.destruct();
           resources::Scene_File_IO sceneFileIO(layoutCtx->transferCommandPool);
-          layoutCtx->sceneLoadedCallback(world.entity("SDFSDFSDF")/*sceneFileIO.load(world, outPath)*/);
+          sceneFileIO.load(world, outPath);
           NFD_FreePathU8(outPath);
         }
         else if (result == NFD_CANCEL)

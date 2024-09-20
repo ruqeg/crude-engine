@@ -10,7 +10,7 @@ import crude.graphics.image_view;
 import crude.graphics.sampler;
 import crude.graphics.texture;
 import crude.gui.imgui_texture_descriptor_set;
-import crude.resources.gltf_loader;
+import crude.resources.gltf_model_loader_system;
 import crude.scene.camera;
 import crude.scripts.free_camera_script;
 import crude.gui.imgui_demo_layout_draw_system;
@@ -89,8 +89,11 @@ void Application::deinitialize()
 void Application::initializeScene(core::float32 aspectRatio)
 {
   m_sceneNode = m_world.entity("scene 1");
-  crude::resources::GLTF_Loader gltfLoader(m_world, m_rendererCoreCtx->transferCommandPool);
-  gltfLoader.loadToNodeFromFile(m_sceneNode, "../../../crude_editor/resources/sponza2.glb");
+
+  flecs::entity modelNode = m_world.entity("m_modelNode");
+  modelNode.child_of(m_sceneNode);
+  modelNode.set<crude::resources::GLTF_Model_Metadata_Component>({.path = "../../../crude_editor/resources/sponza2.glb" });
+  modelNode.add<crude::resources::GLTF_Model_Loader_Uninitialized_Flag>();
 }
 
 void Application::initializeEditorCamera(core::float32 aspectRatio)

@@ -9,6 +9,7 @@ export import crude.graphics.renderer_deferred_gbuffer_pass_system;
 export import crude.graphics.renderer_fullscreen_pbr_pass_system;
 export import crude.platform.input_system;
 export import crude.gui.renderer_imgui_pass_system;
+export import crude.resources.gltf_model_loader_system;
 
 export namespace crude
 {
@@ -38,6 +39,9 @@ protected:
 
   flecs::system                                                          m_lightUpdateSystem;
 
+  flecs::system                                                          m_gltfModelLoaderSystem;
+
+  core::shared_ptr<resources::GLTF_Model_Loader_Context>                 m_gltfModelLoaderCtx;
   core::shared_ptr<platform::Input_System_Context>                       m_inputSystemCtx;
   core::shared_ptr<graphics::Renderer_Core_System_Ctx>                   m_rendererCoreCtx;
   core::shared_ptr<graphics::Renderer_Frame_System_Ctx>                  m_rendererFrameCtx;

@@ -65,6 +65,9 @@ void Engine::initializeSystems()
 {
   initializeInputSystems();
   initializeRendererSystems();
+
+  m_gltfModelLoaderCtx = core::allocateShared<resources::GLTF_Model_Loader_Context>(m_rendererCoreCtx->transferCommandPool);
+  m_gltfModelLoaderSystem = resources::registerGLTFModelLoaderSystem(m_world, m_gltfModelLoaderCtx);
 }
 
 void Engine::initializeInputSystems()
