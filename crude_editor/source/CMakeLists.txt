@@ -4,7 +4,7 @@ project(crude_editor CXX)
 
 add_executable(crude_editor WIN32)
 
-target_link_libraries(crude_editor PUBLIC crude_engine imguizmo nlohmann_json nfd)
+target_link_libraries(crude_editor PUBLIC crude_engine imguizmo nfd)
 
 if(MSVC)
  target_compile_options(crude_editor PRIVATE "/MP")
