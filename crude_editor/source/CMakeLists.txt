@@ -21,8 +21,6 @@ target_sources(crude_editor
   application.ixx)
 
 add_subdirectory(gui)
-add_subdirectory(resources)
 
 source_group(crude_editor FILES application.cpp application.ixx main.cpp)
 source_group(gui REGULAR_EXPRESSION "${CMAKE_CURRENT_SOURCE_DIR}/gui/*")
-source_group(resources REGULAR_EXPRESSION "${CMAKE_CURRENT_SOURCE_DIR}/resources/*")

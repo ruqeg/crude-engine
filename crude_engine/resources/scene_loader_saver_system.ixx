@@ -14,7 +14,7 @@ export namespace crude::resources
 {
 
 using Scene_Saver_Callback_Function  = std::function<void(flecs::entity)>;
-using Scene_Loader_Callback_Function = std::function<void(flecs::entity oldEntity, flecs::entity newEntity)>;
+using Scene_Loader_Callback_Function = std::function<void(flecs::entity)>;
 
 struct Scene_Saver_Component
 {
@@ -29,12 +29,12 @@ struct Scene_Loader_Component
 
 struct Scene_Loader_Context
 {
-  Scene_Loader_Callback_Function callback;
+  Scene_Loader_Callback_Function callback = [](flecs::entity) {};;
 };
 
 struct Scene_Saver_Context
 {
-  Scene_Saver_Callback_Function callback;
+  Scene_Saver_Callback_Function callback = [](flecs::entity) {};;
 };
 
 [[nodiscard]] flecs::system registerSceneLoaderSystem(flecs::world world, core::shared_ptr<Scene_Loader_Context> ctx);

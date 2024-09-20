@@ -260,8 +260,10 @@ void Transform::decomposeNodeToParent(DirectX::FXMMATRIX nodeToParent)
 
 void Transform::updateNodeToWorld()
 {
-  if (!m_updateNodeToWorld)
-    return;
+  if (!shouldUpdateNodeToWorld())
+  {
+      return;
+  }
 
   flecs::entity parent = m_node.parent();
   if (parent.is_valid() && parent.has<scene::Transform>())
@@ -280,6 +282,14 @@ void Transform::updateNodeToWorld()
   DirectX::XMStoreFloat4x4(&m_worldToNodeFloat4x4, DirectX::XMMatrixInverse(nullptr, nodeToWorld));
 
   m_updateNodeToWorld = false;
+}
+
+bool Transform::shouldUpdateNodeToWorld() const
+{
+  flecs::entity parent = m_node.parent();
+  const bool parentHasTransform = parent.is_valid() && parent.has<scene::Transform>();
+  const bool shoouldUpdateParentMatrix = parentHasTransform ? parent.get<scene::Transform>()->shouldUpdateNodeToWorld() : false;
+  return m_updateNodeToWorld || shoouldUpdateParentMatrix;
 }
 
 }

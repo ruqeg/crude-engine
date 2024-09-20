@@ -131,9 +131,9 @@ void sceneLoaderSystemProcess(flecs::iter& it)
 
     for (auto i : it)
     {
-      flecs::entity newNode = loadScene(it.world(), sceneLoader[i].path);
-      it.entity(i).remove<Scene_Loader_Component>();
-      ctx->callback(it.entity(i), newNode);
+      core::string path = sceneLoader[i].path;
+      it.entity(i).destruct();
+      ctx->callback(loadScene(it.world(), path));
     }
   }
 }
@@ -163,15 +163,13 @@ void saveScene(flecs::entity sceneNode, const core::string& path)
     nlohmann::json entityJson;
     parseNodeToJsonWithoutChildren(node, entityJson);
 
-    if (node.has<crude::resources::GLTF_Model_Metadata_Component>())
+    if (!node.has<crude::resources::GLTF_Model_Metadata_Component>())
     {
-      return;
+      nlohmann::json* oldEntityParentJson = entityParentJson;
+      entityParentJson = &entityJson;
+      node.children(parseNodeChildrenToJson);
+      entityParentJson = oldEntityParentJson;
     }
-
-    nlohmann::json* oldEntityParentJson = entityParentJson;
-    entityParentJson = &entityJson;
-    node.children(parseNodeChildrenToJson);
-    entityParentJson = oldEntityParentJson;
 
     (*entityParentJson)["children"].push_back(entityJson);
     };

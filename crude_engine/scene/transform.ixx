@@ -62,6 +62,7 @@ public:
 private:
   void decomposeNodeToParent(DirectX::FXMMATRIX nodeToParent);
   void updateNodeToWorld();
+  bool shouldUpdateNodeToWorld() const;
 private:
   flecs::entity_view   m_node;
   DirectX::XMFLOAT4X4  m_nodeToWorldFloat4x4;

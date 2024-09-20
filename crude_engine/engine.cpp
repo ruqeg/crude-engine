@@ -66,6 +66,11 @@ void Engine::initializeSystems()
   initializeInputSystems();
   initializeRendererSystems();
 
+  m_sceneLoaderCtx = core::allocateShared<resources::Scene_Loader_Context>();
+  m_sceneSaverCtx = core::allocateShared<resources::Scene_Saver_Context>();
+  m_sceneSaverSystem = resources::registerSceneSaverSystem(m_world, m_sceneSaverCtx);
+  m_sceneLoaderSystem = resources::registerSceneLoaderSystem(m_world, m_sceneLoaderCtx);
+
   m_gltfModelLoaderCtx = core::allocateShared<resources::GLTF_Model_Loader_Context>(m_rendererCoreCtx->transferCommandPool);
   m_gltfModelLoaderSystem = resources::registerGLTFModelLoaderSystem(m_world, m_gltfModelLoaderCtx);
 }

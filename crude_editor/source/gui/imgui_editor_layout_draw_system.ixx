@@ -30,8 +30,6 @@ struct Imgui_Editor_Layout_Draw_Ctx
   flecs::entity                                              sceneNode;
   flecs::entity                                              editorCameraNode;
   flecs::entity                                              editorSelectedNode;
-  std::function<void(flecs::entity)>                         sceneLoadedCallback;
-  core::shared_ptr< crude::graphics::Command_Pool>           transferCommandPool;
 };
 
 void imguiEditorLayoutDrawSystemProcess(flecs::iter& it);

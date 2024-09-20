@@ -23,7 +23,7 @@ import crude.scene.light;
 import crude.gui.imgui_texture_descriptor_set;
 import crude.scripts.free_camera_script;
 import crude.core.std_containers_heap;
-import crude.editor.resources.scene_file_io;
+import crude.resources.scene_loader_saver_system;
 
 // TODO refactor this code in some day, but for now...
 
@@ -132,10 +132,7 @@ void drawMainMenuBar(Imgui_Editor_Layout_Draw_Ctx* layoutCtx)
         nfdresult_t result = NFD_OpenDialogU8_With(&outPath, &args);
         if (result == NFD_OKAY)
         {
-          flecs::world world = layoutCtx->sceneNode.world();
-          layoutCtx->sceneNode.destruct();
-          resources::Scene_File_IO sceneFileIO(layoutCtx->transferCommandPool);
-          sceneFileIO.load(world, outPath);
+          layoutCtx->sceneNode.set<crude::resources::Scene_Loader_Component>({.path = outPath });
           NFD_FreePathU8(outPath);
         }
         else if (result == NFD_CANCEL)
@@ -159,8 +156,7 @@ void drawMainMenuBar(Imgui_Editor_Layout_Draw_Ctx* layoutCtx)
         nfdresult_t result = NFD_SaveDialogU8_With(&outPath, &args);
         if (result == NFD_OKAY)
         {
-          resources::Scene_File_IO sceneFileIO(layoutCtx->transferCommandPool);
-          sceneFileIO.save(layoutCtx->sceneNode, outPath);
+          layoutCtx->sceneNode.set<crude::resources::Scene_Saver_Component>({ .path = outPath });
           NFD_FreePathU8(outPath);
         }
         else if (result == NFD_CANCEL)

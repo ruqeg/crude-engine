@@ -14,7 +14,6 @@ import crude.resources.gltf_model_loader_system;
 import crude.scene.camera;
 import crude.scripts.free_camera_script;
 import crude.gui.imgui_demo_layout_draw_system;
-import crude.editor.resources.scene_file_io;
 
 import crude.editor.gui.imgui_editor_layout_draw_system;
 
@@ -60,7 +59,6 @@ void Application::initialize()
 
   m_lightUpdateSystem.run();
 
-  m_editorLayoutCtx->transferCommandPool = m_rendererCoreCtx->transferCommandPool;
   m_editorLayoutCtx->sceneNode            = m_sceneNode;
   m_editorLayoutCtx->editorCameraNode     = m_rendererFrameCtx->cameraNode;
   m_editorLayoutCtx->editorSelectedNode   = m_sceneNode;
@@ -69,7 +67,8 @@ void Application::initialize()
     core::allocateShared<graphics::Texture>(
       core::allocateShared<graphics::Image_View>(m_rendererFullscreenPbrPassCtx->colorAttachment),
       core::allocateShared<graphics::Sampler>(m_rendererCoreCtx->device, graphics::csamlper_state::gMagMinMipLinearRepeat)));
-  m_editorLayoutCtx->sceneLoadedCallback = [this](flecs::entity newSceneNode) {
+
+  m_sceneLoaderCtx->callback = [this](flecs::entity newSceneNode) {
     m_sceneNode                           = newSceneNode;
     m_editorLayoutCtx->sceneNode          = m_sceneNode;
     m_editorLayoutCtx->editorSelectedNode = m_sceneNode;
@@ -89,6 +88,7 @@ void Application::deinitialize()
 void Application::initializeScene(core::float32 aspectRatio)
 {
   m_sceneNode = m_world.entity("scene 1");
+  m_sceneNode.set<scene::Transform>(scene::Transform{ m_sceneNode });
 
   flecs::entity modelNode = m_world.entity("m_modelNode");
   modelNode.child_of(m_sceneNode);
