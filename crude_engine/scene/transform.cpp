@@ -269,7 +269,7 @@ void Transform::updateNodeToWorld()
   if (parent.is_valid() && parent.has<scene::Transform>())
   {
     Transform* transform = parent.get_mut<Transform>();
-    const DirectX::XMMATRIX nodeToWorld = DirectX::XMMatrixMultiply(transform->getNodeToWorldMatrix(), getNodeToParentMatrix());
+    const DirectX::XMMATRIX nodeToWorld = DirectX::XMMatrixMultiply(getNodeToParentMatrix(), transform->getNodeToWorldMatrix());
     DirectX::XMStoreFloat4x4(&m_nodeToWorldFloat4x4, nodeToWorld);
   }
   else
