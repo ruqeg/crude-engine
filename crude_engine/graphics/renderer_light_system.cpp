@@ -33,7 +33,7 @@ void rendererLightUpdateSystemProcess(flecs::iter& it)
       if (it.entity(i).has<scene::Transform>())
       {
         auto transform = it.entity(i).get_ref<scene::Transform>();
-        DirectX::XMStoreFloat3A(&pointLightGPU.position, transform->getTranslationVector());
+        DirectX::XMStoreFloat3A(&pointLightGPU.position, transform->getWorldTranslationVector());
       }
       visiblePointLightsGPU.push_back(pointLightGPU);
     }

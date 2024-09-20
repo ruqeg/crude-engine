@@ -51,18 +51,18 @@ public:
   DirectX::XMVECTOR getTranslationVector() const { return DirectX::XMLoadFloat3(&m_translationFloat3); }
   DirectX::XMVECTOR getRotationQuaternion() const { return DirectX::XMLoadFloat4(&m_rotationFloat4); }
   DirectX::XMVECTOR getScaleVector() const { return DirectX::XMLoadFloat3(&m_scaleFloat3); }
+  DirectX::XMVECTOR getWorldTranslationVector();
   DirectX::XMFLOAT4X4 getNodeToParentFloat4x4() const;
   DirectX::XMVECTOR getWorldBasisUpVector();
   DirectX::XMVECTOR getWorldBasisRightVector();
   DirectX::XMVECTOR getWorldBasisForwardVector();
+  void invalidateNodeToWorld();
   static DirectX::XMVECTOR getDefaultBasisUpVector();
   static DirectX::XMVECTOR getDefaultBasisRightVector();
   static DirectX::XMVECTOR getDefaultBasisForwardVector();
-  void invalidateNodeToWorld() { m_updateNodeToWorld = true; }
 private:
   void decomposeNodeToParent(DirectX::FXMMATRIX nodeToParent);
   void updateNodeToWorld();
-  bool shouldUpdateNodeToWorld() const;
 private:
   flecs::entity_view   m_node;
   DirectX::XMFLOAT4X4  m_nodeToWorldFloat4x4;

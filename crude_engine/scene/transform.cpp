@@ -211,6 +211,12 @@ const DirectX::XMFLOAT4X4& Transform::getWorldToNodeFloat4x4()
   return m_worldToNodeFloat4x4;
 }
 
+DirectX::XMVECTOR Transform::getWorldTranslationVector()
+{
+  // !TODO
+  return DirectX::XMVector3TransformCoord(DirectX::XMLoadFloat3(&m_translationFloat3), getParentToWorldMatrix());
+}
+
 DirectX::XMFLOAT4X4 Transform::getNodeToParentFloat4x4() const
 {
   DirectX::XMFLOAT4X4 nodeToParent;
@@ -249,6 +255,19 @@ DirectX::XMVECTOR Transform::getDefaultBasisForwardVector()
   return cDefaultBasisForward;
 }
 
+void Transform::invalidateNodeToWorld()
+{
+  auto invalidateNodeToWorldChildren = [](flecs::entity node) {
+    if (node.is_valid() && node.has<scene::Transform>())
+    {
+      node.get_mut<scene::Transform>()->invalidateNodeToWorld();
+    }
+    };
+  
+  m_node.children(invalidateNodeToWorldChildren);
+  m_updateNodeToWorld = true;
+}
+
 void Transform::decomposeNodeToParent(DirectX::FXMMATRIX nodeToParent)
 {
   DirectX::XMVECTOR translation, rotation, scale;
@@ -260,7 +279,7 @@ void Transform::decomposeNodeToParent(DirectX::FXMMATRIX nodeToParent)
 
 void Transform::updateNodeToWorld()
 {
-  if (!shouldUpdateNodeToWorld())
+  if (!m_updateNodeToWorld)
   {
       return;
   }
@@ -282,14 +301,6 @@ void Transform::updateNodeToWorld()
   DirectX::XMStoreFloat4x4(&m_worldToNodeFloat4x4, DirectX::XMMatrixInverse(nullptr, nodeToWorld));
 
   m_updateNodeToWorld = false;
-}
-
-bool Transform::shouldUpdateNodeToWorld() const
-{
-  flecs::entity parent = m_node.parent();
-  const bool parentHasTransform = parent.is_valid() && parent.has<scene::Transform>();
-  const bool shoouldUpdateParentMatrix = parentHasTransform ? parent.get<scene::Transform>()->shouldUpdateNodeToWorld() : false;
-  return m_updateNodeToWorld || shoouldUpdateParentMatrix;
 }
 
 }
