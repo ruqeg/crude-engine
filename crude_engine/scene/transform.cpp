@@ -264,7 +264,11 @@ void Transform::invalidateNodeToWorld()
     }
     };
   
-  m_node.children(invalidateNodeToWorldChildren);
+  if (m_node.is_valid())
+  {
+    m_node.children(invalidateNodeToWorldChildren);
+  }
+
   m_updateNodeToWorld = true;
 }
 
