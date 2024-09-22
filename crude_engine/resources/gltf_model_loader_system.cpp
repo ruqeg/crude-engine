@@ -49,56 +49,33 @@ void gltfModelLoaderSystemProcess(flecs::iter & it)
 
     for (auto i : it)
     {
-      loadModelToNodeFromFile(it.entity(i), metadata[i].path.c_str(), ctx->transferCommandPool);
+      GLTF_Loader gltfLoader(ctx->transferCommandPool);
+      gltfLoader.loadToNodeFromFile(it.entity(i), metadata[i].path.c_str(), ctx->transferCommandPool);
       it.entity(i).remove<crude::resources::GLTF_Model_Loader_Uninitialized_Flag>();
     }
   }
 }
 
-void loadModelToNodeFromFile(flecs::entity node, const char* path, core::shared_ptr<graphics::Command_Pool> commandPool)
+void GLTF_Loader::loadToNodeFromFile(flecs::entity node, const char* path)
 {
-  tinygltf::Model tinyModel;
-  
-  if (!loadModelFromFile(tinyModel, path))
+  m_imageViews.clear();
+  m_textures.clear();
+  m_meshes.clear();
+  m_meshBuffers.clear();
+  m_pointLights.clear();
+
+  if (!loadModelFromFile(path))
     return;
 
-  // Load samples
-  core::vector<core::shared_ptr<graphics::Sampler>> samplers;
-  samplers.reserve(tinyModel.samplers.size());
-  for (const tinygltf::Sampler& tinySampler : tinyModel.samplers)
-  {
-    samplers.push_back(parseSampler(commandPool->getDevice(), tinySampler));
-  }
+  m_imageViews.resize(m_tinyModel.images.size() + 1);
+  m_textures.resize(m_tinyModel.textures.size() + 1);
 
-  // Load images
-  core::vector<core::shared_ptr<graphics::Image>> images;
-  images.reserve(tinyModel.images.size());
-  for (const tinygltf::Image& tinyImage : tinyModel.images)
-  {
-    images.push_back(parseImage(commandPool, tinyImage));
-  }
-
-  // Load textures
-  core::vector<core::shared_ptr<graphics::Texture>> textures;
-  textures.reserve(tinyModel.textures.size());
-  for (const tinygltf::Texture& tinyTexture : tinyModel.textures)
-  {
-    core::shared_ptr<graphics::Image_View> imageView = nullptr;
-    core::shared_ptr<graphics::Sampler> sampler = nullptr;
-
-    if (tinyTexture.source >= 0 && tinyTexture.source < images.size())
-      imageView = core::allocateShared<graphics::Image_View>(images[tinyTexture.source], graphics::Image_Subresource_Range(images[tinyTexture.source]));
-    if (tinyTexture.sampler >= 0 && tinyTexture.sampler < samplers.size())
-      sampler = samplers[tinyTexture.sampler];
-
-    textures.push_back(core::allocateShared<graphics::Texture>(imageView, sampler));
-  }
-
-  // Load meshes
-  core::vector<core::shared_ptr<scene::Mesh>> meshes;
-  meshes.reserve(tinyModel.meshes.size());
+  m_sampler = core::allocateShared<graphics::Sampler>(m_commandPool->getDevice(), graphics::csamlper_state::gMagMinMipLinearRepeat);
   
-  for (const tinygltf::Mesh& tinyMesh : tinyModel.meshes)
+  // Load meshes
+  m_meshes.reserve(m_tinyModel.meshes.size());
+  
+  for (const tinygltf::Mesh& tinyMesh : m_tinyModel.meshes)
   {
     core::shared_ptr<scene::Mesh> mesh = core::allocateShared<scene::Mesh>();
 
@@ -109,8 +86,8 @@ void loadModelToNodeFromFile(flecs::entity node, const char* path, core::shared_
       const core::uint32 vertexIndicestOffset = mesh->vertexIndices.size();
       const core::uint32 meshletsOffset = mesh->meshlets.size();
 
-      core::vector<scene::Vertex> primtiveVertices = loadVerticesFromPrimitive(tinyModel, tinyPrimitive);
-      core::vector<core::uint32> primitiveVertexIndices = loadVertexIndicesFromPrimitive(tinyModel, tinyPrimitive);
+      core::vector<scene::Vertex> primtiveVertices = loadVerticesFromPrimitive(tinyPrimitive);
+      core::vector<core::uint32> primitiveVertexIndices = loadVertexIndicesFromPrimitive(tinyPrimitive);
 
       buildMeshlets(primtiveVertices, primitiveVertexIndices, mesh->vertexIndices, mesh->primitiveIndices, mesh->meshlets);
       mesh->vertices.insert(mesh->vertices.end(), primtiveVertices.begin(), primtiveVertices.end());
@@ -119,42 +96,11 @@ void loadModelToNodeFromFile(flecs::entity node, const char* path, core::shared_
       core::shared_ptr<graphics::Material> submeshMaterial = core::allocateShared<graphics::Material>();
       if (tinyPrimitive.material != -1)
       {
-        const tinygltf::Material& tinyMaterial = tinyModel.materials[tinyPrimitive.material];
-        submeshMaterial->albedo = textures[tinyMaterial.pbrMetallicRoughness.baseColorTexture.index];
-        if (tinyMaterial.pbrMetallicRoughness.metallicRoughnessTexture.index == -1)
-        {
-          auto commandBuffer = core::allocateShared<graphics::Command_Buffer>(commandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
-          core::shared_ptr<graphics::Image> image = core::allocateShared<graphics::Image_2D>(
-            commandBuffer,
-            VK_FORMAT_R8G8_SNORM,
-            graphics::Image::Mip_Data(VkExtent3D{ 1, 1, 1 }, core::array<core::byte, 2>{0, 100}),
-            VK_SHARING_MODE_EXCLUSIVE);
-          core::shared_ptr<graphics::Sampler> sampler = core::allocateShared<graphics::Sampler>(commandPool->getDevice(), graphics::csamlper_state::gMagMinMipLinearRepeat);
+        const tinygltf::Material& tinyMaterial = m_tinyModel.materials[tinyPrimitive.material];
 
-          submeshMaterial->metallicRoughness = core::allocateShared<graphics::Texture>(core::allocateShared<graphics::Image_View>(image, graphics::Image_Subresource_Range(image)), sampler);
-        }
-        else
-        {
-          submeshMaterial->metallicRoughness = textures[tinyMaterial.pbrMetallicRoughness.metallicRoughnessTexture.index];
-        }
-
-        // !TODO
-        if (tinyMaterial.normalTexture.index == -1)
-        {
-          auto commandBuffer = core::allocateShared<graphics::Command_Buffer>(commandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
-          core::shared_ptr<graphics::Image> image = core::allocateShared<graphics::Image_2D>(
-            commandBuffer,
-            VK_FORMAT_R8G8B8A8_SNORM,
-            graphics::Image::Mip_Data(VkExtent3D{ 1, 1, 1 }, core::array<core::byte, 4>{0, 255, 0, 255}),
-            VK_SHARING_MODE_EXCLUSIVE);
-          core::shared_ptr<graphics::Sampler> sampler = core::allocateShared<graphics::Sampler>(commandPool->getDevice(), graphics::csamlper_state::gMagMinMipLinearRepeat);
-
-          submeshMaterial->normal = core::allocateShared<graphics::Texture>(core::allocateShared<graphics::Image_View>(image, graphics::Image_Subresource_Range(image)), sampler);
-        }
-        else
-        {
-          submeshMaterial->normal = textures[tinyMaterial.normalTexture.index];
-        }
+        submeshMaterial->albedo = parseTexture(tinyMaterial.pbrMetallicRoughness.baseColorTexture.index, VK_FORMAT_R8G8B8A8_SRGB, core::array<core::byte, 4> { 255, 255, 255, 255 });
+        submeshMaterial->metallicRoughness = parseTexture(tinyMaterial.pbrMetallicRoughness.metallicRoughnessTexture.index, VK_FORMAT_R8G8_SNORM, core::array<core::byte, 2>{0, 100});
+        submeshMaterial->normal = parseTexture(tinyMaterial.normalTexture.index, VK_FORMAT_R8G8B8A8_SNORM, core::array<core::byte, 4> { 0, 0, 255, 255 });
       }
 
       mesh->submeshes.push_back(scene::Sub_Mesh{
@@ -171,31 +117,29 @@ void loadModelToNodeFromFile(flecs::entity node, const char* path, core::shared_
         });
     }
 
-    meshes.push_back(mesh);
+    m_meshes.push_back(mesh);
   }
 
-  core::vector<core::shared_ptr<graphics::Mesh_Buffer>> meshBuffers;
-  meshBuffers.reserve(tinyModel.meshes.size());
-  for (core::shared_ptr<scene::Mesh> mesh : meshes)
+  m_meshBuffers.reserve(m_meshes.size());
+  for (core::shared_ptr<scene::Mesh> mesh : m_meshes)
   {
-    auto commandBuffer = core::allocateShared<graphics::Command_Buffer>(commandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
-    meshBuffers.push_back(core::allocateShared<graphics::Mesh_Buffer>(commandBuffer, *mesh));
+    auto commandBuffer = core::allocateShared<graphics::Command_Buffer>(m_commandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+    m_meshBuffers.push_back(core::allocateShared<graphics::Mesh_Buffer>(commandBuffer, *mesh));
   }
 
   // Load lights
-  core::vector<scene::Point_Light_CPU> pointLights;
-  for (const tinygltf::Light& tinyLight : tinyModel.lights)
+  for (const tinygltf::Light& tinyLight : m_tinyModel.lights)
   {
     if (tinyLight.type == "point")
     {
-      pointLights.push_back(parsePointLight(tinyLight));
+      m_pointLights.push_back(parsePointLight(tinyLight));
     }
   }
 
   // Load nodes
-  for (const tinygltf::Node& tinyNode : tinyModel.nodes)
+  for (const tinygltf::Node& tinyNode : m_tinyModel.nodes)
   {
-    flecs::entity child = parseNode(tinyModel, node.world(), tinyNode, node, pointLights, meshes, meshBuffers);
+    flecs::entity child = parseNode(node.world(), tinyNode);
     child.child_of(node);
   }
   
@@ -203,31 +147,21 @@ void loadModelToNodeFromFile(flecs::entity node, const char* path, core::shared_
     node.set<scene::Transform>(scene::Transform(node));
 }
 
-core::shared_ptr<graphics::Sampler> parseSampler(core::shared_ptr<const graphics::Device> device, const tinygltf::Sampler& tinySampler)
+core::shared_ptr<graphics::Image_View> GLTF_Loader::parseImageView(const core::uint32 tinyImageIndex, VkFormat format, VkFilter mipmapFilter)
 {
-  return core::allocateShared<graphics::Sampler>(device, graphics::csamlper_state::gMagMinMipLinearRepeat);
-}
+  if (m_imageViews[tinyImageIndex])
+  {
+    return m_imageViews[tinyImageIndex];
+  }
 
-core::shared_ptr<graphics::Image> parseImage(core::shared_ptr<graphics::Command_Pool> commandPool, const tinygltf::Image& tinyImage)
-{
-  auto commandBuffer = core::allocateShared<graphics::Command_Buffer>(commandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+  const tinygltf::Image& tinyImage = m_tinyModel.images[tinyImageIndex];
+
+  auto commandBuffer = core::allocateShared<graphics::Command_Buffer>(m_commandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
 
   VkExtent3D extent;
   extent.width  = tinyImage.width;
   extent.height = tinyImage.height;
   extent.depth  = 1u;
-  
-  VkFormat format;
-  switch (tinyImage.component)
-  {
-  case 1: format = VK_FORMAT_R8_SRGB; break;
-  case 2: format = VK_FORMAT_R8G8_SRGB; break;
-  case 3: format = VK_FORMAT_R8G8B8_SRGB; break;
-  case 4: format = VK_FORMAT_R8G8B8A8_SRGB; break;
-  default:
-    core::logError(core::Debug::Channel::FileIO, "Failed to parse image from gltf");
-    core::assert(false);
-  }
   
   core::shared_ptr<graphics::Image> image = core::allocateShared<graphics::Image_2D>(
     commandBuffer,
@@ -237,14 +171,42 @@ core::shared_ptr<graphics::Image> parseImage(core::shared_ptr<graphics::Command_
     VK_SHARING_MODE_EXCLUSIVE);
   
   commandBuffer->begin();
-  graphics::generateMipmaps(commandBuffer, image, VK_FILTER_LINEAR);
+  graphics::generateMipmaps(commandBuffer, image, mipmapFilter);
   commandBuffer->end();
   graphics::flush(commandBuffer);
 
-  return image;
+  m_imageViews[tinyImageIndex] = core::allocateShared<graphics::Image_View>(image);
+  return m_imageViews[tinyImageIndex];
 }
 
-scene::Point_Light_CPU parsePointLight(const tinygltf::Light& tinyLight)
+core::shared_ptr<graphics::Texture> GLTF_Loader::parseTexture(const core::uint32 tinyTextureIndex, const VkFormat format, core::span<const core::byte> texelForUnitialized)
+{
+  if (m_textures[tinyTextureIndex + 1])
+  {
+    return m_textures[tinyTextureIndex + 1];
+  }
+
+  if (tinyTextureIndex == -1)
+  {
+    auto commandBuffer = core::allocateShared<graphics::Command_Buffer>(m_commandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+    core::shared_ptr<graphics::Image> image = core::allocateShared<graphics::Image_2D>(
+      commandBuffer,
+      format,
+      graphics::Image::Mip_Data(VkExtent3D{ 1, 1, 1 }, texelForUnitialized),
+      VK_SHARING_MODE_EXCLUSIVE);
+
+    m_textures[tinyTextureIndex + 1] = core::allocateShared<graphics::Texture>(core::allocateShared<graphics::Image_View>(image), m_sampler);
+  }
+  else
+  {
+    auto imageView = parseImageView(m_tinyModel.textures[tinyTextureIndex].source, format, VK_FILTER_LINEAR);
+    m_textures[tinyTextureIndex + 1] = core::allocateShared<graphics::Texture>(imageView, m_sampler);
+  }
+
+  return m_textures[tinyTextureIndex + 1];
+}
+
+scene::Point_Light_CPU GLTF_Loader::parsePointLight(const tinygltf::Light& tinyLight)
 {
   scene::Point_Light_CPU pointLight;
   const DirectX::XMVECTOR color = tinyLight.color.size() > 0 ? DirectX::XMVectorSet(tinyLight.color[0], tinyLight.color[1], tinyLight.color[2], tinyLight.color[3]) : DirectX::XMVectorSplatOne();
@@ -253,13 +215,13 @@ scene::Point_Light_CPU parsePointLight(const tinygltf::Light& tinyLight)
   return pointLight;
 }
 
-bool loadModelFromFile(tinygltf::Model& tinyModel, const char* path)
+bool GLTF_Loader::loadModelFromFile(const char* path)
 {
   tinygltf::TinyGLTF tinyLoader;
   std::string err;
   std::string warn;
 
-  const bool loadResult = tinyLoader.LoadBinaryFromFile(&tinyModel, &err, &warn, path);
+  const bool loadResult = tinyLoader.LoadBinaryFromFile(&m_tinyModel, &err, &warn, path);
 
   if (!warn.empty())
   {
@@ -282,20 +244,14 @@ bool loadModelFromFile(tinygltf::Model& tinyModel, const char* path)
 }
 
 
-flecs::entity parseNode(tinygltf::Model&                                              tinyModel,
-                        flecs::world                                                  world, 
-                        const tinygltf::Node&                                         tinyNode,
-                        flecs::entity_view                                            parent, 
-                        const core::vector<scene::Point_Light_CPU>&                   pointLights,
-                        const core::vector<core::shared_ptr<scene::Mesh>>&            meshes, 
-                        const core::vector<core::shared_ptr<graphics::Mesh_Buffer>>&  meshBuffers)
+flecs::entity GLTF_Loader::parseNode(flecs::world world, const tinygltf::Node& tinyNode)
 {
   static core::uint32 uniqueNodeID = 0u;
   flecs::entity node(world, tinyNode.name.empty() ? ("Node " + std::to_string(uniqueNodeID++)).c_str() : tinyNode.name.c_str());
   
   if (tinyNode.light != -1)
   {
-    node.set<scene::Point_Light_CPU>(pointLights[tinyNode.light]);
+    node.set<scene::Point_Light_CPU>(m_pointLights[tinyNode.light]);
   }
 
   if (tinyNode.matrix.size() > 0)
@@ -311,54 +267,54 @@ flecs::entity parseNode(tinygltf::Model&                                        
 
   if (tinyNode.mesh != -1)
   {
-    node.set<core::shared_ptr<scene::Mesh>>(meshes[tinyNode.mesh]);
-    node.set<core::shared_ptr<graphics::Mesh_Buffer>>(meshBuffers[tinyNode.mesh]);
+    node.set<core::shared_ptr<scene::Mesh>>(m_meshes[tinyNode.mesh]);
+    node.set<core::shared_ptr<graphics::Mesh_Buffer>>(m_meshBuffers[tinyNode.mesh]);
   }
 
   for (core::uint32 childIndex : tinyNode.children)
   {
-    flecs::entity child = parseNode(tinyModel, world, tinyModel.nodes[childIndex], node, pointLights, meshes, meshBuffers);
+    flecs::entity child = parseNode(world, m_tinyModel.nodes[childIndex]);
     child.child_of(node);
   }
   return node;
 }
 
-core::vector<scene::Vertex> loadVerticesFromPrimitive(tinygltf::Model& tinyModel, const tinygltf::Primitive& tinyPrimitive)
+core::vector<scene::Vertex> GLTF_Loader::loadVerticesFromPrimitive(const tinygltf::Primitive& tinyPrimitive)
 {
-  const core::uint32 primitiveVerticesCount = tinyModel.accessors[tinyPrimitive.attributes.begin()->second].count;
+  const core::uint32 primitiveVerticesCount = m_tinyModel.accessors[tinyPrimitive.attributes.begin()->second].count;
   core::vector<scene::Vertex> primitiveVertices(primitiveVerticesCount);
 
   for (const auto& attribute : tinyPrimitive.attributes)
   {
-    const tinygltf::Accessor& tinyAccessor = tinyModel.accessors[attribute.second];
+    const tinygltf::Accessor& tinyAccessor = m_tinyModel.accessors[attribute.second];
     if (attribute.first == "POSITION")
     {
       core::assert(tinyAccessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT);
       core::assert(tinyAccessor.type == TINYGLTF_TYPE_VEC3);
-      loadBufferFromAccessor(tinyModel, tinyAccessor, reinterpret_cast<core::byte*>(&primitiveVertices[0].position.x), sizeof(DirectX::XMFLOAT3), sizeof(primitiveVertices[0]));
+      loadBufferFromAccessor(tinyAccessor, reinterpret_cast<core::byte*>(&primitiveVertices[0].position.x), sizeof(DirectX::XMFLOAT3), sizeof(primitiveVertices[0]));
     }
     else if (attribute.first == "TEXCOORD_0")
     {
       core::assert(tinyAccessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT);
       core::assert(tinyAccessor.type == TINYGLTF_TYPE_VEC2);
-      loadBufferFromAccessor(tinyModel, tinyAccessor, reinterpret_cast<core::byte*>(&primitiveVertices[0].texcoord.x), sizeof(DirectX::XMFLOAT2), sizeof(primitiveVertices[0]));
+      loadBufferFromAccessor(tinyAccessor, reinterpret_cast<core::byte*>(&primitiveVertices[0].texcoord.x), sizeof(DirectX::XMFLOAT2), sizeof(primitiveVertices[0]));
     }
     else if (attribute.first == "NORMAL")
     {
       core::assert(tinyAccessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT);
       core::assert(tinyAccessor.type == TINYGLTF_TYPE_VEC3);
-      loadBufferFromAccessor(tinyModel, tinyAccessor, reinterpret_cast<core::byte*>(&primitiveVertices[0].normal.x), sizeof(DirectX::XMFLOAT3), sizeof(primitiveVertices[0]));
+      loadBufferFromAccessor(tinyAccessor, reinterpret_cast<core::byte*>(&primitiveVertices[0].normal.x), sizeof(DirectX::XMFLOAT3), sizeof(primitiveVertices[0]));
     }
   }
 
   return primitiveVertices;
 }
 
-core::vector<core::uint32> loadVertexIndicesFromPrimitive(tinygltf::Model& tinyModel, const tinygltf::Primitive& tinyPrimitive)
+core::vector<core::uint32> GLTF_Loader::loadVertexIndicesFromPrimitive(const tinygltf::Primitive& tinyPrimitive)
 {
-  const tinygltf::Accessor& tinyAccessor = tinyModel.accessors[tinyPrimitive.indices];
-  const tinygltf::BufferView& tinyBufferView = tinyModel.bufferViews[tinyAccessor.bufferView];
-  const tinygltf::Buffer& tinyBuffer = tinyModel.buffers[tinyBufferView.buffer];
+  const tinygltf::Accessor& tinyAccessor = m_tinyModel.accessors[tinyPrimitive.indices];
+  const tinygltf::BufferView& tinyBufferView = m_tinyModel.bufferViews[tinyAccessor.bufferView];
+  const tinygltf::Buffer& tinyBuffer = m_tinyModel.buffers[tinyBufferView.buffer];
 
   core::vector<core::uint32> indices(tinyAccessor.count);
 
@@ -386,10 +342,10 @@ core::vector<core::uint32> loadVertexIndicesFromPrimitive(tinygltf::Model& tinyM
   return indices;
 }
 
-void loadBufferFromAccessor(tinygltf::Model& tinyModel, const tinygltf::Accessor& tinyAccessor, core::byte* data, core::size_t elementSize, core::size_t byteStride)
+void GLTF_Loader::loadBufferFromAccessor(const tinygltf::Accessor& tinyAccessor, core::byte* data, core::size_t elementSize, core::size_t byteStride)
 {
-  const tinygltf::BufferView& tinyBufferView = tinyModel.bufferViews[tinyAccessor.bufferView];
-  const tinygltf::Buffer& tinyBuffer = tinyModel.buffers[tinyBufferView.buffer];
+  const tinygltf::BufferView& tinyBufferView = m_tinyModel.bufferViews[tinyAccessor.bufferView];
+  const tinygltf::Buffer& tinyBuffer = m_tinyModel.buffers[tinyBufferView.buffer];
 
   const core::byte* bufferData = reinterpret_cast<const core::byte*>(&tinyBuffer.data[tinyAccessor.byteOffset + tinyBufferView.byteOffset]);
   for (core::size_t i = 0u; i < tinyAccessor.count; ++i)
@@ -400,11 +356,11 @@ void loadBufferFromAccessor(tinygltf::Model& tinyModel, const tinygltf::Accessor
   }
 }
 
-void buildMeshlets(const core::vector<scene::Vertex>&  submeshVertices,
-                   const core::vector<core::uint32>&   submeshVertexIndices,
-                   core::vector<core::uint32>&         meshVertexIndices,
-                   core::vector<core::uint8>&          meshPrimitiveIndices,
-                   core::vector<scene::Meshlet>&       meshMeshlets)
+void GLTF_Loader::buildMeshlets(const core::vector<scene::Vertex>&  submeshVertices,
+                                const core::vector<core::uint32>&   submeshVertexIndices,
+                                core::vector<core::uint32>&         meshVertexIndices,
+                                core::vector<core::uint8>&          meshPrimitiveIndices,
+                                core::vector<scene::Meshlet>&       meshMeshlets)
 {
   constexpr core::size_t maxVertices = 64u;
   constexpr core::size_t maxTriangles = 124u;

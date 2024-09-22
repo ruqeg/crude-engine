@@ -40,7 +40,7 @@ mat3 tbnFromNormalAndUV(vec3 worldPosition, vec3 surfaceNormal, vec2 uv)
 
 vec3 normalFromNormalMap(vec3 normalMapTex, mat3 tbn)
 {
-  normalMapTex.xy *= (float(gl_FrontFacing) * 2.0 - 1.0);
+  normalMapTex.xyz *= (float(gl_FrontFacing) * 2.0 - 1.0);
   const vec3 textureNormal = normalize(tbn * normalMapTex);
   return textureNormal;
 }

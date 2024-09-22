@@ -59,6 +59,7 @@ void Application::initialize()
 
   m_lightUpdateSystem.run();
 
+  m_editorLayoutCtx->rendererFullscreenPbrPass = m_rendererFullscreenPbrPassCtx;
   m_editorLayoutCtx->sceneNode            = m_sceneNode;
   m_editorLayoutCtx->editorCameraNode     = m_rendererFrameCtx->cameraNode;
   m_editorLayoutCtx->editorSelectedNode   = m_sceneNode;

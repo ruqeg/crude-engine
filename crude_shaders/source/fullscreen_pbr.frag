@@ -90,5 +90,5 @@ void main()
   const vec4 worldPosition = viewPosition * camera.viewToWorld;
   
   const vec3 lightOut = pbrSceneLightOut(worldPosition.xyz, textureNormal, albedo.rgb, metalness, roughness);
-  outColor = vec4(lightOut.xyz / 5, 1);
+  outColor = vec4(textureNormal, 1);
 }

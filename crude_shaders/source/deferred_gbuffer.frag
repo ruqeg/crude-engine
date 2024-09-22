@@ -24,10 +24,11 @@ void main()
   const vec2 metallicRoughness = texture(inMetallicRoughness, texCoord).xy;
   const vec3 normalMapTexel = texture(inNormalMap, texCoord).xyz;
 
-  const vec3 textureNormal = normalFromNormalMap(normalMapTexel, tbnFromNormalAndUV(worldPosition, normalize(surfaceNormal), texCoord));
+  const vec3 normal = normalize(surfaceNormal);
+  const vec3 textureNormal = normalFromNormalMap(normalMapTexel, tbnFromNormalAndUV(worldPosition, normal, texCoord));
 
   const vec2 packedTextureNormal = packOctahedron(textureNormal);
-  const vec2 packedSurfaceNormal = packOctahedron(surfaceNormal);
+  const vec2 packedSurfaceNormal = packOctahedron(normal);
   
   outAlbedo = albedo;
   outMetallicRoughness = metallicRoughness;

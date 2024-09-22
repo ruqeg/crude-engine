@@ -24,6 +24,7 @@ import crude.gui.imgui_texture_descriptor_set;
 import crude.scripts.free_camera_script;
 import crude.core.std_containers_heap;
 import crude.resources.scene_loader_saver_system;
+import crude.graphics.renderer_fullscreen_pbr_pass_system;
 
 // TODO refactor this code in some day, but for now...
 
@@ -99,6 +100,32 @@ void imguiEditorLayoutDrawSystemProcess(flecs::iter& it)
   drawInspectorWindow(editorLayoutCtx->editorSelectedNode);
   drawViewportWindow(editorLayoutCtx);
   drawSceneWindow(editorLayoutCtx);
+
+  ImGui::Begin("Debug");
+  if (ImGui::CollapsingHeader("Shading Model"))
+  {
+    graphics::PBRDebug& pbrDebug = editorLayoutCtx->rendererFullscreenPbrPass->pbrDebug;
+
+    if (ImGui::TreeNode("PBR"))
+    {
+      ImGui::InputFloat3("Diffuse Coefficient", &pbrDebug.diffCoeff.x);
+      if (ImGui::InputFloat("Diffuse Coefficient", &pbrDebug.diffCoeff.z)) pbrDebug.diffCoeff.x = pbrDebug.diffCoeff.y = pbrDebug.diffCoeff.z;
+      ImGui::InputFloat3("Specular Coefficient", &pbrDebug.specCoeff.x);
+      if (ImGui::InputFloat("Specular Coefficient", &pbrDebug.specCoeff.z)) pbrDebug.specCoeff.x = pbrDebug.specCoeff.y = pbrDebug.specCoeff.z;
+      ImGui::Spacing();
+      static const char* ndfTypes[] = { "Blinn-Phong", "Beckmann", "GGX (Trowbridge-Reitz)", "Constant" };
+      ImGui::InputFloat("NDF Constant", &pbrDebug.ndfConstant);
+      ImGui::Combo("NDF Type", &pbrDebug.ndfIndex, ndfTypes, IM_ARRAYSIZE(ndfTypes));
+      static const char* gcTypes[] = { "Implicit", "Neumann", "Cook-Torrance", "Kelemen", "Beckmann", "GGX", "Schlick-Beckmann", "Constant" };
+      ImGui::InputFloat("GS Constant", &pbrDebug.gsConstant);
+      ImGui::Combo("GS Type", &pbrDebug.gsIndex, gcTypes, IM_ARRAYSIZE(gcTypes));
+      static const char* fsTypes[] = { "Default (None)", "Schlick", "Cook-Torrance", "Constant" };
+      ImGui::InputFloat3("FS Constant", &pbrDebug.fsConstant.x);
+      ImGui::Combo("FS Type", &pbrDebug.fsIndex, fsTypes, IM_ARRAYSIZE(fsTypes));
+      ImGui::TreePop();
+    }
+  }
+  ImGui::End();
 }
 
 void preDraw(Imgui_Editor_Layout_Draw_Ctx* layoutCtx)

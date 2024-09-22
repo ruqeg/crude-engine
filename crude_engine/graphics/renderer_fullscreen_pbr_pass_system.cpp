@@ -108,14 +108,7 @@ void rendererFullscreenPBRPassSystemProcess(flecs::iter& it)
   frameCtx->getFrameGraphicsCommandBuffer()->bindPipeline(fullscreenPbrCtx->pipeline);
 
   PBRDebug* data = fullscreenPbrCtx->pbrDebugBuffers[frameCtx->currentFrame]->mapUnsafe();
-  data->ndfConstant;
-  data->gsConstant;
-  data->ndfIndex = 0;
-  data->gsIndex = 0;
-  data->fsIndex = 0;
-  data->fsConstant;
-  DirectX::XMStoreFloat3(&data->diffCoeff, DirectX::XMVectorSet(1, 1, 1, 1));
-  DirectX::XMStoreFloat3(&data->specCoeff, DirectX::XMVectorSet(1, 1, 1, 1));
+  *data = fullscreenPbrCtx->pbrDebug;
   fullscreenPbrCtx->pbrDebugBuffers[frameCtx->currentFrame]->unmap();
 
   fullscreenPbrCtx->perFrameBufferDescriptors[frameCtx->currentFrame].update(frameCtx->getFramePerFrameUniformBuffer());

@@ -4,6 +4,7 @@ module;
 #include <tiny_gltf.h>
 #include <DirectXMath.h>
 #include <flecs.h>
+#include <vulkan/vulkan.h>
 
 export module crude.resources.gltf_model_loader_system;
 
@@ -20,6 +21,8 @@ class Sampler;
 class Command_Pool;
 class Image;
 class Mesh_Buffer;
+class Texture;
+class Image_View;
 
 }
 
@@ -51,25 +54,37 @@ namespace crude::resources
 // 1 - crude::resources::GLTF_Model_Loader_Uninitialized_Flag
 void gltfModelLoaderSystemProcess(flecs::iter& it);
 
-void loadModelToNodeFromFile(flecs::entity node, const char* path, core::shared_ptr<graphics::Command_Pool> commandPool);
-bool loadModelFromFile(tinygltf::Model& tinyModel, const char* path);
-core::shared_ptr<graphics::Sampler> parseSampler(core::shared_ptr<const graphics::Device> device, const tinygltf::Sampler& tinySampler);
-core::shared_ptr<graphics::Image> parseImage(core::shared_ptr<graphics::Command_Pool> commandPool, const tinygltf::Image& tinyImage);
-scene::Point_Light_CPU parsePointLight(const tinygltf::Light& tinyLight);
-flecs::entity parseNode(tinygltf::Model&                                              tinyModel,
-                        flecs::world                                                  world,
-                        const tinygltf::Node&                                         tinyNode, 
-                        flecs::entity_view                                            parent, 
-                        const core::vector<scene::Point_Light_CPU>&                   pointLights,
-                        const core::vector<core::shared_ptr<scene::Mesh>>&            meshes, 
-                        const core::vector<core::shared_ptr<graphics::Mesh_Buffer>>&  meshBuffers);
-core::vector<scene::Vertex> loadVerticesFromPrimitive(tinygltf::Model& tinyModel, const tinygltf::Primitive& tinyPrimitive);
-core::vector<core::uint32> loadVertexIndicesFromPrimitive(tinygltf::Model& tinyModel, const tinygltf::Primitive& tinyPrimitive);
-void loadBufferFromAccessor(tinygltf::Model& tinyModel, const tinygltf::Accessor& tinyAccessor, core::byte* data, core::size_t elementSize, core::size_t byteStride);
-void buildMeshlets(const core::vector<scene::Vertex>&  submeshVertices, 
-                   const core::vector<core::uint32>&   submeshVertexIndices,
-                   core::vector<core::uint32>&         meshVertexIndices, 
-                   core::vector<core::uint8>&          meshPrimitiveIndices,
-                   core::vector<scene::Meshlet>&       meshMeshlets);
+class GLTF_Loader
+{
+public:
+  GLTF_Loader(core::shared_ptr<graphics::Command_Pool> commandPool);
+public:
+  void loadToNodeFromFile(flecs::entity node, const char* path);
+private:
+  bool loadModelFromFile(const char* path);
+  scene::Point_Light_CPU parsePointLight(const tinygltf::Light& tinyLight);
+  core::shared_ptr<graphics::Image_View> parseImageView(const core::uint32 tinyImageIndex, VkFormat format, VkFilter mipmapFilter = VK_FILTER_LINEAR);
+  core::shared_ptr<graphics::Texture> parseTexture(const core::uint32 tinyTextureIndex, const VkFormat format, core::span<const core::byte> texelForUnitialized);
+  flecs::entity parseNode(flecs::world world, const tinygltf::Node& tinyNode);
+private:
+  core::vector<scene::Vertex> loadVerticesFromPrimitive(const tinygltf::Primitive& tinyPrimitive);
+  core::vector<core::uint32> loadVertexIndicesFromPrimitive(const tinygltf::Primitive& tinyPrimitive);
+  void loadBufferFromAccessor(const tinygltf::Accessor& tinyAccessor, core::byte* data, core::size_t elementSize, core::size_t byteStride);
+  void buildMeshlets(const core::vector<scene::Vertex>&  submeshVertices, 
+                     const core::vector<core::uint32>&   submeshVertexIndices,
+                     core::vector<core::uint32>&         meshVertexIndices, 
+                     core::vector<core::uint8>&          meshPrimitiveIndices,
+                     core::vector<scene::Meshlet>&       meshMeshlets);
+private:
+  tinygltf::Model                                        m_tinyModel;
+  core::shared_ptr<graphics::Command_Pool>               m_commandPool;
+
+  core::vector<scene::Point_Light_CPU>                   m_pointLights;
+  core::vector<core::shared_ptr<scene::Mesh>>            m_meshes;
+  core::vector<core::shared_ptr<graphics::Mesh_Buffer>>  m_meshBuffers;
+  core::shared_ptr<graphics::Sampler>                    m_sampler;
+  core::vector<core::shared_ptr<graphics::Image_View>>   m_imageViews;
+  core::vector<core::shared_ptr<graphics::Texture>>      m_textures;
+};
 
 }

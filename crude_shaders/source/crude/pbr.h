@@ -183,12 +183,12 @@ vec3 debugCookTorranceBDRFSpecular(float r2, vec3 f0, float w,
 
   // Mitigate specular highlight being incorrectly brighter than the light source
   const float y = min(1.0, (D * w) / (4.0 * ndotv));
-  return y * G * F;
+  return vec3(D, D, D);
 }
 
 vec3 debugCookTorranceBRDF(vec3 I, float w, vec3 a, 
-                      float m, float r, vec3 f0, 
-                      vec3 n, vec3 v, vec3 l, vec3 h)
+                           float m, float r, vec3 f0, 
+                           vec3 n, vec3 v, vec3 l, vec3 h)
 {
   const float ndoth = max(dot(n, h), 0.0);
   const float ndotv = max(dot(n, v), 0.0);

@@ -80,7 +80,7 @@ public:
   core::array<Combined_Image_Sampler_Descriptor, cFramesCount>  depthTextureDescriptors;
   graphics::Storage_Buffer_Descriptor                           pointLightsBufferDescriptor;
   core::array<Uniform_Buffer_Descriptor, cFramesCount>          pbrDebugBufferDescriptors;
-
+  PBRDebug                                                      pbrDebug{};
   core::array<core::shared_ptr<graphics::Uniform_Buffer<PBRDebug>>, cFramesCount>          pbrDebugBuffers;
 };
 
