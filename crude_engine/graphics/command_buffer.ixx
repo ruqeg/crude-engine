@@ -11,6 +11,7 @@ export import crude.core.std_containers_heap;
 export import crude.core.std_containers_stack;
 export import crude.graphics.scissor;
 export import crude.graphics.viewport;
+export import crude.graphics.image_blit_region;
 
 export namespace crude::graphics
 {
@@ -37,10 +38,8 @@ public:
   void barrier(VkPipelineStageFlags         srcStage, 
                VkPipelineStageFlags         dstStage, 
                const Image_Memory_Barrier&  imageMemoryBarrier);
-  void blitImage(core::shared_ptr<Image>  srcImage,
-                 core::shared_ptr<Image>  dstImage, 
-                 const VkImageBlit&       blitRegion, 
-                 VkFilter                 filter);
+  void blitImage(const Image_Blit_Region&  blitRegion, 
+                 VkFilter                  filter);
   void copyBufferToImage(core::shared_ptr<const Buffer>  srcBuffer,
                          core::shared_ptr<Image>         dstImage, 
                          const VkBufferImageCopy&        region);

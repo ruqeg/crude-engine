@@ -30,6 +30,7 @@ struct Vertex
   DirectX::XMFLOAT3A position;
   DirectX::XMFLOAT3A normal;
   DirectX::XMFLOAT2A texcoord;
+  DirectX::XMFLOAT4A color;
 };
 
 struct Sub_Mesh_Lod

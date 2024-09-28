@@ -5,6 +5,7 @@ module;
 #include <DirectXMath.h>
 #include <flecs.h>
 #include <vulkan/vulkan.h>
+#include <filesystem>
 
 export module crude.resources.gltf_model_loader_system;
 
@@ -59,12 +60,13 @@ class GLTF_Loader
 public:
   GLTF_Loader(core::shared_ptr<graphics::Command_Pool> commandPool);
 public:
-  void loadToNodeFromFile(flecs::entity node, const char* path);
+  void loadToNodeFromFile(flecs::entity node, const std::filesystem::path& path);
 private:
-  bool loadModelFromFile(const char* path);
+  bool loadModelFromFile(const std::filesystem::path& path);
   scene::Point_Light_CPU parsePointLight(const tinygltf::Light& tinyLight);
-  core::shared_ptr<graphics::Image_View> parseImageView(const core::uint32 tinyImageIndex, VkFormat format, VkFilter mipmapFilter = VK_FILTER_LINEAR);
-  core::shared_ptr<graphics::Texture> parseTexture(const core::uint32 tinyTextureIndex, const VkFormat format, core::span<const core::byte> texelForUnitialized);
+  core::shared_ptr<graphics::Material> parseMaterial(core::int32 tinyMaterialIndex);
+  core::shared_ptr<graphics::Image_View> parseImageView(const core::int32 tinyImageIndex, VkFormat format, VkFilter mipmapFilter = VK_FILTER_LINEAR);
+  core::shared_ptr<graphics::Texture> parseTexture(const core::int32 tinyTextureIndex, const VkFormat format, core::span<const core::byte> texelForUnitialized);
   flecs::entity parseNode(flecs::world world, const tinygltf::Node& tinyNode);
 private:
   core::vector<scene::Vertex> loadVerticesFromPrimitive(const tinygltf::Primitive& tinyPrimitive);
@@ -85,6 +87,8 @@ private:
   core::shared_ptr<graphics::Sampler>                    m_sampler;
   core::vector<core::shared_ptr<graphics::Image_View>>   m_imageViews;
   core::vector<core::shared_ptr<graphics::Texture>>      m_textures;
+
+  static constexpr VkExtent2D                            cTextureExtentLimit{ .width = 2048, .height = 2048 };
 };
 
 }

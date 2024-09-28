@@ -16,6 +16,7 @@ struct Vertex
   vec3 position;
   vec3 normal;
   vec2 texCoord;
+  vec4 color;
 };
 
 struct Mesh_Lod

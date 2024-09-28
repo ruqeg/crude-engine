@@ -131,6 +131,12 @@ void Transform::setRotationQuaternion(DirectX::FXMVECTOR quaternion)
   DirectX::XMStoreFloat4(&m_rotationFloat4, quaternion);
 }
 
+void Transform::setRotationQuaternion(core::float32 x, core::float32 y, core::float32 z, core::float32 w)
+{
+  invalidateNodeToWorld();
+  DirectX::XMStoreFloat4(&m_rotationFloat4, DirectX::XMVectorSet(x, y, z, w));
+}
+
 void Transform::addRotation(const DirectX::XMFLOAT3& rotation)
 {
   invalidateNodeToWorld();

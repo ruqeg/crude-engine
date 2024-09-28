@@ -17,9 +17,9 @@ class Device;
 class Descriptor_Set_Layout : public Vulkan_Object<VkDescriptorSetLayout>
 {
 public:
-  explicit Descriptor_Set_Layout(core::shared_ptr<const Device>                    device,
-                                 const core::span<Descriptor_Set_Layout_Binding>&  bindings,
-                                 bool                                              pushDescriptor = false);
+  explicit Descriptor_Set_Layout(core::shared_ptr<const Device>                   device,
+                                 core::span<const Descriptor_Set_Layout_Binding>  bindings,
+                                 bool                                             pushDescriptor = false);
   ~Descriptor_Set_Layout();
 private:
   core::shared_ptr<const Device>  m_device;

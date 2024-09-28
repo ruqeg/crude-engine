@@ -85,16 +85,15 @@ void Command_Buffer::barrier(VkPipelineStageFlags         srcStage,
   }
 }
 
-void Command_Buffer::blitImage(core::shared_ptr<Image>  srcImage,
-                               core::shared_ptr<Image>  dstImage, 
-                               const VkImageBlit&       blitRegion, 
-                               VkFilter                 filter)
+void Command_Buffer::blitImage(const Image_Blit_Region&  blitRegion,
+                               VkFilter                  filter)
 {
+  VkImageBlit vkImageBlit = blitRegion;
   vkCmdBlitImage(
     m_handle,
-    srcImage->getHandle(), srcImage->getMipLayout(blitRegion.srcSubresource.mipLevel),
-    dstImage->getHandle(), dstImage->getMipLayout(blitRegion.dstSubresource.mipLevel),
-    1, &blitRegion,
+    blitRegion.getSourceImage()->getHandle(), blitRegion.getSourceImage()->getMipLayout(blitRegion.srcSubresource.mipLevel),
+    blitRegion.getDestinationImage()->getHandle(), blitRegion.getDestinationImage()->getMipLayout(blitRegion.dstSubresource.mipLevel),
+    1, &vkImageBlit,
     filter);
 }
 

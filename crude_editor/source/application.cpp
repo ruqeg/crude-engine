@@ -93,7 +93,7 @@ void Application::initializeScene(core::float32 aspectRatio)
 
   flecs::entity modelNode = m_world.entity("m_modelNode");
   modelNode.child_of(m_sceneNode);
-  modelNode.set<crude::resources::GLTF_Model_Metadata_Component>({.path = "../../../crude_editor/resources/sponza2.glb" });
+  modelNode.set<crude::resources::GLTF_Model_Metadata_Component>({.path = "../../../crude_editor/resources/main1_sponza/NewSponza_Main_glTF_003.gltf" });
   modelNode.add<crude::resources::GLTF_Model_Loader_Uninitialized_Flag>();
 }
 

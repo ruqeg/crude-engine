@@ -2,8 +2,9 @@ target_sources(crude_engine
   PRIVATE
   renderer_light_system.cpp
   gbuffer.cpp
+  renderer_deferred_gbuffer_color_pass_system.cpp
   renderer_fullscreen_pbr_pass_system.cpp
-  renderer_deferred_gbuffer_pass_system.cpp
+  renderer_deferred_gbuffer_pbr_pass_system.cpp
   renderer_frame_system.cpp
   renderer_core_system.cpp
   mesh_buffer.cpp
@@ -43,7 +44,10 @@ target_sources(crude_engine
   descriptor_set_layout.cpp
   device.cpp
   device_memory.cpp
-  image_view.cpp)
+  image_view.cpp
+  image_subresource_layers.cpp
+  image_blit_region.cpp
+)
 
 target_sources(crude_engine
   PUBLIC
@@ -51,8 +55,9 @@ target_sources(crude_engine
   renderer_light_system.ixx
   material.ixx
   gbuffer.ixx
+  renderer_deferred_gbuffer_color_pass_system.ixx
   renderer_fullscreen_pbr_pass_system.ixx
-  renderer_deferred_gbuffer_pass_system.ixx
+  renderer_deferred_gbuffer_pbr_pass_system.ixx
   renderer_frame_system.ixx
   renderer_core_system.ixx
   mesh_buffer.ixx
@@ -127,4 +132,7 @@ target_sources(crude_engine
   viewport_state_create_info.ixx
   vulkan_allocator.ixx
   vulkan_object.ixx
-  vulkan_utils.ixx)
+  vulkan_utils.ixx
+  image_subresource_layers.ixx
+  image_blit_region.ixx
+)

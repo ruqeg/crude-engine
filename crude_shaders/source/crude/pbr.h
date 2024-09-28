@@ -195,7 +195,7 @@ vec3 debugCookTorranceBRDF(vec3 I, float w, vec3 a,
   const float ndotl = max(dot(n, l), 0.0);
   const float vdoth = max(dot(v, h), 0.0);
 
-  const vec3 diffuse = debugCookTorranceBRDFDiffuse(a, m, f0, ndotl);
+  const vec3 diffuse = debugCookTorranceBRDFDiffuse(a, m, f0, ndotl) * w;
   const vec3 specular = debugCookTorranceBDRFSpecular(r, f0, w, ndoth, ndotl, ndotv, vdoth);
   return I * (pbrDebug.diffCoeff * diffuse + pbrDebug.specCoeff * specular);
 }

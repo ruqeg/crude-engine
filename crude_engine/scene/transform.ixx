@@ -33,6 +33,7 @@ public:
   void setRotation(DirectX::FXMVECTOR rotation);
   void setRotation(core::float32 x, core::float32 y, core::float32 z);
   void setRotationQuaternion(DirectX::FXMVECTOR quaternion);
+  void setRotationQuaternion(core::float32 x, core::float32 y, core::float32 z, core::float32 w);
   void addRotation(const DirectX::XMFLOAT3& rotation);
   void addRotation(DirectX::FXMVECTOR rotation);
   void addRotation(core::float32 x, core::float32 y, core::float32 z);

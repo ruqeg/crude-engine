@@ -14,6 +14,8 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/compile_shader.cmake)
 COMPILE_SHADER("${CMAKE_CURRENT_SOURCE_DIR}/source/deferred_gbuffer.mesh")
 COMPILE_SHADER("${CMAKE_CURRENT_SOURCE_DIR}/source/deferred_gbuffer.frag")
 COMPILE_SHADER("${CMAKE_CURRENT_SOURCE_DIR}/source/deferred_gbuffer.task")
+COMPILE_SHADER("${CMAKE_CURRENT_SOURCE_DIR}/source/deferred_gbuffer_color.mesh")
+COMPILE_SHADER("${CMAKE_CURRENT_SOURCE_DIR}/source/deferred_gbuffer_color.frag")
 
 COMPILE_SHADER("${CMAKE_CURRENT_SOURCE_DIR}/source/fullscreen.mesh")
 COMPILE_SHADER("${CMAKE_CURRENT_SOURCE_DIR}/source/fullscreen_pbr.frag")

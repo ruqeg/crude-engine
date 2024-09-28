@@ -26,23 +26,22 @@ Device::Device(core::shared_ptr<const Physical_Device>     physicalDevice,
   // !TODO
   m_queueDescriptors.erase(std::unique(m_queueDescriptors.begin(), m_queueDescriptors.end()), m_queueDescriptors.end());
   core::vector<VkDeviceQueueCreateInfo> queueDescriptorsData(m_queueDescriptors.begin(), m_queueDescriptors.end());
-  
+
   VkPhysicalDeviceRobustness2FeaturesEXT deviceRobustness{};
   deviceRobustness.sType          = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ROBUSTNESS_2_FEATURES_EXT;
-  deviceRobustness.nullDescriptor = true;
+  deviceRobustness.nullDescriptor = VK_TRUE;
 
   // !TODO
   VkPhysicalDevice8BitStorageFeatures deviceFeatures8BitStorage{};
   deviceFeatures8BitStorage.sType                   = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_8BIT_STORAGE_FEATURES;
   deviceFeatures8BitStorage.pNext                   = &deviceRobustness;
-  deviceFeatures8BitStorage.storageBuffer8BitAccess = true;
-
+  deviceFeatures8BitStorage.storageBuffer8BitAccess = VK_TRUE;
 
   VkPhysicalDeviceMeshShaderFeaturesEXT deviceFeaturesMesh{};
-  deviceFeaturesMesh.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_FEATURES_EXT;
-  deviceFeaturesMesh.pNext = &deviceFeatures8BitStorage;
-  deviceFeaturesMesh.meshShader = true;
-  deviceFeaturesMesh.taskShader = true;
+  deviceFeaturesMesh.sType      = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_FEATURES_EXT;
+  deviceFeaturesMesh.pNext      = &deviceFeatures8BitStorage;
+  deviceFeaturesMesh.meshShader = VK_TRUE;
+  deviceFeaturesMesh.taskShader = VK_TRUE;
 
   VkPhysicalDeviceFeatures2  deviceFeatures{};
   deviceFeatures.sType    = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;

@@ -54,6 +54,7 @@ layout(location=0) out PerVertexData
   vec3 viewSurfaceNormal;
   vec3 viewPosition;
   vec3 worldPosition;
+  vec4 color;
 } v_out[];
 
 void main()
@@ -92,6 +93,7 @@ void main()
     v_out[groupThreadIndex].viewSurfaceNormal  = viewSurfaceNormal;
     v_out[groupThreadIndex].worldPosition      = worldPosition.xyz;
     v_out[groupThreadIndex].viewPosition       = viewPosition.xyz;
+    v_out[groupThreadIndex].color              = vertices[vertexIndex].color;
   }
 
   if (groupThreadIndex < primitiveCount)

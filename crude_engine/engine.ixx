@@ -5,7 +5,8 @@ module;
 export module crude.engine;
 
 export import crude.core.std_containers_heap;
-export import crude.graphics.renderer_deferred_gbuffer_pass_system;
+export import crude.graphics.renderer_deferred_gbuffer_color_pass_system;
+export import crude.graphics.renderer_deferred_gbuffer_pbr_pass_system;
 export import crude.graphics.renderer_fullscreen_pbr_pass_system;
 export import crude.platform.input_system;
 export import crude.gui.renderer_imgui_pass_system;
@@ -44,17 +45,18 @@ protected:
   flecs::system                                                          m_sceneSaverSystem;
   flecs::system                                                          m_sceneLoaderSystem;
   
-  core::shared_ptr<resources::Scene_Loader_Context>                      m_sceneLoaderCtx;
-  core::shared_ptr<resources::Scene_Saver_Context>                       m_sceneSaverCtx;
-  core::shared_ptr<resources::GLTF_Model_Loader_Context>                 m_gltfModelLoaderCtx;
-  core::shared_ptr<platform::Input_System_Context>                       m_inputSystemCtx;
-  core::shared_ptr<graphics::Renderer_Core_System_Ctx>                   m_rendererCoreCtx;
-  core::shared_ptr<graphics::Renderer_Frame_System_Ctx>                  m_rendererFrameCtx;
-  core::shared_ptr<graphics::Renderer_Deferred_GBuffer_Pass_Systen_Ctx>  m_rendererDeferredGBufferPassCtx;
-  core::shared_ptr<graphics::Renderer_Light_Ctx>                         m_rendererLightCtx;
-  core::shared_ptr<graphics::Renderer_Fullscreen_PBR_Pass_Ctx>           m_rendererFullscreenPbrPassCtx;
-  core::shared_ptr<gui::Renderer_ImGui_Pass_System_Ctx>                  m_rendererImguiPassCtx;
-  core::shared_ptr<platform::SDL_Window_Container>                       m_windowContainer;
+  core::shared_ptr<resources::Scene_Loader_Context>                            m_sceneLoaderCtx;
+  core::shared_ptr<resources::Scene_Saver_Context>                             m_sceneSaverCtx;
+  core::shared_ptr<resources::GLTF_Model_Loader_Context>                       m_gltfModelLoaderCtx;
+  core::shared_ptr<platform::Input_System_Context>                             m_inputSystemCtx;
+  core::shared_ptr<graphics::Renderer_Core_System_Ctx>                         m_rendererCoreCtx;
+  core::shared_ptr<graphics::Renderer_Frame_System_Ctx>                        m_rendererFrameCtx;
+  core::shared_ptr<graphics::Renderer_Deferred_GBuffer_Color_Pass_Systen_Ctx>  m_rendererDeferredGBufferColorPassCtx;
+  core::shared_ptr<graphics::Renderer_Deferred_GBuffer_PBR_Pass_Systen_Ctx>    m_rendererDeferredGBufferPbrPassCtx;
+  core::shared_ptr<graphics::Renderer_Light_Ctx>                               m_rendererLightCtx;
+  core::shared_ptr<graphics::Renderer_Fullscreen_PBR_Pass_Ctx>                 m_rendererFullscreenPbrPassCtx;
+  core::shared_ptr<gui::Renderer_ImGui_Pass_System_Ctx>                        m_rendererImguiPassCtx;
+  core::shared_ptr<platform::SDL_Window_Container>                             m_windowContainer;
 };
 
 struct Engine::Initialize_Window

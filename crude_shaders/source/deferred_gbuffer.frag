@@ -22,6 +22,7 @@ layout (location=0) in PerVertexData
   vec3 viewSmoothNormal;
   vec3 viewPosition;
   vec3 worldPosition;
+  vec4 color;
 };
 
 layout(location=0) out vec4 outAlbedo;

@@ -101,15 +101,23 @@ void Engine::initializeRendererSystems()
 {
   m_rendererCoreCtx = core::allocateShared<graphics::Renderer_Core_System_Ctx>(m_windowContainer);
   m_rendererFrameCtx = core::allocateShared<graphics::Renderer_Frame_System_Ctx>(m_rendererCoreCtx);
-  m_rendererDeferredGBufferPassCtx = core::allocateShared<graphics::Renderer_Deferred_GBuffer_Pass_Systen_Ctx>(m_rendererFrameCtx);
+  m_rendererDeferredGBufferPbrPassCtx = core::allocateShared<graphics::Renderer_Deferred_GBuffer_PBR_Pass_Systen_Ctx>(m_rendererFrameCtx);
+  m_rendererDeferredGBufferColorPassCtx = core::allocateShared<graphics::Renderer_Deferred_GBuffer_Color_Pass_Systen_Ctx>(m_rendererFrameCtx, m_rendererDeferredGBufferPbrPassCtx->gbuffer);
   m_rendererLightCtx = core::allocateShared<graphics::Renderer_Light_Ctx>(m_rendererCoreCtx);
-  m_rendererFullscreenPbrPassCtx = core::allocateShared<graphics::Renderer_Fullscreen_PBR_Pass_Ctx>(m_rendererFrameCtx, m_rendererLightCtx, m_rendererDeferredGBufferPassCtx->gbuffer);
+  m_rendererFullscreenPbrPassCtx = core::allocateShared<graphics::Renderer_Fullscreen_PBR_Pass_Ctx>(m_rendererFrameCtx, m_rendererLightCtx, m_rendererDeferredGBufferColorPassCtx->gbuffer);
   m_rendererImguiPassCtx = core::allocateShared<gui::Renderer_ImGui_Pass_System_Ctx>(m_rendererFrameCtx);
 
-  flecs::system deferredGBufferPassSystem = m_world.system<core::shared_ptr<graphics::Mesh_Buffer>, core::shared_ptr<scene::Mesh>>("DeferredGBufferPassSystem")
-    .ctx(m_rendererDeferredGBufferPassCtx.get())
+  flecs::system deferredGBufferColorPassSystem = m_world.system<core::shared_ptr<graphics::Mesh_Buffer>, core::shared_ptr<scene::Mesh>>("DeferredGBufferColorPassSystem")
+    .ctx(m_rendererDeferredGBufferColorPassCtx.get())
     .kind(0)
-    .run(graphics::rendererDeferredGBufferPassSystemProcess);
+    .with<graphics::Deferred_Node_Pipeline_Color_Flag>()
+    .run(graphics::rendererDeferredGBufferColorPassSystemProcess);
+
+  flecs::system deferredGBufferPbrPassSystem = m_world.system<core::shared_ptr<graphics::Mesh_Buffer>, core::shared_ptr<scene::Mesh>>("DeferredGBufferPbrPassSystem")
+    .ctx(m_rendererDeferredGBufferPbrPassCtx.get())
+    .kind(0)
+    .with<graphics::Deferred_Node_Pipeline_PBR_Flag>()
+    .run(graphics::rendererDeferredGBufferPbrPassSystemProcess);
 
   m_lightUpdateSystem = m_world.system<scene::Point_Light_CPU>("LightUpdateSystem")
     .ctx(m_rendererLightCtx.get())
@@ -138,9 +146,10 @@ void Engine::initializeRendererSystems()
 
   m_rendererSystem = m_world.system("RendererFrameSubmitSystem")
     .kind(flecs::PreStore)
-    .run([frameStartSystem, deferredGBufferPassSystem, fullscreenPBRPassSystem, imguiPassSystem, frameSubmitSystem](flecs::iter& it) {
+    .run([frameStartSystem, deferredGBufferColorPassSystem, deferredGBufferPbrPassSystem, fullscreenPBRPassSystem, imguiPassSystem, frameSubmitSystem](flecs::iter& it) {
       frameStartSystem.run();
-      deferredGBufferPassSystem.run();
+      deferredGBufferPbrPassSystem.run();
+      deferredGBufferColorPassSystem.run();
       fullscreenPBRPassSystem.run();
       imguiPassSystem.run();
       frameSubmitSystem.run();

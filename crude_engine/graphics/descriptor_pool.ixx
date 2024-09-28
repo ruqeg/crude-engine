@@ -17,10 +17,10 @@ class Device;
 class Descriptor_Pool : public Vulkan_Object<VkDescriptorPool>
 {
 public:
-  explicit Descriptor_Pool(core::shared_ptr<const Device>           device,
-                           const core::span<Descriptor_Pool_Size>&  poolSizes,
-                           core::uint32                             maxSets = 1u,
-                           bool                                     freeDescriptorSet = false);
+  explicit Descriptor_Pool(core::shared_ptr<const Device>          device,
+                           core::span<const Descriptor_Pool_Size>  poolSizes,
+                           core::uint32                            maxSets = 1u,
+                           bool                                    freeDescriptorSet = false);
   core::shared_ptr<const Device> getDevice() const;
   ~Descriptor_Pool();
   bool canFreeDescriptorSet() const;

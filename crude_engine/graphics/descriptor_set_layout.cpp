@@ -8,9 +8,9 @@ import crude.graphics.vulkan_utils;
 namespace crude::graphics
 {
   
-Descriptor_Set_Layout::Descriptor_Set_Layout(core::shared_ptr<const Device>                    device,
-                                             const core::span<Descriptor_Set_Layout_Binding>&  bindings,
-                                             bool                                              pushDescriptor)
+Descriptor_Set_Layout::Descriptor_Set_Layout(core::shared_ptr<const Device>                   device,
+                                             core::span<const Descriptor_Set_Layout_Binding>  bindings,
+                                             bool                                             pushDescriptor)
   :
   m_device(device)
 {
