@@ -113,15 +113,24 @@ void imguiEditorLayoutDrawSystemProcess(flecs::iter& it)
       ImGui::InputFloat3("Specular Coefficient", &pbrDebug.specCoeff.x);
       if (ImGui::InputFloat("Specular Coefficient", &pbrDebug.specCoeff.z)) pbrDebug.specCoeff.x = pbrDebug.specCoeff.y = pbrDebug.specCoeff.z;
       ImGui::Spacing();
-      static const char* ndfTypes[] = { "Blinn-Phong", "Beckmann", "GGX (Trowbridge-Reitz)", "Constant" };
-      ImGui::InputFloat("NDF Constant", &pbrDebug.ndfConstant);
-      ImGui::Combo("NDF Type", &pbrDebug.ndfIndex, ndfTypes, IM_ARRAYSIZE(ndfTypes));
-      static const char* gcTypes[] = { "Implicit", "Neumann", "Cook-Torrance", "Kelemen", "Beckmann", "GGX", "Schlick-Beckmann", "Constant" };
-      ImGui::InputFloat("GS Constant", &pbrDebug.gsConstant);
-      ImGui::Combo("GS Type", &pbrDebug.gsIndex, gcTypes, IM_ARRAYSIZE(gcTypes));
-      static const char* fsTypes[] = { "Default (None)", "Schlick", "Cook-Torrance", "Constant" };
-      ImGui::InputFloat3("FS Constant", &pbrDebug.fsConstant.x);
-      ImGui::Combo("FS Type", &pbrDebug.fsIndex, fsTypes, IM_ARRAYSIZE(fsTypes));
+      constexpr core::array<const char*, 4> ndfTypes = { "Blinn-Phong", "Beckmann", "GGX (Trowbridge-Reitz)", "Constant" };
+      ImGui::Combo("NDF Type", &pbrDebug.ndfIndex, ndfTypes.data(), ndfTypes.size());
+      if (pbrDebug.ndfIndex == (ndfTypes.size() - 1))
+      {
+        ImGui::InputFloat("NDF Constant", &pbrDebug.ndfConstant);
+      }
+      constexpr core::array<const char*, 8> gcTypes = { "Implicit", "Neumann", "Cook-Torrance", "Kelemen", "Beckmann", "GGX", "Schlick-Beckmann", "Constant" };
+      ImGui::Combo("GS Type", &pbrDebug.gsIndex, gcTypes.data(), gcTypes.size());
+      if (pbrDebug.gsIndex == (gcTypes.size() - 1))
+      {
+        ImGui::InputFloat("GS Constant", &pbrDebug.gsConstant);
+      }
+      constexpr core::array<const char*, 4> fsTypes = { "Default (None)", "Schlick", "Cook-Torrance", "Constant" };
+      ImGui::Combo("FS Type", &pbrDebug.fsIndex, fsTypes.data(), fsTypes.size());
+      if (pbrDebug.fsIndex == (fsTypes.size() - 1))
+      {
+        ImGui::InputFloat3("FS Constant", &pbrDebug.fsConstant.x);
+      }
       ImGui::TreePop();
     }
   }

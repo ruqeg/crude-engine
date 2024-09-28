@@ -49,7 +49,7 @@ import crude.graphics.gbuffer;
 namespace crude::graphics
 {
 
-const Uniform_Buffer_Descriptor          cPerFrameUniformBufferDescriptor{ 0u, VK_SHADER_STAGE_MESH_BIT_EXT };
+const Uniform_Buffer_Descriptor          cPerFrameUniformBufferDescriptor{ 0u, VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_FRAGMENT_BIT };
 const Storage_Buffer_Descriptor          cSubmeshesDrawsBufferDescriptor{ 1u, VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT };
 const Storage_Buffer_Descriptor          cVertexBufferDescriptor{ 3u, VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT };
 const Storage_Buffer_Descriptor          cMeshletBufferDescriptor{ 2u, VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT };

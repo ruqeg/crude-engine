@@ -21,33 +21,33 @@ vec3 unpackOctahedron(vec2 oct)
 }
 
 // Per-Pixel Tangent Space Normal Mapping
-// http://hacksoflife.blogspot.ch/2009/11/per-pixel-tangent-space-normal-mapping.html
-mat3 tbnFromNormalAndUV(vec3 worldPosition, vec3 surfaceNormal, vec2 uv)
+// http://www.thetenthplanet.de/archives/1180
+mat3 cotangentFrame(vec3 N, vec3 p, vec2 uv)
 {
-  const vec3 q0 = dFdx(worldPosition.xyz);
-  const vec3 q1 = dFdy(worldPosition.xyz);
-  const vec2 st0 = dFdx(uv.st);
-  const vec2 st1 = dFdy(uv.st);
+  // get edge vec­tors of the pix­el tri­an­gle
+  vec3 dp1  = dFdx(p);
+  vec3 dp2  = dFdy(p);
+  vec2 duv1 = dFdx(uv);
+  vec2 duv2 = dFdy(uv);
 
-  const float scale = sign(st1.t * st0.s - st0.t * st1.s);
+  // solve the lin­ear sys­tem
+  vec3 dp2perp = cross(dp2, N);
+  vec3 dp1perp = cross(N, dp1);
+  vec3 T = dp2perp * duv1.x + dp1perp * duv2.x;
+  vec3 B = dp2perp * duv1.y + dp1perp * duv2.y;
 
-  const vec3 tangent = normalize((q0 * st1.t - q1 * st0.t) * scale);
-  const vec3 bitangent = normalize((-q0 * st1.s + q1 * st0.s) * scale);
-
-  const mat3 tbn = mat3(tangent, bitangent, surfaceNormal);
-  return tbn;
+  // con­struct a scale-invari­ant frame 
+  float invmax = inversesqrt(max(dot(T, T), dot(B, B)));
+  return mat3(T * invmax, B * invmax, N);
 }
 
-vec3 normalFromNormalMap(vec3 normalMapTex, mat3 tbn)
+vec3 perturbNormal(vec3 N, vec3 V, vec2 texcoord, vec3 normalMapTex)
 {
-  normalMapTex.xyz *= (float(gl_FrontFacing) * 2.0 - 1.0);
-  const vec3 textureNormal = normalize(tbn * normalMapTex);
-  return textureNormal;
-}
-
-vec3 normalFromNormalMap(vec3 normalMapTex, vec3 geometryTangent, vec3 geometryBitangent, vec3 geometryNormal)
-{
-  return normalFromNormalMap(normalMapTex, mat3(geometryTangent, geometryBitangent, geometryNormal));
+  // assume N, the interpolated vertex normal and
+  // V, the view vector (vertex to eye)
+  normalMapTex = normalMapTex * (255.0 / 127.0 - 128.0 / 127.0);
+  mat3 TBN = cotangentFrame(N, -V, texcoord);
+  return normalize(TBN * normalMapTex);
 }
 
 vec4 viewFromDepth(vec2 texCoord, float depth, mat4x4 clipToView)

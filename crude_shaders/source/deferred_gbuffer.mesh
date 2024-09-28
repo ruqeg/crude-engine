@@ -50,7 +50,9 @@ layout(binding=5) readonly buffer VertexIndices
 layout(location=0) out PerVertexData 
 {
   vec2 texCoord;
-  vec3 surfaceNormal;
+  vec3 worldSurfaceNormal;
+  vec3 viewSurfaceNormal;
+  vec3 viewPosition;
   vec3 worldPosition;
 } v_out[];
 
@@ -78,14 +80,18 @@ void main()
     
     const vec4 submeshPosition = vec4(vertices[vertexIndex].position, 1.0);
     const vec4 worldPosition   = submeshPosition * perSubmesh.meshToWorld;
-    const vec4 clipPosition    = worldPosition * camera.worldToView * camera.viewToClip;
+    const vec4 viewPosition    = worldPosition * camera.worldToView;
+    const vec4 clipPosition    = viewPosition * camera.viewToClip;
     
-    const vec3 surfaceNormal    = normalize((vec4(vertices[vertexIndex].normal, 0.0) * perSubmesh.meshToWorld).xyz);
+    const vec3 worldSurfaceNormal = normalize((vec4(vertices[vertexIndex].normal, 0.0) * perSubmesh.meshToWorld).xyz);
+    const vec3 viewSurfaceNormal = normalize((vec4(worldSurfaceNormal, 0) * camera.worldToView).xyz);
     
     gl_MeshVerticesEXT[groupThreadIndex].gl_Position = clipPosition;
-    v_out[groupThreadIndex].texCoord = vertices[vertexIndex].texCoord;
-    v_out[groupThreadIndex].surfaceNormal = surfaceNormal;
-    v_out[groupThreadIndex].worldPosition = worldPosition.xyz;
+    v_out[groupThreadIndex].texCoord           = vertices[vertexIndex].texCoord;
+    v_out[groupThreadIndex].worldSurfaceNormal = worldSurfaceNormal;
+    v_out[groupThreadIndex].viewSurfaceNormal  = viewSurfaceNormal;
+    v_out[groupThreadIndex].worldPosition      = worldPosition.xyz;
+    v_out[groupThreadIndex].viewPosition       = viewPosition.xyz;
   }
 
   if (groupThreadIndex < primitiveCount)

@@ -89,6 +89,6 @@ void main()
   const vec4 viewPosition  = viewFromDepth(screenUV, depth, camera.clipToView);
   const vec4 worldPosition = viewPosition * camera.viewToWorld;
   
-  const vec3 lightOut = pbrSceneLightOut(worldPosition.xyz, textureNormal, albedo.rgb, metalness, roughness);
-  outColor = vec4(textureNormal, 1);
+  const vec3 lightOut = pbrSceneLightOut(worldPosition.xyz, surfaceNormal, albedo.rgb, metalness, roughness);
+  outColor = vec4(lightOut, 1);
 }

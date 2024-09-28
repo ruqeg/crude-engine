@@ -50,11 +50,15 @@ void gltfModelLoaderSystemProcess(flecs::iter & it)
     for (auto i : it)
     {
       GLTF_Loader gltfLoader(ctx->transferCommandPool);
-      gltfLoader.loadToNodeFromFile(it.entity(i), metadata[i].path.c_str(), ctx->transferCommandPool);
+      gltfLoader.loadToNodeFromFile(it.entity(i), metadata[i].path.c_str());
       it.entity(i).remove<crude::resources::GLTF_Model_Loader_Uninitialized_Flag>();
     }
   }
 }
+
+GLTF_Loader::GLTF_Loader(core::shared_ptr<graphics::Command_Pool> commandPool)
+  : m_commandPool(commandPool)
+{}
 
 void GLTF_Loader::loadToNodeFromFile(flecs::entity node, const char* path)
 {
@@ -98,11 +102,12 @@ void GLTF_Loader::loadToNodeFromFile(flecs::entity node, const char* path)
       {
         const tinygltf::Material& tinyMaterial = m_tinyModel.materials[tinyPrimitive.material];
 
+        // VK_FORMAT_R8G8B8A8_UNORM ???
         submeshMaterial->albedo = parseTexture(tinyMaterial.pbrMetallicRoughness.baseColorTexture.index, VK_FORMAT_R8G8B8A8_SRGB, core::array<core::byte, 4> { 255, 255, 255, 255 });
-        submeshMaterial->metallicRoughness = parseTexture(tinyMaterial.pbrMetallicRoughness.metallicRoughnessTexture.index, VK_FORMAT_R8G8_SNORM, core::array<core::byte, 2>{0, 100});
-        submeshMaterial->normal = parseTexture(tinyMaterial.normalTexture.index, VK_FORMAT_R8G8B8A8_SNORM, core::array<core::byte, 4> { 0, 0, 255, 255 });
+        submeshMaterial->metallicRoughness = parseTexture(tinyMaterial.pbrMetallicRoughness.metallicRoughnessTexture.index, VK_FORMAT_R8G8B8A8_SRGB, core::array<core::byte, 4>{0, 100, 0, 255});
+        submeshMaterial->normal = parseTexture(tinyMaterial.normalTexture.index, VK_FORMAT_R8G8B8A8_SRGB, core::array<core::byte, 4> { 0, 0, 255, 255 });
       }
-
+      
       mesh->submeshes.push_back(scene::Sub_Mesh{
         .vertexOffset = verticesOffset,
         .vertexCount = static_cast<core::uint32>(primtiveVertices.size()),
