@@ -103,6 +103,7 @@ void rendererDeferredGBufferPbrPassSystemProcess(flecs::iter& it)
       for (core::uint32 submeshIndex = 0u; submeshIndex < meshes[i]->submeshes.size(); ++submeshIndex)
       {
         const scene::Sub_Mesh& submesh = meshes[i]->submeshes[submeshIndex];
+        // !TODO ???
         if (!submesh.material || !submesh.material->albedo || !submesh.material->metallicRoughness || !submesh.material->normal)
         {
           continue;

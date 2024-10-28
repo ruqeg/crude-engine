@@ -1,5 +1,6 @@
 target_sources(crude_engine
   PRIVATE
+  renderer_point_shadow_pass_system.cpp
   renderer_light_system.cpp
   gbuffer.cpp
   renderer_deferred_gbuffer_color_pass_system.cpp
@@ -13,6 +14,7 @@ target_sources(crude_engine
   format_helper.cpp
   image_descriptor.cpp
   image_2d.cpp
+  image_cube.cpp
   buffer_descriptor.cpp
   uniform_buffer.cpp
   flush.cpp
@@ -52,6 +54,7 @@ target_sources(crude_engine
 target_sources(crude_engine
   PUBLIC
   FILE_SET cxx_modules_graphics TYPE CXX_MODULES FILES
+  renderer_point_shadow_pass_system.ixx
   renderer_light_system.ixx
   material.ixx
   gbuffer.ixx
@@ -78,6 +81,7 @@ target_sources(crude_engine
   attachment_load_store_op.ixx
   image_attachment.ixx
   image_2d.ixx
+  image_cube.ixx
   descriptor_pool_size.ixx
   buffer_descriptor.ixx
   descriptor_set_layout_binding.ixx
