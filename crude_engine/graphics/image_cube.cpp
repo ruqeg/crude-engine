@@ -20,5 +20,21 @@ Image_Cube::Image_Cube(core::shared_ptr<const Device>  device,
       VK_IMAGE_TILING_OPTIMAL,
       sharingMode)
 {}
+  
+Image_Cube::Image_Cube(core::shared_ptr<const Device>  device,
+                       VkFormat                        format,
+                       core::uint32                    dimension,
+                       core::uint32                    mipLevelsCount,
+                       VkSampleCountFlagBits           samples,
+                       VkImageCreateFlags              flags,
+                       VkImageUsageFlags               usage,
+                       VkImageTiling                   tiling,
+                       VkSharingMode                   sharingMode)
+  : Image(device, VK_IMAGE_TYPE_2D, format, VkExtent3D{ dimension, dimension, 1 }, mipLevelsCount,
+    6u, 
+    samples,
+    flags | VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT, 
+    usage, tiling, sharingMode)
+{}
 
 }

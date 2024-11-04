@@ -1,0 +1,98 @@
+#version 450
+#extension GL_EXT_mesh_shader : require
+#extension GL_EXT_shader_16bit_storage: require
+#extension GL_EXT_shader_8bit_storage: require
+#extension GL_GOOGLE_include_directive: require
+
+#include "crude/scene.h"
+
+layout(local_size_x=cMaxMeshWorkGroupSize, local_size_y=1, local_size_z=1) in;
+layout(triangles) out;
+layout(max_vertices=cMaxVerticesPerMeshlet, max_primitives=cMaxPrimitivesPerMeshlet) out;
+
+layout(push_constant, row_major) uniform PerSubmesh
+{
+  // !TODO move meshToWorld
+  mat4  meshToWorld;
+  uint  drawID;
+} perSubmesh;
+
+layout(binding=0, row_major) uniform PerFrame
+{
+  Camera camera;
+};
+
+layout(binding=1) readonly buffer SubMeshDraws
+{
+  SubMeshDraw submeshDraws[];
+};
+
+layout(binding=2) readonly buffer Meshlets
+{
+  Meshlet meshlets[];
+};
+
+layout(binding=3) readonly buffer Vertices
+{
+  Vertex vertices[];
+};
+
+layout(binding=4) readonly buffer PrimitiveIndices
+{
+  uint8_t primitiveIndices[];
+};
+
+layout(binding=5) readonly buffer VertexIndices
+{
+  uint vertexIndices[];
+};
+
+layout(location=0) out PerVertexData 
+{
+  vec2 texCoord;
+} v_out[];
+
+struct SharedData
+{
+  int layerIndex;
+};
+taskPayloadSharedEXT SharedData sharedData;
+
+void main()
+{
+  const uint groupIndex = gl_WorkGroupID.x;
+  const uint groupThreadIndex = gl_LocalInvocationID.x;
+  
+  const uint drawID = perSubmesh.drawID;
+
+  const SubMeshDraw submeshDraw = submeshDraws[drawID];
+  const SubMeshLod submeshLod = submeshDraw.lods[0];
+
+  const uint meshletIndex = submeshLod.meshletOffset + groupIndex;
+
+  const uint vertexCount = uint(meshlets[meshletIndex].vertexCount);
+  const uint primitiveCount = uint(meshlets[meshletIndex].primitiveCount);
+
+  SetMeshOutputsEXT(vertexCount, primitiveCount);
+  
+  if (groupThreadIndex < vertexCount)
+  {
+    const uint vertexOffset = uint(meshlets[meshletIndex].vertexOffset);
+    const uint vertexIndex = submeshDraw.vertexOffset + vertexIndices[groupThreadIndex + vertexOffset];
+    
+    const vec4 submeshPosition = vec4(vertices[vertexIndex].position, 1.0);
+    const vec4 worldPosition   = submeshPosition * perSubmesh.meshToWorld;
+    const vec4 viewPosition    = worldPosition * camera.worldToView;
+    const vec4 clipPosition    = viewPosition * camera.viewToClip;
+    
+    gl_MeshVerticesEXT[groupThreadIndex].gl_Position = clipPosition;
+    v_out[groupThreadIndex].texCoord                 = vertices[vertexIndex].texCoord;
+  }
+
+  if (groupThreadIndex < primitiveCount)
+  {
+    const uint primitiveOffest = uint(3 * groupThreadIndex + meshlets[meshletIndex].primitiveOffest);
+    gl_PrimitiveTriangleIndicesEXT[groupThreadIndex] = uvec3(primitiveIndices[primitiveOffest], primitiveIndices[primitiveOffest + 1], primitiveIndices[primitiveOffest + 2]);
+    gl_MeshPrimitivesEXT[groupThreadIndex].gl_Layer = sharedData.layerIndex;
+  }
+}

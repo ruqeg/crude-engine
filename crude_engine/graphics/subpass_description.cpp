@@ -124,6 +124,18 @@ Subpass_Description::Subpass_Description(VkPipelineBindPoint pipelineBindPoint) 
   this->pPreserveAttachments    = nullptr;
 }
 
+Subpass_Description::Subpass_Description(const Initialize_Depth& initialize) noexcept
+  : Subpass_Description(VK_PIPELINE_BIND_POINT_GRAPHICS)
+{
+  VkAttachmentReference* depthStencilReference = core::defaultCxxAllocate<VkAttachmentReference>();
+  if (depthStencilReference)
+  {
+    depthStencilReference->attachment = 0;
+    depthStencilReference->layout = initialize.depthStencilLayout;
+  }
+  this->pDepthStencilAttachment = depthStencilReference;
+}
+
 Subpass_Description::Subpass_Description(const Initialize_Color& initialize) noexcept
   : Subpass_Description(VK_PIPELINE_BIND_POINT_GRAPHICS)
 {

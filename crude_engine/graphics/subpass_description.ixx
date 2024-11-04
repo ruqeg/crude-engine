@@ -16,6 +16,7 @@ class Subpass_Description final : public VkSubpassDescription
 {
 public:
   struct Initialize_Color;
+  struct Initialize_Depth;
   struct Initialize_Color_Depth;
   struct Initialize_Color_Array_Depth;
   struct Initialize_Color_Depth_Resolve;
@@ -28,6 +29,7 @@ public:
   Subpass_Description& operator=(Subpass_Description& other) noexcept;
   Subpass_Description& operator=(Subpass_Description&& other) noexcept;
 public:
+  explicit Subpass_Description(const Initialize_Depth& initialize) noexcept;
   explicit Subpass_Description(const Initialize_Color& initialize) noexcept;
   explicit Subpass_Description(const Initialize_Color_Resolve& initialize) noexcept;
   explicit Subpass_Description(const Initialize_Color_Depth& initialize) noexcept;
@@ -35,6 +37,11 @@ public:
   explicit Subpass_Description(const Initialize_Color_Depth_Resolve& initialize) noexcept;
 private:
   explicit Subpass_Description(VkPipelineBindPoint pipelineBindPoint) noexcept;
+};
+
+struct Subpass_Description::Initialize_Depth
+{
+  VkImageLayout depthStencilLayout;
 };
 
 struct Subpass_Description::Initialize_Color

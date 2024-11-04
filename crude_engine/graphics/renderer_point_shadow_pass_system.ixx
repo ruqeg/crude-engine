@@ -35,12 +35,14 @@ class Device;
 class Mesh_Buffer;
 class Swap_Chain_Image;
 class GBuffer;
+class Image_Cube;
+class Image_View;
+class Depth_Stencil_Cube_Attachment;
 
 struct Renderer_Point_Shadow_Pass_Systen_Ctx
 {
 public:
   explicit Renderer_Point_Shadow_Pass_Systen_Ctx(core::shared_ptr<Renderer_Frame_System_Ctx> frameCtx);
-  explicit Renderer_Point_Shadow_Pass_Systen_Ctx(core::shared_ptr<Renderer_Frame_System_Ctx> frameCtx, core::shared_ptr<GBuffer> gbuffer);
 private:
   void initializeRenderPass();
   void initalizeGraphicsPipeline();
@@ -52,14 +54,13 @@ private:
   Color_Blend_State_Create_Info createColorBlendStateCreateInfo();
   Depth_Stencil_State_Create_Info createDepthStencilStateCreateInfo();
 public:
+  core::shared_ptr<Depth_Stencil_Cube_Attachment>               pointShadowImage;
+  core::shared_ptr<Image_View>                                  pointShadowImageView;
   core::shared_ptr<Renderer_Frame_System_Ctx>                   frameCtx;
   core::shared_ptr<Render_Pass>                                 renderPass;
   core::shared_ptr<Pipeline>                                    pipeline;
   core::vector<core::shared_ptr<Framebuffer>>                   framebuffers;
-  core::shared_ptr<GBuffer>                                     gbuffer;
   core::array<Uniform_Buffer_Descriptor, cFramesCount>          perFrameBufferDescriptors;
-  core::array<Combined_Image_Sampler_Descriptor, cFramesCount>  submeshMetallicRoughnessDescriptors;
-  core::array<Combined_Image_Sampler_Descriptor, cFramesCount>  submeshNormalDescriptors;
   graphics::Storage_Buffer_Descriptor                           submeshesDrawsBufferDescriptor;
   graphics::Storage_Buffer_Descriptor                           vertexBufferDescriptor;
   graphics::Storage_Buffer_Descriptor                           meshletBufferDescriptor;
@@ -94,11 +95,8 @@ private:
   };
 };
 
-struct Deferred_Node_Pipeline_Color_Flag {};
-
 // 0 component - core::shared_ptr<Mesh_Buffer>
 // 1 component - core::shared_ptr<scene::Mesh>
-// 0 with - Deferred_Node_Pipeline_Color_Flag
-void rendererDeferredGBufferColorPassSystemProcess(flecs::iter& it);
+void rendererPointShadowPassSystemProcess(flecs::iter& it);
 
 }

@@ -1,0 +1,42 @@
+#version 450
+#extension GL_EXT_mesh_shader : require
+#extension GL_EXT_shader_16bit_storage: require
+#extension GL_EXT_shader_8bit_storage: require
+#extension GL_GOOGLE_include_directive: require
+
+#include "crude/scene.h"
+
+layout (local_size_x=cMaxTaskWorkGroupSize, local_size_y=1, local_size_z=1) in;
+
+layout(push_constant) uniform PerSubmesh
+{
+  mat4  meshToWorld;
+  uint  drawID;
+} perSubmesh;
+
+layout(binding=1) readonly buffer SubMeshDraws
+{
+  SubMeshDraw submeshDraws[];
+};
+
+layout(binding=2) readonly buffer Meshlets {
+  Meshlet meshlets[];
+};
+
+struct SharedData
+{
+  int layerIndex;
+};
+taskPayloadSharedEXT SharedData sharedData;
+
+void main()
+{
+  const uint groupIndex = gl_WorkGroupID.x;
+  sharedData.layerIndex = int(groupIndex);
+
+  const uint drawID = perSubmesh.drawID;
+  const uint meshletCount = submeshDraws[drawID].lods[0].meshletCount;
+  const uint visibleMeshlets = meshletCount;
+  
+  EmitMeshTasksEXT(visibleMeshlets, 1, 1);
+}

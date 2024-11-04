@@ -17,16 +17,16 @@ Image::Image(core::shared_ptr<const Device>  device,
              VkImageType                     type,
              VkFormat                        format,
              VkExtent3D                      extent)
-  :
-  m_device(device),
-  m_format(format),
-  m_usage(0),
-  m_extent(extent),
-  m_type(type),
-  m_layouts(1u, VK_IMAGE_LAYOUT_UNDEFINED),
-  m_mipLevelsCount(1u),
-  m_arrayLayersCount(1u),
-  m_samples(VK_SAMPLE_COUNT_1_BIT)
+  : m_device{ device }
+  , m_format{ format }
+  , m_usage{ 0 }
+  , m_extent{ extent }
+  , m_type{ type }
+  , m_layouts{ 1u, VK_IMAGE_LAYOUT_UNDEFINED }
+  , m_mipLevelsCount{ 1u }
+  , m_arrayLayersCount{ 1u }
+  , m_samples{ VK_SAMPLE_COUNT_1_BIT }
+  , m_flags{}
 {
   m_handle = handle;
 }
@@ -42,16 +42,16 @@ Image::Image(core::shared_ptr<const Device>  device,
              VkImageUsageFlags               usage,
              VkImageTiling                   tiling,
              VkSharingMode                   sharingMode)
-  :
-  m_device(device),
-  m_format(format),
-  m_usage(usage),
-  m_extent(extent),
-  m_type(type),
-  m_layouts(mipLevelsCount, VK_IMAGE_LAYOUT_UNDEFINED),
-  m_mipLevelsCount(mipLevelsCount),
-  m_arrayLayersCount(arrayLayersCount),
-  m_samples(samples)
+  : m_device{ device }
+  , m_format{ format }
+  , m_usage{ usage }
+  , m_extent{ extent }
+  , m_type{ type }
+  , m_layouts{ mipLevelsCount, VK_IMAGE_LAYOUT_UNDEFINED }
+  , m_mipLevelsCount{ mipLevelsCount }
+  , m_arrayLayersCount{ arrayLayersCount }
+  , m_samples{ samples }
+  , m_flags{ flags }
 {
   VkImageCreateInfo vkImageInfo{};
   vkImageInfo.sType                  = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -59,7 +59,7 @@ Image::Image(core::shared_ptr<const Device>  device,
   vkImageInfo.queueFamilyIndexCount  = 0u; // !TODO
   vkImageInfo.pQueueFamilyIndices    = nullptr; // !TODO
 
-  vkImageInfo.flags                  = flags;
+  vkImageInfo.flags                  = m_flags;
   vkImageInfo.imageType              = m_type;
   vkImageInfo.format                 = m_format;
   vkImageInfo.extent                 = m_extent;

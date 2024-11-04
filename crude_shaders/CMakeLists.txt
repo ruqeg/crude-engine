@@ -20,6 +20,9 @@ COMPILE_SHADER("${CMAKE_CURRENT_SOURCE_DIR}/source/deferred_gbuffer_color.frag")
 COMPILE_SHADER("${CMAKE_CURRENT_SOURCE_DIR}/source/fullscreen.mesh")
 COMPILE_SHADER("${CMAKE_CURRENT_SOURCE_DIR}/source/fullscreen_pbr.frag")
 
+COMPILE_SHADER("${CMAKE_CURRENT_SOURCE_DIR}/source/point_shadow.mesh")
+COMPILE_SHADER("${CMAKE_CURRENT_SOURCE_DIR}/source/point_shadow.task")
+
 set_target_properties(crude_shaders PROPERTIES LINKER_LANGUAGE CXX)
 
 target_include_directories(crude_shaders PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")

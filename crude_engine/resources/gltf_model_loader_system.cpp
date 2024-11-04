@@ -118,7 +118,7 @@ void GLTF_Loader::loadToNodeFromFile(flecs::entity node, const std::filesystem::
     m_meshes.push_back(mesh);
   }
 
-  m_meshBuffers.reserve(m_meshes.size());
+   m_meshBuffers.reserve(m_meshes.size());
   for (core::shared_ptr<scene::Mesh> mesh : m_meshes)
   {
     auto commandBuffer = core::allocateShared<graphics::Command_Buffer>(m_commandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);

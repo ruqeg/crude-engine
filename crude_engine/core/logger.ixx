@@ -120,8 +120,8 @@ void Logger::debugPrintF(const char* filename,
                          const char* format,
                          Args&&...               args) noexcept
 {
-  char messageBuffer[1024] = {};
-  char formatBuffer[1024] = {};
+  char messageBuffer[4 * 1024] = {};
+  char formatBuffer[4 * 1024] = {};
 
   strncat(formatBuffer, sizeof(formatBuffer), "[channel: %s][verbosity: %s][filename: %s][line: %i] =>\n\t");
   strncat(formatBuffer, sizeof(formatBuffer), format);

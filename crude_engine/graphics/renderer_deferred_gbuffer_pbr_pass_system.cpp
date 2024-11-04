@@ -127,8 +127,7 @@ void rendererDeferredGBufferPbrPassSystemProcess(flecs::iter& it)
         perMesh.submeshIndex = submeshIndex;
         frameCtx->getFrameGraphicsCommandBuffer()->pushConstant(deferredGBufferCtx->pipeline->getPipelineLayout(), perMesh);
 
-        const core::size_t taskWorkGroupSize = 1 + submesh.lods[0].meshletCount / 128;
-        frameCtx->getFrameGraphicsCommandBuffer()->drawMeshTasks(taskWorkGroupSize);
+        frameCtx->getFrameGraphicsCommandBuffer()->drawMeshTasks(1);
       }
     }
   }

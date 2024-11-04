@@ -106,6 +106,12 @@ void Engine::initializeRendererSystems()
   m_rendererLightCtx = core::allocateShared<graphics::Renderer_Light_Ctx>(m_rendererCoreCtx);
   m_rendererFullscreenPbrPassCtx = core::allocateShared<graphics::Renderer_Fullscreen_PBR_Pass_Ctx>(m_rendererFrameCtx, m_rendererLightCtx, m_rendererDeferredGBufferColorPassCtx->gbuffer);
   m_rendererImguiPassCtx = core::allocateShared<gui::Renderer_ImGui_Pass_System_Ctx>(m_rendererFrameCtx);
+  m_rendererPointShadowPassCtx = core::allocateShared<graphics::Renderer_Point_Shadow_Pass_Systen_Ctx>(m_rendererFrameCtx);
+
+  flecs::system pointShadowPassSystem = m_world.system<core::shared_ptr<graphics::Mesh_Buffer>, core::shared_ptr<scene::Mesh>>("PointShadowPassSystem")
+    .ctx(m_rendererPointShadowPassCtx.get())
+    .kind(0)
+    .run(graphics::rendererPointShadowPassSystemProcess);
 
   flecs::system deferredGBufferColorPassSystem = m_world.system<core::shared_ptr<graphics::Mesh_Buffer>, core::shared_ptr<scene::Mesh>>("DeferredGBufferColorPassSystem")
     .ctx(m_rendererDeferredGBufferColorPassCtx.get())
@@ -146,8 +152,9 @@ void Engine::initializeRendererSystems()
 
   m_rendererSystem = m_world.system("RendererFrameSubmitSystem")
     .kind(flecs::PreStore)
-    .run([frameStartSystem, deferredGBufferColorPassSystem, deferredGBufferPbrPassSystem, fullscreenPBRPassSystem, imguiPassSystem, frameSubmitSystem](flecs::iter& it) {
+    .run([frameStartSystem, deferredGBufferColorPassSystem, deferredGBufferPbrPassSystem, fullscreenPBRPassSystem, imguiPassSystem, pointShadowPassSystem, frameSubmitSystem](flecs::iter& it) {
       frameStartSystem.run();
+      pointShadowPassSystem.run();
       deferredGBufferPbrPassSystem.run();
       deferredGBufferColorPassSystem.run();
       fullscreenPBRPassSystem.run();

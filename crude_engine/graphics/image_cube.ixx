@@ -17,6 +17,16 @@ public:
                      core::uint32                     dimension,
                      core::uint32                     mipLevelsCount,
                      VkSharingMode                    sharingMode);
+protected:
+  explicit Image_Cube(core::shared_ptr<const Device>  device,
+                      VkFormat                        format,
+                      core::uint32                    dimension,
+                      core::uint32                    mipLevelsCount,
+                      VkSampleCountFlagBits           samples,
+                      VkImageCreateFlags              flags,
+                      VkImageUsageFlags               usage,
+                      VkImageTiling                   tiling,
+                      VkSharingMode                   sharingMode);
 };
 
 }

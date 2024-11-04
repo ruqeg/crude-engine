@@ -36,6 +36,8 @@ void rendererLightUpdateSystemProcess(flecs::iter& it)
         DirectX::XMStoreFloat3A(&pointLightGPU.position, transform->getWorldTranslationVector());
       }
       visiblePointLightsGPU.push_back(pointLightGPU);
+
+      lightCtx->pointLights.push_back(it.entity(i));
     }
   }
 

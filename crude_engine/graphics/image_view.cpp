@@ -31,7 +31,7 @@ Image_View::Image_View(core::shared_ptr<Image>         image,
   vkCreateInfo.pNext                            = nullptr;
   vkCreateInfo.flags                            = 0u;
 
-  vkCreateInfo.viewType                         = imageToViewType(m_image->getType());
+  vkCreateInfo.viewType                         = imageToViewType(m_image->getType(), m_image->getFlags());
   vkCreateInfo.image                            = m_image->getHandle();
   vkCreateInfo.components                       = components;
   vkCreateInfo.format                           = format;
@@ -56,15 +56,18 @@ core::shared_ptr<Image> Image_View::getImage()
     return m_image;
 }
   
-VkImageViewType Image_View::imageToViewType(VkImageType imageType)
+VkImageViewType Image_View::imageToViewType(VkImageType imageType, VkImageCreateFlags imageFlags)
 {
   switch (imageType) 
   {
-    case VK_IMAGE_TYPE_1D:  return VK_IMAGE_VIEW_TYPE_1D;
-    case VK_IMAGE_TYPE_2D:  return VK_IMAGE_VIEW_TYPE_2D;
-    case VK_IMAGE_TYPE_3D:  return VK_IMAGE_VIEW_TYPE_3D;
-    case VK_IMAGE_TYPE_CUBE: return VK_IMAGE_VIEW_TYPE_CUBE;
-    // !TODO
+    case VK_IMAGE_TYPE_1D:
+      return VK_IMAGE_VIEW_TYPE_1D;
+    case VK_IMAGE_TYPE_2D:
+      if (imageFlags & VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT)
+        return VK_IMAGE_VIEW_TYPE_CUBE;
+      return VK_IMAGE_VIEW_TYPE_2D;
+    case VK_IMAGE_TYPE_3D:
+      return VK_IMAGE_VIEW_TYPE_3D;
   }
   return VK_IMAGE_VIEW_TYPE_MAX_ENUM;
 }

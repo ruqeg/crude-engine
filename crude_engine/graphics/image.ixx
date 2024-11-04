@@ -75,6 +75,7 @@ public:
   core::uint32 getHeight() const { return m_extent.height; }
   core::uint32 getDepth() const { return m_extent.depth; }
   VkImageUsageFlags getUsage() const { return m_usage; }
+  VkImageCreateFlags getFlags() const { return m_flags; }
   VkSampleCountFlagBits getSampleCount() const { return m_samples; }
   VkMemoryRequirements getMemoryRequirements() const;
   core::shared_ptr<const Device> getDevice() const;
@@ -82,16 +83,17 @@ public:
   core::uint32 calculateMipWidth(core::uint32 mipLevel) const;
   core::uint32 calculateMipHeight(core::uint32 mipLevel) const;
 protected:
-  core::shared_ptr<const Device>   m_device;
-  core::shared_ptr<Device_Memory>  m_memory;
-  VkSampleCountFlagBits            m_samples;
-  VkFormat                         m_format;
-  VkExtent3D                       m_extent;
-  VkImageUsageFlags                m_usage;
-  VkImageType                      m_type;
-  core::vector<VkImageLayout>      m_layouts;
-  core::uint32                     m_mipLevelsCount;
-  core::uint32                     m_arrayLayersCount;
+  const core::shared_ptr<const Device>   m_device;
+  core::shared_ptr<Device_Memory>        m_memory;
+  const VkSampleCountFlagBits            m_samples;
+  const VkFormat                         m_format;
+  const VkExtent3D                       m_extent;
+  const VkImageUsageFlags                m_usage;
+  const VkImageType                      m_type;
+  const VkImageCreateFlags               m_flags;
+  core::vector<VkImageLayout>            m_layouts;
+  const core::uint32                     m_mipLevelsCount;
+  const core::uint32                     m_arrayLayersCount;
 };
 
 struct Image::Copy_Layout

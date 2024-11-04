@@ -30,7 +30,7 @@ public:
   core::shared_ptr<Image> getImage();
   const Image_Subresource_Range& getSubresourceRange() const { return m_subresourceRange; }
 private:
-  VkImageViewType imageToViewType(VkImageType imageType);
+  VkImageViewType imageToViewType(VkImageType imageType, VkImageCreateFlags imageFlags);
 private:
   core::shared_ptr<Image>         m_image;
   const Image_Subresource_Range   m_subresourceRange;
