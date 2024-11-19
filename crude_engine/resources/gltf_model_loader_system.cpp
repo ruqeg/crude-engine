@@ -52,9 +52,12 @@ void gltfModelLoaderSystemProcess(flecs::iter & it)
 
     for (auto i : it)
     {
+      flecs::entity entity = it.entity(i);
+
       GLTF_Loader gltfLoader(ctx->transferCommandPool);
-      gltfLoader.loadToNodeFromFile(it.entity(i), metadata[i].path.c_str());
-      it.entity(i).remove<crude::resources::GLTF_Model_Loader_Uninitialized_Flag>();
+      gltfLoader.loadToNodeFromFile(entity, metadata[i].path.c_str());
+      ctx->callback(entity);
+      entity.remove<crude::resources::GLTF_Model_Loader_Uninitialized_Flag>();
     }
   }
 }
@@ -132,7 +135,10 @@ void GLTF_Loader::loadToNodeFromFile(flecs::entity node, const std::filesystem::
     {
       m_pointLights.push_back(parsePointLight(tinyLight));
     }
-    m_pointLights.push_back(scene::Point_Light_CPU{});
+    else
+    {
+      m_pointLights.push_back(scene::Point_Light_CPU{});
+    }
   }
 
   // Load nodes

@@ -54,8 +54,10 @@ layout(location=0) out PerVertexData
 
 struct SharedData
 {
-  int layerIndex;
+  int  layerIndex;
+  mat4 worldToClip;
 };
+
 taskPayloadSharedEXT SharedData sharedData;
 
 void main()
@@ -82,8 +84,7 @@ void main()
     
     const vec4 submeshPosition = vec4(vertices[vertexIndex].position, 1.0);
     const vec4 worldPosition   = submeshPosition * perSubmesh.meshToWorld;
-    const vec4 viewPosition    = worldPosition * camera.worldToView;
-    const vec4 clipPosition    = viewPosition * camera.viewToClip;
+    const vec4 clipPosition    = worldPosition * sharedData.worldToClip;
     
     gl_MeshVerticesEXT[groupThreadIndex].gl_Position = clipPosition;
     v_out[groupThreadIndex].texCoord                 = vertices[vertexIndex].texCoord;

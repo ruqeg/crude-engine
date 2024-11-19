@@ -31,7 +31,7 @@ Image_View::Image_View(core::shared_ptr<Image>         image,
   vkCreateInfo.pNext                            = nullptr;
   vkCreateInfo.flags                            = 0u;
 
-  vkCreateInfo.viewType                         = imageToViewType(m_image->getType(), m_image->getFlags());
+  vkCreateInfo.viewType                         = imageToViewType(m_image->getType(), m_image->getFlags(), m_image->getFlags());
   vkCreateInfo.image                            = m_image->getHandle();
   vkCreateInfo.components                       = components;
   vkCreateInfo.format                           = format;
@@ -56,7 +56,7 @@ core::shared_ptr<Image> Image_View::getImage()
     return m_image;
 }
   
-VkImageViewType Image_View::imageToViewType(VkImageType imageType, VkImageCreateFlags imageFlags)
+VkImageViewType Image_View::imageToViewType(VkImageType imageType, VkImageCreateFlags imageFlags, core::uint32 arrayLayersCount)
 {
   switch (imageType) 
   {
@@ -64,7 +64,7 @@ VkImageViewType Image_View::imageToViewType(VkImageType imageType, VkImageCreate
       return VK_IMAGE_VIEW_TYPE_1D;
     case VK_IMAGE_TYPE_2D:
       if (imageFlags & VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT)
-        return VK_IMAGE_VIEW_TYPE_CUBE;
+        return (arrayLayersCount > 6) ? VK_IMAGE_VIEW_TYPE_CUBE_ARRAY : VK_IMAGE_VIEW_TYPE_CUBE;
       return VK_IMAGE_VIEW_TYPE_2D;
     case VK_IMAGE_TYPE_3D:
       return VK_IMAGE_VIEW_TYPE_3D;

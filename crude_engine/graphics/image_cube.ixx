@@ -22,6 +22,7 @@ protected:
                       VkFormat                        format,
                       core::uint32                    dimension,
                       core::uint32                    mipLevelsCount,
+                      core::uint32                    arrayCount,
                       VkSampleCountFlagBits           samples,
                       VkImageCreateFlags              flags,
                       VkImageUsageFlags               usage,

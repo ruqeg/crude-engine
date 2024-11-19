@@ -55,22 +55,28 @@ void rendererPointShadowPassSystemProcess(flecs::iter& it)
   core::shared_ptr<Renderer_Frame_System_Ctx> frameCtx = pointShadowCtx->frameCtx;
   core::shared_ptr<Renderer_Core_System_Ctx> coreCtx = frameCtx->coreCtx;
 
+  if (pointShadowCtx->pointLightsShadowsCount < 1)
+  {
+    while (it.next());
+    return;
+  }
+
   core::array<VkClearValue, 1u> clearValues;
   clearValues[0].depthStencil = { 1.0f, 0 };
 
   VkRect2D renderArea;
-  renderArea.extent = pointShadowCtx->pointShadowImage->getExtent2D();
+  renderArea.extent = pointShadowCtx->pointShadowImageView->getImage()->getExtent2D();
   renderArea.offset = VkOffset2D{ 0, 0 };
 
   frameCtx->getFrameGraphicsCommandBuffer()->setViewport(Viewport({
     .x = 0.0f, .y = 0.0f,
-    .width = static_cast<core::float32>(pointShadowCtx->pointShadowImage->getWidth()),
-    .height = static_cast<core::float32>(pointShadowCtx->pointShadowImage->getHeight()),
+    .width = static_cast<core::float32>(pointShadowCtx->pointShadowImageView->getImage()->getWidth()),
+    .height = static_cast<core::float32>(pointShadowCtx->pointShadowImageView->getImage()->getHeight()),
     .minDepth = 0.0f, .maxDepth = 1.0f }));
 
   frameCtx->getFrameGraphicsCommandBuffer()->setScissor(Scissor({
     .offset = { 0, 0 },
-    .extent = pointShadowCtx->pointShadowImage->getExtent2D() }));
+    .extent = pointShadowCtx->pointShadowImageView->getImage()->getExtent2D() }));
 
   frameCtx->getFrameGraphicsCommandBuffer()->beginRenderPass(pointShadowCtx->pipeline->getRenderPass(), pointShadowCtx->framebuffers[frameCtx->swapchainImageIndex], clearValues, renderArea);
   frameCtx->getFrameGraphicsCommandBuffer()->bindPipeline(pointShadowCtx->pipeline);
@@ -101,19 +107,20 @@ void rendererPointShadowPassSystemProcess(flecs::iter& it)
       {
         const scene::Sub_Mesh& submesh = meshes[i]->submeshes[submeshIndex];
 
-        core::array<VkWriteDescriptorSet, 6u> descriptorWrites;
+        core::array<VkWriteDescriptorSet, 7u> descriptorWrites;
         pointShadowCtx->perFrameBufferDescriptors[frameCtx->currentFrame].write(descriptorWrites[0]);
         pointShadowCtx->submeshesDrawsBufferDescriptor.write(descriptorWrites[1]);
         pointShadowCtx->vertexBufferDescriptor.write(descriptorWrites[2]);
         pointShadowCtx->meshletBufferDescriptor.write(descriptorWrites[3]);
         pointShadowCtx->primitiveIndicesBufferDescriptor.write(descriptorWrites[4]);   
         pointShadowCtx->vertexIndicesBufferDescriptor.write(descriptorWrites[5]);
+        pointShadowCtx->pointLightsBufferDescriptor.write(descriptorWrites[6]);
 
         frameCtx->getFrameGraphicsCommandBuffer()->pushDescriptorSet(pointShadowCtx->pipeline, descriptorWrites);
         perMesh.submeshIndex = submeshIndex;
         frameCtx->getFrameGraphicsCommandBuffer()->pushConstant(pointShadowCtx->pipeline->getPipelineLayout(), perMesh);
 
-        frameCtx->getFrameGraphicsCommandBuffer()->drawMeshTasks(6);
+        frameCtx->getFrameGraphicsCommandBuffer()->drawMeshTasks(6, pointShadowCtx->pointLightsShadowsCount);
       }
     }
   }
@@ -128,23 +135,82 @@ Renderer_Point_Shadow_Pass_Systen_Ctx::Renderer_Point_Shadow_Pass_Systen_Ctx(cor
   , meshletBufferDescriptor{ cMeshletBufferDescriptor }
   , primitiveIndicesBufferDescriptor{ cPrimitiveIndicesBufferDescriptor }
   , vertexIndicesBufferDescriptor{ cVertexIndicesBufferDescriptor }
+  , pointLightsBufferDescriptor{ cPointLightsBufferDescriptor }
   , frameCtx{ frameCtx }
+  , dimensionSize{ 1024 }
+  , samples{ VK_SAMPLE_COUNT_1_BIT }
+  , depthStencilFormat{ findDepthFormatSupportedByDevice(frameCtx->coreCtx->device->getPhysicalDevice(), depth_formats::gDepthCandidates) }
 {
-  core::shared_ptr<Renderer_Core_System_Ctx> coreCtx = frameCtx->coreCtx;
-
-  this->pointShadowImage = core::allocateShared<Depth_Stencil_Cube_Attachment>(Depth_Stencil_Cube_Attachment::Initialize{
-    .device             = coreCtx->device,
-    .depthStencilFormat = findDepthFormatSupportedByDevice(coreCtx->device->getPhysicalDevice(), depth_formats::gDepthCandidates),
-    .dimension          = 2048,
-    .sampled            = true,
-    .explicitResolve    = false,
-    .mipLevelsCount     = 1u,
-    .samples            = VK_SAMPLE_COUNT_1_BIT });
-  this->pointShadowImageView = core::allocateShared<Image_View>(this->pointShadowImage);
+  this->pointShadowImageView = core::allocateShared<Image_View>(core::allocateShared<Depth_Stencil_Cube_Attachment>(Depth_Stencil_Cube_Attachment::Initialize{
+      .device             = frameCtx->coreCtx->device,
+      .depthStencilFormat = this->depthStencilFormat,
+      .dimension          = this->dimensionSize,
+      .sampled            = true,
+      .explicitResolve    = false,
+      .mipLevelsCount     = 1u,
+      .arrayCount         = 1u, 
+      .samples            = this->samples }));
 
   initializeRenderPass();
   initalizeGraphicsPipeline();
+}
+
+void Renderer_Point_Shadow_Pass_Systen_Ctx::update(const core::vector<scene::Point_Light_GPU>& visiblePointLightsGPU)
+{
+  struct Point_Light_Shadow
+  {
+    DirectX::XMFLOAT4X4 worldToClip[6];
+  };
+
+  this->pointShadowImageView = core::allocateShared<Image_View>(core::allocateShared<Depth_Stencil_Cube_Attachment>(Depth_Stencil_Cube_Attachment::Initialize{
+      .device             = frameCtx->coreCtx->device,
+      .depthStencilFormat = this->depthStencilFormat,
+      .dimension          = this->dimensionSize,
+      .sampled            = true,
+      .explicitResolve    = false,
+      .mipLevelsCount     = 1u,
+      .arrayCount         = (core::uint32)visiblePointLightsGPU.size(),
+      .samples            = this->samples }));
+
   initializeFramebuffers();
+
+  core::vector<Point_Light_Shadow> pointLightsShadows;
+  pointLightsShadows.reserve(visiblePointLightsGPU.size());
+
+  for (auto& visiblePointLightGPU : visiblePointLightsGPU)
+  {
+    Point_Light_Shadow pointLightShadow{};
+
+    const DirectX::XMVECTOR position = DirectX::XMLoadFloat3(&visiblePointLightGPU.position);
+    const std::array<DirectX::XMMATRIX, 6> worldsToLightView =
+    {
+      DirectX::XMMatrixLookAtLH(position, DirectX::XMVectorAdd(position, DirectX::XMVECTOR{ 1.f, 0.f, 0.f}), { 0.f, 1.f, 0.f}),
+      DirectX::XMMatrixLookAtLH(position, DirectX::XMVectorAdd(position, DirectX::XMVECTOR{-1.f, 0.f, 0.f}), { 0.f, 1.f, 0.f}),
+      DirectX::XMMatrixLookAtLH(position, DirectX::XMVectorAdd(position, DirectX::XMVECTOR{ 0.f, 1.f, 0.f}), { 0.f, 0.f,-1.f}),
+      DirectX::XMMatrixLookAtLH(position, DirectX::XMVectorAdd(position, DirectX::XMVECTOR{ 0.f,-1.f, 0.f}), { 0.f, 0.f, 1.f}),
+      DirectX::XMMatrixLookAtLH(position, DirectX::XMVectorAdd(position, DirectX::XMVECTOR{ 0.f, 0.f, 1.f}), { 0.f, 1.f, 0.f}),
+      DirectX::XMMatrixLookAtLH(position, DirectX::XMVectorAdd(position, DirectX::XMVECTOR{ 0.f, 0.f,-1.f}), { 0.f, 1.f, 0.f})
+    };
+
+    const DirectX::XMMATRIX lightViewToClip = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV2, 1.0f, 0.01f, std::max(0.011f, visiblePointLightGPU.sourceRadius));
+
+    for (int face = 0; face < 6; ++face)
+    {
+      DirectX::XMStoreFloat4x4(&pointLightShadow.worldToClip[face], DirectX::XMMatrixMultiply(worldsToLightView[face], lightViewToClip));
+    }
+
+    pointLightsShadows.push_back(pointLightShadow);
+  }
+
+  auto commandBuffer = core::allocateShared<graphics::Command_Buffer>(this->frameCtx->coreCtx->graphicsCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+  this->pointLightsShadowsBuffer = core::allocateShared<graphics::Storage_Buffer>(commandBuffer, pointLightsShadows);
+
+  if (this->pointLightsShadowsBuffer)
+    this->pointLightsBufferDescriptor.update(this->pointLightsShadowsBuffer, this->pointLightsShadowsBuffer->getSize());
+  else
+    this->pointLightsBufferDescriptor.clear();
+
+  this->pointLightsShadowsCount = pointLightsShadows.size();
 }
 
 
@@ -159,6 +225,7 @@ core::shared_ptr<Descriptor_Set_Layout> Renderer_Point_Shadow_Pass_Systen_Ctx::c
 void Renderer_Point_Shadow_Pass_Systen_Ctx::initializeRenderPass()
 {
   core::shared_ptr<Renderer_Core_System_Ctx> coreCtx = frameCtx->coreCtx;
+
   core::array<Subpass_Dependency, 1u> subpassesDependencies =
   {
     Subpass_Dependency({
@@ -170,7 +237,23 @@ void Renderer_Point_Shadow_Pass_Systen_Ctx::initializeRenderPass()
       .dstAccessMask   = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
       .dependencyFlags = 0})
   };
-  renderPass = core::allocateShared<Render_Pass>(coreCtx->device, getSubpassDescriptions(), subpassesDependencies, getAttachmentsDescriptions());
+  core::array<Subpass_Description, 1> subpassDescriptions
+  {
+    Subpass_Description(Subpass_Description::Initialize_Depth{
+      VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL })
+  };
+  core::vector<Attachment_Description> attachmentsDescriptions =
+  {
+    Attachment_Description({
+      .format        = this->depthStencilFormat,
+      .samples       = this->samples,
+      .colorOp       = attachment_op::gClearStore,
+      .stenicilOp    = attachment_op::gClearStore,
+      .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+      .finalLayout   = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL })
+  };
+
+  renderPass = core::allocateShared<Render_Pass>(coreCtx->device, subpassDescriptions, subpassesDependencies, attachmentsDescriptions);
 }
 
 void Renderer_Point_Shadow_Pass_Systen_Ctx::initalizeGraphicsPipeline()
@@ -216,6 +299,35 @@ void Renderer_Point_Shadow_Pass_Systen_Ctx::initalizeGraphicsPipeline()
     .alphaToCoverageEnable = false,
     .alphaToOneEnable = false });
 
+  Depth_Stencil_State_Create_Info depthStencilState({
+    .depthTestEnable       = true,
+    .depthWriteEnable      = true,
+    .depthCompareOp        = VK_COMPARE_OP_LESS,
+    .depthBoundsTestEnable = false,
+    .stencilTestEnable     = false,
+    .front                 = {},
+    .back                  = {},
+    .minDepthBounds        = 0.0f,
+    .maxDepthBounds        = 1.0f });
+  
+  core::array<Pipeline_Color_Blend_Attachment_State, 1u> colorAttachments =
+  {
+    Pipeline_Color_Blend_Attachment_State({
+      .blendEnable         = VK_TRUE,
+      .colorWriteMask      = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT,
+      .srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA,
+      .dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
+      .colorBlendOp        = VK_BLEND_OP_ADD,
+      .srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE,
+      .dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO,
+      .alphaBlendOp        = VK_BLEND_OP_ADD }),
+  };
+  Color_Blend_State_Create_Info colorBlendStateCreateInfo({
+    .attachments    = colorAttachments,
+    .blendConstants = { 0.f, 0.f, 0.f, 0.f },
+    .logicOpEnable  = false,
+    .logicOp        = VK_LOGIC_OP_COPY });
+
   core::array<VkDynamicState, 2> dynamicStates = {
     VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR
   };
@@ -237,8 +349,8 @@ void Renderer_Point_Shadow_Pass_Systen_Ctx::initalizeGraphicsPipeline()
     viewportState,
     rasterizer,
     multisampling,
-    createDepthStencilStateCreateInfo(),
-    createColorBlendStateCreateInfo(),
+    depthStencilState,
+    colorBlendStateCreateInfo,
     dynamicStateInfo,
     0u);
 }
@@ -250,69 +362,8 @@ void Renderer_Point_Shadow_Pass_Systen_Ctx::initializeFramebuffers()
   for (core::uint32 i = 0; i < coreCtx->swapchainImages.size(); ++i)
   {
     framebuffers.push_back(core::allocateShared<Framebuffer>(
-      coreCtx->device, renderPass, getFramebufferAttachments(), pointShadowImage->getExtent2D(), 6u));
+      coreCtx->device, renderPass, core::vector<core::shared_ptr<Image_View>>{ pointShadowImageView }, pointShadowImageView->getImage()->getExtent2D(), 6u));
   }
-}
-
-core::array<Subpass_Description, 1> Renderer_Point_Shadow_Pass_Systen_Ctx::getSubpassDescriptions()
-{
-  return
-  {
-    Subpass_Description(Subpass_Description::Initialize_Depth{
-      VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL })
-  };
-}
-
-core::vector<Attachment_Description> Renderer_Point_Shadow_Pass_Systen_Ctx::getAttachmentsDescriptions()
-{
-  return core::vector<Attachment_Description>(1, 
-    Attachment_Description({
-      .format        = pointShadowImage->getFormat(),
-      .samples       = pointShadowImage->getSampleCount(),
-      .colorOp       = attachment_op::gClearStore,
-      .stenicilOp    = attachment_op::gClearStore,
-      .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-      .finalLayout   = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL }));
-}
-
-core::vector<core::shared_ptr<Image_View>> Renderer_Point_Shadow_Pass_Systen_Ctx::getFramebufferAttachments()
-{
-  return { pointShadowImageView };
-}
-
-Color_Blend_State_Create_Info Renderer_Point_Shadow_Pass_Systen_Ctx::createColorBlendStateCreateInfo()
-{
-  core::array<Pipeline_Color_Blend_Attachment_State, 1u> colorAttachments =
-  {
-    Pipeline_Color_Blend_Attachment_State({
-      .blendEnable = VK_TRUE,
-      .colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT,
-      .srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA,
-      .dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
-      .colorBlendOp = VK_BLEND_OP_ADD,
-      .srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE,
-      .dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO,
-      .alphaBlendOp = VK_BLEND_OP_ADD }),
-  };
-  return Color_Blend_State_Create_Info({
-    .attachments = colorAttachments,
-    .blendConstants = { 0.f, 0.f, 0.f, 0.f },
-    .logicOpEnable = false,
-    .logicOp = VK_LOGIC_OP_COPY });
-}
-
-Depth_Stencil_State_Create_Info Renderer_Point_Shadow_Pass_Systen_Ctx::createDepthStencilStateCreateInfo()
-{
-  return Depth_Stencil_State_Create_Info({
-    .depthTestEnable = true,
-    .depthWriteEnable = true,
-    .depthCompareOp = VK_COMPARE_OP_LESS,
-    .depthBoundsTestEnable = false,
-    .stencilTestEnable = false,
-    .front = {},
-    .back = {},
-    .minDepthBounds = 0.0f,
-    .maxDepthBounds = 1.0f });
 }
 
 }

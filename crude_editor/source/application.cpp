@@ -57,8 +57,6 @@ void Application::initialize()
   initializeScene(1000.0 / 800.0);
   initializeEditorCamera(1000.0 / 800.0);
 
-  m_lightUpdateSystem.run();
-
   m_editorLayoutCtx->rendererFullscreenPbrPass = m_rendererFullscreenPbrPassCtx;
   m_editorLayoutCtx->sceneNode            = m_sceneNode;
   m_editorLayoutCtx->editorCameraNode     = m_rendererFrameCtx->cameraNode;
@@ -93,7 +91,9 @@ void Application::initializeScene(core::float32 aspectRatio)
 
   flecs::entity modelNode = m_world.entity("m_modelNode");
   modelNode.child_of(m_sceneNode);
-  modelNode.set<crude::resources::GLTF_Model_Metadata_Component>({.path = "../../../crude_editor/resources/main1_sponza/NewSponza_Main_glTF_003.gltf" });
+  modelNode.set<crude::resources::GLTF_Model_Metadata_Component>({
+    .path = "../../../crude_editor/resources/main1_sponza/NewSponza_Main_glTF_003.gltf"
+  });
   modelNode.add<crude::resources::GLTF_Model_Loader_Uninitialized_Flag>();
 }
 

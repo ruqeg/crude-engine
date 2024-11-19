@@ -71,7 +71,11 @@ void Engine::initializeSystems()
   m_sceneSaverSystem = resources::registerSceneSaverSystem(m_world, m_sceneSaverCtx);
   m_sceneLoaderSystem = resources::registerSceneLoaderSystem(m_world, m_sceneLoaderCtx);
 
-  m_gltfModelLoaderCtx = core::allocateShared<resources::GLTF_Model_Loader_Context>(m_rendererCoreCtx->transferCommandPool);
+  m_gltfModelLoaderCtx = core::allocateShared<resources::GLTF_Model_Loader_Context>(resources::GLTF_Model_Loader_Context{
+    .transferCommandPool = m_rendererCoreCtx->transferCommandPool,
+    .callback = [](flecs::entity entity) {
+      entity.world().add<graphics::Renderer_Light_To_Update_Flag>();
+    }});
   m_gltfModelLoaderSystem = resources::registerGLTFModelLoaderSystem(m_world, m_gltfModelLoaderCtx);
 }
 
@@ -103,10 +107,10 @@ void Engine::initializeRendererSystems()
   m_rendererFrameCtx = core::allocateShared<graphics::Renderer_Frame_System_Ctx>(m_rendererCoreCtx);
   m_rendererDeferredGBufferPbrPassCtx = core::allocateShared<graphics::Renderer_Deferred_GBuffer_PBR_Pass_Systen_Ctx>(m_rendererFrameCtx);
   m_rendererDeferredGBufferColorPassCtx = core::allocateShared<graphics::Renderer_Deferred_GBuffer_Color_Pass_Systen_Ctx>(m_rendererFrameCtx, m_rendererDeferredGBufferPbrPassCtx->gbuffer);
-  m_rendererLightCtx = core::allocateShared<graphics::Renderer_Light_Ctx>(m_rendererCoreCtx);
+  m_rendererPointShadowPassCtx = core::allocateShared<graphics::Renderer_Point_Shadow_Pass_Systen_Ctx>(m_rendererFrameCtx);
+  m_rendererLightCtx = core::allocateShared<graphics::Renderer_Light_Ctx>(m_rendererPointShadowPassCtx);
   m_rendererFullscreenPbrPassCtx = core::allocateShared<graphics::Renderer_Fullscreen_PBR_Pass_Ctx>(m_rendererFrameCtx, m_rendererLightCtx, m_rendererDeferredGBufferColorPassCtx->gbuffer);
   m_rendererImguiPassCtx = core::allocateShared<gui::Renderer_ImGui_Pass_System_Ctx>(m_rendererFrameCtx);
-  m_rendererPointShadowPassCtx = core::allocateShared<graphics::Renderer_Point_Shadow_Pass_Systen_Ctx>(m_rendererFrameCtx);
 
   flecs::system pointShadowPassSystem = m_world.system<core::shared_ptr<graphics::Mesh_Buffer>, core::shared_ptr<scene::Mesh>>("PointShadowPassSystem")
     .ctx(m_rendererPointShadowPassCtx.get())

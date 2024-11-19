@@ -23,16 +23,31 @@ layout(binding=2) readonly buffer Meshlets {
   Meshlet meshlets[];
 };
 
+struct PointLightShadow
+{
+  mat4 worldToClip[6];
+};
+
+layout(binding=6) readonly buffer PointLightsBuffer
+{
+  PointLightShadow pointLights[];
+};
+
 struct SharedData
 {
-  int layerIndex;
+  int  layerIndex;
+  mat4 worldToClip;
 };
 taskPayloadSharedEXT SharedData sharedData;
 
 void main()
 {
-  const uint groupIndex = gl_WorkGroupID.x;
-  sharedData.layerIndex = int(groupIndex);
+  const uint face = gl_WorkGroupID.x;
+  const uint pointLightIndex = gl_WorkGroupID.y;
+
+  sharedData.worldToClip = pointLights[pointLightIndex].worldToClip[face];
+  sharedData.layerIndex = int(face + 6 * pointLightIndex);
+
 
   const uint drawID = perSubmesh.drawID;
   const uint meshletCount = submeshDraws[drawID].lods[0].meshletCount;

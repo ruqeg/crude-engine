@@ -64,12 +64,13 @@ struct Depth_Stencil_Cube_Attachment::Initialize
   bool                            sampled;
   bool                            explicitResolve;
   core::uint32                    mipLevelsCount;
+  core::uint32                    arrayCount;
   VkSampleCountFlagBits           samples;
 };
 
 Depth_Stencil_Cube_Attachment::Depth_Stencil_Cube_Attachment(const Initialize& initialize)
   : Image_Cube(
-    initialize.device, initialize.depthStencilFormat, initialize.dimension, initialize.mipLevelsCount,
+    initialize.device, initialize.depthStencilFormat, initialize.dimension, initialize.mipLevelsCount, initialize.arrayCount,
     initialize.samples, 0u,
     VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
     | (initialize.sampled ? VK_IMAGE_USAGE_SAMPLED_BIT : 0)

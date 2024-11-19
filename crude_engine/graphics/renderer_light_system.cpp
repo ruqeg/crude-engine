@@ -9,17 +9,26 @@ import crude.scene.transform;
 import crude.graphics.command_buffer;
 import crude.graphics.command_pool;
 import crude.graphics.storage_buffer;
+import crude.graphics.renderer_core_system;
 
 namespace crude::graphics
 {
 
-Renderer_Light_Ctx::Renderer_Light_Ctx(core::shared_ptr<Renderer_Core_System_Ctx> coreCtx)
-  : coreCtx{ coreCtx }
+Renderer_Light_Ctx::Renderer_Light_Ctx(core::shared_ptr<Renderer_Point_Shadow_Pass_Systen_Ctx> rendererPointShadowPassCtx)
+  : rendererPointShadowPassCtx{ rendererPointShadowPassCtx }
 {}
 
 void rendererLightUpdateSystemProcess(flecs::iter& it)
 {
+  if (!it.world().has<Renderer_Light_To_Update_Flag>())
+  {
+    while (it.next());
+    return;
+  }
+  it.world().remove<Renderer_Light_To_Update_Flag>();
+
   Renderer_Light_Ctx* lightCtx = it.ctx<Renderer_Light_Ctx>();
+  core::shared_ptr<Renderer_Core_System_Ctx> coreCtx = lightCtx->rendererPointShadowPassCtx->frameCtx->coreCtx;
   
   core::vector<scene::Point_Light_GPU> visiblePointLightsGPU;
   while (it.next())
@@ -36,15 +45,15 @@ void rendererLightUpdateSystemProcess(flecs::iter& it)
         DirectX::XMStoreFloat3A(&pointLightGPU.position, transform->getWorldTranslationVector());
       }
       visiblePointLightsGPU.push_back(pointLightGPU);
-
-      lightCtx->pointLights.push_back(it.entity(i));
     }
   }
 
   if (!visiblePointLightsGPU.empty())
   {
-    auto commandBuffer = core::allocateShared<graphics::Command_Buffer>(lightCtx->coreCtx->graphicsCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+    auto commandBuffer = core::allocateShared<graphics::Command_Buffer>(coreCtx->graphicsCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
     lightCtx->pointLightsBuffer = core::allocateShared<graphics::Storage_Buffer>(commandBuffer, visiblePointLightsGPU);
+
+    lightCtx->rendererPointShadowPassCtx->update(visiblePointLightsGPU);
   }
 }
 

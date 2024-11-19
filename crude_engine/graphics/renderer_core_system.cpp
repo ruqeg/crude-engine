@@ -166,6 +166,7 @@ void Renderer_Core_System_Ctx::initializeLogicDevice(core::shared_ptr<const Phys
   deviceFeatures.samplerAnisotropy = VK_TRUE;
   deviceFeatures.sampleRateShading = VK_TRUE;
   deviceFeatures.independentBlend  = VK_TRUE;
+  deviceFeatures.imageCubeArray    = VK_TRUE;
 
   core::array<Device_Queue_Descriptor, 2> queueInfos =
   {

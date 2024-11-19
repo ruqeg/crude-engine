@@ -35,16 +35,16 @@ private:
   void initializeInputSystems();
   void initializeRendererSystems();
 protected:
-  flecs::world                                                           m_world;
-  flecs::system                                                          m_inputSystem;
-  flecs::system                                                          m_rendererSystem;
-  flecs::entity                                                          m_sceneNode;
-
-  flecs::system                                                          m_lightUpdateSystem;
-
-  flecs::system                                                          m_gltfModelLoaderSystem;
-  flecs::system                                                          m_sceneSaverSystem;
-  flecs::system                                                          m_sceneLoaderSystem;
+  flecs::world                                                                 m_world;
+  flecs::system                                                                m_inputSystem;
+  flecs::system                                                                m_rendererSystem;
+  flecs::entity                                                                m_sceneNode;
+                                                                               
+  flecs::system                                                                m_lightUpdateSystem;
+                                                                               
+  flecs::system                                                                m_gltfModelLoaderSystem;
+  flecs::system                                                                m_sceneSaverSystem;
+  flecs::system                                                                m_sceneLoaderSystem;
   
   core::shared_ptr<resources::Scene_Loader_Context>                            m_sceneLoaderCtx;
   core::shared_ptr<resources::Scene_Saver_Context>                             m_sceneSaverCtx;

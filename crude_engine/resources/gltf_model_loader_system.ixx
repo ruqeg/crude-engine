@@ -30,18 +30,19 @@ class Image_View;
 export namespace crude::resources
 {
 
-struct GLTF_Model_Loader_Uninitialized_Flag
-{
-};
+using GLTF_Model_Loader_Callback_Function = std::function<void(flecs::entity)>;
+
+struct GLTF_Model_Loader_Uninitialized_Flag {};
 
 struct GLTF_Model_Metadata_Component
 {
-  core::string path;
+  core::string  path;
 };
 
 struct GLTF_Model_Loader_Context
 {
-  core::shared_ptr<graphics::Command_Pool> transferCommandPool;
+  core::shared_ptr<graphics::Command_Pool>  transferCommandPool;
+  GLTF_Model_Loader_Callback_Function       callback = [](flecs::entity) {};
 };
 
 [[nodiscard]] flecs::system registerGLTFModelLoaderSystem(flecs::world world, core::shared_ptr<GLTF_Model_Loader_Context> ctx);
