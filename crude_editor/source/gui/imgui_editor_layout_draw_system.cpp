@@ -16,7 +16,7 @@ module crude.editor.gui.imgui_editor_layout_draw_system;
 
 import crude.core.logger;
 import crude.core.alias;
-import crude.graphics.texture;
+import crude.gfx.texture;
 import crude.scene.transform;
 import crude.scene.camera;
 import crude.scene.light;
@@ -24,7 +24,7 @@ import crude.gui.imgui_texture_descriptor_set;
 import crude.scripts.free_camera_script;
 import crude.core.std_containers_heap;
 import crude.resources.scene_loader_saver_system;
-import crude.graphics.renderer_fullscreen_pbr_pass_system;
+import crude.gfx.renderer_fullscreen_pbr_pass_system;
 
 // TODO refactor this code in some day, but for now...
 
@@ -104,7 +104,7 @@ void imguiEditorLayoutDrawSystemProcess(flecs::iter& it)
   ImGui::Begin("Debug");
   if (ImGui::CollapsingHeader("Shading Model"))
   {
-    graphics::PBRDebug& pbrDebug = editorLayoutCtx->rendererFullscreenPbrPass->pbrDebug;
+    gfx::PBRDebug& pbrDebug = editorLayoutCtx->rendererFullscreenPbrPass->pbrDebug;
 
     if (ImGui::TreeNode("PBR"))
     {

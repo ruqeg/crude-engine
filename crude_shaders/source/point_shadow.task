@@ -19,13 +19,14 @@ layout(binding=1) readonly buffer SubMeshDraws
   SubMeshDraw submeshDraws[];
 };
 
-layout(binding=2) readonly buffer Meshlets {
+layout(binding=2) readonly buffer Meshlets
+{
   Meshlet meshlets[];
 };
 
 struct PointLightShadow
 {
-  mat4 worldToClip[6];
+  mat4 worldToClips[6];
 };
 
 layout(binding=6) readonly buffer PointLightsBuffer
@@ -45,7 +46,7 @@ void main()
   const uint face = gl_WorkGroupID.x;
   const uint pointLightIndex = gl_WorkGroupID.y;
 
-  sharedData.worldToClip = pointLights[pointLightIndex].worldToClip[face];
+  sharedData.worldToClip = pointLights[pointLightIndex].worldToClips[face];
   sharedData.layerIndex = int(face + 6 * pointLightIndex);
 
 

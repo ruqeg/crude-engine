@@ -3,17 +3,17 @@
 #include <flecs.h>
 #include <functional>
 
-module crude.graphics.renderer_frame_system;
+module crude.gfx.renderer_frame_system;
 
-import crude.graphics.fence;
-import crude.graphics.swap_chain;
-import crude.graphics.uniform_buffer;
-import crude.graphics.semaphore;
-import crude.graphics.queue;
-import crude.graphics.device;
+import crude.gfx.vk.fence;
+import crude.gfx.vk.swap_chain;
+import crude.gfx.vk.uniform_buffer;
+import crude.gfx.vk.semaphore;
+import crude.gfx.vk.queue;
+import crude.gfx.vk.device;
 import crude.core.logger;
 
-namespace crude::graphics
+namespace crude::gfx
 {
 
 void rendererFrameStartSystemProcess(flecs::iter& it)
@@ -23,7 +23,7 @@ void rendererFrameStartSystemProcess(flecs::iter& it)
 
   frameCtx->getFrameInFlightFence()->wait();
 
-  const Swap_Chain_Next_Image acquireNextImageResult = coreCtx->swapchain->acquireNextImage(frameCtx->getFrameImageAvailableSemaphore());
+  const vk::Swap_Chain_Next_Image acquireNextImageResult = coreCtx->swapchain->acquireNextImage(frameCtx->getFrameImageAvailableSemaphore());
 
   if (acquireNextImageResult.outOfDate())
   {
@@ -71,7 +71,7 @@ void rendererFrameSubmitSystemProcess(flecs::iter& it)
     core::logError(core::Debug::Channel::Graphics, "Failed to submit draw command buffer!");
   }
 
-  const Queue_Present_Result presentResult = coreCtx->presentQueue->present(
+  const vk::Queue_Present_Result presentResult = coreCtx->presentQueue->present(
     core::array{ coreCtx->swapchain },
     core::array{ frameCtx->swapchainImageIndex },
     core::array{ frameCtx->getFrameRenderFinishedSemaphore() });
@@ -94,18 +94,18 @@ Renderer_Frame_System_Ctx::Renderer_Frame_System_Ctx(core::shared_ptr<Renderer_C
 {
   for (core::uint32 i = 0; i < cFramesCount; ++i)
   {
-    perFrameUniformBuffer[i] = core::allocateShared<Uniform_Buffer<Per_Frame>>(coreCtx->device);
+    perFrameUniformBuffer[i] = core::allocateShared<vk::Uniform_Buffer<Per_Frame>>(coreCtx->device);
   }
   for (core::uint32 i = 0; i < cFramesCount; ++i)
   {
-    graphicsCommandBuffers[i] = core::allocateShared<Command_Buffer>(coreCtx->graphicsCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+    graphicsCommandBuffers[i] = core::allocateShared<vk::Command_Buffer>(coreCtx->graphicsCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
   }
 
   for (core::uint32 i = 0; i < cFramesCount; i++)
   {
-    imageAvailableSemaphores[i] = core::allocateShared<Semaphore>(coreCtx->device);
-    renderFinishedSemaphores[i] = core::allocateShared<Semaphore>(coreCtx->device);
-    inFlightFences[i] = core::allocateShared<Fence>(coreCtx->device, VK_FENCE_CREATE_SIGNALED_BIT);
+    imageAvailableSemaphores[i] = core::allocateShared<vk::Semaphore>(coreCtx->device);
+    renderFinishedSemaphores[i] = core::allocateShared<vk::Semaphore>(coreCtx->device);
+    inFlightFences[i] = core::allocateShared<vk::Fence>(coreCtx->device, VK_FENCE_CREATE_SIGNALED_BIT);
   }
 
   currentFrame = 0u;
@@ -116,11 +116,10 @@ void Renderer_Frame_System_Ctx::stepToNextFrame()
   currentFrame = (currentFrame + 1u) % cFramesCount;
 }
 
-core::shared_ptr<Uniform_Buffer<Per_Frame>> Renderer_Frame_System_Ctx::getFramePerFrameUniformBuffer() { return perFrameUniformBuffer[currentFrame]; }
-core::shared_ptr<Command_Buffer> Renderer_Frame_System_Ctx::getFrameGraphicsCommandBuffer() { return graphicsCommandBuffers[currentFrame]; }
-core::shared_ptr<Semaphore> Renderer_Frame_System_Ctx::getFrameImageAvailableSemaphore() { return imageAvailableSemaphores[currentFrame]; }
-core::shared_ptr<Semaphore> Renderer_Frame_System_Ctx::getFrameRenderFinishedSemaphore() { return renderFinishedSemaphores[currentFrame]; }
-core::shared_ptr<Fence> Renderer_Frame_System_Ctx::getFrameInFlightFence() { return inFlightFences[currentFrame]; };
-
+core::shared_ptr<vk::Uniform_Buffer<Per_Frame>> Renderer_Frame_System_Ctx::getFramePerFrameUniformBuffer() { return perFrameUniformBuffer[currentFrame]; }
+core::shared_ptr<vk::Command_Buffer> Renderer_Frame_System_Ctx::getFrameGraphicsCommandBuffer() { return graphicsCommandBuffers[currentFrame]; }
+core::shared_ptr<vk::Semaphore> Renderer_Frame_System_Ctx::getFrameImageAvailableSemaphore() { return imageAvailableSemaphores[currentFrame]; }
+core::shared_ptr<vk::Semaphore> Renderer_Frame_System_Ctx::getFrameRenderFinishedSemaphore() { return renderFinishedSemaphores[currentFrame]; }
+core::shared_ptr<vk::Fence> Renderer_Frame_System_Ctx::getFrameInFlightFence() { return inFlightFences[currentFrame]; };
 
 }

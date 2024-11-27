@@ -7,57 +7,57 @@
 #include <crude_shaders/fullscreen.mesh.inl>
 #include <functional>
 
-module crude.graphics.renderer_fullscreen_pbr_pass_system;
+module crude.gfx.renderer_fullscreen_pbr_pass_system;
 
 import crude.core.logger;
 import crude.scene.image;
-import crude.graphics.format_helper;
-import crude.graphics.generate_mipmaps;
-import crude.graphics.flush;
-import crude.graphics.mesh_buffer;
+import crude.gfx.vk.format_helper;
+import crude.gfx.vk.generate_mipmaps;
+import crude.gfx.vk.flush;
+import crude.gfx.mesh_buffer;
 import crude.scene.mesh;
-import crude.graphics.render_pass;
-import crude.graphics.command_buffer;
-import crude.graphics.framebuffer;
-import crude.graphics.pipeline;
-import crude.graphics.swap_chain;
-import crude.graphics.descriptor_pool;
-import crude.graphics.descriptor_set_layout;
-import crude.graphics.semaphore;
-import crude.graphics.fence;
+import crude.gfx.vk.render_pass;
+import crude.gfx.vk.command_buffer;
+import crude.gfx.vk.framebuffer;
+import crude.gfx.vk.pipeline;
+import crude.gfx.vk.swap_chain;
+import crude.gfx.vk.descriptor_pool;
+import crude.gfx.vk.descriptor_set_layout;
+import crude.gfx.vk.semaphore;
+import crude.gfx.vk.fence;
 import crude.platform.sdl_window_container;
-import crude.graphics.physical_device;
-import crude.graphics.queue;
-import crude.graphics.instance;
-import crude.graphics.device;
-import crude.graphics.surface;
-import crude.graphics.swap_chain;
-import crude.graphics.swap_chain_image;
-import crude.graphics.image_view;
-import crude.graphics.uniform_buffer;
-import crude.graphics.debug_utils_messenger;
-import crude.graphics.image_view;
-import crude.graphics.command_pool;
-import crude.graphics.image_attachment;
-import crude.graphics.shader_module;
-import crude.graphics.storage_buffer;
-import crude.graphics.attachment_description;
-import crude.graphics.gbuffer;
-import crude.graphics.sampler_state;
-import crude.graphics.sampler;
+import crude.gfx.vk.physical_device;
+import crude.gfx.vk.queue;
+import crude.gfx.vk.instance;
+import crude.gfx.vk.device;
+import crude.gfx.vk.surface;
+import crude.gfx.vk.swap_chain;
+import crude.gfx.vk.swap_chain_image;
+import crude.gfx.vk.image_view;
+import crude.gfx.vk.uniform_buffer;
+import crude.gfx.vk.debug_utils_messenger;
+import crude.gfx.vk.image_view;
+import crude.gfx.vk.command_pool;
+import crude.gfx.vk.image_attachment;
+import crude.gfx.vk.shader_module;
+import crude.gfx.vk.storage_buffer;
+import crude.gfx.vk.attachment_description;
+import crude.gfx.gbuffer;
+import crude.gfx.vk.sampler_state;
+import crude.gfx.vk.sampler;
 
-namespace crude::graphics
+namespace crude::gfx
 {
 
-const Uniform_Buffer_Descriptor         cPerFrameUniformBufferDescriptor2{ 0u, VK_SHADER_STAGE_FRAGMENT_BIT };
-const Combined_Image_Sampler_Descriptor cAlbedoTextureDescriptor{ 1u, VK_SHADER_STAGE_FRAGMENT_BIT };
-const Combined_Image_Sampler_Descriptor cMetallicRoughnessTextureDescriptor{ 2u, VK_SHADER_STAGE_FRAGMENT_BIT };
-const Combined_Image_Sampler_Descriptor cNormalTextureDescriptor{ 3u, VK_SHADER_STAGE_FRAGMENT_BIT };
-const Combined_Image_Sampler_Descriptor cDepthTextureDescriptor{ 4u, VK_SHADER_STAGE_FRAGMENT_BIT };
-const Storage_Buffer_Descriptor         cPointLightsBufferDescriptor{ 5u, VK_SHADER_STAGE_FRAGMENT_BIT };
-const Uniform_Buffer_Descriptor         cPbrDebugBufferDescriptor{ 6u, VK_SHADER_STAGE_FRAGMENT_BIT };
+const vk::Uniform_Buffer_Descriptor         cPerFrameUniformBufferDescriptor2{ 0u, VK_SHADER_STAGE_FRAGMENT_BIT };
+const vk::Combined_Image_Sampler_Descriptor cAlbedoTextureDescriptor{ 1u, VK_SHADER_STAGE_FRAGMENT_BIT };
+const vk::Combined_Image_Sampler_Descriptor cMetallicRoughnessTextureDescriptor{ 2u, VK_SHADER_STAGE_FRAGMENT_BIT };
+const vk::Combined_Image_Sampler_Descriptor cNormalTextureDescriptor{ 3u, VK_SHADER_STAGE_FRAGMENT_BIT };
+const vk::Combined_Image_Sampler_Descriptor cDepthTextureDescriptor{ 4u, VK_SHADER_STAGE_FRAGMENT_BIT };
+const vk::Storage_Buffer_Descriptor         cPointLightsBufferDescriptor{ 5u, VK_SHADER_STAGE_FRAGMENT_BIT };
+const vk::Uniform_Buffer_Descriptor         cPbrDebugBufferDescriptor{ 6u, VK_SHADER_STAGE_FRAGMENT_BIT };
 
-core::array<Descriptor_Set_Layout_Binding, 7u> cDescriptorLayoutBindings =
+core::array<vk::Descriptor_Set_Layout_Binding, 7u> cDescriptorLayoutBindings =
 {
   cPerFrameUniformBufferDescriptor2,
   cAlbedoTextureDescriptor,
@@ -68,15 +68,15 @@ core::array<Descriptor_Set_Layout_Binding, 7u> cDescriptorLayoutBindings =
   cPbrDebugBufferDescriptor
 };
 
-core::array<Descriptor_Pool_Size, 7u> cDescriptorPoolSizes
+core::array<vk::Descriptor_Pool_Size, 7u> cDescriptorPoolSizes
 {
-  Uniform_Buffer_Pool_Size(cFramesCount),
-  Combined_Image_Sampler_Pool_Size(cFramesCount),
-  Combined_Image_Sampler_Pool_Size(cFramesCount),
-  Combined_Image_Sampler_Pool_Size(cFramesCount),
-  Combined_Image_Sampler_Pool_Size(cFramesCount),
-  Storage_Buffer_Pool_Size(1u),
-  Uniform_Buffer_Pool_Size(cFramesCount),
+  vk::Uniform_Buffer_Pool_Size(cFramesCount),
+  vk::Combined_Image_Sampler_Pool_Size(cFramesCount),
+  vk::Combined_Image_Sampler_Pool_Size(cFramesCount),
+  vk::Combined_Image_Sampler_Pool_Size(cFramesCount),
+  vk::Combined_Image_Sampler_Pool_Size(cFramesCount),
+  vk::Storage_Buffer_Pool_Size(1u),
+  vk::Uniform_Buffer_Pool_Size(cFramesCount),
 };
 
 void rendererFullscreenPBRPassSystemProcess(flecs::iter& it)
@@ -94,13 +94,13 @@ void rendererFullscreenPBRPassSystemProcess(flecs::iter& it)
   renderArea.extent = fullscreenPbrCtx->colorAttachment->getExtent2D();
   renderArea.offset = VkOffset2D{ 0, 0 };
 
-  frameCtx->getFrameGraphicsCommandBuffer()->setViewport(Viewport({
+  frameCtx->getFrameGraphicsCommandBuffer()->setViewport(vk::Viewport({
     .x = 0.0f, .y = 0.0f,
     .width = static_cast<core::float32>(fullscreenPbrCtx->colorAttachment->getExtent().width),
     .height = static_cast<core::float32>(fullscreenPbrCtx->colorAttachment->getExtent().height),
     .minDepth = 0.0f, .maxDepth = 1.0f }));
 
-  frameCtx->getFrameGraphicsCommandBuffer()->setScissor(Scissor({
+  frameCtx->getFrameGraphicsCommandBuffer()->setScissor(vk::Scissor({
     .offset = { 0, 0 },
     .extent = fullscreenPbrCtx->colorAttachment->getExtent2D() }));
 
@@ -151,9 +151,9 @@ Renderer_Fullscreen_PBR_Pass_Ctx::Renderer_Fullscreen_PBR_Pass_Ctx(core::shared_
 {
   core::shared_ptr<Renderer_Core_System_Ctx> coreCtx = frameCtx->coreCtx;
 
-  sampler = core::allocateShared<graphics::Sampler>(coreCtx->device, graphics::csamlper_state::gMagMinMipLinearRepeat);
+  sampler = core::allocateShared<gfx::vk::Sampler>(coreCtx->device, gfx::vk::csamlper_state::gMagMinMipLinearRepeat);
 
-  colorAttachment = core::allocateShared<Color_Attachment>(Color_Attachment::Initialize{
+  colorAttachment = core::allocateShared<vk::Color_Attachment>(vk::Color_Attachment::Initialize{
     .device = coreCtx->device,
     .format = VK_FORMAT_B8G8R8A8_SRGB,
     .extent = gbuffer->getExtent(),
@@ -168,24 +168,24 @@ Renderer_Fullscreen_PBR_Pass_Ctx::Renderer_Fullscreen_PBR_Pass_Ctx(core::shared_
 
   for (core::uint32 i = 0; i < cFramesCount; ++i)
   {
-    pbrDebugBuffers[i] = core::allocateShared<Uniform_Buffer<PBRDebug>>(coreCtx->device);
+    pbrDebugBuffers[i] = core::allocateShared<vk::Uniform_Buffer<PBRDebug>>(coreCtx->device);
   }
 }
 
-core::shared_ptr<Descriptor_Set_Layout> Renderer_Fullscreen_PBR_Pass_Ctx::createDescriptorSetLayout()
+core::shared_ptr<vk::Descriptor_Set_Layout> Renderer_Fullscreen_PBR_Pass_Ctx::createDescriptorSetLayout()
 {
   core::shared_ptr<Renderer_Core_System_Ctx> coreCtx = frameCtx->coreCtx;
-  auto descriptorPool = core::allocateShared<Descriptor_Pool>(coreCtx->device, cDescriptorPoolSizes, 2);
-  auto descriptorSetLayout = core::allocateShared<Descriptor_Set_Layout>(coreCtx->device, cDescriptorLayoutBindings, true);
+  auto descriptorPool = core::allocateShared<vk::Descriptor_Pool>(coreCtx->device, cDescriptorPoolSizes, 2);
+  auto descriptorSetLayout = core::allocateShared<vk::Descriptor_Set_Layout>(coreCtx->device, cDescriptorLayoutBindings, true);
   return descriptorSetLayout;
 }
 
 void Renderer_Fullscreen_PBR_Pass_Ctx::initializeRenderPass()
 {
   core::shared_ptr<Renderer_Core_System_Ctx> coreCtx = frameCtx->coreCtx;
-  core::array<Subpass_Dependency, 1u> subpassesDependencies =
+  core::array<vk::Subpass_Dependency, 1u> subpassesDependencies =
   {
-    Subpass_Dependency({
+    vk::Subpass_Dependency({
       .srcSubpass      = VK_SUBPASS_EXTERNAL,
       .dstSubpass      = 0,
       .srcStageMask    = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
@@ -194,35 +194,35 @@ void Renderer_Fullscreen_PBR_Pass_Ctx::initializeRenderPass()
       .dstAccessMask   = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
       .dependencyFlags = 0})
   };
-  renderPass = core::allocateShared<Render_Pass>(coreCtx->device, getSubpassDescriptions(), subpassesDependencies, getAttachmentsDescriptions());
+  renderPass = core::allocateShared<vk::Render_Pass>(coreCtx->device, getSubpassDescriptions(), subpassesDependencies, getAttachmentsDescriptions());
 }
 
 void Renderer_Fullscreen_PBR_Pass_Ctx::initalizeGraphicsPipeline()
 {
   core::shared_ptr<Renderer_Core_System_Ctx> coreCtx = frameCtx->coreCtx;
 
-  core::shared_ptr<Shader_Module> meshShaderModule = core::allocateShared<Shader_Module>(coreCtx->device, crude::shaders::fullscreen::mesh);
-  core::shared_ptr<Shader_Module> fragShaderModule = core::allocateShared<Shader_Module>(coreCtx->device, crude::shaders::fullscreen_pbr::frag);
+  core::shared_ptr<vk::Shader_Module> meshShaderModule = core::allocateShared<vk::Shader_Module>(coreCtx->device, crude::shaders::fullscreen::mesh);
+  core::shared_ptr<vk::Shader_Module> fragShaderModule = core::allocateShared<vk::Shader_Module>(coreCtx->device, crude::shaders::fullscreen_pbr::frag);
 
-  core::array<Shader_Stage_Create_Info, 2u> shaderStagesInfo =
+  core::array<vk::Shader_Stage_Create_Info, 2u> shaderStagesInfo =
   {
-    Mesh_Shader_Stage_Create_Info(meshShaderModule, "main"),
-    Fragment_Shader_Stage_Create_Info(fragShaderModule, "main"),
+    vk::Mesh_Shader_Stage_Create_Info(meshShaderModule, "main"),
+    vk::Fragment_Shader_Stage_Create_Info(fragShaderModule, "main"),
   };
 
-  Vertex_Input_State_Create_Info vertexInputStateInfo({
+  vk::Vertex_Input_State_Create_Info vertexInputStateInfo({
     .bindings = {},
     .attributes = {} });
 
-  Tessellation_State_Create_Info tesselationInfo(3u);
+  vk::Tessellation_State_Create_Info tesselationInfo(3u);
 
-  Input_Assembly_State_Create_Info inputAssembly({
+  vk::Input_Assembly_State_Create_Info inputAssembly({
     .topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
     .primitiveRestartEnable = false });
 
-  Viewport_State_Create_Info viewportState(1u, 1u);
+  vk::Viewport_State_Create_Info viewportState(1u, 1u);
 
-  Rasterization_State_Create_Info rasterizer({
+  vk::Rasterization_State_Create_Info rasterizer({
     .depthClampEnable = false,
     .rasterizerDiscardEnable = false,
     .polygonMode = VK_POLYGON_MODE_FILL,
@@ -234,7 +234,7 @@ void Renderer_Fullscreen_PBR_Pass_Ctx::initalizeGraphicsPipeline()
     .depthBiasSlopeFactor = 0.0f,
     .lineWidth = 1.f });
 
-  Multisample_State_Create_Info multisampling({
+  vk::Multisample_State_Create_Info multisampling({
     .rasterizationSamples = VK_SAMPLE_COUNT_1_BIT,
     .sampleShadingEnable = VK_FALSE,
     .minSampleShading = 0.2f,
@@ -244,12 +244,12 @@ void Renderer_Fullscreen_PBR_Pass_Ctx::initalizeGraphicsPipeline()
   core::array<VkDynamicState, 2> dynamicStates = {
     VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR
   };
-  Dynamic_State_Create_Info dynamicStateInfo(dynamicStates);
+  vk::Dynamic_State_Create_Info dynamicStateInfo(dynamicStates);
 
-  core::shared_ptr<Pipeline_Layout> pipelineLayout = core::allocateShared<Pipeline_Layout>(
+  core::shared_ptr<vk::Pipeline_Layout> pipelineLayout = core::allocateShared<vk::Pipeline_Layout>(
     coreCtx->device, createDescriptorSetLayout());
 
-  pipeline = core::allocateShared<Pipeline>(
+  pipeline = core::allocateShared<vk::Pipeline>(
     coreCtx->device,
     renderPass,
     pipelineLayout,
@@ -273,44 +273,44 @@ void Renderer_Fullscreen_PBR_Pass_Ctx::initializeFramebuffers()
   framebuffers.reserve(coreCtx->swapchain->getSwapchainImages().size());
   for (core::size_t i = 0; i < coreCtx->swapchain->getSwapchainImages().size(); ++i)
   {
-    auto colorAttachmentView = core::allocateShared<Image_View>(colorAttachment);
-    framebuffers.push_back(core::allocateShared<Framebuffer>(
+    auto colorAttachmentView = core::allocateShared<vk::Image_View>(colorAttachment);
+    framebuffers.push_back(core::allocateShared<vk::Framebuffer>(
       coreCtx->device,
       pipeline->getRenderPass(),
-      core::vector<core::shared_ptr<Image_View>>{ colorAttachmentView },
+      core::vector<core::shared_ptr<vk::Image_View>>{ colorAttachmentView },
       colorAttachment->getExtent2D(),
       1u));
   }
 }
 
-core::array<Subpass_Description, 1> Renderer_Fullscreen_PBR_Pass_Ctx::getSubpassDescriptions()
+core::array<vk::Subpass_Description, 1> Renderer_Fullscreen_PBR_Pass_Ctx::getSubpassDescriptions()
 {
   return
   {
-    Subpass_Description(Subpass_Description::Initialize_Color{
+    vk::Subpass_Description(vk::Subpass_Description::Initialize_Color{
       .colorLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL})
   };
 }
 
-core::vector<Attachment_Description> Renderer_Fullscreen_PBR_Pass_Ctx::getAttachmentsDescriptions()
+core::vector<vk::Attachment_Description> Renderer_Fullscreen_PBR_Pass_Ctx::getAttachmentsDescriptions()
 {
   return
   {
-    Attachment_Description({
+    vk::Attachment_Description({
       .format        = colorAttachment->getFormat(),
       .samples       = VK_SAMPLE_COUNT_1_BIT,
-      .colorOp       = attachment_op::gClearStore,
-      .stenicilOp    = attachment_op::gDontCare,
+      .colorOp       = vk::attachment_op::gClearStore,
+      .stenicilOp    = vk::attachment_op::gDontCare,
       .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
       .finalLayout   = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL})
   };
 }
 
-Color_Blend_State_Create_Info Renderer_Fullscreen_PBR_Pass_Ctx::createColorBlendStateCreateInfo()
+vk::Color_Blend_State_Create_Info Renderer_Fullscreen_PBR_Pass_Ctx::createColorBlendStateCreateInfo()
 {
-  core::array<Pipeline_Color_Blend_Attachment_State, 1u> colorAttachments =
+  core::array<vk::Pipeline_Color_Blend_Attachment_State, 1u> colorAttachments =
   {
-    Pipeline_Color_Blend_Attachment_State({
+    vk::Pipeline_Color_Blend_Attachment_State({
       .blendEnable = VK_FALSE,
       .colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT,
       .srcColorBlendFactor = VK_BLEND_FACTOR_ONE,
@@ -320,7 +320,7 @@ Color_Blend_State_Create_Info Renderer_Fullscreen_PBR_Pass_Ctx::createColorBlend
       .dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO,
       .alphaBlendOp = VK_BLEND_OP_ADD })
   };
-  return Color_Blend_State_Create_Info({
+  return vk::Color_Blend_State_Create_Info({
     .attachments = colorAttachments,
     .blendConstants = { 0.f, 0.f, 0.f, 0.f },
     .logicOpEnable = false,

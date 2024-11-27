@@ -2,11 +2,11 @@ module;
 
 #include <vulkan/vulkan.hpp>
 
-export module crude.graphics.material;
+export module crude.gfx.material;
 
 export import crude.core.std_containers_heap;
 
-export namespace crude::graphics
+export namespace crude::gfx
 {
 
 class Texture;

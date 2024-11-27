@@ -11,20 +11,20 @@
 
 module crude.resources.gltf_model_loader_system;
 
-import crude.graphics.renderer_deferred_gbuffer_pbr_pass_system;
-import crude.graphics.renderer_deferred_gbuffer_color_pass_system;
-import crude.graphics.device;
-import crude.graphics.sampler;
-import crude.graphics.command_buffer;
-import crude.graphics.generate_mipmaps;
-import crude.graphics.command_pool;
-import crude.graphics.flush;
-import crude.graphics.image;
-import crude.graphics.image_2d;
-import crude.graphics.image_view;
-import crude.graphics.texture;
-import crude.graphics.material;
-import crude.graphics.mesh_buffer;
+import crude.gfx.renderer_deferred_gbuffer_pbr_pass_system;
+import crude.gfx.renderer_deferred_gbuffer_color_pass_system;
+import crude.gfx.vk.device;
+import crude.gfx.vk.sampler;
+import crude.gfx.vk.command_buffer;
+import crude.gfx.vk.generate_mipmaps;
+import crude.gfx.vk.command_pool;
+import crude.gfx.vk.flush;
+import crude.gfx.vk.image;
+import crude.gfx.vk.image_2d;
+import crude.gfx.vk.image_view;
+import crude.gfx.texture;
+import crude.gfx.material;
+import crude.gfx.mesh_buffer;
 import crude.scene.transform;
 import crude.core.logger;
 import crude.core.assert;
@@ -62,7 +62,7 @@ void gltfModelLoaderSystemProcess(flecs::iter & it)
   }
 }
 
-GLTF_Loader::GLTF_Loader(core::shared_ptr<graphics::Command_Pool> commandPool)
+GLTF_Loader::GLTF_Loader(core::shared_ptr<gfx::vk::Command_Pool> commandPool)
   : m_commandPool(commandPool)
 {}
 
@@ -80,7 +80,7 @@ void GLTF_Loader::loadToNodeFromFile(flecs::entity node, const std::filesystem::
   m_imageViews.resize(m_tinyModel.images.size() + 1);
   m_textures.resize(m_tinyModel.textures.size() + 1);
 
-  m_sampler = core::allocateShared<graphics::Sampler>(m_commandPool->getDevice(), graphics::csamlper_state::gMagMinMipLinearRepeat);
+  m_sampler = core::allocateShared<gfx::vk::Sampler>(m_commandPool->getDevice(), gfx::vk::csamlper_state::gMagMinMipLinearRepeat);
   
   // Load meshes
   m_meshes.reserve(m_tinyModel.meshes.size());
@@ -102,7 +102,7 @@ void GLTF_Loader::loadToNodeFromFile(flecs::entity node, const std::filesystem::
       buildMeshlets(primtiveVertices, primitiveVertexIndices, mesh->vertexIndices, mesh->primitiveIndices, mesh->meshlets);
       mesh->vertices.insert(mesh->vertices.end(), primtiveVertices.begin(), primtiveVertices.end());
 
-      core::shared_ptr<graphics::Material> submeshMaterial = parseMaterial(tinyPrimitive.material);
+      core::shared_ptr<gfx::Material> submeshMaterial = parseMaterial(tinyPrimitive.material);
       
       mesh->submeshes.push_back(scene::Sub_Mesh{
         .vertexOffset = verticesOffset,
@@ -124,8 +124,8 @@ void GLTF_Loader::loadToNodeFromFile(flecs::entity node, const std::filesystem::
    m_meshBuffers.reserve(m_meshes.size());
   for (core::shared_ptr<scene::Mesh> mesh : m_meshes)
   {
-    auto commandBuffer = core::allocateShared<graphics::Command_Buffer>(m_commandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
-    m_meshBuffers.push_back(core::allocateShared<graphics::Mesh_Buffer>(commandBuffer, *mesh));
+    auto commandBuffer = core::allocateShared<gfx::vk::Command_Buffer>(m_commandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+    m_meshBuffers.push_back(core::allocateShared<gfx::Mesh_Buffer>(commandBuffer, *mesh));
   }
 
   // Load lights
@@ -152,7 +152,7 @@ void GLTF_Loader::loadToNodeFromFile(flecs::entity node, const std::filesystem::
     node.set<scene::Transform>(scene::Transform(node));
 }
 
-core::shared_ptr<graphics::Image_View> GLTF_Loader::parseImageView(const core::int32 tinyImageIndex, VkFormat format, VkFilter mipmapFilter)
+core::shared_ptr<gfx::vk::Image_View> GLTF_Loader::parseImageView(const core::int32 tinyImageIndex, VkFormat format, VkFilter mipmapFilter)
 {
   if (m_imageViews[tinyImageIndex])
   {
@@ -161,9 +161,9 @@ core::shared_ptr<graphics::Image_View> GLTF_Loader::parseImageView(const core::i
 
   const tinygltf::Image& tinyImage = m_tinyModel.images[tinyImageIndex];
 
-  auto commandBuffer = core::allocateShared<graphics::Command_Buffer>(m_commandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+  auto commandBuffer = core::allocateShared<gfx::vk::Command_Buffer>(m_commandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
 
-  core::shared_ptr<graphics::Image> image;
+  core::shared_ptr<gfx::vk::Image> image;
 
   // !TODO
   if (tinyImage.width > cTextureExtentLimit.width || tinyImage.height > cTextureExtentLimit.height)
@@ -173,10 +173,10 @@ core::shared_ptr<graphics::Image_View> GLTF_Loader::parseImageView(const core::i
     originalExtent.height = tinyImage.height;
     originalExtent.depth  = 1u;
 
-    core::shared_ptr<graphics::Image> originalImage = core::allocateShared<graphics::Image_2D>(
+    core::shared_ptr<gfx::vk::Image> originalImage = core::allocateShared<gfx::vk::Image_2D>(
       commandBuffer,
       format,
-      graphics::Image::Mip_Data(originalExtent, core::span<const core::byte>(tinyImage.image)),
+      gfx::vk::Image::Mip_Data(originalExtent, core::span<const core::byte>(tinyImage.image)),
       1,
       VK_SHARING_MODE_EXCLUSIVE);
 
@@ -185,7 +185,7 @@ core::shared_ptr<graphics::Image_View> GLTF_Loader::parseImageView(const core::i
     limitedExtent.height = std::min<core::uint32>(originalExtent.height, cTextureExtentLimit.height);
     limitedExtent.depth  = 1u;
 
-    core::shared_ptr<graphics::Image> resizedImage = core::allocateShared<graphics::Image_2D>(
+    core::shared_ptr<gfx::vk::Image> resizedImage = core::allocateShared<gfx::vk::Image_2D>(
       commandBuffer->getDevice(),
       format,
       limitedExtent,
@@ -194,16 +194,16 @@ core::shared_ptr<graphics::Image_View> GLTF_Loader::parseImageView(const core::i
 
     commandBuffer->begin();
     commandBuffer->barrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT,
-      graphics::Image_Memory_Barrier(originalImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, graphics::Image_Subresource_Range(originalImage, 0u, 1u, 0u, originalImage->getArrayLayersCount())));
+      gfx::vk::Image_Memory_Barrier(originalImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, gfx::vk::Image_Subresource_Range(originalImage, 0u, 1u, 0u, originalImage->getArrayLayersCount())));
     commandBuffer->barrier(VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT,
-      graphics::Image_Memory_Barrier(resizedImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, graphics::Image_Subresource_Range(resizedImage)));
+      gfx::vk::Image_Memory_Barrier(resizedImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, gfx::vk::Image_Subresource_Range(resizedImage)));
     
-    commandBuffer->blitImage(graphics::Image_Blit_Region(originalImage, resizedImage), VK_FILTER_LINEAR);
+    commandBuffer->blitImage(gfx::vk::Image_Blit_Region(originalImage, resizedImage), VK_FILTER_LINEAR);
     
     commandBuffer->barrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, 
-      graphics::Image_Memory_Barrier(resizedImage, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, graphics::Image_Subresource_Range(resizedImage)));
+      gfx::vk::Image_Memory_Barrier(resizedImage, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, gfx::vk::Image_Subresource_Range(resizedImage)));
     commandBuffer->end();
-    graphics::flush(commandBuffer);
+    gfx::vk::flush(commandBuffer);
   
     image = resizedImage;
   }
@@ -214,10 +214,10 @@ core::shared_ptr<graphics::Image_View> GLTF_Loader::parseImageView(const core::i
     originalExtent.height = tinyImage.height;
     originalExtent.depth  = 1u;
 
-    core::shared_ptr<graphics::Image> originalImage = core::allocateShared<graphics::Image_2D>(
+    core::shared_ptr<gfx::vk::Image> originalImage = core::allocateShared<gfx::vk::Image_2D>(
       commandBuffer,
       format,
-      graphics::Image::Mip_Data(originalExtent, core::span<const core::byte>(tinyImage.image)),
+      gfx::vk::Image::Mip_Data(originalExtent, core::span<const core::byte>(tinyImage.image)),
       1,
       VK_SHARING_MODE_EXCLUSIVE);
 
@@ -225,15 +225,15 @@ core::shared_ptr<graphics::Image_View> GLTF_Loader::parseImageView(const core::i
   }
   
   commandBuffer->begin();
-  graphics::generateMipmaps(commandBuffer, image, mipmapFilter);
+  gfx::vk::generateMipmaps(commandBuffer, image, mipmapFilter);
   commandBuffer->end();
-  graphics::flush(commandBuffer);
+  gfx::vk::flush(commandBuffer);
 
-  m_imageViews[tinyImageIndex] = core::allocateShared<graphics::Image_View>(image);
+  m_imageViews[tinyImageIndex] = core::allocateShared<gfx::vk::Image_View>(image);
   return m_imageViews[tinyImageIndex];
 }
 
-core::shared_ptr<graphics::Texture> GLTF_Loader::parseTexture(const core::int32 tinyTextureIndex, const VkFormat format, core::span<const core::byte> texelForUnitialized)
+core::shared_ptr<gfx::Texture> GLTF_Loader::parseTexture(const core::int32 tinyTextureIndex, const VkFormat format, core::span<const core::byte> texelForUnitialized)
 {
   if (m_textures[tinyTextureIndex + 1])
   {
@@ -242,19 +242,19 @@ core::shared_ptr<graphics::Texture> GLTF_Loader::parseTexture(const core::int32 
 
   if (tinyTextureIndex == -1)
   {
-    auto commandBuffer = core::allocateShared<graphics::Command_Buffer>(m_commandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
-    core::shared_ptr<graphics::Image> image = core::allocateShared<graphics::Image_2D>(
+    auto commandBuffer = core::allocateShared<gfx::vk::Command_Buffer>(m_commandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+    core::shared_ptr<gfx::vk::Image> image = core::allocateShared<gfx::vk::Image_2D>(
       commandBuffer,
       format,
-      graphics::Image::Mip_Data(VkExtent3D{ 1, 1, 1 }, texelForUnitialized),
+      gfx::vk::Image::Mip_Data(VkExtent3D{ 1, 1, 1 }, texelForUnitialized),
       VK_SHARING_MODE_EXCLUSIVE);
 
-    m_textures[tinyTextureIndex + 1] = core::allocateShared<graphics::Texture>(core::allocateShared<graphics::Image_View>(image), m_sampler);
+    m_textures[tinyTextureIndex + 1] = core::allocateShared<gfx::Texture>(core::allocateShared<gfx::vk::Image_View>(image), m_sampler);
   }
   else
   {
     auto imageView = parseImageView(m_tinyModel.textures[tinyTextureIndex].source, format, VK_FILTER_LINEAR);
-    m_textures[tinyTextureIndex + 1] = core::allocateShared<graphics::Texture>(imageView, m_sampler);
+    m_textures[tinyTextureIndex + 1] = core::allocateShared<gfx::Texture>(imageView, m_sampler);
   }
 
   return m_textures[tinyTextureIndex + 1];
@@ -273,7 +273,7 @@ scene::Point_Light_CPU GLTF_Loader::parsePointLight(const tinygltf::Light& tinyL
   return pointLight;
 }
 
-core::shared_ptr<graphics::Material> GLTF_Loader::parseMaterial(core::int32 tinyMaterialIndex)
+core::shared_ptr<gfx::Material> GLTF_Loader::parseMaterial(core::int32 tinyMaterialIndex)
 {
   if (tinyMaterialIndex == -1)
   {
@@ -281,7 +281,7 @@ core::shared_ptr<graphics::Material> GLTF_Loader::parseMaterial(core::int32 tiny
   }
 
   const tinygltf::Material& tinyMaterial = m_tinyModel.materials[tinyMaterialIndex];
-  core::shared_ptr<graphics::Material> material = core::allocateShared<graphics::Material>();
+  core::shared_ptr<gfx::Material> material = core::allocateShared<gfx::Material>();
 
   //core::assert(tinyMaterial.pbrMetallicRoughness.metallicRoughnessTexture.index != -1 && tinyMaterial.normalTexture.index != -1 && tinyMaterial.pbrMetallicRoughness.baseColorTexture.index != -1);
 
@@ -347,11 +347,11 @@ flecs::entity GLTF_Loader::parseNode(flecs::world world, const tinygltf::Node& t
 
   if (tinyNode.extensions.contains("CRUDE_node_deferred_color"))
   {
-    node.add<graphics::Deferred_Node_Pipeline_Color_Flag>();
+    node.add<gfx::Deferred_Node_Pipeline_Color_Flag>();
   }
   else
   {
-    node.add<graphics::Deferred_Node_Pipeline_PBR_Flag>();
+    node.add<gfx::Deferred_Node_Pipeline_PBR_Flag>();
   }
 
   if (tinyNode.light != -1)
@@ -382,7 +382,7 @@ flecs::entity GLTF_Loader::parseNode(flecs::world world, const tinygltf::Node& t
   if (tinyNode.mesh != -1)
   {
     node.set<core::shared_ptr<scene::Mesh>>(m_meshes[tinyNode.mesh]);
-    node.set<core::shared_ptr<graphics::Mesh_Buffer>>(m_meshBuffers[tinyNode.mesh]);
+    node.set<core::shared_ptr<gfx::Mesh_Buffer>>(m_meshBuffers[tinyNode.mesh]);
   }
 
   for (core::uint32 childIndex : tinyNode.children)

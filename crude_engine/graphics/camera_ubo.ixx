@@ -3,12 +3,12 @@ module;
 #include <DirectXMath.h>
 #include <flecs.h>
 
-export module crude.graphics.camera_ubo;
+export module crude.gfx.camera_ubo;
 
 export import crude.scene.camera;
 export import crude.scene.transform;
 
-export namespace crude::graphics
+export namespace crude::gfx
 {
 
 struct Camera_UBO

@@ -6,7 +6,7 @@
 
 module crude.resources.scene_loader_saver_system;
 
-import crude.graphics.command_pool;
+import crude.gfx.vk.command_pool;
 import crude.scene.transform;
 import crude.scene.light;
 import crude.resources.gltf_model_loader_system;

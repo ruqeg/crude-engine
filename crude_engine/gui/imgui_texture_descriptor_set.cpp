@@ -5,15 +5,15 @@
 
 module crude.gui.imgui_texture_descriptor_set;
 
-import crude.graphics.sampler;
-import crude.graphics.image;
-import crude.graphics.image_view;
-import crude.graphics.texture;
+import crude.gfx.vk.sampler;
+import crude.gfx.vk.image;
+import crude.gfx.vk.image_view;
+import crude.gfx.texture;
 
 namespace crude::gui
 {
 
-ImGui_Texture_Descriptor_Set::ImGui_Texture_Descriptor_Set(core::shared_ptr<Renderer_ImGui_Pass_System_Ctx> rendererImguiPassContext, core::shared_ptr<graphics::Texture> texture)
+ImGui_Texture_Descriptor_Set::ImGui_Texture_Descriptor_Set(core::shared_ptr<Renderer_ImGui_Pass_System_Ctx> rendererImguiPassContext, core::shared_ptr<gfx::Texture> texture)
   : m_texture{ texture }
   , m_rendererImguiPassContext{ rendererImguiPassContext }
 {

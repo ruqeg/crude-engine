@@ -4,23 +4,23 @@ module;
 #include <DirectXMath.h>
 #include <flecs.h>
 
-export module crude.graphics.renderer_point_shadow_pass_system;
+export module crude.gfx.renderer_point_shadow_pass_system;
 
 export import crude.core.std_containers_stack;
 export import crude.core.std_containers_heap;
-export import crude.graphics.buffer_descriptor;
-export import crude.graphics.descriptor_pool_size;
-export import crude.graphics.image_descriptor;
-export import crude.graphics.subpass_description;
-export import crude.graphics.attachment_description;
-export import crude.graphics.renderer_frame_system;
+export import crude.gfx.vk.buffer_descriptor;
+export import crude.gfx.vk.descriptor_pool_size;
+export import crude.gfx.vk.image_descriptor;
+export import crude.gfx.vk.subpass_description;
+export import crude.gfx.vk.attachment_description;
+export import crude.gfx.renderer_frame_system;
 export import crude.scene.light;
-import crude.graphics.color_blend_state_create_info;
-import crude.graphics.depth_stencil_state_create_info;
-import crude.graphics.depth_stencil_state_create_info;
-import crude.graphics.renderer_deferred_gbuffer_pbr_pass_system;
+import crude.gfx.vk.color_blend_state_create_info;
+import crude.gfx.vk.depth_stencil_state_create_info;
+import crude.gfx.vk.depth_stencil_state_create_info;
+import crude.gfx.renderer_deferred_gbuffer_pbr_pass_system;
 
-export namespace crude::graphics
+export namespace crude::gfx::vk
 {
 
 class Render_Pass;
@@ -33,14 +33,24 @@ class Swap_Chain;
 class Semaphore;
 class Fence;
 class Device;
-class Mesh_Buffer;
 class Swap_Chain_Image;
-class GBuffer;
 class Image_Cube;
 class Image_View;
 class Depth_Stencil_Cube_Attachment;
 
-const Storage_Buffer_Descriptor cPointLightsBufferDescriptor{ 6u, VK_SHADER_STAGE_TASK_BIT_EXT };
+}
+
+
+export namespace crude::gfx
+{
+
+class Mesh_Buffer;
+class GBuffer;
+
+}
+
+export namespace crude::gfx
+{
 
 struct Renderer_Point_Shadow_Pass_Systen_Ctx
 {
@@ -51,31 +61,32 @@ private:
   void initializeRenderPass();
   void initalizeGraphicsPipeline();
   void initializeFramebuffers();
-  core::shared_ptr<Descriptor_Set_Layout> createDescriptorSetLayout();
+  core::shared_ptr<vk::Descriptor_Set_Layout> createDescriptorSetLayout();
 public:
-  core::shared_ptr<Image_View>                               pointShadowImageView;
-  core::vector<core::shared_ptr<Framebuffer>>                framebuffers;
-  core::shared_ptr<Renderer_Frame_System_Ctx>                frameCtx;
-  core::shared_ptr<Render_Pass>                              renderPass;
-  core::shared_ptr<Pipeline>                                 pipeline;
-  core::shared_ptr<graphics::Storage_Buffer>                 pointLightsShadowsBuffer;
-  core::uint32                                               pointLightsShadowsCount;
+  core::shared_ptr<vk::Image_View>                          pointShadowImageView;
+  core::vector<core::shared_ptr<vk::Framebuffer>>           framebuffers;
+  core::shared_ptr<Renderer_Frame_System_Ctx>               frameCtx;
+  core::shared_ptr<vk::Render_Pass>                         renderPass;
+  core::shared_ptr<vk::Pipeline>                            pipeline;
+  core::shared_ptr<gfx::vk::Storage_Buffer>                 pointLightsShadowsBuffer;
+  core::uint32                                              pointLightsShadowsCount;
 
-  core::array<Uniform_Buffer_Descriptor, cFramesCount>       perFrameBufferDescriptors;
-  graphics::Storage_Buffer_Descriptor                        submeshesDrawsBufferDescriptor;
-  graphics::Storage_Buffer_Descriptor                        vertexBufferDescriptor;
-  graphics::Storage_Buffer_Descriptor                        meshletBufferDescriptor;
-  graphics::Storage_Buffer_Descriptor                        primitiveIndicesBufferDescriptor;
-  graphics::Storage_Buffer_Descriptor                        vertexIndicesBufferDescriptor;
-  graphics::Storage_Buffer_Descriptor                        pointLightsBufferDescriptor;
+  core::array<vk::Uniform_Buffer_Descriptor, cFramesCount>  perFrameBufferDescriptors;
+  gfx::vk::Storage_Buffer_Descriptor                        submeshesDrawsBufferDescriptor;
+  gfx::vk::Storage_Buffer_Descriptor                        vertexBufferDescriptor;
+  gfx::vk::Storage_Buffer_Descriptor                        meshletBufferDescriptor;
+  gfx::vk::Storage_Buffer_Descriptor                        primitiveIndicesBufferDescriptor;
+  gfx::vk::Storage_Buffer_Descriptor                        vertexIndicesBufferDescriptor;
+  gfx::vk::Storage_Buffer_Descriptor                        pointLightsBufferDescriptor;
 private:
   const VkFormat                                             depthStencilFormat;
   const core::uint32                                         dimensionSize;
   const VkSampleCountFlagBits                                samples;
 private:
-  static const core::array<Descriptor_Set_Layout_Binding, 7u>& getDescriptorLayoutBindings()
+  core::array<vk::Descriptor_Set_Layout_Binding, 7u> getDescriptorLayoutBindings()
   {
-    static const core::array<Descriptor_Set_Layout_Binding, 7u> descriptorLayoutBindings =
+    const vk::Storage_Buffer_Descriptor cPofs = cPointLightsBufferDescriptor;
+    core::array<vk::Descriptor_Set_Layout_Binding, 7u> descriptorLayoutBindings =
     {
       cPerFrameUniformBufferDescriptor,
       cSubmeshesDrawsBufferDescriptor,
@@ -83,21 +94,21 @@ private:
       cMeshletBufferDescriptor,
       cPrimitiveIndicesBufferDescriptor,
       cVertexIndicesBufferDescriptor,
-      Storage_Buffer_Descriptor{ 6u, VK_SHADER_STAGE_TASK_BIT_EXT }
+      cPointLightsBufferDescriptor
     };
     return descriptorLayoutBindings;
   };
-  static const core::array<Descriptor_Pool_Size, 7u>& getDescriptorPoolSizes()
+  core::array<vk::Descriptor_Pool_Size, 7u> getDescriptorPoolSizes()
   {
-    static const core::array<Descriptor_Pool_Size, 7u> descriptorPoolSizes =
+    core::array<vk::Descriptor_Pool_Size, 7u> descriptorPoolSizes =
     {
-      Uniform_Buffer_Pool_Size(cFramesCount),
-      Storage_Buffer_Pool_Size(1u),
-      Storage_Buffer_Pool_Size(1u),
-      Storage_Buffer_Pool_Size(1u),
-      Storage_Buffer_Pool_Size(1u),
-      Storage_Buffer_Pool_Size(1u),
-      Storage_Buffer_Pool_Size(1u)
+      vk::Uniform_Buffer_Pool_Size(cFramesCount),
+      vk::Storage_Buffer_Pool_Size(1u),
+      vk::Storage_Buffer_Pool_Size(1u),
+      vk::Storage_Buffer_Pool_Size(1u),
+      vk::Storage_Buffer_Pool_Size(1u),
+      vk::Storage_Buffer_Pool_Size(1u),
+      vk::Storage_Buffer_Pool_Size(1u)
     };
     return descriptorPoolSizes;
   };

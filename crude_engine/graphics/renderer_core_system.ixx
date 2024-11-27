@@ -1,16 +1,18 @@
 module;
 
-export module crude.graphics.renderer_core_system;
+export module crude.gfx.renderer_core_system;
 
 export import crude.core.std_containers_heap;
 export import crude.core.std_containers_stack;
 
 export namespace crude::platform
 {
+
 class SDL_Window_Container;
+
 }
 
-export namespace crude::graphics
+export namespace crude::gfx::vk
 {
 
 class Physical_Device;
@@ -26,7 +28,7 @@ class Command_Pool;
 
 }
 
-export namespace crude::graphics
+export namespace crude::gfx
 {
 
 struct Renderer_Core_System_Ctx
@@ -39,24 +41,24 @@ private:
   void initializeDevice();
   void initializeSwapchain();
   void initalizeCommandPool();
-  core::shared_ptr<Physical_Device> pickPhysicalDevice();
-  void initializeLogicDevice(core::shared_ptr<const Physical_Device> physicalDevice);
+  core::shared_ptr<vk::Physical_Device> pickPhysicalDevice();
+  void initializeLogicDevice(core::shared_ptr<const vk::Physical_Device> physicalDevice);
 public:
-  core::shared_ptr<Queue>                           graphicsQueue;
-  core::shared_ptr<Queue>                           presentQueue;
-  core::shared_ptr<Queue>                           transferQueue;
+  core::shared_ptr<vk::Queue>                           graphicsQueue;
+  core::shared_ptr<vk::Queue>                           presentQueue;
+  core::shared_ptr<vk::Queue>                           transferQueue;
 
-  core::shared_ptr<Command_Pool>                    graphicsCommandPool;
-  core::shared_ptr<Command_Pool>                    transferCommandPool;
+  core::shared_ptr<vk::Command_Pool>                    graphicsCommandPool;
+  core::shared_ptr<vk::Command_Pool>                    transferCommandPool;
 
-  core::shared_ptr<Instance>                        instance;
-  core::shared_ptr<Device>                          device;
-  core::shared_ptr<Surface>                         surface;
-  core::shared_ptr<Swap_Chain>                      swapchain;
-  core::vector<core::shared_ptr<Swap_Chain_Image>>  swapchainImages;
-  core::vector<core::shared_ptr<Image_View>>        swapchainImagesViews;
-  core::shared_ptr<Debug_Utils_Messenger>           debugUtilsMessenger;
-  core::shared_ptr<platform::SDL_Window_Container>  windowContainer;
+  core::shared_ptr<vk::Instance>                        instance;
+  core::shared_ptr<vk::Device>                          device;
+  core::shared_ptr<vk::Surface>                         surface;
+  core::shared_ptr<vk::Swap_Chain>                      swapchain;
+  core::vector<core::shared_ptr<vk::Swap_Chain_Image>>  swapchainImages;
+  core::vector<core::shared_ptr<vk::Image_View>>        swapchainImagesViews;
+  core::shared_ptr<vk::Debug_Utils_Messenger>           debugUtilsMessenger;
+  core::shared_ptr<platform::SDL_Window_Container>      windowContainer;
 };
 
 }

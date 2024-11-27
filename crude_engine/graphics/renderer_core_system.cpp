@@ -1,21 +1,21 @@
 #include <vulkan/vulkan.hpp>
 
-module crude.graphics.renderer_core_system;
+module crude.gfx.renderer_core_system;
 
 import crude.core.logger;
 import crude.platform.sdl_window_container;
-import crude.graphics.physical_device;
-import crude.graphics.queue;
-import crude.graphics.instance;
-import crude.graphics.device;
-import crude.graphics.surface;
-import crude.graphics.swap_chain;
-import crude.graphics.swap_chain_image;
-import crude.graphics.image_view;
-import crude.graphics.debug_utils_messenger;
-import crude.graphics.command_pool;
+import crude.gfx.vk.physical_device;
+import crude.gfx.vk.queue;
+import crude.gfx.vk.instance;
+import crude.gfx.vk.device;
+import crude.gfx.vk.surface;
+import crude.gfx.vk.swap_chain;
+import crude.gfx.vk.swap_chain_image;
+import crude.gfx.vk.image_view;
+import crude.gfx.vk.debug_utils_messenger;
+import crude.gfx.vk.command_pool;
 
-namespace crude::graphics
+namespace crude::gfx
 {
 
 constexpr core::array<const char* const, 7> cDeviceEnabledExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_KHR_SPIRV_1_4_EXTENSION_NAME, VK_EXT_MESH_SHADER_EXTENSION_NAME, VK_KHR_SHADER_FLOAT_CONTROLS_EXTENSION_NAME, VK_KHR_8BIT_STORAGE_EXTENSION_NAME, VK_KHR_PUSH_DESCRIPTOR_EXTENSION_NAME, VK_EXT_ROBUSTNESS_2_EXTENSION_NAME };
@@ -34,8 +34,8 @@ Renderer_Core_System_Ctx::Renderer_Core_System_Ctx(core::shared_ptr<platform::SD
 void Renderer_Core_System_Ctx::initializeInstance()
 {
   // Calculate extensions for instance
-  const auto surfaceExtensions = Surface::requiredExtensions();
-  const auto debugUtilsExtensions = Debug_Utils_Messenger::requiredExtensions();
+  const auto surfaceExtensions = vk::Surface::requiredExtensions();
+  const auto debugUtilsExtensions = vk::Debug_Utils_Messenger::requiredExtensions();
 
   core::vector<const char*> enabledExtensions;
   enabledExtensions.insert(enabledExtensions.end(), surfaceExtensions.begin(), surfaceExtensions.end());
@@ -57,7 +57,7 @@ void Renderer_Core_System_Ctx::initializeInstance()
     };
 
   // Set application
-  const Application application({
+  const vk::Application application({
     .pApplicationName = "crude_example",
     .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
     .pEngineName = "crude_engine",
@@ -65,20 +65,20 @@ void Renderer_Core_System_Ctx::initializeInstance()
     .apiVersion = VK_API_VERSION_1_0 });
 
   // Initialize instance
-  instance = core::allocateShared<Instance>(debugCallback, application, enabledExtensions, cInstanceEnabledLayers);
+  instance = core::allocateShared<vk::Instance>(debugCallback, application, enabledExtensions, cInstanceEnabledLayers);
 
   // Initialize debugCallback
-  debugUtilsMessenger = core::allocateShared<Debug_Utils_Messenger>(instance, debugCallback);
+  debugUtilsMessenger = core::allocateShared<vk::Debug_Utils_Messenger>(instance, debugCallback);
 }
 
 void Renderer_Core_System_Ctx::initializeSurface()
 {
-  surface = core::allocateShared<Surface>(instance, windowContainer);
+  surface = core::allocateShared<vk::Surface>(instance, windowContainer);
 }
 
 void Renderer_Core_System_Ctx::initializeDevice()
 {
-  core::shared_ptr<Physical_Device> physicalDevice = pickPhysicalDevice();
+  core::shared_ptr<vk::Physical_Device> physicalDevice = pickPhysicalDevice();
   if (!physicalDevice)
   {
     core::logError(core::Debug::Channel::Graphics, "Failed to find suitable physical device!");
@@ -89,7 +89,7 @@ void Renderer_Core_System_Ctx::initializeDevice()
 
 void Renderer_Core_System_Ctx::initializeSwapchain()
 {
-  Surface_Capabilities_KHR surfaceCapabilites = device->getPhysicalDevice()->getSurfaceCapabilitis(surface);
+  vk::Surface_Capabilities_KHR surfaceCapabilites = device->getPhysicalDevice()->getSurfaceCapabilitis(surface);
   const VkSurfaceFormatKHR surfaceFormat = device->getPhysicalDevice()->findSurfaceFormat(surface, VK_FORMAT_B8G8R8A8_SRGB, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR);
   const VkPresentModeKHR presentMode = device->getPhysicalDevice()->findSurfacePresentMode(surface, VK_PRESENT_MODE_MAILBOX_KHR);
   const VkExtent2D extent = surfaceCapabilites.calculateSurfaceExtentInPixels({ .width = windowContainer->getWidth(), .height = windowContainer->getHeight() });
@@ -102,7 +102,7 @@ void Renderer_Core_System_Ctx::initializeSwapchain()
 
   core::vector<core::uint32> queueFamilyIndices = { graphicsQueue->getFamilyIndex(), graphicsQueue->getFamilyIndex() };
 
-  swapchain = core::allocateShared<Swap_Chain>(
+  swapchain = core::allocateShared<vk::Swap_Chain>(
     device,
     surface,
     surfaceFormat,
@@ -122,17 +122,17 @@ void Renderer_Core_System_Ctx::initializeSwapchain()
   swapchainImagesViews.resize(swapchainImages.size());
   for (core::uint32 i = 0; i < swapchainImages.size(); ++i)
   {
-    swapchainImagesViews[i] = core::allocateShared<Image_View>(swapchainImages[i], surfaceFormat.format, Image_Subresource_Range(swapchainImages[i]));
+    swapchainImagesViews[i] = core::allocateShared<vk::Image_View>(swapchainImages[i], surfaceFormat.format, vk::Image_Subresource_Range(swapchainImages[i]));
   }
 }
 
 void Renderer_Core_System_Ctx::initalizeCommandPool()
 {
-  graphicsCommandPool = core::allocateShared<Command_Pool>(device, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, graphicsQueue->getFamilyIndex());
+  graphicsCommandPool = core::allocateShared<vk::Command_Pool>(device, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, graphicsQueue->getFamilyIndex());
   transferCommandPool = graphicsCommandPool; // = core::allocateShared<Command_Pool>(m_device, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, queueIndices.transferFamily.value());
 }
 
-core::shared_ptr<Physical_Device> Renderer_Core_System_Ctx::pickPhysicalDevice()
+core::shared_ptr<vk::Physical_Device> Renderer_Core_System_Ctx::pickPhysicalDevice()
 {
   auto physicalDevices = instance->getPhysicalDevices();
   for (auto& physicalDevice : physicalDevices)
@@ -160,7 +160,7 @@ core::shared_ptr<Physical_Device> Renderer_Core_System_Ctx::pickPhysicalDevice()
   return nullptr;
 }
 
-void Renderer_Core_System_Ctx::initializeLogicDevice(core::shared_ptr<const Physical_Device> physicalDevice)
+void Renderer_Core_System_Ctx::initializeLogicDevice(core::shared_ptr<const vk::Physical_Device> physicalDevice)
 {
   VkPhysicalDeviceFeatures deviceFeatures{};
   deviceFeatures.samplerAnisotropy = VK_TRUE;
@@ -168,19 +168,19 @@ void Renderer_Core_System_Ctx::initializeLogicDevice(core::shared_ptr<const Phys
   deviceFeatures.independentBlend  = VK_TRUE;
   deviceFeatures.imageCubeArray    = VK_TRUE;
 
-  core::array<Device_Queue_Descriptor, 2> queueInfos =
+  core::array<vk::Device_Queue_Descriptor, 2> queueInfos =
   {
-    Device_Queue_Descriptor(physicalDevice, VK_QUEUE_GRAPHICS_BIT),
-    Device_Queue_Descriptor(physicalDevice, surface),
+    vk::Device_Queue_Descriptor(physicalDevice, VK_QUEUE_GRAPHICS_BIT),
+    vk::Device_Queue_Descriptor(physicalDevice, surface),
   };
 
-  device = core::allocateShared<Device>(physicalDevice, queueInfos, deviceFeatures, cDeviceEnabledExtensions, cInstanceEnabledLayers);
+  device = core::allocateShared<vk::Device>(physicalDevice, queueInfos, deviceFeatures, cDeviceEnabledExtensions, cInstanceEnabledLayers);
 
   for (auto it = device->getQueueDescriptors().begin(); it != device->getQueueDescriptors().end(); ++it)
   {
-    if (it->getDenotation() == DEVICE_QUEUE_DENOTATION_GRAPHICS_BITS)
+    if (it->getDenotation() == vk::DEVICE_QUEUE_DENOTATION_GRAPHICS_BITS)
       graphicsQueue = device->getQueueByFamily(it->queueFamilyIndex, 0u).value_or(nullptr);
-    if (it->getDenotation() == DEVICE_QUEUE_DENOTATION_PRESENT_BITS)
+    if (it->getDenotation() == vk::DEVICE_QUEUE_DENOTATION_PRESENT_BITS)
       presentQueue = device->getQueueByFamily(it->queueFamilyIndex, 0u).value_or(nullptr);
   }
   if (!presentQueue) presentQueue = graphicsQueue;

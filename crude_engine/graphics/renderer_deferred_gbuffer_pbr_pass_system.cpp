@@ -8,45 +8,45 @@
 #include <crude_shaders/deferred_gbuffer.task.inl>
 #include <functional>
 
-module crude.graphics.renderer_deferred_gbuffer_pbr_pass_system;
+module crude.gfx.renderer_deferred_gbuffer_pbr_pass_system;
 
 import crude.core.logger;
 import crude.scene.image;
-import crude.graphics.format_helper;
-import crude.graphics.generate_mipmaps;
-import crude.graphics.flush;
-import crude.graphics.mesh_buffer;
+import crude.gfx.vk.format_helper;
+import crude.gfx.vk.generate_mipmaps;
+import crude.gfx.vk.flush;
+import crude.gfx.mesh_buffer;
 import crude.scene.mesh;
-import crude.graphics.render_pass;
-import crude.graphics.command_buffer;
-import crude.graphics.framebuffer;
-import crude.graphics.pipeline;
-import crude.graphics.swap_chain;
-import crude.graphics.descriptor_pool;
-import crude.graphics.descriptor_set_layout;
-import crude.graphics.semaphore;
-import crude.graphics.fence;
+import crude.gfx.vk.render_pass;
+import crude.gfx.vk.command_buffer;
+import crude.gfx.vk.framebuffer;
+import crude.gfx.vk.pipeline;
+import crude.gfx.vk.swap_chain;
+import crude.gfx.vk.descriptor_pool;
+import crude.gfx.vk.descriptor_set_layout;
+import crude.gfx.vk.semaphore;
+import crude.gfx.vk.fence;
 import crude.platform.sdl_window_container;
-import crude.graphics.physical_device;
-import crude.graphics.queue;
-import crude.graphics.instance;
-import crude.graphics.device;
-import crude.graphics.surface;
-import crude.graphics.swap_chain;
-import crude.graphics.swap_chain_image;
-import crude.graphics.image_view;
-import crude.graphics.uniform_buffer;
-import crude.graphics.material;
-import crude.graphics.texture;
-import crude.graphics.debug_utils_messenger;
-import crude.graphics.command_pool;
-import crude.graphics.image_attachment;
-import crude.graphics.shader_module;
-import crude.graphics.storage_buffer;
-import crude.graphics.attachment_description;
-import crude.graphics.gbuffer;
+import crude.gfx.vk.physical_device;
+import crude.gfx.vk.queue;
+import crude.gfx.vk.instance;
+import crude.gfx.vk.device;
+import crude.gfx.vk.surface;
+import crude.gfx.vk.swap_chain;
+import crude.gfx.vk.swap_chain_image;
+import crude.gfx.vk.image_view;
+import crude.gfx.vk.uniform_buffer;
+import crude.gfx.material;
+import crude.gfx.texture;
+import crude.gfx.vk.debug_utils_messenger;
+import crude.gfx.vk.command_pool;
+import crude.gfx.vk.image_attachment;
+import crude.gfx.vk.shader_module;
+import crude.gfx.vk.storage_buffer;
+import crude.gfx.vk.attachment_description;
+import crude.gfx.gbuffer;
 
-namespace crude::graphics
+namespace crude::gfx
 {
 
 void rendererDeferredGBufferPbrPassSystemProcess(flecs::iter& it)
@@ -65,13 +65,13 @@ void rendererDeferredGBufferPbrPassSystemProcess(flecs::iter& it)
   renderArea.extent = coreCtx->swapchain->getExtent();
   renderArea.offset = VkOffset2D { 0, 0 };
 
-  frameCtx->getFrameGraphicsCommandBuffer()->setViewport(Viewport({
+  frameCtx->getFrameGraphicsCommandBuffer()->setViewport(vk::Viewport({
     .x = 0.0f, .y = 0.0f,
     .width = static_cast<core::float32>(coreCtx->swapchain->getExtent().width),
     .height = static_cast<core::float32>(coreCtx->swapchain->getExtent().height),
     .minDepth = 0.0f, .maxDepth = 1.0f }));
 
-  frameCtx->getFrameGraphicsCommandBuffer()->setScissor(Scissor({
+  frameCtx->getFrameGraphicsCommandBuffer()->setScissor(vk::Scissor({
     .offset = { 0, 0 },
     .extent = coreCtx->swapchain->getExtent() }));
 
@@ -157,20 +157,20 @@ Renderer_Deferred_GBuffer_PBR_Pass_Systen_Ctx::Renderer_Deferred_GBuffer_PBR_Pas
 }
 
 
-core::shared_ptr<Descriptor_Set_Layout> Renderer_Deferred_GBuffer_PBR_Pass_Systen_Ctx::createDescriptorSetLayout()
+core::shared_ptr<vk::Descriptor_Set_Layout> Renderer_Deferred_GBuffer_PBR_Pass_Systen_Ctx::createDescriptorSetLayout()
 {
   core::shared_ptr<Renderer_Core_System_Ctx> coreCtx = frameCtx->coreCtx;
-  auto descriptorPool = core::allocateShared<Descriptor_Pool>(coreCtx->device, getDescriptorPoolSizes(), 2);
-  auto descriptorSetLayout = core::allocateShared<Descriptor_Set_Layout>(coreCtx->device, getDescriptorLayoutBindings(), true);
+  auto descriptorPool = core::allocateShared<vk::Descriptor_Pool>(coreCtx->device, getDescriptorPoolSizes(), 2);
+  auto descriptorSetLayout = core::allocateShared<vk::Descriptor_Set_Layout>(coreCtx->device, getDescriptorLayoutBindings(), true);
   return descriptorSetLayout;
 }
 
 void Renderer_Deferred_GBuffer_PBR_Pass_Systen_Ctx::initializeRenderPass()
 {
   core::shared_ptr<Renderer_Core_System_Ctx> coreCtx = frameCtx->coreCtx;
-  core::array<Subpass_Dependency, 1u> subpassesDependencies =
+  core::array<vk::Subpass_Dependency, 1u> subpassesDependencies =
   {
-    Subpass_Dependency({
+    vk::Subpass_Dependency({
       .srcSubpass = VK_SUBPASS_EXTERNAL,
       .dstSubpass = 0,
       .srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
@@ -179,36 +179,36 @@ void Renderer_Deferred_GBuffer_PBR_Pass_Systen_Ctx::initializeRenderPass()
       .dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
       .dependencyFlags = 0})
   };
-  renderPass = core::allocateShared<Render_Pass>(coreCtx->device, getSubpassDescriptions(), subpassesDependencies, getAttachmentsDescriptions());
+  renderPass = core::allocateShared<vk::Render_Pass>(coreCtx->device, getSubpassDescriptions(), subpassesDependencies, getAttachmentsDescriptions());
 }
 
 void Renderer_Deferred_GBuffer_PBR_Pass_Systen_Ctx::initalizeGraphicsPipeline()
 {
   core::shared_ptr<Renderer_Core_System_Ctx> coreCtx = frameCtx->coreCtx;
-  core::shared_ptr<Shader_Module> taskShaderModule = core::allocateShared<Shader_Module>(coreCtx->device, crude::shaders::deferred_gbuffer::task);
-  core::shared_ptr<Shader_Module> meshShaderModule = core::allocateShared<Shader_Module>(coreCtx->device, crude::shaders::deferred_gbuffer::mesh);
-  core::shared_ptr<Shader_Module> fragShaderModule = core::allocateShared<Shader_Module>(coreCtx->device, crude::shaders::deferred_gbuffer::frag);
+  core::shared_ptr<vk::Shader_Module> taskShaderModule = core::allocateShared<vk::Shader_Module>(coreCtx->device, crude::shaders::deferred_gbuffer::task);
+  core::shared_ptr<vk::Shader_Module> meshShaderModule = core::allocateShared<vk::Shader_Module>(coreCtx->device, crude::shaders::deferred_gbuffer::mesh);
+  core::shared_ptr<vk::Shader_Module> fragShaderModule = core::allocateShared<vk::Shader_Module>(coreCtx->device, crude::shaders::deferred_gbuffer::frag);
 
-  core::array<Shader_Stage_Create_Info, 3u> shaderStagesInfo =
+  core::array<vk::Shader_Stage_Create_Info, 3u> shaderStagesInfo =
   {
-    Task_Shader_Stage_Create_Info(taskShaderModule, "main"),
-    Mesh_Shader_Stage_Create_Info(meshShaderModule, "main"),
-    Fragment_Shader_Stage_Create_Info(fragShaderModule, "main"),
+    vk::Task_Shader_Stage_Create_Info(taskShaderModule, "main"),
+    vk::Mesh_Shader_Stage_Create_Info(meshShaderModule, "main"),
+    vk::Fragment_Shader_Stage_Create_Info(fragShaderModule, "main"),
   };
 
-  Vertex_Input_State_Create_Info vertexInputStateInfo({
+  vk::Vertex_Input_State_Create_Info vertexInputStateInfo({
     .bindings = {},
     .attributes = {} });
 
-  Tessellation_State_Create_Info tesselationInfo(3u);
+  vk::Tessellation_State_Create_Info tesselationInfo(3u);
 
-  Input_Assembly_State_Create_Info inputAssembly({
+  vk::Input_Assembly_State_Create_Info inputAssembly({
     .topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
     .primitiveRestartEnable = false });
 
-  Viewport_State_Create_Info viewportState(1u, 1u);
+  vk::Viewport_State_Create_Info viewportState(1u, 1u);
 
-  Rasterization_State_Create_Info rasterizer({
+  vk::Rasterization_State_Create_Info rasterizer({
     .depthClampEnable = false,
     .rasterizerDiscardEnable = false,
     .polygonMode = VK_POLYGON_MODE_FILL,
@@ -220,7 +220,7 @@ void Renderer_Deferred_GBuffer_PBR_Pass_Systen_Ctx::initalizeGraphicsPipeline()
     .depthBiasSlopeFactor = 0.0f,
     .lineWidth = 1.f });
 
-  Multisample_State_Create_Info multisampling({
+  vk::Multisample_State_Create_Info multisampling({
     .rasterizationSamples = VK_SAMPLE_COUNT_1_BIT,
     .sampleShadingEnable = VK_FALSE,
     .minSampleShading = 0.2f,
@@ -230,13 +230,13 @@ void Renderer_Deferred_GBuffer_PBR_Pass_Systen_Ctx::initalizeGraphicsPipeline()
   core::array<VkDynamicState, 2> dynamicStates = {
     VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR
   };
-  Dynamic_State_Create_Info dynamicStateInfo(dynamicStates);
+  vk::Dynamic_State_Create_Info dynamicStateInfo(dynamicStates);
 
-  core::shared_ptr<Pipeline_Layout> pipelineLayout = core::allocateShared<Pipeline_Layout>(
+  core::shared_ptr<vk::Pipeline_Layout> pipelineLayout = core::allocateShared<vk::Pipeline_Layout>(
     coreCtx->device, createDescriptorSetLayout(),
-    Push_Constant_Range<Per_Mesh>(VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT));
+    vk::Push_Constant_Range<Per_Mesh>(VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT));
 
-  pipeline = core::allocateShared<Pipeline>(
+  pipeline = core::allocateShared<vk::Pipeline>(
     coreCtx->device,
     renderPass,
     pipelineLayout,
@@ -260,16 +260,16 @@ void Renderer_Deferred_GBuffer_PBR_Pass_Systen_Ctx::initializeFramebuffers()
   framebuffers.reserve(coreCtx->swapchainImages.size());
   for (core::uint32 i = 0; i < coreCtx->swapchainImages.size(); ++i)
   {
-    framebuffers.push_back(core::allocateShared<Framebuffer>(
+    framebuffers.push_back(core::allocateShared<vk::Framebuffer>(
       coreCtx->device, renderPass, getFramebufferAttachments(), gbuffer->getExtent(), 1u));
   }
 }
 
-core::array<Subpass_Description, 1> Renderer_Deferred_GBuffer_PBR_Pass_Systen_Ctx::getSubpassDescriptions()
+core::array<vk::Subpass_Description, 1> Renderer_Deferred_GBuffer_PBR_Pass_Systen_Ctx::getSubpassDescriptions()
 {
   return
   {
-    Subpass_Description(Subpass_Description::Initialize_Color_Array_Depth{
+    vk::Subpass_Description(vk::Subpass_Description::Initialize_Color_Array_Depth{
       core::array<VkImageLayout,3>
       {
         VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
@@ -280,51 +280,51 @@ core::array<Subpass_Description, 1> Renderer_Deferred_GBuffer_PBR_Pass_Systen_Ct
   };
 }
 
-core::vector<Attachment_Description> Renderer_Deferred_GBuffer_PBR_Pass_Systen_Ctx::getAttachmentsDescriptions()
+core::vector<vk::Attachment_Description> Renderer_Deferred_GBuffer_PBR_Pass_Systen_Ctx::getAttachmentsDescriptions()
 {
   return
   {
-    Attachment_Description({
+    vk::Attachment_Description({
       .format        = gbuffer->getAlbedoAttachment()->getFormat(),
       .samples       = gbuffer->getAlbedoAttachment()->getSampleCount(),
-      .colorOp       = attachment_op::gClearStore,
-      .stenicilOp    = attachment_op::gClearStore,
+      .colorOp       = vk::attachment_op::gClearStore,
+      .stenicilOp    = vk::attachment_op::gClearStore,
       .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
       .finalLayout   = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL }),
-    Attachment_Description({
+    vk::Attachment_Description({
       .format        = gbuffer->getMetallicRoughnessAttachment()->getFormat(),
       .samples       = gbuffer->getMetallicRoughnessAttachment()->getSampleCount(),
-      .colorOp       = attachment_op::gClearStore,
-      .stenicilOp    = attachment_op::gClearStore,
+      .colorOp       = vk::attachment_op::gClearStore,
+      .stenicilOp    = vk::attachment_op::gClearStore,
       .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
       .finalLayout   = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL }),
-    Attachment_Description({
+    vk::Attachment_Description({
       .format        = gbuffer->getNormalAttachment()->getFormat(),
       .samples       = gbuffer->getNormalAttachment()->getSampleCount(),
-      .colorOp       = attachment_op::gClearStore,
-      .stenicilOp    = attachment_op::gClearStore,
+      .colorOp       = vk::attachment_op::gClearStore,
+      .stenicilOp    = vk::attachment_op::gClearStore,
       .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
       .finalLayout   = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL }),
-    Attachment_Description({
+    vk::Attachment_Description({
       .format        = gbuffer->getDepthStencilAttachment()->getFormat(),
       .samples       = gbuffer->getDepthStencilAttachment()->getSampleCount(),
-      .colorOp       = attachment_op::gClearStore,
-      .stenicilOp    = attachment_op::gClearStore,
+      .colorOp       = vk::attachment_op::gClearStore,
+      .stenicilOp    = vk::attachment_op::gClearStore,
       .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
       .finalLayout   = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL })
   };
 }
 
-core::vector<core::shared_ptr<Image_View>> Renderer_Deferred_GBuffer_PBR_Pass_Systen_Ctx::getFramebufferAttachments()
+core::vector<core::shared_ptr<vk::Image_View>> Renderer_Deferred_GBuffer_PBR_Pass_Systen_Ctx::getFramebufferAttachments()
 {
   return { gbuffer->getAlbedoAttachmentView(), gbuffer->getMetallicRoughnessAttachmentView(), gbuffer->getNormalAttachmentView(), gbuffer->getDepthStencilAttachmentView() };
 }
 
-Color_Blend_State_Create_Info Renderer_Deferred_GBuffer_PBR_Pass_Systen_Ctx::createColorBlendStateCreateInfo()
+vk::Color_Blend_State_Create_Info Renderer_Deferred_GBuffer_PBR_Pass_Systen_Ctx::createColorBlendStateCreateInfo()
 {
-  core::array<Pipeline_Color_Blend_Attachment_State, 3u> colorAttachments =
+  core::array<vk::Pipeline_Color_Blend_Attachment_State, 3u> colorAttachments =
   {
-    Pipeline_Color_Blend_Attachment_State({
+    vk::Pipeline_Color_Blend_Attachment_State({
       .blendEnable         = VK_TRUE,
       .colorWriteMask      = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT,
       .srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA,
@@ -333,7 +333,7 @@ Color_Blend_State_Create_Info Renderer_Deferred_GBuffer_PBR_Pass_Systen_Ctx::cre
       .srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE,
       .dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO,
       .alphaBlendOp        = VK_BLEND_OP_ADD }),
-    Pipeline_Color_Blend_Attachment_State({
+    vk::Pipeline_Color_Blend_Attachment_State({
       .blendEnable         = VK_FALSE,
       .colorWriteMask      = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT,
       .srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA,
@@ -342,7 +342,7 @@ Color_Blend_State_Create_Info Renderer_Deferred_GBuffer_PBR_Pass_Systen_Ctx::cre
       .srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE,
       .dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO,
       .alphaBlendOp        = VK_BLEND_OP_ADD }),
-    Pipeline_Color_Blend_Attachment_State({
+    vk::Pipeline_Color_Blend_Attachment_State({
       .blendEnable         = VK_FALSE,
       .colorWriteMask      = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT,
       .srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA,
@@ -352,16 +352,16 @@ Color_Blend_State_Create_Info Renderer_Deferred_GBuffer_PBR_Pass_Systen_Ctx::cre
       .dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO,
       .alphaBlendOp        = VK_BLEND_OP_ADD })
   };
-  return Color_Blend_State_Create_Info({
+  return vk::Color_Blend_State_Create_Info({
     .attachments = colorAttachments,
     .blendConstants = { 0.f, 0.f, 0.f, 0.f },
     .logicOpEnable = false,
     .logicOp = VK_LOGIC_OP_COPY });
 }
 
-Depth_Stencil_State_Create_Info Renderer_Deferred_GBuffer_PBR_Pass_Systen_Ctx::createDepthStencilStateCreateInfo()
+vk::Depth_Stencil_State_Create_Info Renderer_Deferred_GBuffer_PBR_Pass_Systen_Ctx::createDepthStencilStateCreateInfo()
 {
-  return Depth_Stencil_State_Create_Info({
+  return vk::Depth_Stencil_State_Create_Info({
     .depthTestEnable       = true,
     .depthWriteEnable      = true,
     .depthCompareOp        = VK_COMPARE_OP_LESS,

@@ -4,11 +4,11 @@
 
 module crude.editor.application;
 
-import crude.graphics.command_pool;
-import crude.graphics.sampler_state;
-import crude.graphics.image_view;
-import crude.graphics.sampler;
-import crude.graphics.texture;
+import crude.gfx.vk.command_pool;
+import crude.gfx.vk.sampler_state;
+import crude.gfx.vk.image_view;
+import crude.gfx.vk.sampler;
+import crude.gfx.texture;
 import crude.gui.imgui_texture_descriptor_set;
 import crude.resources.gltf_model_loader_system;
 import crude.scene.camera;
@@ -63,9 +63,9 @@ void Application::initialize()
   m_editorLayoutCtx->editorSelectedNode   = m_sceneNode;
   m_editorLayoutCtx->viewportImguiTexture = core::allocateShared<crude::gui::ImGui_Texture_Descriptor_Set>(
     m_rendererImguiPassCtx,
-    core::allocateShared<graphics::Texture>(
-      core::allocateShared<graphics::Image_View>(m_rendererFullscreenPbrPassCtx->colorAttachment),
-      core::allocateShared<graphics::Sampler>(m_rendererCoreCtx->device, graphics::csamlper_state::gMagMinMipLinearRepeat)));
+    core::allocateShared<gfx::Texture>(
+      core::allocateShared<gfx::vk::Image_View>(m_rendererFullscreenPbrPassCtx->colorAttachment),
+      core::allocateShared<gfx::vk::Sampler>(m_rendererCoreCtx->device, gfx::vk::csamlper_state::gMagMinMipLinearRepeat)));
 
   m_sceneLoaderCtx->callback = [this](flecs::entity newSceneNode) {
     m_sceneNode                           = newSceneNode;

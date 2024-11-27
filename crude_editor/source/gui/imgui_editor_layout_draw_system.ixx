@@ -11,15 +11,25 @@ export module crude.editor.gui.imgui_editor_layout_draw_system;
 
 export import crude.core.std_containers_heap;
 
-export namespace crude::graphics
+export namespace crude::gfx::vk
 {
+
 class Command_Pool;
+
+}
+
+export namespace crude::gfx
+{
+
 class Renderer_Fullscreen_PBR_Pass_Ctx;
+
 }
 
 export namespace crude::gui
 {
+
 class ImGui_Texture_Descriptor_Set;
+
 }
 
 export namespace crude::editor::gui
@@ -27,11 +37,11 @@ export namespace crude::editor::gui
 
 struct Imgui_Editor_Layout_Draw_Ctx
 {
-  core::shared_ptr<crude::gui::ImGui_Texture_Descriptor_Set>    viewportImguiTexture;
-  core::shared_ptr<graphics::Renderer_Fullscreen_PBR_Pass_Ctx>  rendererFullscreenPbrPass;
-  flecs::entity                                                 sceneNode;
-  flecs::entity                                                 editorCameraNode;
-  flecs::entity                                                 editorSelectedNode;
+  core::shared_ptr<crude::gui::ImGui_Texture_Descriptor_Set>  viewportImguiTexture;
+  core::shared_ptr<gfx::Renderer_Fullscreen_PBR_Pass_Ctx>     rendererFullscreenPbrPass;
+  flecs::entity                                               sceneNode;
+  flecs::entity                                               editorCameraNode;
+  flecs::entity                                               editorSelectedNode;
 };
 
 void imguiEditorLayoutDrawSystemProcess(flecs::iter& it);

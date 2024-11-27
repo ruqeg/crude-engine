@@ -14,16 +14,22 @@ export import crude.scene.light;
 export import crude.core.std_containers_heap;
 export import crude.core.std_containers_stack;
 
-export namespace crude::graphics
+export namespace crude::gfx::vk
 {
 
 class Device;
 class Sampler;
 class Command_Pool;
 class Image;
+class Image_View;
+
+}
+
+export namespace crude::gfx
+{
+
 class Mesh_Buffer;
 class Texture;
-class Image_View;
 
 }
 
@@ -41,7 +47,7 @@ struct GLTF_Model_Metadata_Component
 
 struct GLTF_Model_Loader_Context
 {
-  core::shared_ptr<graphics::Command_Pool>  transferCommandPool;
+  core::shared_ptr<gfx::vk::Command_Pool>  transferCommandPool;
   GLTF_Model_Loader_Callback_Function       callback = [](flecs::entity) {};
 };
 
@@ -59,15 +65,15 @@ void gltfModelLoaderSystemProcess(flecs::iter& it);
 class GLTF_Loader
 {
 public:
-  GLTF_Loader(core::shared_ptr<graphics::Command_Pool> commandPool);
+  GLTF_Loader(core::shared_ptr<gfx::vk::Command_Pool> commandPool);
 public:
   void loadToNodeFromFile(flecs::entity node, const std::filesystem::path& path);
 private:
   bool loadModelFromFile(const std::filesystem::path& path);
   scene::Point_Light_CPU parsePointLight(const tinygltf::Light& tinyLight);
-  core::shared_ptr<graphics::Material> parseMaterial(core::int32 tinyMaterialIndex);
-  core::shared_ptr<graphics::Image_View> parseImageView(const core::int32 tinyImageIndex, VkFormat format, VkFilter mipmapFilter = VK_FILTER_LINEAR);
-  core::shared_ptr<graphics::Texture> parseTexture(const core::int32 tinyTextureIndex, const VkFormat format, core::span<const core::byte> texelForUnitialized);
+  core::shared_ptr<gfx::Material> parseMaterial(core::int32 tinyMaterialIndex);
+  core::shared_ptr<gfx::vk::Image_View> parseImageView(const core::int32 tinyImageIndex, VkFormat format, VkFilter mipmapFilter = VK_FILTER_LINEAR);
+  core::shared_ptr<gfx::Texture> parseTexture(const core::int32 tinyTextureIndex, const VkFormat format, core::span<const core::byte> texelForUnitialized);
   flecs::entity parseNode(flecs::world world, const tinygltf::Node& tinyNode);
 private:
   core::vector<scene::Vertex> loadVerticesFromPrimitive(const tinygltf::Primitive& tinyPrimitive);
@@ -79,15 +85,15 @@ private:
                      core::vector<core::uint8>&          meshPrimitiveIndices,
                      core::vector<scene::Meshlet>&       meshMeshlets);
 private:
-  tinygltf::Model                                        m_tinyModel;
-  core::shared_ptr<graphics::Command_Pool>               m_commandPool;
+  tinygltf::Model                                      m_tinyModel;
+  core::shared_ptr<gfx::vk::Command_Pool>              m_commandPool;
 
-  core::vector<scene::Point_Light_CPU>                   m_pointLights;
-  core::vector<core::shared_ptr<scene::Mesh>>            m_meshes;
-  core::vector<core::shared_ptr<graphics::Mesh_Buffer>>  m_meshBuffers;
-  core::shared_ptr<graphics::Sampler>                    m_sampler;
-  core::vector<core::shared_ptr<graphics::Image_View>>   m_imageViews;
-  core::vector<core::shared_ptr<graphics::Texture>>      m_textures;
+  core::vector<scene::Point_Light_CPU>                 m_pointLights;
+  core::vector<core::shared_ptr<scene::Mesh>>          m_meshes;
+  core::vector<core::shared_ptr<gfx::Mesh_Buffer>>     m_meshBuffers;
+  core::shared_ptr<gfx::vk::Sampler>                   m_sampler;
+  core::vector<core::shared_ptr<gfx::vk::Image_View>>  m_imageViews;
+  core::vector<core::shared_ptr<gfx::Texture>>         m_textures;
 
   static constexpr VkExtent2D                            cTextureExtentLimit{ .width = 2048, .height = 2048 };
 };

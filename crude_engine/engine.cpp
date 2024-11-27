@@ -9,13 +9,18 @@ module crude.engine;
 import crude.core.logger;
 import crude.core.memory;
 import crude.scripts.window_script;
-import crude.graphics.device;
+import crude.gfx.vk.device;
 import crude.platform.sdl_helper;
 import crude.platform.sdl_window_container;
 import crude.gui.imgui_helper;
 import crude.gui.imgui_input_system;
 import crude.scene.mesh;
 import crude.scene.light;
+
+
+
+import crude.gfx.vk.format_helper;
+import crude.gfx.render_graph;
 
 namespace crude
 {
@@ -48,10 +53,38 @@ void Engine::deinitialize()
 void Engine::mainLoop()
 {
   const auto windowScriptComponent = m_world.get<scripts::Window_Script_Component>();
-  while (!windowScriptComponent->shouldClose)
-  {
-    m_world.progress();
-  }
+  //while (!windowScriptComponent->shouldClose)
+  //{
+  //  m_world.progress();
+  //}
+
+  const VkFormat depthFormat = gfx::vk::findDepthFormatSupportedByDevice(m_rendererCoreCtx->device->getPhysicalDevice(), gfx::vk::depth_formats::gDepthCandidates);
+
+  crude::gfx::Attachment_Info albedo, normal, metallicRoughness, depth;
+  albedo.format            = VK_FORMAT_B8G8R8A8_SRGB;
+  normal.format            = VK_FORMAT_R16G16B16A16_SNORM;
+  metallicRoughness.format = VK_FORMAT_R8G8_UNORM;
+  depth.format             = depthFormat;
+
+  crude::gfx::Render_Graph graph(m_rendererCoreCtx->device);
+  auto gbuffer = graph.addPass("gbuffer", VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT);
+  gbuffer->addColorOutput("albedo", albedo);
+  gbuffer->addColorOutput("normal", normal);
+  gbuffer->addColorOutput("pbr", metallicRoughness);
+  gbuffer->setDepthStencilOutput("depth", depth);
+  gbuffer->build();
+
+  ////auto lighting = graph.addPass("lighting", VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT);
+  ////lighting->addColorOutput("HDR", emissive, "emissive");
+  ////lighting->addAttachmentInput("albedo");
+  ////lighting->addAttachmentInput("normal");
+  ////lighting->addAttachmentInput("pbr");
+  ////lighting->addAttachmentInput("depth");
+  ////lighting->setDepthStencilInput("depth");
+
+  ////lighting->addTextureInput("shadow-main");
+  ////lighting->addTextureInput("shadow-near");
+
   m_rendererCoreCtx->device->waitIdle();
 }
 
@@ -74,7 +107,7 @@ void Engine::initializeSystems()
   m_gltfModelLoaderCtx = core::allocateShared<resources::GLTF_Model_Loader_Context>(resources::GLTF_Model_Loader_Context{
     .transferCommandPool = m_rendererCoreCtx->transferCommandPool,
     .callback = [](flecs::entity entity) {
-      entity.world().add<graphics::Renderer_Light_To_Update_Flag>();
+      entity.world().add<gfx::Renderer_Light_To_Update_Flag>();
     }});
   m_gltfModelLoaderSystem = resources::registerGLTFModelLoaderSystem(m_world, m_gltfModelLoaderCtx);
 }
@@ -103,46 +136,46 @@ void Engine::initializeInputSystems()
 
 void Engine::initializeRendererSystems()
 {
-  m_rendererCoreCtx = core::allocateShared<graphics::Renderer_Core_System_Ctx>(m_windowContainer);
-  m_rendererFrameCtx = core::allocateShared<graphics::Renderer_Frame_System_Ctx>(m_rendererCoreCtx);
-  m_rendererDeferredGBufferPbrPassCtx = core::allocateShared<graphics::Renderer_Deferred_GBuffer_PBR_Pass_Systen_Ctx>(m_rendererFrameCtx);
-  m_rendererDeferredGBufferColorPassCtx = core::allocateShared<graphics::Renderer_Deferred_GBuffer_Color_Pass_Systen_Ctx>(m_rendererFrameCtx, m_rendererDeferredGBufferPbrPassCtx->gbuffer);
-  m_rendererPointShadowPassCtx = core::allocateShared<graphics::Renderer_Point_Shadow_Pass_Systen_Ctx>(m_rendererFrameCtx);
-  m_rendererLightCtx = core::allocateShared<graphics::Renderer_Light_Ctx>(m_rendererPointShadowPassCtx);
-  m_rendererFullscreenPbrPassCtx = core::allocateShared<graphics::Renderer_Fullscreen_PBR_Pass_Ctx>(m_rendererFrameCtx, m_rendererLightCtx, m_rendererDeferredGBufferColorPassCtx->gbuffer);
+  m_rendererCoreCtx = core::allocateShared<gfx::Renderer_Core_System_Ctx>(m_windowContainer);
+  m_rendererFrameCtx = core::allocateShared<gfx::Renderer_Frame_System_Ctx>(m_rendererCoreCtx);
+  m_rendererDeferredGBufferPbrPassCtx = core::allocateShared<gfx::Renderer_Deferred_GBuffer_PBR_Pass_Systen_Ctx>(m_rendererFrameCtx);
+  m_rendererDeferredGBufferColorPassCtx = core::allocateShared<gfx::Renderer_Deferred_GBuffer_Color_Pass_Systen_Ctx>(m_rendererFrameCtx, m_rendererDeferredGBufferPbrPassCtx->gbuffer);
+  m_rendererPointShadowPassCtx = core::allocateShared<gfx::Renderer_Point_Shadow_Pass_Systen_Ctx>(m_rendererFrameCtx);
+  m_rendererLightCtx = core::allocateShared<gfx::Renderer_Light_Ctx>(m_rendererPointShadowPassCtx);
+  m_rendererFullscreenPbrPassCtx = core::allocateShared<gfx::Renderer_Fullscreen_PBR_Pass_Ctx>(m_rendererFrameCtx, m_rendererLightCtx, m_rendererDeferredGBufferColorPassCtx->gbuffer);
   m_rendererImguiPassCtx = core::allocateShared<gui::Renderer_ImGui_Pass_System_Ctx>(m_rendererFrameCtx);
 
-  flecs::system pointShadowPassSystem = m_world.system<core::shared_ptr<graphics::Mesh_Buffer>, core::shared_ptr<scene::Mesh>>("PointShadowPassSystem")
+  flecs::system pointShadowPassSystem = m_world.system<core::shared_ptr<gfx::Mesh_Buffer>, core::shared_ptr<scene::Mesh>>("PointShadowPassSystem")
     .ctx(m_rendererPointShadowPassCtx.get())
     .kind(0)
-    .run(graphics::rendererPointShadowPassSystemProcess);
+    .run(gfx::rendererPointShadowPassSystemProcess);
 
-  flecs::system deferredGBufferColorPassSystem = m_world.system<core::shared_ptr<graphics::Mesh_Buffer>, core::shared_ptr<scene::Mesh>>("DeferredGBufferColorPassSystem")
+  flecs::system deferredGBufferColorPassSystem = m_world.system<core::shared_ptr<gfx::Mesh_Buffer>, core::shared_ptr<scene::Mesh>>("DeferredGBufferColorPassSystem")
     .ctx(m_rendererDeferredGBufferColorPassCtx.get())
     .kind(0)
-    .with<graphics::Deferred_Node_Pipeline_Color_Flag>()
-    .run(graphics::rendererDeferredGBufferColorPassSystemProcess);
+    .with<gfx::Deferred_Node_Pipeline_Color_Flag>()
+    .run(gfx::rendererDeferredGBufferColorPassSystemProcess);
 
-  flecs::system deferredGBufferPbrPassSystem = m_world.system<core::shared_ptr<graphics::Mesh_Buffer>, core::shared_ptr<scene::Mesh>>("DeferredGBufferPbrPassSystem")
+  flecs::system deferredGBufferPbrPassSystem = m_world.system<core::shared_ptr<gfx::Mesh_Buffer>, core::shared_ptr<scene::Mesh>>("DeferredGBufferPbrPassSystem")
     .ctx(m_rendererDeferredGBufferPbrPassCtx.get())
     .kind(0)
-    .with<graphics::Deferred_Node_Pipeline_PBR_Flag>()
-    .run(graphics::rendererDeferredGBufferPbrPassSystemProcess);
+    .with<gfx::Deferred_Node_Pipeline_PBR_Flag>()
+    .run(gfx::rendererDeferredGBufferPbrPassSystemProcess);
 
   m_lightUpdateSystem = m_world.system<scene::Point_Light_CPU>("LightUpdateSystem")
     .ctx(m_rendererLightCtx.get())
     .kind(flecs::OnUpdate)
-    .run(graphics::rendererLightUpdateSystemProcess);
+    .run(gfx::rendererLightUpdateSystemProcess);
 
   flecs::system frameStartSystem = m_world.system("FrameStartSystem")
     .ctx(m_rendererFrameCtx.get())
     .kind(0)
-    .run(graphics::rendererFrameStartSystemProcess);
+    .run(gfx::rendererFrameStartSystemProcess);
 
   flecs::system fullscreenPBRPassSystem = m_world.system("FullscreenPBRPassSystem")
     .ctx(m_rendererFullscreenPbrPassCtx.get())
     .kind(0)
-    .run(graphics::rendererFullscreenPBRPassSystemProcess);
+    .run(gfx::rendererFullscreenPBRPassSystemProcess);
 
   flecs::system imguiPassSystem = m_world.system("ImguiPassSystem")
     .ctx(m_rendererImguiPassCtx.get())
@@ -152,7 +185,7 @@ void Engine::initializeRendererSystems()
   flecs::system frameSubmitSystem = m_world.system("FrameSubmitSystem")
     .ctx(m_rendererFrameCtx.get())
     .kind(0)
-    .run(graphics::rendererFrameSubmitSystemProcess);
+    .run(gfx::rendererFrameSubmitSystemProcess);
 
   m_rendererSystem = m_world.system("RendererFrameSubmitSystem")
     .kind(flecs::PreStore)

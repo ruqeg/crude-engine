@@ -2,16 +2,16 @@
 #include <DirectXMath.h>
 #include <flecs.h>
 
-module crude.graphics.renderer_light_system;
+module crude.gfx.renderer_light_system;
 
 import crude.scene.light;
 import crude.scene.transform;
-import crude.graphics.command_buffer;
-import crude.graphics.command_pool;
-import crude.graphics.storage_buffer;
-import crude.graphics.renderer_core_system;
+import crude.gfx.vk.command_buffer;
+import crude.gfx.vk.command_pool;
+import crude.gfx.vk.storage_buffer;
+import crude.gfx.renderer_core_system;
 
-namespace crude::graphics
+namespace crude::gfx
 {
 
 Renderer_Light_Ctx::Renderer_Light_Ctx(core::shared_ptr<Renderer_Point_Shadow_Pass_Systen_Ctx> rendererPointShadowPassCtx)
@@ -50,8 +50,8 @@ void rendererLightUpdateSystemProcess(flecs::iter& it)
 
   if (!visiblePointLightsGPU.empty())
   {
-    auto commandBuffer = core::allocateShared<graphics::Command_Buffer>(coreCtx->graphicsCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
-    lightCtx->pointLightsBuffer = core::allocateShared<graphics::Storage_Buffer>(commandBuffer, visiblePointLightsGPU);
+    auto commandBuffer = core::allocateShared<gfx::vk::Command_Buffer>(coreCtx->graphicsCommandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+    lightCtx->pointLightsBuffer = core::allocateShared<gfx::vk::Storage_Buffer>(commandBuffer, visiblePointLightsGPU);
 
     lightCtx->rendererPointShadowPassCtx->update(visiblePointLightsGPU);
   }

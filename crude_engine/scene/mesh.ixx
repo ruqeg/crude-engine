@@ -9,9 +9,11 @@ export import crude.scene.image;
 export import crude.core.std_containers_heap;
 export import crude.core.std_containers_stack;
 
-export namespace crude::graphics
+export namespace crude::gfx
 {
+
 class Material;
+
 }
 
 export namespace crude::scene
@@ -43,11 +45,11 @@ struct Sub_Mesh_Lod
 
 struct Sub_Mesh
 {
-  core::uint32                          vertexOffset;
-  core::uint32                          vertexCount;
-  core::uint32                          lodCount;
-  core::array<Sub_Mesh_Lod, 8>          lods;
-  core::shared_ptr<graphics::Material>  material;
+  core::uint32                     vertexOffset;
+  core::uint32                     vertexCount;
+  core::uint32                     lodCount;
+  core::array<Sub_Mesh_Lod, 8>     lods;
+  core::shared_ptr<gfx::Material>  material;
 };
 
 struct Sub_Mesh_Draw
