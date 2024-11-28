@@ -17,6 +17,8 @@ export namespace crude::gfx::vk
 
 class Device;
 class Render_Pass;
+class Framebuffer;
+class Image_View;
 
 }
 
@@ -25,67 +27,70 @@ export namespace crude::gfx
 
 struct Attachment_Info
 {
-  VkFormat               format = VK_FORMAT_UNDEFINED;
-  VkSampleCountFlagBits  samples = VK_SAMPLE_COUNT_1_BIT;
-};
-
-enum Render_Graph_Queue_Flag_Bits
-{
-  RENDER_GRAPH_QUEUE_GRAPHICS_BIT = 1 << 0,
-  RENDER_GRAPH_QUEUE_COMPUTE_BIT  = 1 << 1,
-};
-
-class Render_Resource {};
-class Render_Texture_Resource : public Render_Resource
-{
-public:
-  void setAttachmentInfo(const Attachment_Info& attachmentInfo) { m_attachmentInfo = attachmentInfo; }
-  const Attachment_Info& getAttachmentInfo() const { return m_attachmentInfo; }
-private:
-  Attachment_Info m_attachmentInfo;
+  VkExtent2D             extent          = { 800, 800 };
+  VkFormat               format          = VK_FORMAT_UNDEFINED;
+  VkSampleCountFlagBits  samples         = VK_SAMPLE_COUNT_1_BIT;
 };
 
 class Render_Graph;
 
-class Render_Graph_Pass
+class Render_Pass
 {
+private:
+  struct Initialize;
+private:
+  Render_Pass(const Initialize& info);
+private:
+  Render_Graph&                                    m_graph;
+  VkPipelineStageFlags                             m_queue;
+  core::string                                     m_name;
+  std::vector<core::shared_ptr<vk::Image_View>>    m_outputs;
+  core::shared_ptr<vk::Render_Pass>                m_renderPass;
+  core::vector<core::shared_ptr<vk::Framebuffer>>  m_framebuffers;
+  VkExtent2D                                       m_framebufferExtent;
+private:
   friend class Render_Graph;
-public:
-  Render_Graph_Pass() = default;
-private:
-  Render_Graph_Pass(Render_Graph& graph, core::uint32 index, VkPipelineStageFlags queue);
-public:
-  void setName(const core::string& name);
-  void addColorOutput(const core::string& name, const Attachment_Info& attachmentInfo);
-  void setDepthStencilOutput(const core::string& name, const Attachment_Info& attachmentInfo);
-  void addAttachmentInput(const core::string& name, const Attachment_Info& attachmentInfo);
-  void addTextureInput(const core::string& name, const Attachment_Info& attachmentInfo);
-  void build();
-private:
-  Render_Graph&                                           m_graph;
-  core::uint32                                            m_index;
-  VkPipelineStageFlags                                    m_queue;
-  core::string                                            m_name;
-  std::vector<core::shared_ptr<Render_Texture_Resource>>  m_colorOutputs;
-  core::shared_ptr<Render_Texture_Resource>               m_depthOutput;
-  core::shared_ptr<vk::Render_Pass>                       m_renderPass;
 };
 
 class Render_Graph
 {
-  friend class Render_Graph_Pass;
 public:
-  Render_Graph(core::shared_ptr<vk::Device> device);
+  struct Initialize;
+  struct Render_Pass_Info;
 public:
-  core::shared_ptr<Render_Graph_Pass> addPass(const core::string& name, VkPipelineStageFlags queue);
+  Render_Graph(const Initialize& initialize);
 private:
-  core::shared_ptr<Render_Texture_Resource> getTextureResource(const core::string& name);
+  core::vector<core::shared_ptr<Render_Pass>>  m_passes;
+  core::shared_ptr<vk::Device>                 m_device;
+  core::uint32                                 m_swapchainImagesCount;
 private:
-  core::vector<core::shared_ptr<Render_Graph_Pass>>        m_passes;
-  core::vector<core::shared_ptr<Render_Texture_Resource>>  m_resources;
-  core::unordered_map<core::string, core::uint32>          m_passToIndex;
-  core::unordered_map<core::string, core::uint32>          m_resourceToIndex;
-  core::shared_ptr<vk::Device>                             m_device;
+  friend class Render_Pass;
+};
+
+struct Render_Pass::Initialize
+{
+  Render_Graph&                      graph;
+  VkPipelineStageFlags               queue;
+  core::string                       name;
+  core::span<const Attachment_Info>  colorAttachments;
+  core::optional<Attachment_Info>    depthAttachment;
+  VkExtent2D                         framebufferExtent;
+};
+
+struct Render_Graph::Render_Pass_Info
+{
+  core::string                     name;
+  VkPipelineStageFlags             queue;
+  core::vector<Attachment_Info>    colorAttachments;
+  core::optional<Attachment_Info>  depthAttachment;
+  VkExtent2D                       framebufferExtent;
+};
+
+struct Render_Graph::Initialize
+{
+  core::vector<Render_Pass_Info>  renderPassesInfos;
+  core::shared_ptr<vk::Device>    device;
+  core::uint32                    swapchainImagesCount;
 };
 
 }

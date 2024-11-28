@@ -4,71 +4,62 @@ module crude.gfx.render_graph;
 
 import crude.gfx.vk.render_pass;
 import crude.gfx.vk.device;
+import crude.gfx.vk.image_view;
+import crude.gfx.vk.attachment_description;
+import crude.gfx.vk.image_attachment;
+import crude.gfx.vk.framebuffer;
 
 namespace crude::gfx
 {
 
-Render_Graph_Pass::Render_Graph_Pass(Render_Graph& graph, core::uint32 index, VkPipelineStageFlags queue)
-  : m_graph{ graph }
-  , m_index{ index }
-  , m_queue{ queue }
-{}
-
-
-void Render_Graph_Pass::setName(const core::string& name)
-{
-  m_name = name;
-}
-
-void Render_Graph_Pass::addColorOutput(const core::string& name, const Attachment_Info& attachmentInfo)
-{
-  auto resource = m_graph.getTextureResource(name);
-  resource->setAttachmentInfo(attachmentInfo);
-  m_colorOutputs.push_back(resource);
-}
-
-void Render_Graph_Pass::setDepthStencilOutput(const core::string& name, const Attachment_Info& attachmentInfo)
-{
-  auto resource = m_graph.getTextureResource(name);
-  resource->setAttachmentInfo(attachmentInfo);
-  m_depthOutput = resource;
-}
-
-void Render_Graph_Pass::addAttachmentInput(const core::string& name, const Attachment_Info& attachmentInfo)
-{
-
-}
-
-void Render_Graph_Pass::addTextureInput(const core::string& name, const Attachment_Info& attachmentInfo)
-{
-
-}
-
-void Render_Graph_Pass::build()
+Render_Pass::Render_Pass(const Initialize& initialize)
+  : m_graph{ initialize.graph }
+  , m_queue{ initialize.queue }
+  , m_name{ initialize.name }
+  , m_framebufferExtent{ initialize.framebufferExtent }
 {
   core::vector<vk::Attachment_Description> attachmentsDescriptions;
   core::vector<VkImageLayout> colorLayouts;
 
-  attachmentsDescriptions.reserve(m_colorOutputs.size());
-  colorLayouts.reserve(m_colorOutputs.size());
+  attachmentsDescriptions.reserve(initialize.colorAttachments.size());
+  colorLayouts.reserve(initialize.colorAttachments.size());
 
-  for (auto colorOutput : m_colorOutputs)
+  for (auto colorAttachment : initialize.colorAttachments)
   {
+    m_outputs.push_back(core::allocateShared<vk::Image_View>(core::allocateShared<vk::Color_Attachment>(vk::Color_Attachment::Initialize{
+      .device          = m_graph.m_device,
+      .format          = colorAttachment.format,
+      .extent          = colorAttachment.extent,
+      .sampled         = true,
+      .explicitResolve = false,
+      .mipLevelsCount  = 1u,
+      .samples         = colorAttachment.samples })));
+
     attachmentsDescriptions.push_back(vk::Attachment_Description({
-      .format        = colorOutput->getAttachmentInfo().format,
-      .samples       = colorOutput->getAttachmentInfo().samples,
+      .format        = colorAttachment.format,
+      .samples       = colorAttachment.samples,
       .colorOp       = vk::attachment_op::gDontCareStore,
       .stenicilOp    = vk::attachment_op::gClearStore,
       .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
       .finalLayout   = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL }));
+
     colorLayouts.push_back(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
   }
 
-  if (m_depthOutput)
+  if (initialize.depthAttachment.has_value())
   {
+    m_outputs.push_back(core::allocateShared<vk::Image_View>(core::allocateShared<vk::Depth_Stencil_Attachment>(vk::Depth_Stencil_Attachment::Initialize{
+      .device             = m_graph.m_device,
+      .depthStencilFormat = initialize.depthAttachment.value().format,
+      .extent             = initialize.depthAttachment.value().extent,
+      .sampled            = true,
+      .explicitResolve    = false,
+      .mipLevelsCount     = 1u,
+      .samples            = initialize.depthAttachment.value().samples })));
+
     attachmentsDescriptions.push_back(vk::Attachment_Description({
-      .format        = m_depthOutput->getAttachmentInfo().format,
-      .samples       = m_depthOutput->getAttachmentInfo().samples,
+      .format        = initialize.depthAttachment.value().format,
+      .samples       = initialize.depthAttachment.value().samples,
       .colorOp       = vk::attachment_op::gDontCareStore,
       .stenicilOp    = vk::attachment_op::gClearStore,
       .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
@@ -76,7 +67,7 @@ void Render_Graph_Pass::build()
   }
 
   vk::Subpass_Description subpassDescription;
-  if (m_depthOutput)
+  if (initialize.depthAttachment.has_value())
   {
     subpassDescription = vk::Subpass_Description{ vk::Subpass_Description::Initialize_Color_Array_Depth { colorLayouts, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL } };
   }
@@ -99,38 +90,32 @@ void Render_Graph_Pass::build()
     core::span<const vk::Subpass_Description>{ &subpassDescription, 1u },
     core::span<const vk::Subpass_Dependency>{ &subpassDependency, 1u },
     attachmentsDescriptions);
+
+  m_framebuffers.reserve(m_graph.m_swapchainImagesCount);
+  for (core::uint32 i = 0; i < m_graph.m_swapchainImagesCount; ++i)
+  {
+    m_framebuffers.push_back(core::allocateShared<vk::Framebuffer>(
+      m_graph.m_device, m_renderPass, 
+      m_outputs,
+      m_framebufferExtent, 1u));
+  }
 }
 
-Render_Graph::Render_Graph(core::shared_ptr<vk::Device> device)
-  : m_device{ device }
-{}
-
-core::shared_ptr<Render_Graph_Pass> Render_Graph::addPass(const core::string& name, VkPipelineStageFlags queue)
+Render_Graph::Render_Graph(const Initialize& initialize)
+  : m_device{ initialize.device }
+  , m_swapchainImagesCount{ initialize.swapchainImagesCount }
 {
-  if (m_passToIndex.contains(name))
+  for (const Render_Pass_Info& renderPassInfo : initialize.renderPassesInfos)
   {
-    return m_passes[m_passToIndex.find(name)->second];
+    m_passes.push_back(core::allocateShared<Render_Pass>(Render_Pass::Initialize{
+      .graph             = *this,
+      .queue             = renderPassInfo.queue,
+      .name              = renderPassInfo.name,
+      .colorAttachments  = renderPassInfo.colorAttachments,
+      .depthAttachment   = renderPassInfo.depthAttachment,
+      .framebufferExtent = renderPassInfo.framebufferExtent
+      }));
   }
-
-  core::uint32 index = m_passes.size();
-  Render_Graph_Pass s(*this, index, queue);
-  m_passes.push_back(core::allocateShared<Render_Graph_Pass>(s));
-  m_passes.back()->setName(name);
-  m_passToIndex[name] = index;
-  return m_passes.back();
-}
-
-core::shared_ptr<Render_Texture_Resource> Render_Graph::getTextureResource(const core::string& name)
-{
-  if (m_resourceToIndex.contains(name))
-  {
-    return m_resources[m_resourceToIndex[name]];
-  }
-
-  core::uint32 index = m_resources.size();
-  m_resources.push_back(core::allocateShared<Render_Texture_Resource>());
-  m_resourceToIndex[name] = index;
-  return m_resources.back();
 }
 
 }

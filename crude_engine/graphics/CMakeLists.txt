@@ -1,10 +1,12 @@
-add_subdirectory(vk)
+add_subdirectory(vulkan)
 
 target_sources(crude_engine
   PRIVATE
   gbuffer.cpp
   mesh_buffer.cpp
   render_graph.cpp
+  renderer.cpp
+  renderer_suite.cpp
   renderer_core_system.cpp
   renderer_deferred_gbuffer_color_pass_system.cpp
   renderer_deferred_gbuffer_pbr_pass_system.cpp
@@ -23,6 +25,8 @@ target_sources(crude_engine
   material.ixx
   mesh_buffer.ixx
   render_graph.ixx
+  renderer.ixx
+  renderer_suite.ixx
   renderer_core_system.ixx
   renderer_deferred_gbuffer_color_pass_system.ixx
   renderer_deferred_gbuffer_pbr_pass_system.ixx
