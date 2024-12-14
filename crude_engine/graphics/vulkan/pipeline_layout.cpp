@@ -11,22 +11,21 @@ import crude.core.algorithms;
 namespace crude::gfx::vk
 {
 
-Pipeline_Layout::Pipeline_Layout(core::shared_ptr<const Device> device, core::shared_ptr<const Descriptor_Set_Layout> descriptorSetLayout)
-  : Pipeline_Layout(device, core::vector{ descriptorSetLayout })
-{}
-
 Pipeline_Layout::Pipeline_Layout(core::shared_ptr<const Device>                 device,
-                                 core::shared_ptr<const Descriptor_Set_Layout>  descriptorSetLayout, 
-                                 const Push_Constant_Range_Base&                pushConstantRange)
-  : Pipeline_Layout(device, core::vector { descriptorSetLayout }, core::vector{ pushConstantRange })
+                                 core::shared_ptr<const Descriptor_Set_Layout>  descriptorSetLayout,
+                                 core::optional<Push_Constant_Range_Base>       pushConstantRange)
+  : Pipeline_Layout{
+      device,
+      { descriptorSetLayout },
+      pushConstantRange.has_value() ? core::vector{ pushConstantRange.value() } : core::vector<Push_Constant_Range_Base>{} }
 {}
 
 Pipeline_Layout::Pipeline_Layout(core::shared_ptr<const Device>                                      device,
                                  const core::vector<core::shared_ptr<const Descriptor_Set_Layout>>&  descriptorSetLayouts,
                                  const core::vector<Push_Constant_Range_Base>&                       pushConstantRanges)
-  : m_device(device)
-  , m_setLayouts(descriptorSetLayouts)
-  , m_pushConstantRanges(pushConstantRanges)
+  : m_device{ device }
+  , m_setLayouts{ descriptorSetLayouts }
+  , m_pushConstantRanges{ pushConstantRanges }
 {
   core::vector<VkDescriptorSetLayout> vkDescriptorSetLayoutHandles(m_setLayouts.size());
   core::copyc(m_setLayouts.begin(), m_setLayouts.end(), vkDescriptorSetLayoutHandles.begin(), [](auto& src, auto& dst) -> void {

@@ -12,6 +12,7 @@ export namespace crude::gfx::vk
 class Descriptor_Set_Layout_Binding : public VkDescriptorSetLayoutBinding
 {
 public:
+  Descriptor_Set_Layout_Binding() {}
   Descriptor_Set_Layout_Binding(core::uint32 binding, VkDescriptorType descriptorType, core::uint32 descriptorCount, VkShaderStageFlags stageFlags)
   {
     this->binding            = binding;

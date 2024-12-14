@@ -40,16 +40,6 @@ void Application::initialize()
     .kind(0)
     .run(scripts::freeCameraScriptInputSystemProcess));
 
-  m_rendererImguiPassCtx->layoutsDrawSystems.push_back(
-    m_world.system("ImguiEditorLayoutDrawSystem")
-    .ctx(m_editorLayoutCtx.get())
-    .kind(0)
-    .run(gui::imguiEditorLayoutDrawSystemProcess));
-  m_rendererImguiPassCtx->layoutsDrawSystems.push_back(
-    m_world.system("imguiDemoLayoutDrawSystemProcess")
-    .kind(0)
-    .run(crude::gui::imguiDemoLayoutDrawSystemProcess));
-
   m_freeCameraUpdateSystem = m_world.system<scripts::Free_Camera_Script_Component, scene::Transform>("FreeCameraScriptUpdateSystem")
     .kind(flecs::OnUpdate)
     .run(scripts::freeCameraScriptUpdateSystemProcess);
@@ -57,15 +47,9 @@ void Application::initialize()
   initializeScene(1000.0 / 800.0);
   initializeEditorCamera(1000.0 / 800.0);
 
-  m_editorLayoutCtx->rendererFullscreenPbrPass = m_rendererFullscreenPbrPassCtx;
   m_editorLayoutCtx->sceneNode            = m_sceneNode;
   m_editorLayoutCtx->editorCameraNode     = m_rendererFrameCtx->cameraNode;
   m_editorLayoutCtx->editorSelectedNode   = m_sceneNode;
-  m_editorLayoutCtx->viewportImguiTexture = core::allocateShared<crude::gui::ImGui_Texture_Descriptor_Set>(
-    m_rendererImguiPassCtx,
-    core::allocateShared<gfx::Texture>(
-      core::allocateShared<gfx::vk::Image_View>(m_rendererFullscreenPbrPassCtx->colorAttachment),
-      core::allocateShared<gfx::vk::Sampler>(m_rendererCoreCtx->device, gfx::vk::csamlper_state::gMagMinMipLinearRepeat)));
 
   m_sceneLoaderCtx->callback = [this](flecs::entity newSceneNode) {
     m_sceneNode                           = newSceneNode;

@@ -4,6 +4,12 @@
 #include <vulkan/vulkan.h>
 #include <functional>
 
+
+#include <crude_shaders/deferred_gbuffer.frag.inl>
+#include <crude_shaders/deferred_gbuffer.mesh.inl>
+#include <crude_shaders/deferred_gbuffer.task.inl>
+
+
 module crude.engine;
 
 import crude.core.logger;
@@ -21,6 +27,10 @@ import crude.scene.light;
 
 import crude.gfx.vk.format_helper;
 import crude.gfx.render_graph;
+import crude.gfx.vk.shader_module;
+import crude.gfx.vk.shader_stage_create_info;
+import crude.gfx.vk.push_constant_range;
+import crude.gfx.vk.color_blend_state_create_info;
 
 namespace crude
 {
@@ -61,18 +71,95 @@ void Engine::mainLoop()
   const VkFormat depthFormat = gfx::vk::findDepthFormatSupportedByDevice(m_rendererCoreCtx->device->getPhysicalDevice(), gfx::vk::depth_formats::gDepthCandidates);
 
   crude::gfx::Attachment_Info albedo, normal, metallicRoughness, depth;
+  albedo.blendAttachmentState = gfx::vk::Pipeline_Color_Blend_Attachment_State({
+    .blendEnable         = VK_TRUE,
+    .colorWriteMask      = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT,
+    .srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA,
+    .dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
+    .colorBlendOp        = VK_BLEND_OP_ADD,
+    .srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE,
+    .dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO,
+    .alphaBlendOp        = VK_BLEND_OP_ADD });
   albedo.format            = VK_FORMAT_B8G8R8A8_SRGB;
+ 
   normal.format            = VK_FORMAT_R16G16B16A16_SNORM;
+  normal.blendAttachmentState = gfx::vk::Pipeline_Color_Blend_Attachment_State({
+    .blendEnable         = VK_FALSE,
+    .colorWriteMask      = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT,
+    .srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA,
+    .dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
+    .colorBlendOp        = VK_BLEND_OP_ADD,
+    .srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE,
+    .dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO,
+    .alphaBlendOp        = VK_BLEND_OP_ADD });
+
   metallicRoughness.format = VK_FORMAT_R8G8_UNORM;
+  metallicRoughness.blendAttachmentState = gfx::vk::Pipeline_Color_Blend_Attachment_State({
+    .blendEnable         = VK_FALSE,
+    .colorWriteMask      = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT,
+    .srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA,
+    .dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
+    .colorBlendOp        = VK_BLEND_OP_ADD,
+    .srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE,
+    .dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO,
+    .alphaBlendOp        = VK_BLEND_OP_ADD });
+
   depth.format             = depthFormat;
 
-  crude::gfx::Render_Graph graph(m_rendererCoreCtx->device);
-  auto gbuffer = graph.addPass("gbuffer", VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT);
-  gbuffer->addColorOutput("albedo", albedo);
-  gbuffer->addColorOutput("normal", normal);
-  gbuffer->addColorOutput("pbr", metallicRoughness);
-  gbuffer->setDepthStencilOutput("depth", depth);
+  //core::shared_ptr<gfx::Render_Graph> graph = core::allocateShared<gfx::Render_Pass>(gfx::Render_Graph::Initialize{
+
+  //core::vector<core::shared_ptr<Render_Pass>>  passes;
+  //core::shared_ptr<vk::Device>                 device;
+  //core::uint32                                 swapchainImagesCount;
+
+  //  });
+  
+  struct Per_Mesh
+  {
+    // !TODO Move
+    DirectX::XMFLOAT4X4  modelToWorld;
+    core::uint32         submeshIndex;
+  };
+  core::shared_ptr<gfx::Render_Graph> graph = core::allocateShared<gfx::Render_Graph>(m_rendererCoreCtx->device, 3u);
+  core::shared_ptr<gfx::Render_Pass> gbuffer = graph->addPass(VkExtent2D{ 800, 800 }, VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT);
+  gbuffer->addColorOutput(albedo);
+  gbuffer->addColorOutput(normal);
+  gbuffer->addColorOutput(metallicRoughness);
+  gbuffer->setDepthStencilOutput(depth);
+  gbuffer->setPushConstantRange(gfx::vk::Push_Constant_Range<Per_Mesh>(VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT));
+  gbuffer->setShaderStagesInfo({
+    gfx::vk::Task_Shader_Stage_Create_Info(core::allocateShared<gfx::vk::Shader_Module>(m_rendererCoreCtx->device, crude::shaders::deferred_gbuffer::task), "main"),
+    gfx::vk::Mesh_Shader_Stage_Create_Info(core::allocateShared<gfx::vk::Shader_Module>(m_rendererCoreCtx->device, crude::shaders::deferred_gbuffer::mesh), "main"),
+    gfx::vk::Fragment_Shader_Stage_Create_Info(core::allocateShared<gfx::vk::Shader_Module>(m_rendererCoreCtx->device, crude::shaders::deferred_gbuffer::frag), "main"),
+  });
+  gbuffer->addUniformInput("Per Frame", VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_FRAGMENT_BIT);
+  gbuffer->addStorageInput("Submeshes Draws", VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT);
+  gbuffer->addStorageInput("Vertices", VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT);
+  gbuffer->addStorageInput("Meshlets", VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT);
+  gbuffer->addStorageInput("Primitive Indices", VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT);
+  gbuffer->addStorageInput("Vertex Indices", VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT);
+  gbuffer->addTextureInput("Albedo", VK_SHADER_STAGE_FRAGMENT_BIT);
+  gbuffer->addTextureInput("Metallic-Roughness", VK_SHADER_STAGE_FRAGMENT_BIT);
+  gbuffer->addTextureInput("Normal", VK_SHADER_STAGE_FRAGMENT_BIT);
   gbuffer->build();
+  //auto renderer = Util::make_handle<RenderPassSceneRenderer>();
+
+  //RenderPassSceneRenderer::Setup setup = {};
+  //setup.scene           = &scene_loader.get_scene();
+  //setup.deferred_lights = &deferred_lights;
+  //setup.context         = &context;
+  //setup.suite           = &renderer_suite;
+  //setup.flags           = SCENE_RENDERER_DEFERRED_GBUFFER_BIT;
+  ////if (!config.clustered_lights && config.deferred_clustered_stencil_culling)
+  ////  setup.flags |= SCENE_RENDERER_DEFERRED_GBUFFER_LIGHT_PREPASS_BIT;
+  ////if (config.debug_probes)
+  ////  setup.flags |= SCENE_RENDERER_DEBUG_PROBES_BIT;
+
+  //renderer->init(setup);
+
+  //gbuffer.set_render_pass_interface(std::move(renderer));
+
+  //gbuffer->build();
 
   ////auto lighting = graph.addPass("lighting", VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT);
   ////lighting->addColorOutput("HDR", emissive, "emissive");
@@ -138,66 +225,6 @@ void Engine::initializeRendererSystems()
 {
   m_rendererCoreCtx = core::allocateShared<gfx::Renderer_Core_System_Ctx>(m_windowContainer);
   m_rendererFrameCtx = core::allocateShared<gfx::Renderer_Frame_System_Ctx>(m_rendererCoreCtx);
-  m_rendererDeferredGBufferPbrPassCtx = core::allocateShared<gfx::Renderer_Deferred_GBuffer_PBR_Pass_Systen_Ctx>(m_rendererFrameCtx);
-  m_rendererDeferredGBufferColorPassCtx = core::allocateShared<gfx::Renderer_Deferred_GBuffer_Color_Pass_Systen_Ctx>(m_rendererFrameCtx, m_rendererDeferredGBufferPbrPassCtx->gbuffer);
-  m_rendererPointShadowPassCtx = core::allocateShared<gfx::Renderer_Point_Shadow_Pass_Systen_Ctx>(m_rendererFrameCtx);
-  m_rendererLightCtx = core::allocateShared<gfx::Renderer_Light_Ctx>(m_rendererPointShadowPassCtx);
-  m_rendererFullscreenPbrPassCtx = core::allocateShared<gfx::Renderer_Fullscreen_PBR_Pass_Ctx>(m_rendererFrameCtx, m_rendererLightCtx, m_rendererDeferredGBufferColorPassCtx->gbuffer);
-  m_rendererImguiPassCtx = core::allocateShared<gui::Renderer_ImGui_Pass_System_Ctx>(m_rendererFrameCtx);
-
-  flecs::system pointShadowPassSystem = m_world.system<core::shared_ptr<gfx::Mesh_Buffer>, core::shared_ptr<scene::Mesh>>("PointShadowPassSystem")
-    .ctx(m_rendererPointShadowPassCtx.get())
-    .kind(0)
-    .run(gfx::rendererPointShadowPassSystemProcess);
-
-  flecs::system deferredGBufferColorPassSystem = m_world.system<core::shared_ptr<gfx::Mesh_Buffer>, core::shared_ptr<scene::Mesh>>("DeferredGBufferColorPassSystem")
-    .ctx(m_rendererDeferredGBufferColorPassCtx.get())
-    .kind(0)
-    .with<gfx::Deferred_Node_Pipeline_Color_Flag>()
-    .run(gfx::rendererDeferredGBufferColorPassSystemProcess);
-
-  flecs::system deferredGBufferPbrPassSystem = m_world.system<core::shared_ptr<gfx::Mesh_Buffer>, core::shared_ptr<scene::Mesh>>("DeferredGBufferPbrPassSystem")
-    .ctx(m_rendererDeferredGBufferPbrPassCtx.get())
-    .kind(0)
-    .with<gfx::Deferred_Node_Pipeline_PBR_Flag>()
-    .run(gfx::rendererDeferredGBufferPbrPassSystemProcess);
-
-  m_lightUpdateSystem = m_world.system<scene::Point_Light_CPU>("LightUpdateSystem")
-    .ctx(m_rendererLightCtx.get())
-    .kind(flecs::OnUpdate)
-    .run(gfx::rendererLightUpdateSystemProcess);
-
-  flecs::system frameStartSystem = m_world.system("FrameStartSystem")
-    .ctx(m_rendererFrameCtx.get())
-    .kind(0)
-    .run(gfx::rendererFrameStartSystemProcess);
-
-  flecs::system fullscreenPBRPassSystem = m_world.system("FullscreenPBRPassSystem")
-    .ctx(m_rendererFullscreenPbrPassCtx.get())
-    .kind(0)
-    .run(gfx::rendererFullscreenPBRPassSystemProcess);
-
-  flecs::system imguiPassSystem = m_world.system("ImguiPassSystem")
-    .ctx(m_rendererImguiPassCtx.get())
-    .kind(0)
-    .run(gui::rendererImguiPassSystemProcess);
-
-  flecs::system frameSubmitSystem = m_world.system("FrameSubmitSystem")
-    .ctx(m_rendererFrameCtx.get())
-    .kind(0)
-    .run(gfx::rendererFrameSubmitSystemProcess);
-
-  m_rendererSystem = m_world.system("RendererFrameSubmitSystem")
-    .kind(flecs::PreStore)
-    .run([frameStartSystem, deferredGBufferColorPassSystem, deferredGBufferPbrPassSystem, fullscreenPBRPassSystem, imguiPassSystem, pointShadowPassSystem, frameSubmitSystem](flecs::iter& it) {
-      frameStartSystem.run();
-      pointShadowPassSystem.run();
-      deferredGBufferPbrPassSystem.run();
-      deferredGBufferColorPassSystem.run();
-      fullscreenPBRPassSystem.run();
-      imguiPassSystem.run();
-      frameSubmitSystem.run();
-    });
 }
 
 }

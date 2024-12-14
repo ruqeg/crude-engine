@@ -11,8 +11,7 @@ namespace crude::gfx::vk
 Descriptor_Set_Layout::Descriptor_Set_Layout(core::shared_ptr<const Device>                   device,
                                              core::span<const Descriptor_Set_Layout_Binding>  bindings,
                                              bool                                             pushDescriptor)
-  :
-  m_device(device)
+  : m_device(device)
 {
   VkDescriptorSetLayoutCreateInfo vkCreateInfo;
   vkCreateInfo.sType         = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
@@ -25,7 +24,7 @@ Descriptor_Set_Layout::Descriptor_Set_Layout(core::shared_ptr<const Device>     
   VkResult result = vkCreateDescriptorSetLayout(m_device->getHandle(), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
   vulkanHandleResult(result, "failed to create descriptor set layout");
 }
-  
+
 Descriptor_Set_Layout::~Descriptor_Set_Layout()
 {
   vkDestroyDescriptorSetLayout(m_device->getHandle(), m_handle, getPVkAllocationCallbacks());

@@ -8,33 +8,74 @@ import crude.gfx.vk.image_view;
 import crude.gfx.vk.attachment_description;
 import crude.gfx.vk.image_attachment;
 import crude.gfx.vk.framebuffer;
+import crude.gfx.vk.pipeline;
+import crude.gfx.vk.buffer_descriptor;
+import crude.gfx.vk.image_descriptor;
+import crude.gfx.vk.descriptor_set_layout;
 
 namespace crude::gfx
 {
 
-Render_Pass::Render_Pass(const Initialize& initialize)
-  : m_graph{ initialize.graph }
-  , m_queue{ initialize.queue }
-  , m_name{ initialize.name }
-  , m_framebufferExtent{ initialize.framebufferExtent }
+Render_Pass::Render_Pass(core::shared_ptr<Render_Graph> graph, const VkExtent2D& framebufferExtent, VkPipelineStageFlags queue)
+  : m_graph{ graph }
+  , m_queue{ queue }
+  , m_framebufferExtent{ framebufferExtent }
+{}
+
+void Render_Pass::addColorOutput(const Attachment_Info& colorOutput)
+{
+  m_colorOutputs.push_back(colorOutput);
+}
+
+void Render_Pass::setDepthStencilOutput(const Attachment_Info& depthStencilOutput)
+{
+  m_depthStencilOutput = depthStencilOutput;
+}
+
+void Render_Pass::addUniformInput(const core::string& name, VkShaderStageFlags stageFlags)
+{
+  const core::uint32 binding = m_descriptorLayoutBindings.size();
+  m_descriptorLayoutBindings.push_back(vk::Uniform_Buffer_Descriptor{ binding, stageFlags });
+}
+void Render_Pass::addStorageInput(const core::string& name, VkShaderStageFlags stageFlags)
+{
+  const core::uint32 binding = m_descriptorLayoutBindings.size();
+  m_descriptorLayoutBindings.push_back(vk::Storage_Buffer_Descriptor{ binding, stageFlags });
+}
+
+void Render_Pass::addTextureInput(const core::string& name, VkShaderStageFlags stageFlags)
+{
+  const core::uint32 binding = m_descriptorLayoutBindings.size();
+  m_descriptorLayoutBindings.push_back(vk::Combined_Image_Sampler_Descriptor{ binding, stageFlags });
+}
+
+void Render_Pass::setPushConstantRange(const vk::Push_Constant_Range_Base& pushConstantRange)
+{
+  m_pushConstantRange = pushConstantRange;
+}
+
+void Render_Pass::setShaderStagesInfo(const core::vector<vk::Shader_Stage_Create_Info>& shaderStagesInfo)
+{
+  m_shaderStagesInfo = shaderStagesInfo;
+}
+
+void Render_Pass::build()
+{
+  initializeRenderPass();
+  initializeFramebuffers();
+  initializePipeline();
+}
+
+void Render_Pass::initializeRenderPass()
 {
   core::vector<vk::Attachment_Description> attachmentsDescriptions;
   core::vector<VkImageLayout> colorLayouts;
 
-  attachmentsDescriptions.reserve(initialize.colorAttachments.size());
-  colorLayouts.reserve(initialize.colorAttachments.size());
+  attachmentsDescriptions.reserve(m_colorOutputs.size());
+  colorLayouts.reserve(m_colorOutputs.size());
 
-  for (auto colorAttachment : initialize.colorAttachments)
+  for (auto colorAttachment : m_colorOutputs)
   {
-    m_outputs.push_back(core::allocateShared<vk::Image_View>(core::allocateShared<vk::Color_Attachment>(vk::Color_Attachment::Initialize{
-      .device          = m_graph.m_device,
-      .format          = colorAttachment.format,
-      .extent          = colorAttachment.extent,
-      .sampled         = true,
-      .explicitResolve = false,
-      .mipLevelsCount  = 1u,
-      .samples         = colorAttachment.samples })));
-
     attachmentsDescriptions.push_back(vk::Attachment_Description({
       .format        = colorAttachment.format,
       .samples       = colorAttachment.samples,
@@ -46,20 +87,11 @@ Render_Pass::Render_Pass(const Initialize& initialize)
     colorLayouts.push_back(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
   }
 
-  if (initialize.depthAttachment.has_value())
+  if (m_depthStencilOutput.has_value())
   {
-    m_outputs.push_back(core::allocateShared<vk::Image_View>(core::allocateShared<vk::Depth_Stencil_Attachment>(vk::Depth_Stencil_Attachment::Initialize{
-      .device             = m_graph.m_device,
-      .depthStencilFormat = initialize.depthAttachment.value().format,
-      .extent             = initialize.depthAttachment.value().extent,
-      .sampled            = true,
-      .explicitResolve    = false,
-      .mipLevelsCount     = 1u,
-      .samples            = initialize.depthAttachment.value().samples })));
-
     attachmentsDescriptions.push_back(vk::Attachment_Description({
-      .format        = initialize.depthAttachment.value().format,
-      .samples       = initialize.depthAttachment.value().samples,
+      .format        = m_depthStencilOutput.value().format,
+      .samples       = m_depthStencilOutput.value().samples,
       .colorOp       = vk::attachment_op::gDontCareStore,
       .stenicilOp    = vk::attachment_op::gClearStore,
       .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
@@ -67,7 +99,7 @@ Render_Pass::Render_Pass(const Initialize& initialize)
   }
 
   vk::Subpass_Description subpassDescription;
-  if (initialize.depthAttachment.has_value())
+  if (m_depthStencilOutput.has_value())
   {
     subpassDescription = vk::Subpass_Description{ vk::Subpass_Description::Initialize_Color_Array_Depth { colorLayouts, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL } };
   }
@@ -86,36 +118,146 @@ Render_Pass::Render_Pass(const Initialize& initialize)
     .dependencyFlags = 0 });
 
   m_renderPass = core::allocateShared<vk::Render_Pass>(
-    m_graph.m_device, 
+    m_graph->m_device,
     core::span<const vk::Subpass_Description>{ &subpassDescription, 1u },
     core::span<const vk::Subpass_Dependency>{ &subpassDependency, 1u },
     attachmentsDescriptions);
+}
 
-  m_framebuffers.reserve(m_graph.m_swapchainImagesCount);
-  for (core::uint32 i = 0; i < m_graph.m_swapchainImagesCount; ++i)
+void Render_Pass::initializeFramebuffers()
+{
+  core::vector<core::shared_ptr<vk::Image_View>> outputs;
+  outputs.reserve(m_colorOutputs.size() + m_depthStencilOutput.has_value());
+
+  for (auto colorAttachment : m_colorOutputs)
+  {
+    outputs.push_back(core::allocateShared<vk::Image_View>(core::allocateShared<vk::Color_Attachment>(vk::Color_Attachment::Initialize{
+      .device          = m_graph->m_device,
+      .format          = colorAttachment.format,
+      .extent          = colorAttachment.extent,
+      .sampled         = true,
+      .explicitResolve = false,
+      .mipLevelsCount  = 1u,
+      .samples         = colorAttachment.samples })));
+  }
+
+  if (m_depthStencilOutput.has_value())
+  {
+    outputs.push_back(core::allocateShared<vk::Image_View>(core::allocateShared<vk::Depth_Stencil_Attachment>(vk::Depth_Stencil_Attachment::Initialize{
+      .device             = m_graph->m_device,
+      .depthStencilFormat = m_depthStencilOutput.value().format,
+      .extent             = m_depthStencilOutput.value().extent,
+      .sampled            = true,
+      .explicitResolve    = false,
+      .mipLevelsCount     = 1u,
+      .samples            = m_depthStencilOutput.value().samples })));
+  }
+
+  m_framebuffers.reserve(m_graph->m_swapchainImagesCount);
+  for (core::uint32 i = 0; i < m_graph->m_swapchainImagesCount; ++i)
   {
     m_framebuffers.push_back(core::allocateShared<vk::Framebuffer>(
-      m_graph.m_device, m_renderPass, 
-      m_outputs,
-      m_framebufferExtent, 1u));
+      m_graph->m_device,
+      m_renderPass,
+      outputs,
+      m_framebufferExtent,
+      1u));
   }
 }
 
-Render_Graph::Render_Graph(const Initialize& initialize)
-  : m_device{ initialize.device }
-  , m_swapchainImagesCount{ initialize.swapchainImagesCount }
+void Render_Pass::initializePipeline()
 {
-  for (const Render_Pass_Info& renderPassInfo : initialize.renderPassesInfos)
+  core::vector<vk::Pipeline_Color_Blend_Attachment_State> colorBlendAttachmentsStates;
+  colorBlendAttachmentsStates.reserve(m_colorOutputs.size());
+  for (auto colorAttachment : m_colorOutputs)
   {
-    m_passes.push_back(core::allocateShared<Render_Pass>(Render_Pass::Initialize{
-      .graph             = *this,
-      .queue             = renderPassInfo.queue,
-      .name              = renderPassInfo.name,
-      .colorAttachments  = renderPassInfo.colorAttachments,
-      .depthAttachment   = renderPassInfo.depthAttachment,
-      .framebufferExtent = renderPassInfo.framebufferExtent
-      }));
+    colorBlendAttachmentsStates.push_back(colorAttachment.blendAttachmentState);
   }
+
+  vk::Vertex_Input_State_Create_Info vertexInputStateInfo({
+    .bindings   = {},
+    .attributes = {} });
+
+  vk::Tessellation_State_Create_Info tesselationInfo(3u);
+
+  vk::Input_Assembly_State_Create_Info inputAssembly({
+    .topology               = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
+    .primitiveRestartEnable = false });
+
+  vk::Viewport_State_Create_Info viewportState(1u, 1u);
+
+  vk::Rasterization_State_Create_Info rasterizer({
+    .depthClampEnable        = false,
+    .rasterizerDiscardEnable = false,
+    .polygonMode             = VK_POLYGON_MODE_FILL,
+    .cullMode                = VK_CULL_MODE_BACK_BIT,
+    .frontFace               = VK_FRONT_FACE_COUNTER_CLOCKWISE,
+    .depthBiasEnable         = false,
+    .depthBiasConstantFactor = 0.0f,
+    .depthBiasClamp          = 0.0f,
+    .depthBiasSlopeFactor    = 0.0f,
+    .lineWidth               = 1.f });
+
+  vk::Multisample_State_Create_Info multisampling({
+    .rasterizationSamples  = VK_SAMPLE_COUNT_1_BIT,
+    .sampleShadingEnable   = VK_FALSE,
+    .minSampleShading      = 0.2f,
+    .alphaToCoverageEnable = false,
+    .alphaToOneEnable      = false });
+
+  core::array<VkDynamicState, 2> dynamicStates = {
+    VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR
+  };
+
+  vk::Dynamic_State_Create_Info dynamicStateInfo(dynamicStates);
+
+  vk::Color_Blend_State_Create_Info colorBlendStateInfo({
+    .attachments    = colorBlendAttachmentsStates,
+    .blendConstants = { 0.f, 0.f, 0.f, 0.f },
+    .logicOpEnable  = false,
+    .logicOp        = VK_LOGIC_OP_COPY });
+
+  vk::Depth_Stencil_State_Create_Info depthStencilStateInfo({
+    .depthTestEnable       = true,
+    .depthWriteEnable      = true,
+    .depthCompareOp        = VK_COMPARE_OP_LESS,
+    .depthBoundsTestEnable = false,
+    .stencilTestEnable     = false,
+    .front                 = {},
+    .back                  = {},
+    .minDepthBounds        = 0.0f,
+    .maxDepthBounds        = 1.0f });
+
+  core::shared_ptr<vk::Descriptor_Set_Layout> descriptorSetLayout = core::allocateShared<vk::Descriptor_Set_Layout>(m_graph->m_device, m_descriptorLayoutBindings, true);
+  core::shared_ptr<vk::Pipeline_Layout> pipelineLayout = core::allocateShared<vk::Pipeline_Layout>(m_graph->m_device, descriptorSetLayout, m_pushConstantRange.value());
+
+  m_pipeline = core::allocateShared<vk::Pipeline>(
+    m_graph->m_device,
+    m_renderPass,
+    pipelineLayout,
+    nullptr,
+    m_shaderStagesInfo,
+    vertexInputStateInfo,
+    tesselationInfo,
+    inputAssembly,
+    viewportState,
+    rasterizer,
+    multisampling,
+    depthStencilStateInfo,
+    colorBlendStateInfo,
+    dynamicStateInfo,
+    0u);
+}
+
+Render_Graph::Render_Graph(core::shared_ptr<vk::Device> device, core::uint32 swapchainImagesCount)
+  : m_device{ device }
+  , m_swapchainImagesCount{ swapchainImagesCount }
+{}
+
+core::shared_ptr<Render_Pass> Render_Graph::addPass(const VkExtent2D& framebufferExtent, VkPipelineStageFlags queue)
+{
+  core::shared_ptr<Render_Pass> pass = core::allocateShared<Render_Pass>(std::move(Render_Pass(shared_from_this(), framebufferExtent, queue)));
+  return pass;
 }
 
 }

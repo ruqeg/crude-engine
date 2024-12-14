@@ -17,10 +17,20 @@ class Device;
 class Descriptor_Set_Layout : public Vulkan_Object<VkDescriptorSetLayout>
 {
 public:
+  explicit Descriptor_Set_Layout(core::shared_ptr<const Device>                      device,
+                                 const core::vector<Descriptor_Set_Layout_Binding>&  bindings,
+                                 bool                                                pushDescriptor = false)
+    : Descriptor_Set_Layout{ device, core::span<const Descriptor_Set_Layout_Binding>(bindings), pushDescriptor } {}
+  template<core::size_t N>
+  explicit Descriptor_Set_Layout(core::shared_ptr<const Device>                        device,
+                                 const core::array<Descriptor_Set_Layout_Binding, N>&  bindings,
+                                 bool                                                  pushDescriptor = false)
+    : Descriptor_Set_Layout{ device, core::span<const Descriptor_Set_Layout_Binding>(bindings), pushDescriptor } {}
+  ~Descriptor_Set_Layout();
+private:
   explicit Descriptor_Set_Layout(core::shared_ptr<const Device>                   device,
                                  core::span<const Descriptor_Set_Layout_Binding>  bindings,
                                  bool                                             pushDescriptor = false);
-  ~Descriptor_Set_Layout();
 private:
   core::shared_ptr<const Device>  m_device;
 };

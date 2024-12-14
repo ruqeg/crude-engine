@@ -4,6 +4,7 @@ target_sources(crude_engine
   PRIVATE
   gbuffer.cpp
   mesh_buffer.cpp
+  pipeline_manager.cpp
   render_graph.cpp
   renderer.cpp
   renderer_suite.cpp
@@ -24,6 +25,7 @@ target_sources(crude_engine
   gbuffer.ixx
   material.ixx
   mesh_buffer.ixx
+  pipeline_manager.ixx
   render_graph.ixx
   renderer.ixx
   renderer_suite.ixx
