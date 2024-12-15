@@ -68,7 +68,7 @@ void Engine::mainLoop()
   //  m_world.progress();
   //}
 
-  const VkFormat depthFormat = gfx::vk::findDepthFormatSupportedByDevice(m_rendererCoreCtx->device->getPhysicalDevice(), gfx::vk::depth_formats::gDepthCandidates);
+  const VkFormat depthFormat = gfx::vk::findDepthFormatSupportedByDevice(m_rendererCore->getDevice()->getPhysicalDevice(), gfx::vk::depth_formats::gDepthCandidates);
 
   crude::gfx::Attachment_Info albedo, normal, metallicRoughness, depth;
   albedo.blendAttachmentState = gfx::vk::Pipeline_Color_Blend_Attachment_State({
@@ -120,7 +120,7 @@ void Engine::mainLoop()
     DirectX::XMFLOAT4X4  modelToWorld;
     core::uint32         submeshIndex;
   };
-  core::shared_ptr<gfx::Render_Graph> graph = core::allocateShared<gfx::Render_Graph>(m_rendererCoreCtx->device, 3u);
+  core::shared_ptr<gfx::Render_Graph> graph = core::allocateShared<gfx::Render_Graph>(m_rendererFrame, 3u);
   core::shared_ptr<gfx::Render_Pass> gbuffer = graph->addPass(VkExtent2D{ 800, 800 }, VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT);
   gbuffer->addColorOutput(albedo);
   gbuffer->addColorOutput(normal);
@@ -128,9 +128,9 @@ void Engine::mainLoop()
   gbuffer->setDepthStencilOutput(depth);
   gbuffer->setPushConstantRange(gfx::vk::Push_Constant_Range<Per_Mesh>(VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT));
   gbuffer->setShaderStagesInfo({
-    gfx::vk::Task_Shader_Stage_Create_Info(core::allocateShared<gfx::vk::Shader_Module>(m_rendererCoreCtx->device, crude::shaders::deferred_gbuffer::task), "main"),
-    gfx::vk::Mesh_Shader_Stage_Create_Info(core::allocateShared<gfx::vk::Shader_Module>(m_rendererCoreCtx->device, crude::shaders::deferred_gbuffer::mesh), "main"),
-    gfx::vk::Fragment_Shader_Stage_Create_Info(core::allocateShared<gfx::vk::Shader_Module>(m_rendererCoreCtx->device, crude::shaders::deferred_gbuffer::frag), "main"),
+    gfx::vk::Task_Shader_Stage_Create_Info(core::allocateShared<gfx::vk::Shader_Module>(m_rendererCore->getDevice(), crude::shaders::deferred_gbuffer::task), "main"),
+    gfx::vk::Mesh_Shader_Stage_Create_Info(core::allocateShared<gfx::vk::Shader_Module>(m_rendererCore->getDevice(), crude::shaders::deferred_gbuffer::mesh), "main"),
+    gfx::vk::Fragment_Shader_Stage_Create_Info(core::allocateShared<gfx::vk::Shader_Module>(m_rendererCore->getDevice(), crude::shaders::deferred_gbuffer::frag), "main"),
   });
   gbuffer->addUniformInput("Per Frame", VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_FRAGMENT_BIT);
   gbuffer->addStorageInput("Submeshes Draws", VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT);
@@ -141,13 +141,12 @@ void Engine::mainLoop()
   gbuffer->addTextureInput("Albedo", VK_SHADER_STAGE_FRAGMENT_BIT);
   gbuffer->addTextureInput("Metallic-Roughness", VK_SHADER_STAGE_FRAGMENT_BIT);
   gbuffer->addTextureInput("Normal", VK_SHADER_STAGE_FRAGMENT_BIT);
-
+  core::shared_ptr<gfx::Renderer_Frame> rendererFrame = m_rendererFrame;
   gbuffer->build(m_world
     .system<core::shared_ptr<gfx::Mesh_Buffer>, core::shared_ptr<scene::Mesh>>("gbuffer_pbr_pass_system")
     .kind(0)
-    .with<gfx::Deferred_Node_Pipeline_PBR_Flag>()
-    .run([](flecs::iter& it) {
-      deferredGBufferCtx->perFrameBufferDescriptors[frameCtx->currentFrame].update(frameCtx->getFramePerFrameUniformBuffer());
+    .run([rendererFrame](flecs::iter& it) {
+      perFrameBufferDescriptors[frameCtx->currentFrame].update(frameCtx->getFramePerFrameUniformBuffer());
 
       while (it.next())
       {
@@ -253,7 +252,7 @@ void Engine::initializeSystems()
   m_sceneLoaderSystem = resources::registerSceneLoaderSystem(m_world, m_sceneLoaderCtx);
 
   m_gltfModelLoaderCtx = core::allocateShared<resources::GLTF_Model_Loader_Context>(resources::GLTF_Model_Loader_Context{
-    .transferCommandPool = m_rendererCoreCtx->transferCommandPool,
+    .transferCommandPool = m_rendererCore->getTransferCommandPool(),
     .callback = [](flecs::entity entity) {
       entity.world().add<gfx::Renderer_Light_To_Update_Flag>();
     }});
@@ -284,8 +283,8 @@ void Engine::initializeInputSystems()
 
 void Engine::initializeRendererSystems()
 {
-  m_rendererCoreCtx = core::allocateShared<gfx::Renderer_Core_System_Ctx>(m_windowContainer);
-  m_rendererFrameCtx = core::allocateShared<gfx::Renderer_Frame_System_Ctx>(m_rendererCoreCtx);
+  m_rendererCore = core::allocateShared<gfx::Renderer_Core>(m_windowContainer);
+  m_rendererFrame = core::allocateShared<gfx::Renderer_Frame>(m_rendererCore, 2u);
 }
 
 }

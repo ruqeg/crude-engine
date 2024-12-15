@@ -5,6 +5,7 @@ module;
 
 export module crude.gfx.render_graph;
 
+export import crude.gfx.renderer_frame;
 export import crude.core.std_containers_heap;
 export import crude.core.std_containers_stack;
 export import crude.gfx.vk.subpass_dependency;
@@ -83,13 +84,14 @@ private:
 class Render_Graph : public std::enable_shared_from_this<Render_Graph>
 {
 public:
-  Render_Graph(core::shared_ptr<vk::Device> device, core::uint32 swapchainImagesCount);
+  Render_Graph(core::shared_ptr<Renderer_Frame> rendererFrame, core::uint32 swapchainImagesCount);
 public:
   core::shared_ptr<Render_Pass> addPass(const VkExtent2D& framebufferExtent, VkPipelineStageFlags queue);
 private:
   core::vector<core::weak_ptr<Render_Pass>>  m_passes;
   core::shared_ptr<vk::Device>               m_device;
   core::uint32                               m_swapchainImagesCount;
+  core::shared_ptr<Renderer_Frame>           m_rendererFrame;
 private:
   friend class Render_Pass;
 };

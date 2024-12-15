@@ -7,14 +7,8 @@ target_sources(crude_engine
   pipeline_manager.cpp
   render_graph.cpp
   renderer.cpp
-  renderer_suite.cpp
   renderer_core.cpp
-  renderer_deferred_gbuffer_color_pass_system.cpp
-  renderer_deferred_gbuffer_pbr_pass_system.cpp
   renderer_frame.cpp
-  renderer_fullscreen_pbr_pass_system.cpp
-  renderer_light_system.cpp
-  renderer_point_shadow_pass_system.cpp
   texture.cpp
 )
 
@@ -28,13 +22,7 @@ target_sources(crude_engine
   pipeline_manager.ixx
   render_graph.ixx
   renderer.ixx
-  renderer_suite.ixx
   renderer_core.ixx
-  renderer_deferred_gbuffer_color_pass_system.ixx
-  renderer_deferred_gbuffer_pbr_pass_system.ixx
   renderer_frame.ixx
-  renderer_fullscreen_pbr_pass_system.ixx
-  renderer_light_system.ixx
-  renderer_point_shadow_pass_system.ixx
   texture.ixx
 )

@@ -70,6 +70,8 @@ void Render_Pass::build(flecs::system renderPassSystem)
 
 void Render_Pass::run()
 {
+  core::shared_ptr<Renderer_Frame> frame = m_graph->m_rendererFrame;
+
   core::array<VkClearValue, 4u> clearValues;
   clearValues[0].color = { {0.0f, 0.0f, 0.0f, 1.0f} };
   clearValues[1].color = { {0.0f, 0.5f, 0.0f, 1.0f} };
@@ -80,22 +82,22 @@ void Render_Pass::run()
   renderArea.extent = m_framebufferExtent;
   renderArea.offset = VkOffset2D{ 0, 0 };
 
-  frameCtx->getFrameGraphicsCommandBuffer()->setViewport(vk::Viewport({
+  frame->getGraphicsCommandBuffer()->setViewport(vk::Viewport({
     .x = 0.0f, .y = 0.0f,
     .width = static_cast<core::float32>(m_framebufferExtent.width),
     .height = static_cast<core::float32>(m_framebufferExtent.height),
     .minDepth = 0.0f, .maxDepth = 1.0f }));
 
-  frameCtx->getFrameGraphicsCommandBuffer()->setScissor(vk::Scissor({
+  frame->getGraphicsCommandBuffer()->setScissor(vk::Scissor({
     .offset = { 0, 0 },
-    .extent = coreCtx->swapchain->getExtent() }));
+    .extent = m_framebufferExtent}));
 
-  frameCtx->getFrameGraphicsCommandBuffer()->beginRenderPass(m_renderPass, m_framebuffers[frameCtx->swapchainImageIndex], clearValues, renderArea);
-  frameCtx->getFrameGraphicsCommandBuffer()->bindPipeline(m_pipeline);
+  frame->getGraphicsCommandBuffer()->beginRenderPass(m_renderPass, m_framebuffers[frame->getSwapchainImageIndex()], clearValues, renderArea);
+  frame->getGraphicsCommandBuffer()->bindPipeline(m_pipeline);
 
   m_renderPassSystem.run();
 
-  frameCtx->getFrameGraphicsCommandBuffer()->endRenderPass();
+  frame->getGraphicsCommandBuffer()->endRenderPass();
 }
 
 void Render_Pass::initializeRenderPass()
@@ -281,8 +283,9 @@ void Render_Pass::initializePipeline()
     0u);
 }
 
-Render_Graph::Render_Graph(core::shared_ptr<vk::Device> device, core::uint32 swapchainImagesCount)
-  : m_device{ device }
+Render_Graph::Render_Graph(core::shared_ptr<Renderer_Frame> rendererFrame, core::uint32 swapchainImagesCount)
+  : m_rendererFrame{ rendererFrame }
+  , m_device{ rendererFrame->getCore()->getDevice() }
   , m_swapchainImagesCount{ swapchainImagesCount }
 {}
 

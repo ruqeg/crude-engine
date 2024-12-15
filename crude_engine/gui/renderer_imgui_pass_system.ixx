@@ -11,22 +11,14 @@ export module crude.gui.renderer_imgui_pass_system;
 
 export import crude.core.std_containers_stack;
 export import crude.core.std_containers_heap;
-export import crude.gfx.renderer_frame_system;
+export import crude.gfx.renderer_frame;
 
 export namespace crude::gfx::vk
 {
 
 class Render_Pass;
 class Framebuffer;
-class Device;
 class Descriptor_Pool;
-
-}
-
-export namespace crude::gfx
-{
-
-class Renderer_Frame_System_Ctx;
 
 }
 
@@ -36,9 +28,9 @@ export namespace crude::gui
 struct Renderer_ImGui_Pass_System_Ctx
 {
 public:
-  explicit Renderer_ImGui_Pass_System_Ctx(core::shared_ptr<gfx::Renderer_Frame_System_Ctx> frameCtx);
+  explicit Renderer_ImGui_Pass_System_Ctx(core::shared_ptr<gfx::Renderer_Frame> frame);
   ~Renderer_ImGui_Pass_System_Ctx();
-  core::shared_ptr<gfx::Renderer_Frame_System_Ctx>      frameCtx;
+  core::shared_ptr<gfx::Renderer_Frame>                 frame;
   core::vector<flecs::system>                           layoutsDrawSystems;
   core::shared_ptr<gfx::vk::Render_Pass>                renderPass;
   core::shared_ptr<gfx::vk::Descriptor_Pool>            descriptorPool;
