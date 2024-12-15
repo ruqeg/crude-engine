@@ -141,7 +141,68 @@ void Engine::mainLoop()
   gbuffer->addTextureInput("Albedo", VK_SHADER_STAGE_FRAGMENT_BIT);
   gbuffer->addTextureInput("Metallic-Roughness", VK_SHADER_STAGE_FRAGMENT_BIT);
   gbuffer->addTextureInput("Normal", VK_SHADER_STAGE_FRAGMENT_BIT);
-  gbuffer->build();
+
+  gbuffer->build(m_world
+    .system<core::shared_ptr<gfx::Mesh_Buffer>, core::shared_ptr<scene::Mesh>>("gbuffer_pbr_pass_system")
+    .kind(0)
+    .with<gfx::Deferred_Node_Pipeline_PBR_Flag>()
+    .run([](flecs::iter& it) {
+      deferredGBufferCtx->perFrameBufferDescriptors[frameCtx->currentFrame].update(frameCtx->getFramePerFrameUniformBuffer());
+
+      while (it.next())
+      {
+        auto meshBuffers = it.field<core::shared_ptr<gfx::Mesh_Buffer>>(0);
+        auto meshes = it.field<core::shared_ptr<scene::Mesh>>(1);
+
+        for (auto i : it)
+        {
+          deferredGBufferCtx->submeshesDrawsBufferDescriptor.update(meshBuffers[i]->getSubmeshesDrawsBuffer(), meshBuffers[i]->getSubmeshesDrawsBuffer()->getSize());
+          deferredGBufferCtx->vertexBufferDescriptor.update(meshBuffers[i]->getVerticesBuffer(), meshBuffers[i]->getVerticesBuffer()->getSize());
+          deferredGBufferCtx->meshletBufferDescriptor.update(meshBuffers[i]->getMeshletsBuffer(), meshBuffers[i]->getMeshletsBuffer()->getSize());
+          deferredGBufferCtx->primitiveIndicesBufferDescriptor.update(meshBuffers[i]->getPrimitiveIndicesBuffer(), meshBuffers[i]->getPrimitiveIndicesBuffer()->getSize());
+          deferredGBufferCtx->vertexIndicesBufferDescriptor.update(meshBuffers[i]->getVertexIndicesBuffer(), meshBuffers[i]->getVertexIndicesBuffer()->getSize());
+
+          Per_Mesh perMesh;
+          if (it.entity(i).has<scene::Transform>())
+          {
+            auto transform = it.entity(i).get_ref<scene::Transform>();
+            perMesh.modelToWorld = transform->getNodeToWorldFloat4x4();
+          }
+
+          for (core::uint32 submeshIndex = 0u; submeshIndex < meshes[i]->submeshes.size(); ++submeshIndex)
+          {
+            const scene::Sub_Mesh& submesh = meshes[i]->submeshes[submeshIndex];
+            // !TODO ???
+            if (!submesh.material || !submesh.material->albedo || !submesh.material->metallicRoughness || !submesh.material->normal)
+            {
+              continue;
+            }
+            deferredGBufferCtx->submeshAlbedoDescriptors[frameCtx->currentFrame].update(submesh.material->albedo->getImageView(), submesh.material->albedo->getSampler());
+            deferredGBufferCtx->submeshMetallicRoughnessDescriptors[frameCtx->currentFrame].update(submesh.material->metallicRoughness->getImageView(), submesh.material->metallicRoughness->getSampler());
+            deferredGBufferCtx->submeshNormalDescriptors[frameCtx->currentFrame].update(submesh.material->normal->getImageView(), submesh.material->normal->getSampler());
+
+            core::array<VkWriteDescriptorSet, 9u> descriptorWrites;
+            deferredGBufferCtx->perFrameBufferDescriptors[frameCtx->currentFrame].write(descriptorWrites[0]);
+            deferredGBufferCtx->submeshAlbedoDescriptors[frameCtx->currentFrame].write(descriptorWrites[1]);
+            deferredGBufferCtx->submeshMetallicRoughnessDescriptors[frameCtx->currentFrame].write(descriptorWrites[2]);
+            deferredGBufferCtx->submeshNormalDescriptors[frameCtx->currentFrame].write(descriptorWrites[3]);
+            deferredGBufferCtx->submeshesDrawsBufferDescriptor.write(descriptorWrites[4]);
+            deferredGBufferCtx->vertexBufferDescriptor.write(descriptorWrites[5]);
+            deferredGBufferCtx->meshletBufferDescriptor.write(descriptorWrites[6]);
+            deferredGBufferCtx->primitiveIndicesBufferDescriptor.write(descriptorWrites[7]);
+            deferredGBufferCtx->vertexIndicesBufferDescriptor.write(descriptorWrites[8]);
+
+            frameCtx->getFrameGraphicsCommandBuffer()->pushDescriptorSet(deferredGBufferCtx->pipeline, descriptorWrites);
+            perMesh.submeshIndex = submeshIndex;
+            frameCtx->getFrameGraphicsCommandBuffer()->pushConstant(deferredGBufferCtx->pipeline->getPipelineLayout(), perMesh);
+
+            frameCtx->getFrameGraphicsCommandBuffer()->drawMeshTasks(1);
+          }
+        }
+      }
+      }));
+
+  gbuffer->run();
   //auto renderer = Util::make_handle<RenderPassSceneRenderer>();
 
   //RenderPassSceneRenderer::Setup setup = {};

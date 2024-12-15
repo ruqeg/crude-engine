@@ -1,4 +1,5 @@
 #include <vulkan/vulkan.hpp>
+#include <flecs.h>
 
 module crude.gfx.render_graph;
 
@@ -59,11 +60,42 @@ void Render_Pass::setShaderStagesInfo(const core::vector<vk::Shader_Stage_Create
   m_shaderStagesInfo = shaderStagesInfo;
 }
 
-void Render_Pass::build()
+void Render_Pass::build(flecs::system renderPassSystem)
 {
+  m_renderPassSystem = renderPassSystem;
   initializeRenderPass();
   initializeFramebuffers();
   initializePipeline();
+}
+
+void Render_Pass::run()
+{
+  core::array<VkClearValue, 4u> clearValues;
+  clearValues[0].color = { {0.0f, 0.0f, 0.0f, 1.0f} };
+  clearValues[1].color = { {0.0f, 0.5f, 0.0f, 1.0f} };
+  clearValues[2].color = { {0.0f, 1.0f, 0.0f, 1.0f} };
+  clearValues[3].depthStencil = { 1.0f, 0 };
+
+  VkRect2D renderArea;
+  renderArea.extent = m_framebufferExtent;
+  renderArea.offset = VkOffset2D{ 0, 0 };
+
+  frameCtx->getFrameGraphicsCommandBuffer()->setViewport(vk::Viewport({
+    .x = 0.0f, .y = 0.0f,
+    .width = static_cast<core::float32>(m_framebufferExtent.width),
+    .height = static_cast<core::float32>(m_framebufferExtent.height),
+    .minDepth = 0.0f, .maxDepth = 1.0f }));
+
+  frameCtx->getFrameGraphicsCommandBuffer()->setScissor(vk::Scissor({
+    .offset = { 0, 0 },
+    .extent = coreCtx->swapchain->getExtent() }));
+
+  frameCtx->getFrameGraphicsCommandBuffer()->beginRenderPass(m_renderPass, m_framebuffers[frameCtx->swapchainImageIndex], clearValues, renderArea);
+  frameCtx->getFrameGraphicsCommandBuffer()->bindPipeline(m_pipeline);
+
+  m_renderPassSystem.run();
+
+  frameCtx->getFrameGraphicsCommandBuffer()->endRenderPass();
 }
 
 void Render_Pass::initializeRenderPass()

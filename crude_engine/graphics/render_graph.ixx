@@ -1,6 +1,7 @@
 module;
 
 #include <vulkan/vulkan.hpp>
+#include <flecs.h>
 
 export module crude.gfx.render_graph;
 
@@ -55,22 +56,24 @@ public:
   void addTextureInput(const core::string& name, VkShaderStageFlags stageFlags);
   void setPushConstantRange(const vk::Push_Constant_Range_Base& pushConstantRange);
   void setShaderStagesInfo(const core::vector<vk::Shader_Stage_Create_Info>& shaderStagesInfo);
-  void build();
+  void build(flecs::system renderPassSystem);
+  void run();
 private:
   void initializeRenderPass();
   void initializeFramebuffers();
   void initializePipeline();
 private:
+  flecs::system                                            m_renderPassSystem;
   core::shared_ptr<Render_Graph>                           m_graph;
   VkPipelineStageFlags                                     m_queue;
   core::string                                             m_name;
   core::vector<Attachment_Info>                            m_colorOutputs;
   core::optional<Attachment_Info>                          m_depthStencilOutput;
-  core::shared_ptr<vk::Render_Pass>                        m_renderPass;
+  core::shared_ptr<vk::Pipeline>                           m_pipeline;
   core::vector<core::shared_ptr<vk::Framebuffer>>          m_framebuffers;
+  core::shared_ptr<vk::Render_Pass>                        m_renderPass;
   VkExtent2D                                               m_framebufferExtent;
   core::vector<vk::Descriptor_Set_Layout_Binding>          m_descriptorLayoutBindings;
-  core::shared_ptr<vk::Pipeline>                           m_pipeline;
   core::optional<vk::Push_Constant_Range_Base>             m_pushConstantRange;
   core::vector<vk::Shader_Stage_Create_Info>               m_shaderStagesInfo;
 private:

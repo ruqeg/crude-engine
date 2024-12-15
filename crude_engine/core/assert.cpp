@@ -1,21 +1,16 @@
 module crude.core.assert;
 
 #include <stdexcept>
+#include <assert.h>
 
 import crude.core.debug;
 
 namespace crude::core
 {
 
-void assert(bool assertion) noexcept
+void (assert)(bool assertion) noexcept
 {
-  if constexpr (gDebug)
-  {
-    if (!assertion)
-    {
-      throw std::exception();
-    }
-  }
+  assert(assertion);
 }
 
 }
