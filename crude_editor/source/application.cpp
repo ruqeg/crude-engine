@@ -48,7 +48,6 @@ void Application::initialize()
   initializeEditorCamera(1000.0 / 800.0);
 
   m_editorLayoutCtx->sceneNode            = m_sceneNode;
-  m_editorLayoutCtx->editorCameraNode     = m_rendererFrameCtx->cameraNode;
   m_editorLayoutCtx->editorSelectedNode   = m_sceneNode;
 
   m_sceneLoaderCtx->callback = [this](flecs::entity newSceneNode) {
@@ -95,7 +94,6 @@ void Application::initializeEditorCamera(core::float32 aspectRatio)
     return transform;
     }());
   cameraNode.set<scripts::Free_Camera_Script_Component>(scripts::Free_Camera_Script_Component());
-  m_rendererFrameCtx->cameraNode = cameraNode;
 }
 
 }

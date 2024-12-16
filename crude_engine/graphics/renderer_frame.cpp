@@ -99,8 +99,10 @@ void Renderer_Frame::endFrame()
 }
 
 core::shared_ptr<Renderer_Core> Renderer_Frame::getCore() { return m_core; }
+core::uint32 Renderer_Frame::getFramesCount() { return m_framesCount; }
 core::shared_ptr<vk::Command_Buffer> Renderer_Frame::getGraphicsCommandBuffer() { return m_graphicsCommandBuffers[m_currentFrame]; }
 core::uint32 Renderer_Frame::getSwapchainImageIndex() { return m_swapchainImageIndex; }
+core::uint32 Renderer_Frame::getCurrentFrame() { return m_currentFrame; }
 core::shared_ptr<vk::Semaphore> Renderer_Frame::getImageAvailableSemaphore() { return m_imageAvailableSemaphores[m_currentFrame]; }
 core::shared_ptr<vk::Semaphore> Renderer_Frame::getRenderFinishedSemaphore() { return m_renderFinishedSemaphores[m_currentFrame]; }
 core::shared_ptr<vk::Fence> Renderer_Frame::getInFlightFence() { return m_inFlightFences[m_currentFrame]; };

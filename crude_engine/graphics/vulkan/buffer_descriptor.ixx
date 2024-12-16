@@ -19,7 +19,7 @@ class Buffer_Descriptor : public Descriptor_Set_Layout_Binding
 {
 public:
   void write(VkWriteDescriptorSet& writeDescriptorSet);
-  void updateBase(core::shared_ptr<const Buffer> buffer, VkDeviceSize range, VkDeviceSize offset);
+  void updateBase(core::shared_ptr<const Buffer> buffer, VkDeviceSize range, VkDeviceSize offset = 0);
   void clear();
 protected:
   explicit Buffer_Descriptor(core::uint32 binding, VkDescriptorType descriptorType, VkShaderStageFlags stageFlags);

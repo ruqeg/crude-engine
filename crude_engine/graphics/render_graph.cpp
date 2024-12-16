@@ -13,6 +13,8 @@ import crude.gfx.vk.pipeline;
 import crude.gfx.vk.buffer_descriptor;
 import crude.gfx.vk.image_descriptor;
 import crude.gfx.vk.descriptor_set_layout;
+import crude.gfx.vk.command_buffer;
+import crude.gfx.vk.pipeline;
 
 namespace crude::gfx
 {
@@ -33,21 +35,27 @@ void Render_Pass::setDepthStencilOutput(const Attachment_Info& depthStencilOutpu
   m_depthStencilOutput = depthStencilOutput;
 }
 
-void Render_Pass::addUniformInput(const core::string& name, VkShaderStageFlags stageFlags)
+core::shared_ptr<vk::Buffer_Descriptor[]> Render_Pass::addUniformInput(const core::string& name, VkShaderStageFlags stageFlags)
 {
   const core::uint32 binding = m_descriptorLayoutBindings.size();
   m_descriptorLayoutBindings.push_back(vk::Uniform_Buffer_Descriptor{ binding, stageFlags });
+  m_bindingToFramesBufferDescriptors[binding] = core::allocateShared<vk::Buffer_Descriptor[]>(m_graph->m_rendererFrame->getFramesCount());
+  return m_bindingToFramesBufferDescriptors[binding];
 }
-void Render_Pass::addStorageInput(const core::string& name, VkShaderStageFlags stageFlags)
+core::shared_ptr<vk::Buffer_Descriptor[]> Render_Pass::addStorageInput(const core::string& name, VkShaderStageFlags stageFlags)
 {
   const core::uint32 binding = m_descriptorLayoutBindings.size();
   m_descriptorLayoutBindings.push_back(vk::Storage_Buffer_Descriptor{ binding, stageFlags });
+  m_bindingToFramesBufferDescriptors[binding] = core::allocateShared<vk::Buffer_Descriptor[]>(m_graph->m_rendererFrame->getFramesCount());
+  return m_bindingToFramesBufferDescriptors[binding];
 }
 
-void Render_Pass::addTextureInput(const core::string& name, VkShaderStageFlags stageFlags)
+core::shared_ptr<vk::Image_Descriptor[]> Render_Pass::addTextureInput(const core::string& name, VkShaderStageFlags stageFlags)
 {
   const core::uint32 binding = m_descriptorLayoutBindings.size();
   m_descriptorLayoutBindings.push_back(vk::Combined_Image_Sampler_Descriptor{ binding, stageFlags });
+  m_bindingToFramesImageDescriptors[binding] = core::allocateShared<vk::Image_Descriptor[]>(m_graph->m_rendererFrame->getFramesCount());
+  return m_bindingToFramesImageDescriptors[binding];
 }
 
 void Render_Pass::setPushConstantRange(const vk::Push_Constant_Range_Base& pushConstantRange)
@@ -58,6 +66,33 @@ void Render_Pass::setPushConstantRange(const vk::Push_Constant_Range_Base& pushC
 void Render_Pass::setShaderStagesInfo(const core::vector<vk::Shader_Stage_Create_Info>& shaderStagesInfo)
 {
   m_shaderStagesInfo = shaderStagesInfo;
+}
+
+void Render_Pass::pushDescriptorSet()
+{
+  const core::uint32 currentFrame = m_graph->m_rendererFrame->getCurrentFrame();
+
+  core::vector<VkWriteDescriptorSet> descriptorWrites;
+  descriptorWrites.resize(m_descriptorLayoutBindings.size());
+  for (core::uint32 i = 0; i < descriptorWrites.size(); ++i)
+  {
+    core::uint32 binding = m_descriptorLayoutBindings[i].binding;
+    if (m_bindingToFramesBufferDescriptors.contains(binding))
+    {
+      m_bindingToFramesBufferDescriptors[binding][currentFrame].write(descriptorWrites[i]);
+    }
+    else if (m_bindingToFramesImageDescriptors.contains(binding))
+    {
+      m_bindingToFramesImageDescriptors[binding][currentFrame].write(descriptorWrites[i]);
+    }
+  }
+
+  m_graph->m_rendererFrame->getGraphicsCommandBuffer()->pushDescriptorSet(m_pipeline, descriptorWrites);
+}
+
+void Render_Pass::pushConstantBase(core::span<const core::byte> data, core::uint32 offset)
+{
+  m_graph->m_rendererFrame->getGraphicsCommandBuffer()->pushConstantBase(m_pipeline->getPipelineLayout(), data, offset);
 }
 
 void Render_Pass::build(flecs::system renderPassSystem)

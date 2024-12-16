@@ -24,7 +24,6 @@ import crude.gui.imgui_texture_descriptor_set;
 import crude.scripts.free_camera_script;
 import crude.core.std_containers_heap;
 import crude.resources.scene_loader_saver_system;
-import crude.gfx.renderer_fullscreen_pbr_pass_system;
 
 // TODO refactor this code in some day, but for now...
 
@@ -101,7 +100,7 @@ void imguiEditorLayoutDrawSystemProcess(flecs::iter& it)
   drawViewportWindow(editorLayoutCtx);
   drawSceneWindow(editorLayoutCtx);
 
-  ImGui::Begin("Debug");
+ /* ImGui::Begin("Debug");
   if (ImGui::CollapsingHeader("Shading Model"))
   {
     gfx::PBRDebug& pbrDebug = editorLayoutCtx->rendererFullscreenPbrPass->pbrDebug;
@@ -134,7 +133,7 @@ void imguiEditorLayoutDrawSystemProcess(flecs::iter& it)
       ImGui::TreePop();
     }
   }
-  ImGui::End();
+  ImGui::End();*/
 }
 
 void preDraw(Imgui_Editor_Layout_Draw_Ctx* layoutCtx)

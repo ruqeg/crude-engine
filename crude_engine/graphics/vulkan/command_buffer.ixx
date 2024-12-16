@@ -69,6 +69,7 @@ public:
                           core::span<core::uint32>                      dynamicOffsets = {});
   template<class T>
   void pushConstant(core::shared_ptr<const Pipeline_Layout> layout, const T& constant, core::uint32 offset = 0);
+  void pushConstantBase(core::shared_ptr<const Pipeline_Layout> layout, core::span<const core::byte> data, core::uint32 offset);
   void draw(core::uint32 vertexCount, core::uint32 instanceCount = 0u, core::uint32 firstVertex = 0u, core::uint32 firstInstance = 0u);
   void drawIndexed(core::uint32 indexCount, core::uint32 instanceCount, core::uint32 firstIndex = 0u, core::int32 vertexOffset = 0u, core::uint32 firstInstance = 0u);
   void drawMeshTasks(core::uint32 groupCountX, core::uint32 groupCountY = 1u, core::uint32 groupCountZ = 1u);
@@ -76,8 +77,6 @@ public:
 public:
   core::shared_ptr<const Device> getDevice() const;
   core::shared_ptr<Command_Pool> getCommandPool();
-private:
-  void pushConstantBase(core::shared_ptr<const Pipeline_Layout> layout, core::span<const core::byte> data, core::uint32 offset);
 private:
   const core::shared_ptr<Command_Pool>          m_commandPool;
   core::optional<core::shared_ptr<Render_Pass>> m_renderPass;

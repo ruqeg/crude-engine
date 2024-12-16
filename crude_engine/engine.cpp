@@ -31,6 +31,11 @@ import crude.gfx.vk.shader_module;
 import crude.gfx.vk.shader_stage_create_info;
 import crude.gfx.vk.push_constant_range;
 import crude.gfx.vk.color_blend_state_create_info;
+import crude.gfx.vk.image_descriptor;
+import crude.gfx.mesh_buffer;
+import crude.gfx.material;
+import crude.gfx.camera_ubo;
+import crude.gfx.texture;
 
 namespace crude
 {
@@ -71,6 +76,7 @@ void Engine::mainLoop()
   const VkFormat depthFormat = gfx::vk::findDepthFormatSupportedByDevice(m_rendererCore->getDevice()->getPhysicalDevice(), gfx::vk::depth_formats::gDepthCandidates);
 
   crude::gfx::Attachment_Info albedo, normal, metallicRoughness, depth;
+  albedo.format = VK_FORMAT_B8G8R8A8_SRGB;
   albedo.blendAttachmentState = gfx::vk::Pipeline_Color_Blend_Attachment_State({
     .blendEnable         = VK_TRUE,
     .colorWriteMask      = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT,
@@ -80,9 +86,8 @@ void Engine::mainLoop()
     .srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE,
     .dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO,
     .alphaBlendOp        = VK_BLEND_OP_ADD });
-  albedo.format            = VK_FORMAT_B8G8R8A8_SRGB;
  
-  normal.format            = VK_FORMAT_R16G16B16A16_SNORM;
+  normal.format = VK_FORMAT_R16G16B16A16_SNORM;
   normal.blendAttachmentState = gfx::vk::Pipeline_Color_Blend_Attachment_State({
     .blendEnable         = VK_FALSE,
     .colorWriteMask      = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT,
@@ -132,21 +137,32 @@ void Engine::mainLoop()
     gfx::vk::Mesh_Shader_Stage_Create_Info(core::allocateShared<gfx::vk::Shader_Module>(m_rendererCore->getDevice(), crude::shaders::deferred_gbuffer::mesh), "main"),
     gfx::vk::Fragment_Shader_Stage_Create_Info(core::allocateShared<gfx::vk::Shader_Module>(m_rendererCore->getDevice(), crude::shaders::deferred_gbuffer::frag), "main"),
   });
-  gbuffer->addUniformInput("Per Frame", VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_FRAGMENT_BIT);
-  gbuffer->addStorageInput("Submeshes Draws", VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT);
-  gbuffer->addStorageInput("Vertices", VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT);
-  gbuffer->addStorageInput("Meshlets", VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT);
-  gbuffer->addStorageInput("Primitive Indices", VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT);
-  gbuffer->addStorageInput("Vertex Indices", VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT);
-  gbuffer->addTextureInput("Albedo", VK_SHADER_STAGE_FRAGMENT_BIT);
-  gbuffer->addTextureInput("Metallic-Roughness", VK_SHADER_STAGE_FRAGMENT_BIT);
-  gbuffer->addTextureInput("Normal", VK_SHADER_STAGE_FRAGMENT_BIT);
-  core::shared_ptr<gfx::Renderer_Frame> rendererFrame = m_rendererFrame;
+  auto perFramesDesc = gbuffer->addUniformInput("Per Frame", VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_FRAGMENT_BIT);
+  auto submeshesDrawsDesc = gbuffer->addStorageInput("Submeshes Draws", VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT);
+  auto verticesDesc = gbuffer->addStorageInput("Vertices", VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT);
+  auto meshletsDesc = gbuffer->addStorageInput("Meshlets", VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT);
+  auto primitiveIndicesDesc = gbuffer->addStorageInput("Primitive Indices", VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT);
+  auto vertexIndicesDesc = gbuffer->addStorageInput("Vertex Indices", VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT);
+  auto albedoDesc = gbuffer->addTextureInput("Albedo", VK_SHADER_STAGE_FRAGMENT_BIT);
+  auto metallicRoughnessDesc = gbuffer->addTextureInput("Metallic-Roughness", VK_SHADER_STAGE_FRAGMENT_BIT);
+  auto normalDesc = gbuffer->addTextureInput("Normal", VK_SHADER_STAGE_FRAGMENT_BIT);
+
+  struct Per_Frame
+  {
+    gfx::Camera_UBO camera;
+  };
+  core::vector<core::shared_ptr<gfx::vk::Uniform_Buffer<Per_Frame>>> perFrameUniformBuffers =
+  {
+    core::allocateShared<gfx::vk::Uniform_Buffer<Per_Frame>>(m_rendererCore->getDevice()),
+    core::allocateShared<gfx::vk::Uniform_Buffer<Per_Frame>>(m_rendererCore->getDevice()),
+    core::allocateShared<gfx::vk::Uniform_Buffer<Per_Frame>>(m_rendererCore->getDevice())
+  };
   gbuffer->build(m_world
     .system<core::shared_ptr<gfx::Mesh_Buffer>, core::shared_ptr<scene::Mesh>>("gbuffer_pbr_pass_system")
     .kind(0)
-    .run([rendererFrame](flecs::iter& it) {
-      perFrameBufferDescriptors[frameCtx->currentFrame].update(frameCtx->getFramePerFrameUniformBuffer());
+    .run([rendererFrame = m_rendererFrame, gbuffer, perFrameUniformBuffers, perFramesDesc, submeshesDrawsDesc, verticesDesc, meshletsDesc, primitiveIndicesDesc, vertexIndicesDesc, albedoDesc, metallicRoughnessDesc, normalDesc](flecs::iter& it) {
+      const core::uint32 currentFrame = rendererFrame->getCurrentFrame();
+      perFramesDesc[currentFrame].updateBase(perFrameUniformBuffers[currentFrame], perFrameUniformBuffers[currentFrame]->getSize());
 
       while (it.next())
       {
@@ -155,11 +171,11 @@ void Engine::mainLoop()
 
         for (auto i : it)
         {
-          deferredGBufferCtx->submeshesDrawsBufferDescriptor.update(meshBuffers[i]->getSubmeshesDrawsBuffer(), meshBuffers[i]->getSubmeshesDrawsBuffer()->getSize());
-          deferredGBufferCtx->vertexBufferDescriptor.update(meshBuffers[i]->getVerticesBuffer(), meshBuffers[i]->getVerticesBuffer()->getSize());
-          deferredGBufferCtx->meshletBufferDescriptor.update(meshBuffers[i]->getMeshletsBuffer(), meshBuffers[i]->getMeshletsBuffer()->getSize());
-          deferredGBufferCtx->primitiveIndicesBufferDescriptor.update(meshBuffers[i]->getPrimitiveIndicesBuffer(), meshBuffers[i]->getPrimitiveIndicesBuffer()->getSize());
-          deferredGBufferCtx->vertexIndicesBufferDescriptor.update(meshBuffers[i]->getVertexIndicesBuffer(), meshBuffers[i]->getVertexIndicesBuffer()->getSize());
+          submeshesDrawsDesc[currentFrame].updateBase(meshBuffers[i]->getSubmeshesDrawsBuffer(), meshBuffers[i]->getSubmeshesDrawsBuffer()->getSize());
+          verticesDesc[currentFrame].updateBase(meshBuffers[i]->getVerticesBuffer(), meshBuffers[i]->getVerticesBuffer()->getSize());
+          meshletsDesc[currentFrame].updateBase(meshBuffers[i]->getMeshletsBuffer(), meshBuffers[i]->getMeshletsBuffer()->getSize());
+          primitiveIndicesDesc[currentFrame].updateBase(meshBuffers[i]->getPrimitiveIndicesBuffer(), meshBuffers[i]->getPrimitiveIndicesBuffer()->getSize());
+          vertexIndicesDesc[currentFrame].updateBase(meshBuffers[i]->getVertexIndicesBuffer(), meshBuffers[i]->getVertexIndicesBuffer()->getSize());
 
           Per_Mesh perMesh;
           if (it.entity(i).has<scene::Transform>())
@@ -176,26 +192,15 @@ void Engine::mainLoop()
             {
               continue;
             }
-            deferredGBufferCtx->submeshAlbedoDescriptors[frameCtx->currentFrame].update(submesh.material->albedo->getImageView(), submesh.material->albedo->getSampler());
-            deferredGBufferCtx->submeshMetallicRoughnessDescriptors[frameCtx->currentFrame].update(submesh.material->metallicRoughness->getImageView(), submesh.material->metallicRoughness->getSampler());
-            deferredGBufferCtx->submeshNormalDescriptors[frameCtx->currentFrame].update(submesh.material->normal->getImageView(), submesh.material->normal->getSampler());
+            albedoDesc[rendererFrame->getCurrentFrame()].update(submesh.material->albedo->getImageView(), submesh.material->albedo->getSampler());
+            metallicRoughnessDesc[rendererFrame->getCurrentFrame()].update(submesh.material->metallicRoughness->getImageView(), submesh.material->metallicRoughness->getSampler());
+            normalDesc[rendererFrame->getCurrentFrame()].update(submesh.material->normal->getImageView(), submesh.material->normal->getSampler());
 
-            core::array<VkWriteDescriptorSet, 9u> descriptorWrites;
-            deferredGBufferCtx->perFrameBufferDescriptors[frameCtx->currentFrame].write(descriptorWrites[0]);
-            deferredGBufferCtx->submeshAlbedoDescriptors[frameCtx->currentFrame].write(descriptorWrites[1]);
-            deferredGBufferCtx->submeshMetallicRoughnessDescriptors[frameCtx->currentFrame].write(descriptorWrites[2]);
-            deferredGBufferCtx->submeshNormalDescriptors[frameCtx->currentFrame].write(descriptorWrites[3]);
-            deferredGBufferCtx->submeshesDrawsBufferDescriptor.write(descriptorWrites[4]);
-            deferredGBufferCtx->vertexBufferDescriptor.write(descriptorWrites[5]);
-            deferredGBufferCtx->meshletBufferDescriptor.write(descriptorWrites[6]);
-            deferredGBufferCtx->primitiveIndicesBufferDescriptor.write(descriptorWrites[7]);
-            deferredGBufferCtx->vertexIndicesBufferDescriptor.write(descriptorWrites[8]);
-
-            frameCtx->getFrameGraphicsCommandBuffer()->pushDescriptorSet(deferredGBufferCtx->pipeline, descriptorWrites);
             perMesh.submeshIndex = submeshIndex;
-            frameCtx->getFrameGraphicsCommandBuffer()->pushConstant(deferredGBufferCtx->pipeline->getPipelineLayout(), perMesh);
+            gbuffer->pushDescriptorSet();
+            gbuffer->pushConstant(perMesh);
 
-            frameCtx->getFrameGraphicsCommandBuffer()->drawMeshTasks(1);
+            rendererFrame->getGraphicsCommandBuffer()->drawMeshTasks(1);
           }
         }
       }
@@ -232,7 +237,7 @@ void Engine::mainLoop()
   ////lighting->addTextureInput("shadow-main");
   ////lighting->addTextureInput("shadow-near");
 
-  m_rendererCoreCtx->device->waitIdle();
+  m_rendererCore->getDevice()->waitIdle();
 }
 
 void Engine::initializeWindow(const Initialize_Window& initialize)
@@ -254,7 +259,6 @@ void Engine::initializeSystems()
   m_gltfModelLoaderCtx = core::allocateShared<resources::GLTF_Model_Loader_Context>(resources::GLTF_Model_Loader_Context{
     .transferCommandPool = m_rendererCore->getTransferCommandPool(),
     .callback = [](flecs::entity entity) {
-      entity.world().add<gfx::Renderer_Light_To_Update_Flag>();
     }});
   m_gltfModelLoaderSystem = resources::registerGLTFModelLoaderSystem(m_world, m_gltfModelLoaderCtx);
 }

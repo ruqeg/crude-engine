@@ -37,8 +37,10 @@ public:
   void startFrame();
   void endFrame();
   core::shared_ptr<Renderer_Core> getCore();
+  core::uint32 getFramesCount();
   core::shared_ptr<vk::Command_Buffer> getGraphicsCommandBuffer();
   core::uint32 getSwapchainImageIndex();
+  core::uint32 getCurrentFrame();
 private:
   core::shared_ptr<vk::Semaphore> getImageAvailableSemaphore();
   core::shared_ptr<vk::Semaphore> getRenderFinishedSemaphore();
