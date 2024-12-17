@@ -38,23 +38,26 @@ void Render_Pass::setDepthStencilOutput(const Attachment_Info& depthStencilOutpu
 core::shared_ptr<vk::Buffer_Descriptor[]> Render_Pass::addUniformInput(const core::string& name, VkShaderStageFlags stageFlags)
 {
   const core::uint32 binding = m_descriptorLayoutBindings.size();
-  m_descriptorLayoutBindings.push_back(vk::Uniform_Buffer_Descriptor{ binding, stageFlags });
-  m_bindingToFramesBufferDescriptors[binding] = core::allocateShared<vk::Buffer_Descriptor[]>(m_graph->m_rendererFrame->getFramesCount());
+  const vk::Uniform_Buffer_Descriptor descriptor = vk::Uniform_Buffer_Descriptor{ binding, stageFlags };
+  m_descriptorLayoutBindings.push_back(descriptor);
+  m_bindingToFramesBufferDescriptors[binding] = core::allocateShared<vk::Buffer_Descriptor[]>(m_graph->m_rendererFrame->getFramesCount(), descriptor);
   return m_bindingToFramesBufferDescriptors[binding];
 }
 core::shared_ptr<vk::Buffer_Descriptor[]> Render_Pass::addStorageInput(const core::string& name, VkShaderStageFlags stageFlags)
 {
   const core::uint32 binding = m_descriptorLayoutBindings.size();
-  m_descriptorLayoutBindings.push_back(vk::Storage_Buffer_Descriptor{ binding, stageFlags });
-  m_bindingToFramesBufferDescriptors[binding] = core::allocateShared<vk::Buffer_Descriptor[]>(m_graph->m_rendererFrame->getFramesCount());
+  const vk::Storage_Buffer_Descriptor descriptor = vk::Storage_Buffer_Descriptor{ binding, stageFlags };
+  m_descriptorLayoutBindings.push_back(descriptor);
+  m_bindingToFramesBufferDescriptors[binding] = core::allocateShared<vk::Buffer_Descriptor[]>(m_graph->m_rendererFrame->getFramesCount(), descriptor);
   return m_bindingToFramesBufferDescriptors[binding];
 }
 
 core::shared_ptr<vk::Image_Descriptor[]> Render_Pass::addTextureInput(const core::string& name, VkShaderStageFlags stageFlags)
 {
   const core::uint32 binding = m_descriptorLayoutBindings.size();
-  m_descriptorLayoutBindings.push_back(vk::Combined_Image_Sampler_Descriptor{ binding, stageFlags });
-  m_bindingToFramesImageDescriptors[binding] = core::allocateShared<vk::Image_Descriptor[]>(m_graph->m_rendererFrame->getFramesCount());
+  const vk::Combined_Image_Sampler_Descriptor descriptor = vk::Combined_Image_Sampler_Descriptor{ binding, stageFlags };
+  m_descriptorLayoutBindings.push_back(descriptor);
+  m_bindingToFramesImageDescriptors[binding] = core::allocateShared<vk::Image_Descriptor[]>(m_graph->m_rendererFrame->getFramesCount(), descriptor);
   return m_bindingToFramesImageDescriptors[binding];
 }
 

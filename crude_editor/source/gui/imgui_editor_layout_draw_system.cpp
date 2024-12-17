@@ -14,13 +14,13 @@
 
 module crude.editor.gui.imgui_editor_layout_draw_system;
 
+import crude.core.std_containers_stack;
 import crude.core.logger;
 import crude.core.alias;
 import crude.gfx.texture;
 import crude.scene.transform;
 import crude.scene.camera;
 import crude.scene.light;
-import crude.gui.imgui_texture_descriptor_set;
 import crude.scripts.free_camera_script;
 import crude.core.std_containers_heap;
 import crude.resources.scene_loader_saver_system;
@@ -30,7 +30,7 @@ import crude.resources.scene_loader_saver_system;
 namespace crude::editor::gui
 {
 
-enum class ComponentType
+enum class Component_Type
 {
   Transform,
   FreeCameraScript,
@@ -38,49 +38,49 @@ enum class ComponentType
   PointLight
 };
 
-constexpr crude::core::array<ComponentType, 4> cComponentsTypes =
+constexpr crude::core::array<Component_Type, 4> cComponentsTypes =
 {
-  ComponentType::Transform,
-  ComponentType::FreeCameraScript,
-  ComponentType::Camera,
-  ComponentType::PointLight
+  Component_Type::Transform,
+  Component_Type::FreeCameraScript,
+  Component_Type::Camera,
+  Component_Type::PointLight
 };
 
-const char* componentTypeToStr(ComponentType componentType)
+const char* componentTypeToStr(Component_Type componentType)
 {
   switch (componentType)
   {
-  case ComponentType::Transform: return "Transform";
-  case ComponentType::FreeCameraScript: return "Free Camera Script";
-  case ComponentType::PointLight: return "Point Light";
-  case ComponentType::Camera: return "Camera";
+  case Component_Type::Transform: return "Transform";
+  case Component_Type::FreeCameraScript: return "Free Camera Script";
+  case Component_Type::PointLight: return "Point Light";
+  case Component_Type::Camera: return "Camera";
   default: return "Unkown";
   };
 }
 
-void addComponentToNode(flecs::entity node, ComponentType componentType)
+void addComponentToNode(flecs::entity node, Component_Type componentType)
 {
   switch (componentType)
   {
-  case ComponentType::Transform:
+  case Component_Type::Transform:
     if (!node.has<crude::scene::Transform>())
     {
       node.set<crude::scene::Transform>(crude::scene::Transform{ node });
     }
     break;
-  case ComponentType::FreeCameraScript:
+  case Component_Type::FreeCameraScript:
     if (!node.has<crude::scripts::Free_Camera_Script_Component>())
     {
       node.set<crude::scripts::Free_Camera_Script_Component>(crude::scripts::Free_Camera_Script_Component());
     }
     break;
-  case ComponentType::PointLight:
+  case Component_Type::PointLight:
     if (!node.has<crude::scene::Point_Light_CPU>())
     {
       node.set<crude::scene::Point_Light_CPU>(crude::scene::Point_Light_CPU());
     }
     break;
-  case ComponentType::Camera:
+  case Component_Type::Camera:
     if (!node.has<crude::scene::Camera>())
     {
       node.set<crude::scene::Camera>(crude::scene::Camera());
@@ -276,7 +276,7 @@ void drawViewportWindow(Imgui_Editor_Layout_Draw_Ctx* layoutCtx)
 
   // draw scene texture
   ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
-  ImGui::Image(layoutCtx->viewportImguiTexture->getHandle(), ImVec2{ viewportPanelSize.x, viewportPanelSize.y });
+  //ImGui::Image(layoutCtx->viewportImguiTexture->getHandle(), ImVec2{ viewportPanelSize.x, viewportPanelSize.y });
 
   auto camera = layoutCtx->editorCameraNode.get_mut<crude::scene::Camera>();
   auto cameraTransform = layoutCtx->editorCameraNode.get_mut<crude::scene::Transform>();
@@ -381,7 +381,7 @@ void drawSceneWindow(Imgui_Editor_Layout_Draw_Ctx* layoutCtx)
       // Add component
       if (ImGui::BeginMenu("Add Component"))
       {
-        for (ComponentType componentType : cComponentsTypes)
+        for (Component_Type componentType : cComponentsTypes)
         {
           if (ImGui::MenuItem(componentTypeToStr(componentType)))
           {

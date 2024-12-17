@@ -11,8 +11,6 @@
 
 module crude.resources.gltf_model_loader_system;
 
-import crude.gfx.renderer_deferred_gbuffer_pbr_pass_system;
-import crude.gfx.renderer_deferred_gbuffer_color_pass_system;
 import crude.gfx.vk.device;
 import crude.gfx.vk.sampler;
 import crude.gfx.vk.command_buffer;
@@ -347,11 +345,11 @@ flecs::entity GLTF_Loader::parseNode(flecs::world world, const tinygltf::Node& t
 
   if (tinyNode.extensions.contains("CRUDE_node_deferred_color"))
   {
-    node.add<gfx::Deferred_Node_Pipeline_Color_Flag>();
+    //node.add<gfx::Deferred_Node_Pipeline_Color_Flag>();
   }
   else
   {
-    node.add<gfx::Deferred_Node_Pipeline_PBR_Flag>();
+    //node.add<gfx::Deferred_Node_Pipeline_PBR_Flag>();
   }
 
   if (tinyNode.light != -1)

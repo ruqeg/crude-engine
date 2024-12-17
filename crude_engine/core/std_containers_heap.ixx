@@ -56,7 +56,13 @@ shared_ptr<T> allocateShared() noexcept
 template <class T>
 shared_ptr<T> allocateShared(core::size_t n) noexcept
 {
-  return std::allocate_shared<T>(STD_Allocator<T>(), n);
+  return std::allocate_shared<T>(STD_Allocator<std::remove_extent<T>>(), n);
+}
+
+template <class T>
+shared_ptr<T> allocateShared(core::size_t n, const std::remove_extent<T>& val) noexcept
+{
+  return std::allocate_shared<T>(STD_Allocator<T>(), n, val);
 }
 
 template <class T, class ...Args>

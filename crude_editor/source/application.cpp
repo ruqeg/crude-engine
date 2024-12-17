@@ -9,7 +9,6 @@ import crude.gfx.vk.sampler_state;
 import crude.gfx.vk.image_view;
 import crude.gfx.vk.sampler;
 import crude.gfx.texture;
-import crude.gui.imgui_texture_descriptor_set;
 import crude.resources.gltf_model_loader_system;
 import crude.scene.camera;
 import crude.scripts.free_camera_script;
