@@ -2,6 +2,7 @@ add_subdirectory(vulkan)
 
 target_sources(crude_engine
   PRIVATE
+  gbuffer_pass.cpp
   gbuffer.cpp
   mesh_buffer.cpp
   pipeline_manager.cpp
@@ -15,6 +16,7 @@ target_sources(crude_engine
 target_sources(crude_engine
   PUBLIC
   FILE_SET cxx_modules_graphics TYPE CXX_MODULES FILES
+  gbuffer_pass.ixx
   camera_ubo.ixx
   gbuffer.ixx
   material.ixx

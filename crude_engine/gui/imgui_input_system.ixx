@@ -13,7 +13,7 @@ export namespace crude::gui
 void imguiInputSystemProcess(flecs::iter& it)
 {
   const SDL_Event& inputEvent = it.ctx<platform::Input_System_Context>()->inputEvent;
-  ImGui_ImplSDL3_ProcessEvent(&inputEvent);
+  //ImGui_ImplSDL3_ProcessEvent(&inputEvent);
 }
 
 }

@@ -9,7 +9,7 @@ import crude.gfx.vk.image;
 
 namespace crude::gfx::vk
 {
-  
+
 Render_Pass::Render_Pass(core::shared_ptr<const Device>        device,
                          core::span<const Subpass_Description> subpasses,
                          core::span<const Subpass_Dependency>  subpassesDependencies,

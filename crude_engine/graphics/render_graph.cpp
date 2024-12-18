@@ -106,7 +106,7 @@ void Render_Pass::build(flecs::system renderPassSystem)
   initializePipeline();
 }
 
-void Render_Pass::run()
+void Render_Pass::render()
 {
   core::shared_ptr<Renderer_Frame> frame = m_graph->m_rendererFrame;
 
@@ -151,7 +151,7 @@ void Render_Pass::initializeRenderPass()
     attachmentsDescriptions.push_back(vk::Attachment_Description({
       .format        = colorAttachment.format,
       .samples       = colorAttachment.samples,
-      .colorOp       = vk::attachment_op::gDontCareStore,
+      .colorOp       = vk::attachment_op::gClearStore,
       .stenicilOp    = vk::attachment_op::gClearStore,
       .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
       .finalLayout   = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL }));
@@ -164,7 +164,7 @@ void Render_Pass::initializeRenderPass()
     attachmentsDescriptions.push_back(vk::Attachment_Description({
       .format        = m_depthStencilOutput.value().format,
       .samples       = m_depthStencilOutput.value().samples,
-      .colorOp       = vk::attachment_op::gDontCareStore,
+      .colorOp       = vk::attachment_op::gClearStore,
       .stenicilOp    = vk::attachment_op::gClearStore,
       .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
       .finalLayout   = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL }));
@@ -327,9 +327,25 @@ Render_Graph::Render_Graph(core::shared_ptr<Renderer_Frame> rendererFrame, core:
   , m_swapchainImagesCount{ swapchainImagesCount }
 {}
 
+void Render_Graph::render()
+{
+  m_rendererFrame->startFrame();
+  for (auto pass : m_passes)
+  {
+    pass.lock()->render();
+  }
+  m_rendererFrame->endFrame();
+}
+
+core::shared_ptr<Renderer_Frame> Render_Graph::getRendererFrame()
+{
+  return m_rendererFrame;
+}
+
 core::shared_ptr<Render_Pass> Render_Graph::addPass(const VkExtent2D& framebufferExtent, VkPipelineStageFlags queue)
 {
-  core::shared_ptr<Render_Pass> pass = core::allocateShared<Render_Pass>(std::move(Render_Pass(shared_from_this(), framebufferExtent, queue)));
+  core::shared_ptr<Render_Pass> pass = core::allocateShared<Render_Pass>(Render_Pass(shared_from_this(), framebufferExtent, queue));
+  m_passes.push_back(pass);
   return pass;
 }
 

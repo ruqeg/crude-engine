@@ -22,6 +22,7 @@ private:
 private:
   flecs::system                                        m_freeCameraUpdateSystem;
   core::shared_ptr<gui::Imgui_Editor_Layout_Draw_Ctx>  m_editorLayoutCtx;
+  flecs::entity                                        m_cameraNode;
 };
 
 }

@@ -8,7 +8,7 @@
 
 layout (local_size_x=cMaxTaskWorkGroupSize, local_size_y=1, local_size_z=1) in;
 
-layout(push_constant) uniform PerSubmesh
+layout(push_constant, row_major) uniform PerSubmesh
 {
   mat4  meshToWorld;
   uint  drawID;

@@ -59,13 +59,13 @@ public:
   void setPushConstantRange(const vk::Push_Constant_Range_Base& pushConstantRange);
   void setShaderStagesInfo(const core::vector<vk::Shader_Stage_Create_Info>& shaderStagesInfo);
   void build(flecs::system renderPassSystem);
-  void run();
 public:
   // !TODO 0_0
   template<class T>
   void pushConstant(const T& constant, core::uint32 offset = 0u);
   void pushDescriptorSet();
 private:
+  void render();
   void pushConstantBase(core::span<const core::byte> data, core::uint32 offset);
 private:
   void initializeRenderPass();
@@ -96,6 +96,8 @@ class Render_Graph : public std::enable_shared_from_this<Render_Graph>
 public:
   Render_Graph(core::shared_ptr<Renderer_Frame> rendererFrame, core::uint32 swapchainImagesCount);
 public:
+  void render();
+  core::shared_ptr<Renderer_Frame> getRendererFrame();
   core::shared_ptr<Render_Pass> addPass(const VkExtent2D& framebufferExtent, VkPipelineStageFlags queue);
 private:
   core::vector<core::weak_ptr<Render_Pass>>  m_passes;

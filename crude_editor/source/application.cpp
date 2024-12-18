@@ -13,6 +13,7 @@ import crude.resources.gltf_model_loader_system;
 import crude.scene.camera;
 import crude.scripts.free_camera_script;
 import crude.gui.imgui_demo_layout_draw_system;
+import crude.gfx.gbuffer_pass;
 
 import crude.editor.gui.imgui_editor_layout_draw_system;
 
@@ -54,6 +55,8 @@ void Application::initialize()
     m_editorLayoutCtx->sceneNode          = m_sceneNode;
     m_editorLayoutCtx->editorSelectedNode = m_sceneNode;
     };
+
+  gfx::initializeGbufferPass(m_graph, m_world, m_cameraNode);
 }
 
 void Application::run()
@@ -81,18 +84,18 @@ void Application::initializeScene(core::float32 aspectRatio)
 
 void Application::initializeEditorCamera(core::float32 aspectRatio)
 {
-  flecs::entity cameraNode = m_world.entity("Editor Camera");
-  cameraNode.set<scene::Camera>([aspectRatio]() {
+  m_cameraNode = m_world.entity("Editor Camera");
+  m_cameraNode.set<scene::Camera>([aspectRatio]() {
     scene::Camera camera;
     camera.calculateViewToClipMatrix(DirectX::XM_PIDIV4, aspectRatio, 0.05f, 100.0f);
     return camera;
     }());
-  cameraNode.set<scene::Transform>([&cameraNode]() {
+  m_cameraNode.set<scene::Transform>([&cameraNode = m_cameraNode]() {
     scene::Transform transform(cameraNode);
     transform.setTranslation(0.0, 0.0, -2.0);
     return transform;
     }());
-  cameraNode.set<scripts::Free_Camera_Script_Component>(scripts::Free_Camera_Script_Component());
+  m_cameraNode.set<scripts::Free_Camera_Script_Component>(scripts::Free_Camera_Script_Component());
 }
 
 }
