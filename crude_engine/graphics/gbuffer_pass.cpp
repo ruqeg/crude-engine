@@ -13,9 +13,13 @@ import crude.gfx.render_graph;
 import crude.gfx.mesh_buffer;
 import crude.gfx.material;
 import crude.gfx.texture;
+import crude.gfx.vk.pipeline;
+import crude.gfx.vk.pipeline_layout;
 import crude.gfx.vk.device;
 import crude.gfx.vk.format_helper;
 import crude.gfx.vk.shader_module;
+import crude.gfx.vk.buffer_descriptor;
+import crude.gfx.vk.image_descriptor;
 import crude.scene.mesh;
 
 namespace crude::gfx
@@ -32,7 +36,7 @@ struct Per_Frame
   Camera_UBO camera;
 };
 
-void  initializeGbufferPass(core::shared_ptr<Render_Graph> graph, flecs::world world, flecs::entity cameraNode)
+void initializeGbufferPass(core::shared_ptr<Render_Graph> graph, flecs::world world, flecs::entity cameraNode)
 {
   core::shared_ptr<vk::Device> device = graph->getRendererFrame()->getCore()->getDevice();
 
@@ -88,15 +92,15 @@ void  initializeGbufferPass(core::shared_ptr<Render_Graph> graph, flecs::world w
     vk::Fragment_Shader_Stage_Create_Info(core::allocateShared<vk::Shader_Module>(device, crude::shaders::deferred_gbuffer::frag), "main"),
     });
 
-  auto perFramesDesc = gbuffer->addUniformInput("Per Frame", VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_FRAGMENT_BIT);
-  auto submeshesDrawsDesc = gbuffer->addStorageInput("Submeshes Draws", VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT);
-  auto verticesDesc = gbuffer->addStorageInput("Vertices", VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT);
-  auto meshletsDesc = gbuffer->addStorageInput("Meshlets", VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT);
-  auto primitiveIndicesDesc = gbuffer->addStorageInput("Primitive Indices", VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT);
-  auto vertexIndicesDesc = gbuffer->addStorageInput("Vertex Indices", VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT);
-  auto albedoDesc = gbuffer->addTextureInput("Albedo", VK_SHADER_STAGE_FRAGMENT_BIT);
-  auto metallicRoughnessDesc = gbuffer->addTextureInput("Metallic-Roughness", VK_SHADER_STAGE_FRAGMENT_BIT);
-  auto normalDesc = gbuffer->addTextureInput("Normal", VK_SHADER_STAGE_FRAGMENT_BIT);
+  auto perFramesDesc = gbuffer->addUniformInput(VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_FRAGMENT_BIT);
+  auto submeshesDrawsDesc = gbuffer->addStorageInput(VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT);
+  auto verticesDesc = gbuffer->addStorageInput(VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT);
+  auto meshletsDesc = gbuffer->addStorageInput(VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT);
+  auto primitiveIndicesDesc = gbuffer->addStorageInput(VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT);
+  auto vertexIndicesDesc = gbuffer->addStorageInput(VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT);
+  auto albedoDesc = gbuffer->addTextureInput(VK_SHADER_STAGE_FRAGMENT_BIT);
+  auto metallicRoughnessDesc = gbuffer->addTextureInput(VK_SHADER_STAGE_FRAGMENT_BIT);
+  auto normalDesc = gbuffer->addTextureInput(VK_SHADER_STAGE_FRAGMENT_BIT);
 
   core::vector<core::shared_ptr<vk::Uniform_Buffer<Per_Frame>>> perFrameUniformBuffers =
   {
@@ -115,9 +119,9 @@ void  initializeGbufferPass(core::shared_ptr<Render_Graph> graph, flecs::world w
   gbuffer->build(world
     .system<core::shared_ptr<gfx::Mesh_Buffer>, core::shared_ptr<scene::Mesh>>("gbuffer_pbr_pass_system")
     .kind(0)
-    .run([rendererFrame = graph->getRendererFrame(), gbuffer, perFrameUniformBuffers, perFramesDesc, submeshesDrawsDesc, verticesDesc, meshletsDesc, primitiveIndicesDesc, vertexIndicesDesc, albedoDesc, metallicRoughnessDesc, normalDesc](flecs::iter& it) {
+    .run([rendererFrame = graph->getRendererFrame(), pipeline = gbuffer->getPipeline(), perFrameUniformBuffers, perFramesDesc, submeshesDrawsDesc, verticesDesc, meshletsDesc, primitiveIndicesDesc, vertexIndicesDesc, albedoDesc, metallicRoughnessDesc, normalDesc](flecs::iter& it) {
       const core::uint32 currentFrame = rendererFrame->getCurrentFrame();
-      perFramesDesc[currentFrame].updateBase(perFrameUniformBuffers[currentFrame], perFrameUniformBuffers[currentFrame]->getSize());
+      perFramesDesc[currentFrame].update(perFrameUniformBuffers[currentFrame]);
 
       while (it.next())
       {
@@ -126,35 +130,45 @@ void  initializeGbufferPass(core::shared_ptr<Render_Graph> graph, flecs::world w
 
         for (auto i : it)
         {
-          submeshesDrawsDesc[currentFrame].updateBase(meshBuffers[i]->getSubmeshesDrawsBuffer(), meshBuffers[i]->getSubmeshesDrawsBuffer()->getSize());
-          verticesDesc[currentFrame].updateBase(meshBuffers[i]->getVerticesBuffer(), meshBuffers[i]->getVerticesBuffer()->getSize());
-          meshletsDesc[currentFrame].updateBase(meshBuffers[i]->getMeshletsBuffer(), meshBuffers[i]->getMeshletsBuffer()->getSize());
-          primitiveIndicesDesc[currentFrame].updateBase(meshBuffers[i]->getPrimitiveIndicesBuffer(), meshBuffers[i]->getPrimitiveIndicesBuffer()->getSize());
-          vertexIndicesDesc[currentFrame].updateBase(meshBuffers[i]->getVertexIndicesBuffer(), meshBuffers[i]->getVertexIndicesBuffer()->getSize());
+          submeshesDrawsDesc[currentFrame].update(meshBuffers[i]->getSubmeshesDrawsBuffer());
+          verticesDesc[currentFrame].update(meshBuffers[i]->getVerticesBuffer());
+          meshletsDesc[currentFrame].update(meshBuffers[i]->getMeshletsBuffer());
+          primitiveIndicesDesc[currentFrame].update(meshBuffers[i]->getPrimitiveIndicesBuffer());
+          vertexIndicesDesc[currentFrame].update(meshBuffers[i]->getVertexIndicesBuffer());
+
+          auto transform = it.entity(i).get_ref<scene::Transform>();
+          if (!transform)
+            continue;
 
           Per_Mesh perMesh;
-          if (it.entity(i).has<scene::Transform>())
-          {
-            auto transform = it.entity(i).get_ref<scene::Transform>();
-            perMesh.modelToWorld = transform->getNodeToWorldFloat4x4();
-          }
+          perMesh.modelToWorld = transform->getNodeToWorldFloat4x4();
 
           for (core::uint32 submeshIndex = 0u; submeshIndex < meshes[i]->submeshes.size(); ++submeshIndex)
           {
             const scene::Sub_Mesh& submesh = meshes[i]->submeshes[submeshIndex];
-            // !TODO ???
-            if (!submesh.material || !submesh.material->albedo || !submesh.material->metallicRoughness || !submesh.material->normal)
-            {
+            
+            const bool isMaterialValid = submesh.material && submesh.material->isValid();
+            if (!isMaterialValid)
               continue;
-            }
-            albedoDesc[rendererFrame->getCurrentFrame()].update(submesh.material->albedo->getImageView(), submesh.material->albedo->getSampler());
-            metallicRoughnessDesc[rendererFrame->getCurrentFrame()].update(submesh.material->metallicRoughness->getImageView(), submesh.material->metallicRoughness->getSampler());
-            normalDesc[rendererFrame->getCurrentFrame()].update(submesh.material->normal->getImageView(), submesh.material->normal->getSampler());
 
+            albedoDesc[currentFrame].update(submesh.material->albedo->getImageView(), submesh.material->albedo->getSampler());
+            metallicRoughnessDesc[currentFrame].update(submesh.material->metallicRoughness->getImageView(), submesh.material->metallicRoughness->getSampler());
+            normalDesc[currentFrame].update(submesh.material->normal->getImageView(), submesh.material->normal->getSampler());
+
+            core::array<VkWriteDescriptorSet, 9> descriptorWrites;
+            perFramesDesc[currentFrame].write(descriptorWrites[0]);
+            submeshesDrawsDesc[currentFrame].write(descriptorWrites[1]);
+            verticesDesc[currentFrame].write(descriptorWrites[2]);
+            meshletsDesc[currentFrame].write(descriptorWrites[3]);
+            primitiveIndicesDesc[currentFrame].write(descriptorWrites[4]);
+            vertexIndicesDesc[currentFrame].write(descriptorWrites[5]);
+            albedoDesc[currentFrame].write(descriptorWrites[6]);
+            metallicRoughnessDesc[currentFrame].write(descriptorWrites[7]);
+            normalDesc[currentFrame].write(descriptorWrites[8]);
+
+            rendererFrame->getGraphicsCommandBuffer()->pushConstant(pipeline->getPipelineLayout(), perMesh);
             perMesh.submeshIndex = submeshIndex;
-            gbuffer->pushDescriptorSet();
-            gbuffer->pushConstant(perMesh);
-
+            rendererFrame->getGraphicsCommandBuffer()->pushDescriptorSet(pipeline, descriptorWrites);
             rendererFrame->getGraphicsCommandBuffer()->drawMeshTasks(1);
           }
         }

@@ -53,20 +53,16 @@ private:
 public:
   void addColorOutput(const Attachment_Info& colorOutput);
   void setDepthStencilOutput(const Attachment_Info& depthStencilOutput);
-  [[nodiscard]] core::shared_ptr<vk::Buffer_Descriptor[]> addUniformInput(const core::string& name, VkShaderStageFlags stageFlags);
-  [[nodiscard]] core::shared_ptr<vk::Buffer_Descriptor[]> addStorageInput(const core::string& name, VkShaderStageFlags stageFlags);
-  [[nodiscard]] core::shared_ptr<vk::Image_Descriptor[]> addTextureInput(const core::string& name, VkShaderStageFlags stageFlags);
+  [[nodiscard]] core::shared_ptr<vk::Uniform_Buffer_Descriptor[]> addUniformInput(VkShaderStageFlags stageFlags);
+  [[nodiscard]] core::shared_ptr<vk::Storage_Buffer_Descriptor[]> addStorageInput(VkShaderStageFlags stageFlags);
+  [[nodiscard]] core::shared_ptr<vk::Combined_Image_Sampler_Descriptor[]> addTextureInput(VkShaderStageFlags stageFlags);
   void setPushConstantRange(const vk::Push_Constant_Range_Base& pushConstantRange);
   void setShaderStagesInfo(const core::vector<vk::Shader_Stage_Create_Info>& shaderStagesInfo);
   void build(flecs::system renderPassSystem);
 public:
-  // !TODO 0_0
-  template<class T>
-  void pushConstant(const T& constant, core::uint32 offset = 0u);
-  void pushDescriptorSet();
+  core::shared_ptr<vk::Pipeline> getPipeline();
 private:
   void render();
-  void pushConstantBase(core::span<const core::byte> data, core::uint32 offset);
 private:
   void initializeRenderPass();
   void initializeFramebuffers();
@@ -83,8 +79,6 @@ private:
   core::shared_ptr<vk::Render_Pass>                        m_renderPass;
   VkExtent2D                                               m_framebufferExtent;
   core::vector<vk::Descriptor_Set_Layout_Binding>          m_descriptorLayoutBindings;
-  core::unordered_map<core::uint32, core::shared_ptr<vk::Buffer_Descriptor[]>>  m_bindingToFramesBufferDescriptors;
-  core::unordered_map<core::uint32, core::shared_ptr<vk::Image_Descriptor[]>>   m_bindingToFramesImageDescriptors;
   core::optional<vk::Push_Constant_Range_Base>             m_pushConstantRange;
   core::vector<vk::Shader_Stage_Create_Info>               m_shaderStagesInfo;
 private:
@@ -107,11 +101,5 @@ private:
 private:
   friend class Render_Pass;
 };
-
-template<class T>
-void Render_Pass::pushConstant(const T& constant, core::uint32 offset)
-{
-  pushConstantBase(core::span<const core::byte>(reinterpret_cast<const core::byte*>(&constant), sizeof(T)), offset);
-}
 
 }

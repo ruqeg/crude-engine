@@ -29,6 +29,11 @@ void Buffer_Descriptor::updateBase(core::shared_ptr<const Buffer> buffer, VkDevi
   m_descriptoBuferInfo.range  = range;
 }
 
+void Buffer_Descriptor::updateBase(core::shared_ptr<const Buffer> buffer)
+{
+  updateBase(buffer, buffer->getSize(), 0);
+}
+
 void Buffer_Descriptor::clear()
 {
   m_descriptoBuferInfo.buffer = VK_NULL_HANDLE;
@@ -39,6 +44,11 @@ void Buffer_Descriptor::clear()
 Storage_Buffer_Descriptor::Storage_Buffer_Descriptor(core::uint32 binding, VkShaderStageFlags stageFlags)
   : Buffer_Descriptor(binding, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, stageFlags) 
 {}
+
+void Storage_Buffer_Descriptor::update(core::shared_ptr<Storage_Buffer> buffer)
+{
+  update(buffer, buffer->getSize(), 0u);
+}
 
 void Storage_Buffer_Descriptor::update(core::shared_ptr<Storage_Buffer> buffer, VkDeviceSize range, VkDeviceSize offset)
 {

@@ -35,30 +35,28 @@ void Render_Pass::setDepthStencilOutput(const Attachment_Info& depthStencilOutpu
   m_depthStencilOutput = depthStencilOutput;
 }
 
-core::shared_ptr<vk::Buffer_Descriptor[]> Render_Pass::addUniformInput(const core::string& name, VkShaderStageFlags stageFlags)
+core::shared_ptr<vk::Uniform_Buffer_Descriptor[]> Render_Pass::addUniformInput(VkShaderStageFlags stageFlags)
 {
   const core::uint32 binding = m_descriptorLayoutBindings.size();
-  const vk::Uniform_Buffer_Descriptor descriptor = vk::Uniform_Buffer_Descriptor{ binding, stageFlags };
+  vk::Uniform_Buffer_Descriptor descriptor{ binding, stageFlags };
   m_descriptorLayoutBindings.push_back(descriptor);
-  m_bindingToFramesBufferDescriptors[binding] = core::allocateShared<vk::Buffer_Descriptor[]>(m_graph->m_rendererFrame->getFramesCount(), descriptor);
-  return m_bindingToFramesBufferDescriptors[binding];
-}
-core::shared_ptr<vk::Buffer_Descriptor[]> Render_Pass::addStorageInput(const core::string& name, VkShaderStageFlags stageFlags)
-{
-  const core::uint32 binding = m_descriptorLayoutBindings.size();
-  const vk::Storage_Buffer_Descriptor descriptor = vk::Storage_Buffer_Descriptor{ binding, stageFlags };
-  m_descriptorLayoutBindings.push_back(descriptor);
-  m_bindingToFramesBufferDescriptors[binding] = core::allocateShared<vk::Buffer_Descriptor[]>(m_graph->m_rendererFrame->getFramesCount(), descriptor);
-  return m_bindingToFramesBufferDescriptors[binding];
+  return core::allocateShared<vk::Uniform_Buffer_Descriptor[]>(m_graph->m_rendererFrame->getFramesCount(), descriptor);
 }
 
-core::shared_ptr<vk::Image_Descriptor[]> Render_Pass::addTextureInput(const core::string& name, VkShaderStageFlags stageFlags)
+core::shared_ptr<vk::Storage_Buffer_Descriptor[]> Render_Pass::addStorageInput(VkShaderStageFlags stageFlags)
 {
   const core::uint32 binding = m_descriptorLayoutBindings.size();
-  const vk::Combined_Image_Sampler_Descriptor descriptor = vk::Combined_Image_Sampler_Descriptor{ binding, stageFlags };
+  vk::Storage_Buffer_Descriptor descriptor{ binding, stageFlags };
   m_descriptorLayoutBindings.push_back(descriptor);
-  m_bindingToFramesImageDescriptors[binding] = core::allocateShared<vk::Image_Descriptor[]>(m_graph->m_rendererFrame->getFramesCount(), descriptor);
-  return m_bindingToFramesImageDescriptors[binding];
+  return core::allocateShared<vk::Storage_Buffer_Descriptor[]>(m_graph->m_rendererFrame->getFramesCount(), descriptor);
+}
+
+core::shared_ptr<vk::Combined_Image_Sampler_Descriptor[]> Render_Pass::addTextureInput(VkShaderStageFlags stageFlags)
+{
+  const core::uint32 binding = m_descriptorLayoutBindings.size();
+  vk::Combined_Image_Sampler_Descriptor descriptor{ binding, stageFlags };
+  m_descriptorLayoutBindings.push_back(descriptor);
+  return core::allocateShared<vk::Combined_Image_Sampler_Descriptor[]>(m_graph->m_rendererFrame->getFramesCount(), descriptor);
 }
 
 void Render_Pass::setPushConstantRange(const vk::Push_Constant_Range_Base& pushConstantRange)
@@ -71,39 +69,17 @@ void Render_Pass::setShaderStagesInfo(const core::vector<vk::Shader_Stage_Create
   m_shaderStagesInfo = shaderStagesInfo;
 }
 
-void Render_Pass::pushDescriptorSet()
-{
-  const core::uint32 currentFrame = m_graph->m_rendererFrame->getCurrentFrame();
-
-  core::vector<VkWriteDescriptorSet> descriptorWrites;
-  descriptorWrites.resize(m_descriptorLayoutBindings.size());
-  for (core::uint32 i = 0; i < descriptorWrites.size(); ++i)
-  {
-    core::uint32 binding = m_descriptorLayoutBindings[i].binding;
-    if (m_bindingToFramesBufferDescriptors.contains(binding))
-    {
-      m_bindingToFramesBufferDescriptors[binding][currentFrame].write(descriptorWrites[i]);
-    }
-    else if (m_bindingToFramesImageDescriptors.contains(binding))
-    {
-      m_bindingToFramesImageDescriptors[binding][currentFrame].write(descriptorWrites[i]);
-    }
-  }
-
-  m_graph->m_rendererFrame->getGraphicsCommandBuffer()->pushDescriptorSet(m_pipeline, descriptorWrites);
-}
-
-void Render_Pass::pushConstantBase(core::span<const core::byte> data, core::uint32 offset)
-{
-  m_graph->m_rendererFrame->getGraphicsCommandBuffer()->pushConstantBase(m_pipeline->getPipelineLayout(), data, offset);
-}
-
 void Render_Pass::build(flecs::system renderPassSystem)
 {
   m_renderPassSystem = renderPassSystem;
   initializeRenderPass();
   initializeFramebuffers();
   initializePipeline();
+}
+
+core::shared_ptr<vk::Pipeline> Render_Pass::getPipeline()
+{
+  return m_pipeline;
 }
 
 void Render_Pass::render()

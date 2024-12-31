@@ -7,7 +7,6 @@ target_sources(crude_engine
   mesh_buffer.cpp
   pipeline_manager.cpp
   render_graph.cpp
-  renderer.cpp
   renderer_core.cpp
   renderer_frame.cpp
   texture.cpp
@@ -23,7 +22,6 @@ target_sources(crude_engine
   mesh_buffer.ixx
   pipeline_manager.ixx
   render_graph.ixx
-  renderer.ixx
   renderer_core.ixx
   renderer_frame.ixx
   texture.ixx

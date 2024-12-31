@@ -16,6 +16,7 @@ struct Material
   core::shared_ptr<Texture> albedo;
   core::shared_ptr<Texture> normal;
   core::shared_ptr<Texture> metallicRoughness;
+  bool isValid() { return albedo && normal && metallicRoughness; }
 };
 
 }
