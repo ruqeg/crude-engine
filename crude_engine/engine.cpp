@@ -92,7 +92,7 @@ void Engine::initializeSystems()
   m_sceneSaverSystem = resources::registerSceneSaverSystem(m_world, m_sceneSaverCtx);
   m_sceneLoaderSystem = resources::registerSceneLoaderSystem(m_world, m_sceneLoaderCtx);
 
-  m_gltfModelLoaderCtx = core::allocateShared<resources::GLTF_Model_Loader_Context>(resources::GLTF_Model_Loader_Context{
+  m_gltfModelLoaderCtx = core::allocateShared<resources::GLTF_Loader_Context>(resources::GLTF_Loader_Context{
     .transferCommandPool = m_rendererCore->getTransferCommandPool(),
     .callback = [](flecs::entity entity) {
     }});

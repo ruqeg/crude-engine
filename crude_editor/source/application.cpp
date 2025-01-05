@@ -9,7 +9,6 @@ import crude.gfx.vk.sampler_state;
 import crude.gfx.vk.image_view;
 import crude.gfx.vk.sampler;
 import crude.gfx.texture;
-import crude.resources.gltf_model_loader_system;
 import crude.scene.camera;
 import crude.scripts.free_camera_script;
 import crude.gui.imgui_demo_layout_draw_system;
@@ -56,7 +55,7 @@ void Application::initialize()
     m_editorLayoutCtx->editorSelectedNode = m_sceneNode;
     };
 
-  gfx::initializeGbufferPass(m_graph, m_world, m_cameraNode);
+  //gfx::initializeGbufferPass(m_graph, m_world, m_cameraNode);
 }
 
 void Application::run()
@@ -76,10 +75,10 @@ void Application::initializeScene(core::float32 aspectRatio)
 
   flecs::entity modelNode = m_world.entity("m_modelNode");
   modelNode.child_of(m_sceneNode);
-  modelNode.set<crude::resources::GLTF_Model_Metadata_Component>({
+  modelNode.set<crude::resources::GLTF_Metadata_Component>({
     .path = "../../../crude_editor/resources/main1_sponza/NewSponza_Main_glTF_003.gltf"
   });
-  modelNode.add<crude::resources::GLTF_Model_Loader_Uninitialized_Flag>();
+  modelNode.add<crude::resources::GLTF_Loader_Uninitialized_Flag>();
 }
 
 void Application::initializeEditorCamera(core::float32 aspectRatio)

@@ -9,7 +9,7 @@ module crude.resources.scene_loader_saver_system;
 import crude.gfx.vk.command_pool;
 import crude.scene.transform;
 import crude.scene.light;
-import crude.resources.gltf_model_loader_system;
+import crude.resources.gltf_loader_system;
 
 
 namespace DirectX
@@ -87,7 +87,7 @@ void from_json(const nlohmann::json& j, Point_Light_CPU& pointLightCPU)
 namespace crude::resources
 {
 
-void to_json(nlohmann::json& j, const GLTF_Model_Metadata_Component& gltfModel)
+void to_json(nlohmann::json& j, const GLTF_Metadata_Component& gltfModel)
 {
   j = nlohmann::json
   {
@@ -95,7 +95,7 @@ void to_json(nlohmann::json& j, const GLTF_Model_Metadata_Component& gltfModel)
   };
 }
 
-void from_json(const nlohmann::json& j, GLTF_Model_Metadata_Component& gltfModel)
+void from_json(const nlohmann::json& j, GLTF_Metadata_Component& gltfModel)
 {
   gltfModel.path = j["path"];
 }
@@ -163,7 +163,7 @@ void saveScene(flecs::entity sceneNode, const core::string& path)
     nlohmann::json entityJson;
     parseNodeToJsonWithoutChildren(node, entityJson);
 
-    if (!node.has<crude::resources::GLTF_Model_Metadata_Component>())
+    if (!node.has<crude::resources::GLTF_Metadata_Component>())
     {
       nlohmann::json* oldEntityParentJson = entityParentJson;
       entityParentJson = &entityJson;
@@ -176,7 +176,7 @@ void saveScene(flecs::entity sceneNode, const core::string& path)
 
   entityParentJson = &sceneJson;
   parseNodeToJsonWithoutChildren(sceneNode, sceneJson);
-  if (!sceneNode.has<crude::resources::GLTF_Model_Metadata_Component>())
+  if (!sceneNode.has<crude::resources::GLTF_Metadata_Component>())
   {
     sceneNode.children(parseNodeChildrenToJson);
   }
@@ -228,10 +228,10 @@ void parseNodeFromJsonWithoutChildren(flecs::entity node, const nlohmann::json& 
   {
     node.set<scene::Point_Light_CPU>(nodeComponentsJson["point_light"].get<scene::Point_Light_CPU>());
   }
-  if (nodeComponentsJson.contains("gltf_model"))
+  if (nodeComponentsJson.contains("gltf"))
   {
-    node.set<crude::resources::GLTF_Model_Metadata_Component>(nodeComponentsJson["gltf_model"].get<crude::resources::GLTF_Model_Metadata_Component>());
-    node.add<crude::resources::GLTF_Model_Loader_Uninitialized_Flag>();
+    node.set<crude::resources::GLTF_Metadata_Component>(nodeComponentsJson["gltf"].get<crude::resources::GLTF_Metadata_Component>());
+    node.add<crude::resources::GLTF_Loader_Uninitialized_Flag>();
   }
 }
 
@@ -248,9 +248,9 @@ void parseNodeToJsonWithoutChildren(flecs::entity node, nlohmann::json& nodeJson
   {
     nodeComponentsJson["point_light"] = *node.get<scene::Point_Light_CPU>();
   }
-  if (node.has<crude::resources::GLTF_Model_Metadata_Component>())
+  if (node.has<crude::resources::GLTF_Metadata_Component>())
   {
-    nodeComponentsJson["gltf_model"] = *node.get<crude::resources::GLTF_Model_Metadata_Component>();
+    nodeComponentsJson["gltf"] = *node.get<crude::resources::GLTF_Metadata_Component>();
   }
   nodeJson["components"] = nodeComponentsJson;
 }
