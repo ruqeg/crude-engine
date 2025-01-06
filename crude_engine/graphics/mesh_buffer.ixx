@@ -34,4 +34,11 @@ private:
   core::shared_ptr<vk::Storage_Buffer>  m_vertexIndicesBuffer;
 };
 
+// !TODO someday
+class RT_Mesh_Buffer
+{
+public:
+  explicit RT_Mesh_Buffer(core::shared_ptr<vk::Command_Buffer> commandBuffer);
+};
+
 }

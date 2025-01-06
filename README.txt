@@ -1,5 +1,5 @@
 TODO
-- rendergraph
+- render graph
 - vulkan api rework (span to vec/arr)
 - remove unnecessary code from core
 - README
@@ -8,3 +8,4 @@ TODO
 - lod
 - joltphysics
 - tracy
+- custom export for mesh shader like *.vks

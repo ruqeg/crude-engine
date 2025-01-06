@@ -49,29 +49,48 @@ VKS_Loader::VKS_Loader(core::shared_ptr<gfx::vk::Command_Pool> commandPool)
 
 void VKS_Loader::loadToNodeFromFile(flecs::entity node, const std::filesystem::path& path)
 {
-  std::ifstream file(path);
-  if (!file.is_open())
+  FILE* file = fopen(path.string().c_str(), "rb");
+  if (!file)
   {
-    core::logError(core::Debug::Channel::General, "Failed to open the scene file at %s.", path.c_str());
+    core::logError(core::Debug::Channel::FileIO, "Failed to open the scene file at %s.", path.string().c_str());
     return;
   }
-  //// Load the header
-  //fread(&scene->header.marker, sizeof(uint32_t), 1, file);
-  //if (scene->header.marker != 0xabcabc) {
-  //  printf("The scene file at %s is not a valid *.vks file. Its marker does not match.\n", file_path);
-  //  free_scene_loader(&loader, device);
-  //  return 1;
-  //}
-  //fread(&scene->header.version, sizeof(uint32_t), 1, file);
-  //if (scene->header.version != 1) {
-  //  printf("This renderer only supports *.vks files using version 1 of the file format, but the scene file at %s uses version %u.\n", file_path, scene->header.version);
-  //  free_scene_loader(&loader, device);
-  //  return 1;
-  //}
-  //fread(&scene->header.material_count, sizeof(uint64_t), 1, file);
-  //fread(&scene->header.triangle_count, sizeof(uint64_t), 1, file);
-  //fread(&scene->header.dequantization_factor, sizeof(float), 3, file);
-  //fread(&scene->header.dequantization_summand, sizeof(float), 3, file);
+
+  core::uint32 marker;
+  fread(&marker, sizeof(marker), 1, file);
+  if (marker != 0xabcabc)
+  {
+    core::logError(core::Debug::Channel::FileIO, "The scene file at %s is not a valid *.vks file. Its marker does not match.", path.string().c_str());
+    fclose(file);
+    return;
+  }
+
+  core::uint32 version;
+  fread(&version, sizeof(version), 1, file);
+  if (version != 1)
+  {
+    core::logError(core::Debug::Channel::FileIO, "Only supports *.vks files using version 1 of the file format, but the scene file at %s uses version %u.", path.string().c_str(), version);
+    fclose(file);
+    return;
+  }
+
+  core::uint64 materialCount, triangleCount;
+  core::array<core::float32, 3> dequantizationFactor, dequantizationSummand;
+  fread(&materialCount, sizeof(materialCount), 1, file);
+  fread(&triangleCount, sizeof(triangleCount), 1, file);
+  fread(dequantizationFactor.data(), sizeof(dequantizationFactor[0]), dequantizationFactor.size(), file);
+  fread(dequantizationSummand.data(), sizeof(dequantizationSummand[0]), dequantizationSummand.size(), file);
+
+  core::uint32 eofMarker;
+  fread(&eofMarker, sizeof(eofMarker), 1, file);
+  if (eofMarker != 0xe0fe0f)
+  {
+    core::logError(core::Debug::Channel::FileIO, "Finished reading data from the scene file at %s but did not encounter an end-of-file marker where expected. Either the file is invalid or the loader is buggy.", path.string().c_str());
+    fclose(file);
+    return;
+  }
+
+  fclose(file);
 }
 
 }

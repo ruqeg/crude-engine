@@ -74,4 +74,10 @@ struct Mesh
   core::vector<Sub_Mesh>      submeshes;
 };
 
+// !TODO someday
+struct RT_Mesh
+{
+
+};
+
 }
