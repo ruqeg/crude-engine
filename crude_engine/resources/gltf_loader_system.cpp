@@ -30,9 +30,9 @@ import crude.core.assert;
 namespace crude::resources
 {
 
-flecs::system registerGLTFModelLoaderSystem(flecs::world world, core::shared_ptr<GLTF_Loader_Context> ctx)
+flecs::system registerGLTFLoaderSystem(flecs::world world, core::shared_ptr<GLTF_Loader_Context> ctx)
 {
-  return world.system<GLTF_Metadata_Component>("GLTFModelLoaderSystem")
+  return world.system<GLTF_Metadata_Component>("GLTFLoaderSystem")
     .ctx(ctx.get())
     .kind(flecs::OnLoad)
     .with<GLTF_Loader_Uninitialized_Flag>()
@@ -53,7 +53,7 @@ void gltfModelLoaderSystemProcess(flecs::iter & it)
       flecs::entity entity = it.entity(i);
 
       GLTF_Loader gltfLoader(ctx->transferCommandPool);
-      gltfLoader.loadToNodeFromFile(entity, metadata[i].path.c_str());
+      gltfLoader.loadToNodeFromFile(entity, metadata[i].path);
       ctx->callback(entity);
       entity.remove<crude::resources::GLTF_Loader_Uninitialized_Flag>();
     }

@@ -1,4 +1,5 @@
 #include <vector>
+#include <filesystem>
 
 #ifdef _WIN32
 #include <io.h.>
@@ -16,12 +17,12 @@ import crude.core.logger;
 namespace crude::core
 {
 
-Filesystem_Result readFile(const char* filename, span<char>& buffer)
+Filesystem_Result readFile(const std::filesystem::path& path, span<char>& buffer)
 {
-  FILE *file = fopen(filename, "rb");
+  FILE *file = fopen(path.generic_string().c_str(), "rb");
   if (file == nullptr)
   {
-    core::logError(core::Debug::Channel::FileIO, "Failed to open file %s!", filename);
+    core::logError(core::Debug::Channel::FileIO, "Failed to open file %s!", path.generic_string().c_str());
     return FILESYSTEM_RESULT_FAILED_OPEN;
   }
   fseek(file, 0, SEEK_END);
@@ -31,7 +32,7 @@ Filesystem_Result readFile(const char* filename, span<char>& buffer)
   if (buffer.size() < fileSize + 1)
   {
     fclose(file);
-    core::logError(core::Debug::Channel::FileIO, "Failed to read file %s! Out of range!", filename);
+    core::logError(core::Debug::Channel::FileIO, "Failed to read file %s! Out of range!", path.generic_string().c_str());
     return FILESYSTEM_RESULT_OUT_OF_RANGE;
   }
 
@@ -42,13 +43,14 @@ Filesystem_Result readFile(const char* filename, span<char>& buffer)
   return FILESYSTEM_RESULT_SUCCESS;
 }
 
-Filesystem_Result readFile(const char* filename, vector<char>& buffer)
+vector<char> readFile(const std::filesystem::path& path)
 {
-  FILE* file = fopen(filename, "rb");
+  vector<char> buffer;
+  FILE* file = fopen(path.generic_string().c_str(), "rb");
   if (file == nullptr)
   {
-    core::logError(core::Debug::Channel::FileIO, "Failed to open file %s!", filename);
-    return FILESYSTEM_RESULT_FAILED_OPEN;
+    core::logError(core::Debug::Channel::FileIO, "Failed to open file %s!", path.generic_string().c_str());
+    return {};
   }
   fseek(file, 0, SEEK_END);
   size_t fileSize = ftell(file);
@@ -63,12 +65,12 @@ Filesystem_Result readFile(const char* filename, vector<char>& buffer)
   buffer[fileSize] = 0;
   fclose(file);
 
-  return FILESYSTEM_RESULT_SUCCESS;
+  return buffer;
 }
 
-bool checkFileAccess(const char* filename)
+bool checkFileAccess(const std::filesystem::path& path)
 {
-  return (_access(filename, F_OK) == 0);
+  return (_access(path.generic_string().c_str(), F_OK) == 0);
 }
 
 constexpr char getFileSeparator() 

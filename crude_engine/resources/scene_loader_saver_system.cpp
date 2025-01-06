@@ -91,13 +91,13 @@ void to_json(nlohmann::json& j, const GLTF_Metadata_Component& gltfModel)
 {
   j = nlohmann::json
   {
-    { "path", gltfModel.path },
+    { "path", gltfModel.path.string() },
   };
 }
 
 void from_json(const nlohmann::json& j, GLTF_Metadata_Component& gltfModel)
 {
-  gltfModel.path = j["path"];
+  gltfModel.path = j["path"].get<std::string>();
 }
 
 }

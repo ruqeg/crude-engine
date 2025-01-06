@@ -17,7 +17,6 @@ export import crude.core.std_containers_stack;
 export namespace crude::gfx::vk
 {
 
-class Device;
 class Sampler;
 class Command_Pool;
 class Image;
@@ -42,7 +41,7 @@ struct GLTF_Loader_Uninitialized_Flag {};
 
 struct GLTF_Metadata_Component
 {
-  core::string  path;
+  std::filesystem::path path;
 };
 
 struct GLTF_Loader_Context
@@ -51,7 +50,7 @@ struct GLTF_Loader_Context
   GLTF_Loader_Callback_Function            callback = [](flecs::entity) {};
 };
 
-[[nodiscard]] flecs::system registerGLTFModelLoaderSystem(flecs::world world, core::shared_ptr<GLTF_Loader_Context> ctx);
+[[nodiscard]] flecs::system registerGLTFLoaderSystem(flecs::world world, core::shared_ptr<GLTF_Loader_Context> ctx);
 
 }
 

@@ -1,5 +1,7 @@
 module;
 
+#include <filesystem>
+
 export module crude.core.filesystem;
 
 export import crude.core.std_containers_heap;
@@ -21,9 +23,9 @@ enum Filesystem_Result
   FILESYSTEM_RESULT_FAILED_OPEN,
 };
 
-Filesystem_Result readFile(const char* filename, span<char>& buffer);
-Filesystem_Result readFile(const char* filename, vector<char>& buffer);
-bool checkFileAccess(const char* filename);
+Filesystem_Result readFile(const std::filesystem::path& path, span<char>& buffer);
+vector<char> readFile(const std::filesystem::path& path);
+bool checkFileAccess(const std::filesystem::path& path);
 constexpr char getFileSeparator();
 
 }

@@ -92,11 +92,17 @@ void Engine::initializeSystems()
   m_sceneSaverSystem = resources::registerSceneSaverSystem(m_world, m_sceneSaverCtx);
   m_sceneLoaderSystem = resources::registerSceneLoaderSystem(m_world, m_sceneLoaderCtx);
 
-  m_gltfModelLoaderCtx = core::allocateShared<resources::GLTF_Loader_Context>(resources::GLTF_Loader_Context{
+  m_gltfLoaderCtx = core::allocateShared<resources::GLTF_Loader_Context>(resources::GLTF_Loader_Context{
     .transferCommandPool = m_rendererCore->getTransferCommandPool(),
     .callback = [](flecs::entity entity) {
     }});
-  m_gltfModelLoaderSystem = resources::registerGLTFModelLoaderSystem(m_world, m_gltfModelLoaderCtx);
+  m_gltfLoaderSystem = resources::registerGLTFLoaderSystem(m_world, m_gltfLoaderCtx);
+
+  m_vksLoaderCtx = core::allocateShared<resources::VKS_Loader_Context>(resources::VKS_Loader_Context{
+    .transferCommandPool = m_rendererCore->getTransferCommandPool(),
+    .callback = [](flecs::entity entity) {
+    } });
+  m_vksLoaderSystem = resources::registerVksLoaderSystem(m_world, m_vksLoaderCtx);
 }
 
 void Engine::initializeInputSystems()

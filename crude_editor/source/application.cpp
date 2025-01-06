@@ -9,10 +9,11 @@ import crude.gfx.vk.sampler_state;
 import crude.gfx.vk.image_view;
 import crude.gfx.vk.sampler;
 import crude.gfx.texture;
+import crude.gfx.gbuffer_pass;
 import crude.scene.camera;
 import crude.scripts.free_camera_script;
 import crude.gui.imgui_demo_layout_draw_system;
-import crude.gfx.gbuffer_pass;
+import crude.resources.vks_loader_system;
 
 import crude.editor.gui.imgui_editor_layout_draw_system;
 
@@ -79,6 +80,10 @@ void Application::initializeScene(core::float32 aspectRatio)
     .path = "../../../crude_editor/resources/main1_sponza/NewSponza_Main_glTF_003.gltf"
   });
   modelNode.add<crude::resources::GLTF_Loader_Uninitialized_Flag>();
+  modelNode.set<crude::resources::VKS_Metadata_Component>({
+    .path = "../../../crude_editor/resources/Bistro_outside.vks"
+    });
+  modelNode.add<crude::resources::VKS_Loader_Uninitialized_Flag>();
 }
 
 void Application::initializeEditorCamera(core::float32 aspectRatio)
