@@ -16,41 +16,19 @@ namespace crude::gfx::vk
 
 Device::Device(core::shared_ptr<const Physical_Device>     physicalDevice,
                core::span<const Device_Queue_Descriptor>   queueDescriptors,
-               const VkPhysicalDeviceFeatures&             enabledFeatures,
+               const Structure_Chain&                      extendedFeatures,
                core::span<const char* const>               enabledExtensions,
                core::span<const char* const>               enabledLayers)
   :
   m_physicalDevice(physicalDevice),
   m_queueDescriptors(queueDescriptors.begin(), queueDescriptors.end())
 {
-  // !TODO
   m_queueDescriptors.erase(std::unique(m_queueDescriptors.begin(), m_queueDescriptors.end()), m_queueDescriptors.end());
   core::vector<VkDeviceQueueCreateInfo> queueDescriptorsData(m_queueDescriptors.begin(), m_queueDescriptors.end());
 
-  VkPhysicalDeviceRobustness2FeaturesEXT deviceRobustness{};
-  deviceRobustness.sType          = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ROBUSTNESS_2_FEATURES_EXT;
-  deviceRobustness.nullDescriptor = VK_TRUE;
-
-  // !TODO
-  VkPhysicalDevice8BitStorageFeatures deviceFeatures8BitStorage{};
-  deviceFeatures8BitStorage.sType                   = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_8BIT_STORAGE_FEATURES;
-  deviceFeatures8BitStorage.pNext                   = &deviceRobustness;
-  deviceFeatures8BitStorage.storageBuffer8BitAccess = VK_TRUE;
-
-  VkPhysicalDeviceMeshShaderFeaturesEXT deviceFeaturesMesh{};
-  deviceFeaturesMesh.sType      = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_FEATURES_EXT;
-  deviceFeaturesMesh.pNext      = &deviceFeatures8BitStorage;
-  deviceFeaturesMesh.meshShader = VK_TRUE;
-  deviceFeaturesMesh.taskShader = VK_TRUE;
-
-  VkPhysicalDeviceFeatures2  deviceFeatures{};
-  deviceFeatures.sType    = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
-  deviceFeatures.pNext    = &deviceFeaturesMesh;
-  deviceFeatures.features = enabledFeatures;
-
   VkDeviceCreateInfo vkDeviceCreateInfo{};
   vkDeviceCreateInfo.sType                    = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-  vkDeviceCreateInfo.pNext                    = &deviceFeatures;
+  vkDeviceCreateInfo.pNext                    = extendedFeatures.getHeadNode();
   vkDeviceCreateInfo.flags                    = 0u;
   vkDeviceCreateInfo.queueCreateInfoCount     = queueDescriptorsData.size();
   vkDeviceCreateInfo.pQueueCreateInfos        = queueDescriptorsData.data();

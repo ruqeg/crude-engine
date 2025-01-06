@@ -8,6 +8,7 @@ export import crude.core.std_containers_heap;
 export import crude.core.std_containers_stack;
 export import crude.gfx.vk.vulkan_object;
 export import crude.gfx.vk.device_queue_descriptor;
+export import crude.gfx.vk.structure_chain;
 
 export namespace crude::gfx::vk
 {
@@ -21,7 +22,7 @@ class Device : public Vulkan_Object<VkDevice>
 public:
   explicit Device(core::shared_ptr<const Physical_Device>     physicalDevice,
                   core::span<const Device_Queue_Descriptor>   queueDescriptors,
-                  const VkPhysicalDeviceFeatures&             enabledFeatures,
+                  const Structure_Chain&                      extendedFeatures,
                   core::span<const char* const>               enabledExtensions,
                   core::span<const char* const>               enabledLayers);
 

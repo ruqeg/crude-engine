@@ -14,6 +14,9 @@ class Staging_Buffer : public Buffer
 {
 public:
   template<class T>
+  explicit Staging_Buffer(core::shared_ptr<const Device> device, const core::vector<T>& data)
+    : Staging_Buffer(device, data.data(), data.size_bytes()) {}
+  template<class T>
   explicit Staging_Buffer(core::shared_ptr<const Device> device, core::span<const T> data)
     : Staging_Buffer(device, data.data(), data.size_bytes()) {}
   explicit Staging_Buffer(core::shared_ptr<const Device> device, const void* data, VkDeviceSize size)

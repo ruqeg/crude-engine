@@ -1,5 +1,6 @@
 target_sources(crude_engine
   PRIVATE
+  structure_chain.cpp
   extension.cpp
   format_helper.cpp
   image_descriptor.cpp
@@ -43,6 +44,7 @@ target_sources(crude_engine
 target_sources(crude_engine
   PUBLIC
   FILE_SET cxx_modules_graphics_vk TYPE CXX_MODULES FILES
+  structure_chain.ixx
   storage_buffer.ixx
   extension.ixx
   push_constant_range.ixx

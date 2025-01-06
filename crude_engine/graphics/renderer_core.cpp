@@ -18,7 +18,22 @@ import crude.gfx.vk.command_pool;
 namespace crude::gfx
 {
 
-constexpr core::array<const char* const, 7> cDeviceEnabledExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_KHR_SPIRV_1_4_EXTENSION_NAME, VK_EXT_MESH_SHADER_EXTENSION_NAME, VK_KHR_SHADER_FLOAT_CONTROLS_EXTENSION_NAME, VK_KHR_8BIT_STORAGE_EXTENSION_NAME, VK_KHR_PUSH_DESCRIPTOR_EXTENSION_NAME, VK_EXT_ROBUSTNESS_2_EXTENSION_NAME };
+constexpr core::array<const char* const, 13> cDeviceEnabledExtensions = 
+{ 
+  VK_KHR_SWAPCHAIN_EXTENSION_NAME, 
+  VK_KHR_SPIRV_1_4_EXTENSION_NAME, 
+  VK_EXT_MESH_SHADER_EXTENSION_NAME, 
+  VK_KHR_SHADER_FLOAT_CONTROLS_EXTENSION_NAME, 
+  VK_KHR_8BIT_STORAGE_EXTENSION_NAME, 
+  VK_KHR_PUSH_DESCRIPTOR_EXTENSION_NAME, 
+  VK_EXT_ROBUSTNESS_2_EXTENSION_NAME,
+  VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME,
+  VK_KHR_RAY_QUERY_EXTENSION_NAME,
+  VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME,
+  VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME,
+  VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME,
+  VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME
+};
 constexpr core::array<const char*, 1> cInstanceEnabledLayers = { "VK_LAYER_KHRONOS_validation" };
 
 Renderer_Core::Renderer_Core(core::shared_ptr<platform::SDL_Window_Container> windowContainer)
@@ -102,21 +117,7 @@ void Renderer_Core::initializeSwapchain()
 
   core::vector<core::uint32> queueFamilyIndices = { m_graphicsQueue->getFamilyIndex(), m_graphicsQueue->getFamilyIndex() };
 
-  m_swapchain = core::allocateShared<vk::Swap_Chain>(
-    m_device,
-    m_surface,
-    surfaceFormat,
-    extent,
-    VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
-    imageCount,
-    1u,
-    queueFamilyIndices,
-    surfaceCapabilites.getCurrentTransform(),
-    VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
-    presentMode,
-    true,
-    0u,
-    nullptr);
+  m_swapchain = core::allocateShared<vk::Swap_Chain>(m_device, m_surface, surfaceFormat, extent, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, imageCount, 1u, queueFamilyIndices, surfaceCapabilites.getCurrentTransform(), VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR, presentMode, true, 0u, nullptr);
 
   m_swapchainImages = m_swapchain->getSwapchainImages();
   m_swapchainImagesViews.reserve(m_swapchainImages.size());
@@ -162,11 +163,61 @@ core::shared_ptr<vk::Physical_Device> Renderer_Core::pickPhysicalDevice()
 
 void Renderer_Core::initializeLogicDevice(core::shared_ptr<const vk::Physical_Device> physicalDevice)
 {
-  VkPhysicalDeviceFeatures deviceFeatures{};
-  deviceFeatures.samplerAnisotropy = VK_TRUE;
-  deviceFeatures.sampleRateShading = VK_TRUE;
-  deviceFeatures.independentBlend  = VK_TRUE;
-  deviceFeatures.imageCubeArray    = VK_TRUE;
+  vk::Structure_Chain extendedFeatures;
+
+  VkPhysicalDeviceRobustness2FeaturesEXT deviceRobustness{};
+  deviceRobustness.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ROBUSTNESS_2_FEATURES_EXT;
+  deviceRobustness.nullDescriptor = VK_TRUE;
+  extendedFeatures.linkNode(deviceRobustness);
+
+  VkPhysicalDevice8BitStorageFeatures deviceFeatures8BitStorage{};
+  deviceFeatures8BitStorage.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_8BIT_STORAGE_FEATURES;
+  deviceFeatures8BitStorage.storageBuffer8BitAccess = VK_TRUE;
+  extendedFeatures.linkNode(deviceFeatures8BitStorage);
+
+  VkPhysicalDeviceMeshShaderFeaturesEXT deviceFeaturesMesh{};
+  deviceFeaturesMesh.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_FEATURES_EXT;
+  deviceFeaturesMesh.meshShader = VK_TRUE;
+  deviceFeaturesMesh.taskShader = VK_TRUE;
+  extendedFeatures.linkNode(deviceFeaturesMesh);
+
+  VkPhysicalDeviceFeatures2 deviceFeatures{};
+  deviceFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+  deviceFeatures.features.samplerAnisotropy = VK_TRUE;
+  deviceFeatures.features.sampleRateShading = VK_TRUE;
+  deviceFeatures.features.independentBlend = VK_TRUE;
+  deviceFeatures.features.imageCubeArray = VK_TRUE;
+  extendedFeatures.linkNode(deviceFeatures);
+
+  VkPhysicalDeviceAccelerationStructureFeaturesKHR accelerationStructureFeatures{};
+  accelerationStructureFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR;
+  accelerationStructureFeatures.accelerationStructure = VK_TRUE;
+  accelerationStructureFeatures.accelerationStructureCaptureReplay = VK_FALSE;
+  accelerationStructureFeatures.accelerationStructureIndirectBuild = VK_FALSE;
+  accelerationStructureFeatures.accelerationStructureHostCommands = VK_FALSE;
+  accelerationStructureFeatures.descriptorBindingAccelerationStructureUpdateAfterBind = VK_FALSE;
+  extendedFeatures.linkNode(accelerationStructureFeatures);
+
+  VkPhysicalDeviceRayTracingPipelineFeaturesKHR rayTracingPipelineFeatures{};
+  rayTracingPipelineFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR;
+  rayTracingPipelineFeatures.rayTracingPipeline = VK_TRUE;
+  rayTracingPipelineFeatures.rayTracingPipelineShaderGroupHandleCaptureReplay = VK_FALSE;
+  rayTracingPipelineFeatures.rayTracingPipelineShaderGroupHandleCaptureReplayMixed = VK_FALSE;
+  rayTracingPipelineFeatures.rayTracingPipelineTraceRaysIndirect = VK_FALSE;
+  rayTracingPipelineFeatures.rayTraversalPrimitiveCulling = VK_FALSE;
+  extendedFeatures.linkNode(rayTracingPipelineFeatures);
+
+  VkPhysicalDeviceRayQueryFeaturesKHR rayQueryFeatures{};
+  rayQueryFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_QUERY_FEATURES_KHR;
+  rayQueryFeatures.rayQuery = VK_TRUE;
+  extendedFeatures.linkNode(rayQueryFeatures);
+
+  VkPhysicalDeviceBufferDeviceAddressFeaturesKHR bufferDeviceAddressFeatures{};
+  bufferDeviceAddressFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES_KHR;
+  bufferDeviceAddressFeatures.bufferDeviceAddress = VK_TRUE;
+  bufferDeviceAddressFeatures.bufferDeviceAddressCaptureReplay = VK_FALSE;
+  bufferDeviceAddressFeatures.bufferDeviceAddressMultiDevice = VK_FALSE;
+  extendedFeatures.linkNode(bufferDeviceAddressFeatures);
 
   core::array<vk::Device_Queue_Descriptor, 2> queueInfos =
   {
@@ -174,7 +225,7 @@ void Renderer_Core::initializeLogicDevice(core::shared_ptr<const vk::Physical_De
     vk::Device_Queue_Descriptor(physicalDevice, m_surface),
   };
 
-  m_device = core::allocateShared<vk::Device>(physicalDevice, queueInfos, deviceFeatures, cDeviceEnabledExtensions, cInstanceEnabledLayers);
+  m_device = core::allocateShared<vk::Device>(physicalDevice, queueInfos, extendedFeatures, cDeviceEnabledExtensions, cInstanceEnabledLayers);
 
   for (auto it = m_device->getQueueDescriptors().begin(); it != m_device->getQueueDescriptors().end(); ++it)
   {
@@ -186,6 +237,7 @@ void Renderer_Core::initializeLogicDevice(core::shared_ptr<const vk::Physical_De
   if (!m_presentQueue) m_presentQueue = m_graphicsQueue;
   if (!m_transferQueue) m_transferQueue = m_graphicsQueue;
 }
+
 core::shared_ptr<vk::Queue> Renderer_Core::getGraphicsQueue() { return m_graphicsQueue; }
 core::shared_ptr<vk::Queue> Renderer_Core::getPresentQueue() { return m_presentQueue; }
 core::shared_ptr<vk::Queue> Renderer_Core::getTransferQueue() { return m_transferQueue; }

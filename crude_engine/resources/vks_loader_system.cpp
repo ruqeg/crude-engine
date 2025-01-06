@@ -9,6 +9,8 @@ module crude.resources.vks_loader_system;
 
 import crude.core.logger;
 import crude.gfx.vk.vertex_buffer;
+import crude.gfx.vk.staging_buffer;
+import crude.gfx.vk.command_buffer;
 import crude.gfx.vk.command_pool;
 
 namespace crude::resources
@@ -90,6 +92,21 @@ void VKS_Loader::loadToNodeFromFile(flecs::entity node, const std::filesystem::p
     file.read(&materialNames[i][0], materialNames[i].size());
   }
 
+  // !TODO T_T
+  core::vector<char> data;
+  data.resize(sizeof(core::uint32) * 2u * triangleCount * 3u);
+  file.read(data.data(), data.size());
+  auto commandBuffer = core::allocateShared<gfx::vk::Command_Buffer>(m_commandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+  core::shared_ptr<gfx::vk::Vertex_Buffer> positionBuffer = core::allocateShared<gfx::vk::Vertex_Buffer>(commandBuffer, data);
+
+  data.resize(sizeof(core::uint32) * 2u * triangleCount * 3u);
+  file.read(data.data(), data.size());
+  core::shared_ptr<gfx::vk::Vertex_Buffer> normalTexcoordBuffer = core::allocateShared<gfx::vk::Vertex_Buffer>(commandBuffer, data);
+
+  data.resize(sizeof(core::uint8) * triangleCount);
+  file.read(data.data(), data.size());
+  core::shared_ptr<gfx::vk::Vertex_Buffer> materialIndicesBuffer = core::allocateShared<gfx::vk::Vertex_Buffer>(commandBuffer, data);
+
   core::uint32 eofMarker;
   file.read(reinterpret_cast<char*>(&eofMarker), sizeof(eofMarker));
   if (eofMarker != 0xe0fe0f)
@@ -97,6 +114,8 @@ void VKS_Loader::loadToNodeFromFile(flecs::entity node, const std::filesystem::p
     core::logError(core::Debug::Channel::FileIO, "Finished reading data from the scene file at %s but did not encounter an end-of-file marker where expected. Either the file is invalid or the loader is buggy.", path.string().c_str());
     return;
   }
+
+  // !TODO
 }
 
 }
