@@ -8,6 +8,7 @@
 module crude.resources.vks_loader_system;
 
 import crude.core.logger;
+import crude.gfx.vk.vertex_buffer;
 import crude.gfx.vk.command_pool;
 
 namespace crude::resources
@@ -49,48 +50,53 @@ VKS_Loader::VKS_Loader(core::shared_ptr<gfx::vk::Command_Pool> commandPool)
 
 void VKS_Loader::loadToNodeFromFile(flecs::entity node, const std::filesystem::path& path)
 {
-  FILE* file = fopen(path.string().c_str(), "rb");
-  if (!file)
+  std::ifstream file(path, std::ios::binary);
+  if (!file.is_open())
   {
     core::logError(core::Debug::Channel::FileIO, "Failed to open the scene file at %s.", path.string().c_str());
     return;
   }
 
   core::uint32 marker;
-  fread(&marker, sizeof(marker), 1, file);
+  file.read(reinterpret_cast<char*>(&marker), sizeof(marker));
   if (marker != 0xabcabc)
   {
     core::logError(core::Debug::Channel::FileIO, "The scene file at %s is not a valid *.vks file. Its marker does not match.", path.string().c_str());
-    fclose(file);
     return;
   }
 
   core::uint32 version;
-  fread(&version, sizeof(version), 1, file);
+  file.read(reinterpret_cast<char*>(&version), sizeof(version));
   if (version != 1)
   {
     core::logError(core::Debug::Channel::FileIO, "Only supports *.vks files using version 1 of the file format, but the scene file at %s uses version %u.", path.string().c_str(), version);
-    fclose(file);
     return;
   }
 
   core::uint64 materialCount, triangleCount;
   core::array<core::float32, 3> dequantizationFactor, dequantizationSummand;
-  fread(&materialCount, sizeof(materialCount), 1, file);
-  fread(&triangleCount, sizeof(triangleCount), 1, file);
-  fread(dequantizationFactor.data(), sizeof(dequantizationFactor[0]), dequantizationFactor.size(), file);
-  fread(dequantizationSummand.data(), sizeof(dequantizationSummand[0]), dequantizationSummand.size(), file);
+  file.read(reinterpret_cast<char*>(&materialCount), sizeof(materialCount));
+  file.read(reinterpret_cast<char*>(&triangleCount), sizeof(triangleCount));
+  file.read(reinterpret_cast<char*>(dequantizationFactor.data()), sizeof(dequantizationFactor[0]) * dequantizationFactor.size());
+  file.read(reinterpret_cast<char*>(dequantizationSummand.data()), sizeof(dequantizationSummand[0]) * dequantizationSummand.size());
+
+  core::vector<core::string> materialNames(materialCount);
+  for (core::uint64 i = 0; i != materialCount; ++i)
+  {
+    core::uint64 length;
+    file.read(reinterpret_cast<char*>(&length), sizeof(length));
+
+    materialNames[i].resize(length + 1);
+    file.read(&materialNames[i][0], materialNames[i].size());
+  }
 
   core::uint32 eofMarker;
-  fread(&eofMarker, sizeof(eofMarker), 1, file);
+  file.read(reinterpret_cast<char*>(&eofMarker), sizeof(eofMarker));
   if (eofMarker != 0xe0fe0f)
   {
     core::logError(core::Debug::Channel::FileIO, "Finished reading data from the scene file at %s but did not encounter an end-of-file marker where expected. Either the file is invalid or the loader is buggy.", path.string().c_str());
-    fclose(file);
     return;
   }
-
-  fclose(file);
 }
 
 }

@@ -9,3 +9,4 @@ TODO
 - joltphysics
 - tracy
 - custom export for mesh shader like *.vks
+- rework vks (at least str)
