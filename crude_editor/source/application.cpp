@@ -9,6 +9,7 @@ import crude.gfx.vk.sampler_state;
 import crude.gfx.vk.image_view;
 import crude.gfx.vk.sampler;
 import crude.gfx.texture;
+import crude.gfx.raytracing_pass;
 import crude.gfx.gbuffer_pass;
 import crude.scene.camera;
 import crude.scripts.free_camera_script;
@@ -56,6 +57,7 @@ void Application::initialize()
     m_editorLayoutCtx->editorSelectedNode = m_sceneNode;
     };
 
+  gfx::initializeRaytracingPass(m_graph, m_world, m_cameraNode);
   //gfx::initializeGbufferPass(m_graph, m_world, m_cameraNode);
 }
 

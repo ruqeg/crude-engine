@@ -6,6 +6,7 @@ target_sources(crude_engine
   gbuffer.cpp
   mesh_buffer.cpp
   pipeline_manager.cpp
+  raytracing_pass.cpp
   render_graph.cpp
   renderer_core.cpp
   renderer_frame.cpp
@@ -21,6 +22,7 @@ target_sources(crude_engine
   material.ixx
   mesh_buffer.ixx
   pipeline_manager.ixx
+  raytracing_pass.ixx
   render_graph.ixx
   renderer_core.ixx
   renderer_frame.ixx

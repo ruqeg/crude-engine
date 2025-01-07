@@ -64,9 +64,10 @@ public:
   
   void pushDescriptorSet(core::shared_ptr<Pipeline>                     pipeline,
                          const core::span<const VkWriteDescriptorSet>&  descriptorWrites);
-  void bindDescriptorSets(core::shared_ptr<Pipeline>                    pipeline,
-                          core::span<core::shared_ptr<Descriptor_Set>>  descriptorSets,
-                          core::span<core::uint32>                      dynamicOffsets = {});
+  void bindDescriptorSets(core::shared_ptr<Pipeline>                          pipeline,
+                          core::span<const core::shared_ptr<Descriptor_Set>>  descriptorSets,
+                          core::span<const core::uint32>                      dynamicOffsets = {});
+  void bindDescriptorSet(core::shared_ptr<Pipeline> pipeline, core::shared_ptr<Descriptor_Set> descriptorSet, core::uint32 dynamicOffset = 0u);
   template<class T>
   void pushConstant(core::shared_ptr<const Pipeline_Layout> layout, const T& constant, core::uint32 offset = 0);
   void pushConstantBase(core::shared_ptr<const Pipeline_Layout> layout, core::span<const core::byte> data, core::uint32 offset);

@@ -189,8 +189,8 @@ void Command_Buffer::copyBuffer(core::shared_ptr<const Buffer>  srcBuffer,
 }
 
 void Command_Buffer::bindDescriptorSets(core::shared_ptr<Pipeline>                    pipeline,
-                                        core::span<core::shared_ptr<Descriptor_Set>>  descriptorSets,
-                                        core::span<core::uint32>                      dynamicOffsets)
+                                        core::span<const core::shared_ptr<Descriptor_Set>>  descriptorSets,
+                                        core::span<const core::uint32>                      dynamicOffsets)
 {
   constexpr core::uint32 offset = 0u;
 
@@ -208,6 +208,20 @@ void Command_Buffer::bindDescriptorSets(core::shared_ptr<Pipeline>              
     descriptorSetsHandles.data(),
     dynamicOffsets.size(),
     dynamicOffsets.data());
+}
+
+void Command_Buffer::bindDescriptorSet(core::shared_ptr<Pipeline> pipeline, core::shared_ptr<Descriptor_Set> descriptorSet, core::uint32 dynamicOffset)
+{
+  constexpr core::uint32 offset = 0u;
+  vkCmdBindDescriptorSets(
+    m_handle,
+    pipeline->getBindPoint(),
+    pipeline->getPipelineLayout()->getHandle(),
+    offset,
+    1u,
+    &descriptorSet->getHandle(),
+    1u,
+    &dynamicOffset);
 }
 
 void Command_Buffer::pushDescriptorSet(core::shared_ptr<Pipeline>                     pipeline,
