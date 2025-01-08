@@ -24,8 +24,11 @@ public:
       .memoryFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
       })
   {
+    m_stide = sizeof(T);
     stagedUpload(commandBuffer, data);
   }
+private:
+  core::uint32 m_stide;
 };
 
 }

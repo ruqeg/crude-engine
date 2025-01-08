@@ -10,6 +10,7 @@ import crude.gfx.vk.device_memory;
 import crude.gfx.vk.queue;
 import crude.gfx.vk.command_pool;
 import crude.gfx.vk.flush;
+import crude.gfx.vk.constants;
 import crude.core.logger;
 
 namespace crude::gfx::vk
@@ -90,6 +91,15 @@ VkMemoryRequirements Buffer::getMemoryRequirements() const
   VkMemoryRequirements memRequirements;
   vkGetBufferMemoryRequirements(m_device->getHandle(), m_handle, &memRequirements);
   return memRequirements;
+}
+
+VkDeviceAddress Buffer::getDeviceAddress() const
+{
+  VkBufferDeviceAddressInfo info{};
+  info.sType  = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO_KHR;
+  info.buffer = m_handle;
+  info.pNext  = nullptr;
+  return vkGetBufferDeviceAddress(m_device->getHandle(), &info);
 }
 
 VkDeviceSize Buffer::getSize() const

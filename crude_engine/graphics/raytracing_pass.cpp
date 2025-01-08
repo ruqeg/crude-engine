@@ -20,6 +20,7 @@ import crude.gfx.vk.vertex_buffer;
 import crude.gfx.vk.image_descriptor;
 import crude.gfx.vk.descriptor_pool;
 import crude.gfx.vk.acceleration_structure_input_buffer;
+import crude.gfx.vk.acceleration_structure_geometry_triangles;
 import crude.scene.mesh;
 
 namespace crude::gfx
@@ -48,7 +49,7 @@ void initializeRaytracingPass(core::shared_ptr<Render_Graph> graph, flecs::world
 
   auto commandBuffer = core::allocateShared<gfx::vk::Command_Buffer>(graph->getRendererFrame()->getCore()->getTransferCommandPool(), VK_COMMAND_BUFFER_LEVEL_PRIMARY);
   core::shared_ptr<vk::Acceleration_Structure_Input_Buffer> vertexBuffer = core::allocateShared<vk::Acceleration_Structure_Input_Buffer>(commandBuffer, vertices);
-  geometry = magma::AccelerationStructureGeometryTriangles(VK_FORMAT_R32G32B32_SFLOAT, vertexBuffer.get());
+  vk::Acceleration_Structure_Geometry_Triangles geometry = vk::Acceleration_Structure_Geometry_Triangles(VK_FORMAT_R32G32B32_SFLOAT, 3 * sizeof(core::uint32), vertexBuffer);
 }
 
 }
