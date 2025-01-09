@@ -1,6 +1,7 @@
 target_sources(crude_engine
   PRIVATE
   utils.cpp
+  acceleration_structure.cpp
   acceleration_structure_input_buffer.cpp
   acceleration_structure_geometry_triangles.cpp
   structure_chain.cpp
@@ -49,6 +50,9 @@ target_sources(crude_engine
   FILE_SET cxx_modules_graphics_vk TYPE CXX_MODULES FILES
   utils.ixx
   constants.ixx
+  bottom_level_acceleration_structure.ixx
+  acceleration_structure_storage_buffer.ixx
+  acceleration_structure.ixx
   acceleration_structure_input_buffer.ixx
   acceleration_structure_geometry_triangles.ixx
   structure_chain.ixx

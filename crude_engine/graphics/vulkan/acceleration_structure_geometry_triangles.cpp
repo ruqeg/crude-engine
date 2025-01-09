@@ -11,6 +11,7 @@ namespace crude::gfx::vk
 {
 
 Acceleration_Structure_Geometry_Triangles::Acceleration_Structure_Geometry_Triangles()
+  : primitiveCount{ 0u }
 {
   this->sType                                          = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR;
   this->pNext                                          = nullptr;
@@ -29,6 +30,7 @@ Acceleration_Structure_Geometry_Triangles::Acceleration_Structure_Geometry_Trian
 }
 
 Acceleration_Structure_Geometry_Triangles::Acceleration_Structure_Geometry_Triangles(VkFormat vertexFormat, VkDeviceSize vertexStride, core::shared_ptr<Acceleration_Structure_Input_Buffer> vertices)
+  : Acceleration_Structure_Geometry_Triangles{}
 {
   this->geometry.triangles.vertexFormat  = vertexFormat;
   this->geometry.triangles.vertexData    = vk::getAddress(vertices);
@@ -36,6 +38,8 @@ Acceleration_Structure_Geometry_Triangles::Acceleration_Structure_Geometry_Trian
   this->geometry.triangles.maxVertex     = static_cast<core::uint32>(vertices->getSize() / geometry.triangles.vertexStride) - 1;
   this->geometry.triangles.transformData = VkDeviceOrHostAddressConstKHR{};
   this->flags                            = 0;
+
+  primitiveCount = (geometry.triangles.maxVertex + 1) / 3;
 }
 
 }

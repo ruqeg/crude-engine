@@ -21,6 +21,7 @@ import crude.gfx.vk.image_descriptor;
 import crude.gfx.vk.descriptor_pool;
 import crude.gfx.vk.acceleration_structure_input_buffer;
 import crude.gfx.vk.acceleration_structure_geometry_triangles;
+import crude.gfx.vk.bottom_level_acceleration_structure;
 import crude.scene.mesh;
 
 namespace crude::gfx
@@ -50,6 +51,11 @@ void initializeRaytracingPass(core::shared_ptr<Render_Graph> graph, flecs::world
   auto commandBuffer = core::allocateShared<gfx::vk::Command_Buffer>(graph->getRendererFrame()->getCore()->getTransferCommandPool(), VK_COMMAND_BUFFER_LEVEL_PRIMARY);
   core::shared_ptr<vk::Acceleration_Structure_Input_Buffer> vertexBuffer = core::allocateShared<vk::Acceleration_Structure_Input_Buffer>(commandBuffer, vertices);
   vk::Acceleration_Structure_Geometry_Triangles geometry = vk::Acceleration_Structure_Geometry_Triangles(VK_FORMAT_R32G32B32_SFLOAT, 3 * sizeof(core::uint32), vertexBuffer);
+  core::shared_ptr<vk::Bottom_Level_Acceleration_Structure> bottomLevel = core::allocateShared<vk::Bottom_Level_Acceleration_Structure>(
+    device,
+    core::array<vk::Acceleration_Structure_Geometry_Triangles, 1>{ geometry },
+    VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR,
+    VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR);
 }
 
 }

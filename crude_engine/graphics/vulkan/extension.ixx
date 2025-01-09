@@ -41,6 +41,11 @@ constexpr const char* pfnToProcAddr()
   {
     return "vkCmdPushDescriptorSetKHR";
   }
+  else if constexpr (std::same_as<Fn, PFN_vkGetBufferDeviceAddressEXT>)
+  {
+    return "vkGetBufferDeviceAddressEXT";
+  }
+
   core::logError(core::Debug::Channel::Graphics, "Failed to converty pfn to procAddr!");
   return "";
 }
