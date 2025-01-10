@@ -81,11 +81,12 @@ void* Free_RBT_Allocator::allocate(size_t size) noexcept
     *allocatedHeader = Node(allocatedHeader->blockSize, false, allocatedHeader->prev, allocatedHeader->next);
   }
 
-#ifdef _CRUDE_FREE_RBT_ALLOCATOR_MASSIVE_ASSERT
-  assertLostMemoryBlock();
-  assertCorruptedMemoryList();
-  assertUnmergedMemoryBlocks();
-#endif
+  if constexpr (cEnableAsserts)
+  {
+    assertLostMemoryBlock();
+    assertCorruptedMemoryList();
+    assertUnmergedMemoryBlocks();
+  }
 
   return resultAddress;
 }
@@ -116,7 +117,7 @@ void Free_RBT_Allocator::deallocate(void* ptr) noexcept
       allocatedHeader->next->prev = allocatedHeader;
     }
   }
-  
+
   if (allocatedHeader->next && (allocatedHeader->next->free))
   {
     assert(allocatedHeader->next->prev == allocatedHeader);
@@ -129,14 +130,15 @@ void Free_RBT_Allocator::deallocate(void* ptr) noexcept
       allocatedHeader->next->prev = allocatedHeader;
     }
   }
-  
+
   m_rbt.insert(*allocatedHeader);
 
-#ifdef _CRUDE_FREE_RBT_ALLOCATOR_MASSIVE_ASSERT
-  assertLostMemoryBlock();
-  assertCorruptedMemoryList();
-  assertUnmergedMemoryBlocks();
-#endif
+  if constexpr (cEnableAsserts)
+  {
+    assertLostMemoryBlock();
+    assertCorruptedMemoryList();
+    assertUnmergedMemoryBlocks();
+  }
 
   return;
 }
@@ -153,7 +155,6 @@ void Free_RBT_Allocator::reset() noexcept
 
 void Free_RBT_Allocator::assertLostMemoryBlock()
 {
-#ifdef _CRUDE_FREE_RBT_ALLOCATOR_MASSIVE_ASSERT
   assert([this]() -> bool {
     Node* header = &*m_rbt.begin();
     while (header->prev)
@@ -180,12 +181,10 @@ void Free_RBT_Allocator::assertLostMemoryBlock()
 
     return (m_capacity == totalBlockSize);
     }());
-#endif
 }
 
 void Free_RBT_Allocator::assertCorruptedMemoryList()
 {
-#ifdef _CRUDE_FREE_RBT_ALLOCATOR_MASSIVE_ASSERT
   assert([this]() -> bool {
     Node* header = &*m_rbt.begin();
     while (header->prev)
@@ -205,12 +204,10 @@ void Free_RBT_Allocator::assertCorruptedMemoryList()
 
     return true;
     }());
-#endif
 }
 
 void Free_RBT_Allocator::assertUnmergedMemoryBlocks()
 {
-#ifdef _CRUDE_FREE_RBT_ALLOCATOR_MASSIVE_ASSERT
   assert([this]() -> bool {
     for (auto it = m_rbt.begin(); it != m_rbt.end(); ++it)
     {
@@ -230,7 +227,6 @@ void Free_RBT_Allocator::assertUnmergedMemoryBlocks()
     }
     return true;
     }());
-#endif
 }
 
 }

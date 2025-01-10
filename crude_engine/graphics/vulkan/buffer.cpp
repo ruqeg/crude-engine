@@ -105,7 +105,7 @@ VkDeviceAddress Buffer::getDeviceAddress() const
   if (vkGetBufferDeviceAddressEXT)
   {
     return vkGetBufferDeviceAddressEXT(m_device->getHandle(), &info);
-  }
+  } 
   return cDeviceAddressNull;
 }
 

@@ -60,6 +60,9 @@ private:
   const size_t          m_capacity;
   Red_Black_Tree<Node>  m_rbt;
   Placement_Policy      m_policy;
+  
+private:
+  constexpr static bool cEnableAsserts = true;
 };
 
 }
