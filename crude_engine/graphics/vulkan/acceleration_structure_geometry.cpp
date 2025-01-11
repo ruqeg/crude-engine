@@ -32,14 +32,6 @@ Acceleration_Structure_Geometry_Triangles::Acceleration_Structure_Geometry_Trian
 Acceleration_Structure_Geometry_Triangles::Acceleration_Structure_Geometry_Triangles(VkFormat vertexFormat, VkDeviceSize vertexStride, core::shared_ptr<Acceleration_Structure_Input_Buffer> vertices)
   : Acceleration_Structure_Geometry_Triangles{}
 {
-  this->geometry.triangles.vertexFormat  = vertexFormat;
-  this->geometry.triangles.vertexData    = vk::getAddress(vertices);
-  this->geometry.triangles.vertexStride  = vertexStride;
-  this->geometry.triangles.maxVertex     = static_cast<core::uint32>(vertices->getSize() / geometry.triangles.vertexStride) - 1;
-  this->geometry.triangles.transformData = VkDeviceOrHostAddressConstKHR{};
-  this->flags                            = 0;
-
-  primitiveCount = (geometry.triangles.maxVertex + 1) / 3;
 }
 
 }

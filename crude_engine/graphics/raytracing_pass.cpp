@@ -22,6 +22,8 @@ import crude.gfx.vk.descriptor_pool;
 import crude.gfx.vk.acceleration_structure_input_buffer;
 import crude.gfx.vk.acceleration_structure_geometry_triangles;
 import crude.gfx.vk.bottom_level_acceleration_structure;
+import crude.gfx.vk.acceleration_structure_instance_buffer;
+import crude.gfx.vk.acceleration_structure_instance;
 import crude.scene.mesh;
 
 namespace crude::gfx
@@ -56,6 +58,8 @@ void initializeRaytracingPass(core::shared_ptr<Render_Graph> graph, flecs::world
     core::array<vk::Acceleration_Structure_Geometry_Triangles, 1>{ geometry },
     VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR,
     VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR);
+  core::shared_ptr<vk::Acceleration_Structure_Instance_Buffer<vk::Acceleration_Structure_Instance>> instanceBuffer = core::allocateShared<vk::Acceleration_Structure_Instance_Buffer<vk::Acceleration_Structure_Instance>>(device, 1u);
+  vk::Acceleration_Structure_Geometry_Instances geometryInstaces = vk::Acceleration_Structure_Geometry_Instances{ instanceBuffer };
 }
 
 }

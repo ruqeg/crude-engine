@@ -27,6 +27,14 @@ public:
     m_stide = sizeof(T);
     stagedUpload(commandBuffer, data);
   }
+  explicit Acceleration_Structure_Input_Buffer(core::shared_ptr<Device> device, VkDeviceSize size)
+    : Buffer({
+      .device = device,
+      .size = size,
+      .usage = VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT_KHR | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+      .memoryFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
+      })
+  {}
 private:
   core::uint32 m_stide;
 };
