@@ -45,7 +45,15 @@ constexpr const char* pfnToProcAddr()
   {
     return "vkGetBufferDeviceAddressKHR";
   }
-
+  else if constexpr (std::same_as<Fn, PFN_vkGetAccelerationStructureBuildSizesKHR>)
+  {
+    return "vkGetAccelerationStructureBuildSizesKHR";
+  }
+  else if constexpr (std::same_as<Fn, PFN_vkCreateAccelerationStructureKHR>)
+  {
+    return "vkCreateAccelerationStructureKHR";
+  }
+  
   core::logError(core::Debug::Channel::Graphics, "Failed to converty pfn to procAddr!");
   return "";
 }

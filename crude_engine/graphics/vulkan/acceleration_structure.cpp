@@ -2,7 +2,11 @@
 
 module crude.gfx.vk.acceleration_structure;
 
+import crude.gfx.vk.vulkan_utils;
 import crude.gfx.vk.device;
+import crude.gfx.vk.extension;
+import crude.gfx.vk.acceleration_structure_storage_buffer;
+import crude.gfx.vk.constants;
 
 namespace crude::gfx::vk
 {
@@ -36,20 +40,30 @@ Acceleration_Structure::Acceleration_Structure(core::shared_ptr<Device>         
   buildGeometryInfo.scratchData.hostAddress  = nullptr;
 
   VkAccelerationStructureBuildSizesInfoKHR buildSizesInfo = { VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_SIZES_INFO_KHR };
-  //vkGetAccelerationStructureBuildSizesKHR(device->getHandle(), buildType, &buildGeometryInfo, maxPrimitiveCounts.data(), &buildSizesInfo);
-  
-  //buffer = std::make_unique<AccelerationStructureStorageBuffer>(std::move(device),
-  //  buildSizesInfo.accelerationStructureSize, buildType, std::move(allocator), Buffer::Initializer(), sharing);
+  auto vkGetAccelerationStructureBuildSizesKHR = getDeviceExtension<PFN_vkGetAccelerationStructureBuildSizesKHR>(m_device);
+  if (vkGetAccelerationStructureBuildSizesKHR)
+  {
+    vkGetAccelerationStructureBuildSizesKHR(device->getHandle(), buildType, &buildGeometryInfo, maxPrimitiveCounts.data(), &buildSizesInfo);
+  }
 
-  //VkAccelerationStructureCreateInfoKHR createInfo{};
-  //createInfo.sType          = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_KHR;
-  //createInfo.pNext          = nullptr;
-  //createInfo.createFlags    = 0;
-  //createInfo.buffer         = ;
-  //createInfo.offset         =;
-  //createInfo.size           =;
-  //createInfo.type           =;
-  //createInfo.deviceAddress  =;
+  m_buffer = core::allocateShared<vk::Acceleration_Structure_Storage_Buffer>(device, buildSizesInfo.accelerationStructureSize);
+  
+  VkAccelerationStructureCreateInfoKHR accelerationStructureInfo;
+  accelerationStructureInfo.sType         = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_KHR;
+  accelerationStructureInfo.pNext         = nullptr;
+  accelerationStructureInfo.createFlags   = flags;
+  accelerationStructureInfo.buffer        = m_buffer->getHandle();
+  accelerationStructureInfo.offset        = 0u;
+  accelerationStructureInfo.size          = buildSizesInfo.accelerationStructureSize;
+  accelerationStructureInfo.type          = structureType;
+  accelerationStructureInfo.deviceAddress = cDeviceAddressNull;
+
+  auto vkCreateAccelerationStructureKHR = getDeviceExtension<PFN_vkCreateAccelerationStructureKHR>(m_device);
+  if (vkCreateAccelerationStructureKHR)
+  {
+    VkResult result = vkCreateAccelerationStructureKHR(device->getHandle(), &accelerationStructureInfo, getPVkAllocationCallbacks(), &m_handle);
+    vulkanHandleResult(result, "failed to create acceleration structure");
+  }
 }
 
 }

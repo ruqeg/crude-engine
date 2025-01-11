@@ -13,6 +13,7 @@ export namespace crude::gfx::vk
 {
 class Device;
 class Buffer;
+class Acceleration_Structure_Storage_Buffer;
 }
 
 export namespace crude::gfx::vk
@@ -28,7 +29,8 @@ protected:
                                   VkBuildAccelerationStructureFlagsKHR                         buildFlags,
                                   core::span<const Acceleration_Structure_Geometry_Triangles>  geometries);
 private:
-  core::shared_ptr<Device> m_device;
+  core::shared_ptr<Device>                                 m_device;
+  core::shared_ptr<Acceleration_Structure_Storage_Buffer>  m_buffer;
 };
 
 }

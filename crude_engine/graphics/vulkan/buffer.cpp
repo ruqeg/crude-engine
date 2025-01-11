@@ -110,10 +110,10 @@ VkDeviceAddress Buffer::getDeviceAddress() const
   info.pNext  = nullptr;
   info.buffer = m_handle;
 
-  auto vkGetBufferDeviceAddressEXT = getDeviceExtension<PFN_vkGetBufferDeviceAddressKHR>(m_device);
-  if (vkGetBufferDeviceAddressEXT)
+  auto vkGetBufferDeviceAddressKHR = getDeviceExtension<PFN_vkGetBufferDeviceAddressKHR>(m_device);
+  if (vkGetBufferDeviceAddressKHR)
   {
-    return vkGetBufferDeviceAddressEXT(m_device->getHandle(), &info);
+    return vkGetBufferDeviceAddressKHR(m_device->getHandle(), &info);
   } 
   return cDeviceAddressNull;
 }

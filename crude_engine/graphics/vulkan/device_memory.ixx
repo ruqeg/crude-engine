@@ -43,8 +43,6 @@ public:
   void unmap();
   core::shared_ptr<const Device> getDevice() const;
 private:
-  void initalize(VkDeviceSize allocationSize, core::uint32 memoryTypeIndex, const vk::Structure_Chain& extendedMemoryInfo);
-private:
   core::shared_ptr<const Device>  m_device;
 };
 

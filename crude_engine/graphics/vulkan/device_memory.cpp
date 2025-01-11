@@ -16,38 +16,26 @@ Device_Memory::Device_Memory(core::shared_ptr<const Device>  device,
                              core::uint32                    memoryTypeFilter,
                              VkMemoryPropertyFlags           memoryProperties,
                              const vk::Structure_Chain&      extendedMemoryInfo)
-  : m_device{ device }
-{
-  core::int64 memoryTypeIndex;
+  : Device_Memory { 
+    device, 
+    allocationSize,
+    // Get memory type index
+    [device, memoryTypeFilter, memoryProperties]() -> core::uint32 {
+      VkPhysicalDeviceMemoryProperties memProperties = device->getPhysicalDevice()->getMemoryProperties();
+      
+      for (core::uint32 i = 0u; i < memProperties.memoryTypeCount; ++i)
+      {
+        if (memoryTypeFilter & (1 << i) && (memProperties.memoryTypes[i].propertyFlags & memoryProperties) == memoryProperties)
+        {
+          return i;
+        }
+      }
 
-  VkPhysicalDeviceMemoryProperties memProperties = m_device->getPhysicalDevice()->getMemoryProperties();
-
-  // !TODO
-  memoryTypeIndex = -1;
-  for (core::uint32 i = 0u; i < memProperties.memoryTypeCount; i++)
-  {
-    if (memoryTypeFilter & (1 << i) && (memProperties.memoryTypes[i].propertyFlags & memoryProperties) == memoryProperties)
-    {
-      memoryTypeIndex = i;
-    }
-  }
-
-  if (memoryTypeIndex == -1)
-  {
-    vulkanHandleError("failed to find device memory type");
-  }
-
-  initalize(allocationSize, memoryTypeIndex, extendedMemoryInfo);
-}
-
-Device_Memory::Device_Memory(core::shared_ptr<const Device>  device,
-                             VkDeviceSize                    allocationSize,
-                             core::uint32                    memoryTypeIndex,
-                             const vk::Structure_Chain&      extendedMemoryInfo)
-  : m_device{ device }
-{
-  initalize(allocationSize, memoryTypeIndex, extendedMemoryInfo);
-}
+      vulkanHandleError("failed to find device memory type");
+      return -1;
+    }(),
+    extendedMemoryInfo }
+{}
 
 Device_Memory::Device_Memory(core::shared_ptr<const Device>  device, 
                              VkMemoryRequirements            memoryRequirements, 
@@ -56,7 +44,11 @@ Device_Memory::Device_Memory(core::shared_ptr<const Device>  device,
   : Device_Memory{ device, memoryRequirements.size, memoryRequirements.memoryTypeBits, memoryProperties, extendedMemoryInfo }
 {}
 
-void Device_Memory::initalize(VkDeviceSize allocationSize, core::uint32 memoryTypeIndex, const vk::Structure_Chain& extendedMemoryInfo)
+Device_Memory::Device_Memory(core::shared_ptr<const Device>  device,
+                             VkDeviceSize                    allocationSize,
+                             core::uint32                    memoryTypeIndex,
+                             const vk::Structure_Chain&      extendedMemoryInfo)
+  : m_device{ device }
 {
   VkMemoryAllocateInfo vkAllocateInfo{};
   vkAllocateInfo.sType           = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
