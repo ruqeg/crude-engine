@@ -6,6 +6,7 @@ export module crude.gfx.vk.device_memory;
 
 export import crude.core.std_containers_stack;
 export import crude.core.std_containers_heap;
+export import crude.gfx.vk.structure_chain;
 import crude.gfx.vk.vulkan_object;
 
 export namespace crude::gfx::vk
@@ -20,16 +21,19 @@ class Device_Memory : public Vulkan_Object<VkDeviceMemory>
 public:
   explicit Device_Memory(core::shared_ptr<const Device>  device,
                          VkDeviceSize                    allocationSize,
-                         core::uint32                    memoryTypeIndex);
+                         core::uint32                    memoryTypeIndex,
+                         const vk::Structure_Chain&      extendedMemoryInfo = {});
   
   explicit Device_Memory(core::shared_ptr<const Device>  device,
                          VkMemoryRequirements            memoryRequirements,
-                         VkMemoryPropertyFlags           memoryProperties);
+                         VkMemoryPropertyFlags           memoryProperties,
+                         const vk::Structure_Chain&      extendedMemoryInfo = {});
 
   explicit Device_Memory(core::shared_ptr<const Device>  device,
                          VkDeviceSize                    allocationSize,
                          core::uint32                    memoryTypeFilter,
-                         VkMemoryPropertyFlags           memoryProperties);
+                         VkMemoryPropertyFlags           memoryProperties,
+                         const vk::Structure_Chain&      extendedMemoryInfo = {});
   ~Device_Memory();
 
   void bind(core::shared_ptr<Image> image, VkDeviceSize offset = 0u);
@@ -39,7 +43,7 @@ public:
   void unmap();
   core::shared_ptr<const Device> getDevice() const;
 private:
-  void initalize(VkDeviceSize allocationSize, core::uint32 memoryTypeIndex);
+  void initalize(VkDeviceSize allocationSize, core::uint32 memoryTypeIndex, const vk::Structure_Chain& extendedMemoryInfo);
 private:
   core::shared_ptr<const Device>  m_device;
 };

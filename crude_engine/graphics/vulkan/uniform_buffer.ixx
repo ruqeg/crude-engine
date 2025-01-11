@@ -44,7 +44,7 @@ template<class T>
 core::optional<T*> Uniform_Buffer<T>::map()
 {
   core::optional<void*> data = m_memory->map();
-  return data.hasValue() ? static_cast<T*>(data.value()) : core::nullopt;
+  return data.has_value() ? static_cast<T*>(data.value()) : core::nullopt;
 }
 
 template<class T>

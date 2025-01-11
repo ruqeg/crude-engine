@@ -26,14 +26,14 @@ bool initializeSDL()
 bool loadSDLVulkan()
 {
   int res = SDL_Vulkan_LoadLibrary(nullptr);
-  if (res != 0)
+  if (res == 0)
   {
     core::logError(
       core::Debug::Channel::System, 
       "SDL_Manager::initializeVulkan error: %s", 
       SDL_GetError());
   }
-  return (res == 0);
+  return (res != 0);
 }
 
 void unloadSDLVulkan()

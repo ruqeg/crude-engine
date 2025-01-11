@@ -14,9 +14,9 @@ namespace crude::gfx::vk
 Device_Memory::Device_Memory(core::shared_ptr<const Device>  device,
                              VkDeviceSize                    allocationSize,
                              core::uint32                    memoryTypeFilter,
-                             VkMemoryPropertyFlags           memoryProperties)
-  :
-  m_device(device)
+                             VkMemoryPropertyFlags           memoryProperties,
+                             const vk::Structure_Chain&      extendedMemoryInfo)
+  : m_device{ device }
 {
   core::int64 memoryTypeIndex;
 
@@ -37,32 +37,31 @@ Device_Memory::Device_Memory(core::shared_ptr<const Device>  device,
     vulkanHandleError("failed to find device memory type");
   }
 
-  initalize(allocationSize, memoryTypeIndex);
+  initalize(allocationSize, memoryTypeIndex, extendedMemoryInfo);
 }
 
 Device_Memory::Device_Memory(core::shared_ptr<const Device>  device,
                              VkDeviceSize                    allocationSize,
-                             core::uint32                    memoryTypeIndex)
-  :
-  m_device(device)
+                             core::uint32                    memoryTypeIndex,
+                             const vk::Structure_Chain&      extendedMemoryInfo)
+  : m_device{ device }
 {
-  initalize(allocationSize, memoryTypeIndex);
+  initalize(allocationSize, memoryTypeIndex, extendedMemoryInfo);
 }
 
 Device_Memory::Device_Memory(core::shared_ptr<const Device>  device, 
                              VkMemoryRequirements            memoryRequirements, 
-                             VkMemoryPropertyFlags           memoryProperties)
-  :
-  Device_Memory(device, memoryRequirements.size, memoryRequirements.memoryTypeBits, memoryProperties)
+                             VkMemoryPropertyFlags           memoryProperties,
+                             const vk::Structure_Chain&      extendedMemoryInfo)
+  : Device_Memory{ device, memoryRequirements.size, memoryRequirements.memoryTypeBits, memoryProperties, extendedMemoryInfo }
 {}
 
-void Device_Memory::initalize(VkDeviceSize allocationSize, core::uint32 memoryTypeIndex)
+void Device_Memory::initalize(VkDeviceSize allocationSize, core::uint32 memoryTypeIndex, const vk::Structure_Chain& extendedMemoryInfo)
 {
   VkMemoryAllocateInfo vkAllocateInfo{};
-  vkAllocateInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-  vkAllocateInfo.pNext = nullptr;
-
-  vkAllocateInfo.allocationSize = allocationSize;
+  vkAllocateInfo.sType           = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+  vkAllocateInfo.pNext           = extendedMemoryInfo.getHeadNode();
+  vkAllocateInfo.allocationSize  = allocationSize;
   vkAllocateInfo.memoryTypeIndex = memoryTypeIndex;
 
   VkResult result = vkAllocateMemory(m_device->getHandle(), &vkAllocateInfo, getPVkAllocationCallbacks(), &m_handle);

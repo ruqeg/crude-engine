@@ -121,7 +121,7 @@ void initializeGbufferPass(core::shared_ptr<Render_Graph> graph, flecs::world wo
     .kind(0)
     .run([rendererFrame = graph->getRendererFrame(), pipeline = gbuffer->getPipeline(), perFrameUniformBuffers, perFramesDesc, submeshesDrawsDesc, verticesDesc, meshletsDesc, primitiveIndicesDesc, vertexIndicesDesc, albedoDesc, metallicRoughnessDesc, normalDesc](flecs::iter& it) {
       const core::uint32 currentFrame = rendererFrame->getCurrentFrame();
-      perFramesDesc[currentFrame].update(perFrameUniformBuffers[currentFrame]);
+      perFramesDesc.get()[currentFrame].update(perFrameUniformBuffers[currentFrame]);
 
       while (it.next())
       {
@@ -130,11 +130,11 @@ void initializeGbufferPass(core::shared_ptr<Render_Graph> graph, flecs::world wo
 
         for (auto i : it)
         {
-          submeshesDrawsDesc[currentFrame].update(meshBuffers[i]->getSubmeshesDrawsBuffer());
-          verticesDesc[currentFrame].update(meshBuffers[i]->getVerticesBuffer());
-          meshletsDesc[currentFrame].update(meshBuffers[i]->getMeshletsBuffer());
-          primitiveIndicesDesc[currentFrame].update(meshBuffers[i]->getPrimitiveIndicesBuffer());
-          vertexIndicesDesc[currentFrame].update(meshBuffers[i]->getVertexIndicesBuffer());
+          submeshesDrawsDesc.get()[currentFrame].update(meshBuffers[i]->getSubmeshesDrawsBuffer());
+          verticesDesc.get()[currentFrame].update(meshBuffers[i]->getVerticesBuffer());
+          meshletsDesc.get()[currentFrame].update(meshBuffers[i]->getMeshletsBuffer());
+          primitiveIndicesDesc.get()[currentFrame].update(meshBuffers[i]->getPrimitiveIndicesBuffer());
+          vertexIndicesDesc.get()[currentFrame].update(meshBuffers[i]->getVertexIndicesBuffer());
 
           auto transform = it.entity(i).get_ref<scene::Transform>();
           if (!transform)
@@ -151,20 +151,20 @@ void initializeGbufferPass(core::shared_ptr<Render_Graph> graph, flecs::world wo
             if (!isMaterialValid)
               continue;
 
-            albedoDesc[currentFrame].update(submesh.material->albedo->getImageView(), submesh.material->albedo->getSampler());
-            metallicRoughnessDesc[currentFrame].update(submesh.material->metallicRoughness->getImageView(), submesh.material->metallicRoughness->getSampler());
-            normalDesc[currentFrame].update(submesh.material->normal->getImageView(), submesh.material->normal->getSampler());
+            albedoDesc.get()[currentFrame].update(submesh.material->albedo->getImageView(), submesh.material->albedo->getSampler());
+            metallicRoughnessDesc.get()[currentFrame].update(submesh.material->metallicRoughness->getImageView(), submesh.material->metallicRoughness->getSampler());
+            normalDesc.get()[currentFrame].update(submesh.material->normal->getImageView(), submesh.material->normal->getSampler());
 
             core::array<VkWriteDescriptorSet, 9> descriptorWrites;
-            perFramesDesc[currentFrame].write(descriptorWrites[0]);
-            submeshesDrawsDesc[currentFrame].write(descriptorWrites[1]);
-            verticesDesc[currentFrame].write(descriptorWrites[2]);
-            meshletsDesc[currentFrame].write(descriptorWrites[3]);
-            primitiveIndicesDesc[currentFrame].write(descriptorWrites[4]);
-            vertexIndicesDesc[currentFrame].write(descriptorWrites[5]);
-            albedoDesc[currentFrame].write(descriptorWrites[6]);
-            metallicRoughnessDesc[currentFrame].write(descriptorWrites[7]);
-            normalDesc[currentFrame].write(descriptorWrites[8]);
+            perFramesDesc.get()[currentFrame].write(descriptorWrites[0]);
+            submeshesDrawsDesc.get()[currentFrame].write(descriptorWrites[1]);
+            verticesDesc.get()[currentFrame].write(descriptorWrites[2]);
+            meshletsDesc.get()[currentFrame].write(descriptorWrites[3]);
+            primitiveIndicesDesc.get()[currentFrame].write(descriptorWrites[4]);
+            vertexIndicesDesc.get()[currentFrame].write(descriptorWrites[5]);
+            albedoDesc.get()[currentFrame].write(descriptorWrites[6]);
+            metallicRoughnessDesc.get()[currentFrame].write(descriptorWrites[7]);
+            normalDesc.get()[currentFrame].write(descriptorWrites[8]);
 
             rendererFrame->getGraphicsCommandBuffer()->pushConstant(pipeline->getPipelineLayout(), perMesh);
             perMesh.submeshIndex = submeshIndex;

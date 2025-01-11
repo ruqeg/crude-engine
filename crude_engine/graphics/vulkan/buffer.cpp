@@ -21,20 +21,29 @@ Buffer::Buffer(const Initialize& info)
   : m_device(info.device)
   , m_size(info.size)
 {
-  VkBufferCreateInfo vkCreateInfo{};
-  vkCreateInfo.sType                  = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-  vkCreateInfo.pNext                  = nullptr;
-  vkCreateInfo.flags                  = 0u;
-  vkCreateInfo.size                   = info.size;
-  vkCreateInfo.usage                  = info.usage;
-  vkCreateInfo.sharingMode            = info.queueFamilyIndices.size() > 1 ? VK_SHARING_MODE_CONCURRENT : VK_SHARING_MODE_EXCLUSIVE;
-  vkCreateInfo.queueFamilyIndexCount  = info.queueFamilyIndices.size();
-  vkCreateInfo.pQueueFamilyIndices    = info.queueFamilyIndices.data();
+  VkBufferCreateInfo bufferCreateInfo{};
+  bufferCreateInfo.sType                  = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+  bufferCreateInfo.pNext                  = nullptr;
+  bufferCreateInfo.flags                  = 0u;
+  bufferCreateInfo.size                   = info.size;
+  bufferCreateInfo.usage                  = info.usage;
+  bufferCreateInfo.sharingMode            = info.queueFamilyIndices.size() > 1 ? VK_SHARING_MODE_CONCURRENT : VK_SHARING_MODE_EXCLUSIVE;
+  bufferCreateInfo.queueFamilyIndexCount  = info.queueFamilyIndices.size();
+  bufferCreateInfo.pQueueFamilyIndices    = info.queueFamilyIndices.data();
 
-  VkResult result = vkCreateBuffer(m_device->getHandle(), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
+  VkResult result = vkCreateBuffer(m_device->getHandle(), &bufferCreateInfo, getPVkAllocationCallbacks(), &m_handle);
   vulkanHandleResult(result, "failed to create buffer");
 
-  m_memory = core::allocateShared<Device_Memory>(m_device, getMemoryRequirements(), info.memoryFlags);
+  VkMemoryAllocateFlagsInfo memoryAllocateFlagsInfo{ .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_FLAGS_INFO };
+  if (bufferCreateInfo.usage & VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT_KHR)
+  {
+    memoryAllocateFlagsInfo.flags |= VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT_KHR;
+  }
+
+  vk::Structure_Chain extendedMemoryInfo;
+  extendedMemoryInfo.linkNode(memoryAllocateFlagsInfo);
+
+  m_memory = core::allocateShared<Device_Memory>(m_device, getMemoryRequirements(), info.memoryFlags, extendedMemoryInfo);
   m_memory->bind(core::makeUnsafeSharedWithEmptyDestructor(this));
 }
 
@@ -101,7 +110,7 @@ VkDeviceAddress Buffer::getDeviceAddress() const
   info.pNext  = nullptr;
   info.buffer = m_handle;
 
-  auto vkGetBufferDeviceAddressEXT = getDeviceExtension<PFN_vkGetBufferDeviceAddressEXT>(m_device);
+  auto vkGetBufferDeviceAddressEXT = getDeviceExtension<PFN_vkGetBufferDeviceAddressKHR>(m_device);
   if (vkGetBufferDeviceAddressEXT)
   {
     return vkGetBufferDeviceAddressEXT(m_device->getHandle(), &info);
