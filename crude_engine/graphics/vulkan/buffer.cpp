@@ -49,7 +49,7 @@ Buffer::Buffer(const Initialize& info)
 
 void Buffer::stagedUpload(core::shared_ptr<Command_Buffer> commandBuffer, const void* data, VkDeviceSize size) noexcept
 {
-  core::shared_ptr<Staging_Buffer> stagingBuffer = core::allocateShared<Staging_Buffer>(m_device, data, size);
+  core::shared_ptr<Staging_Buffer> stagingBuffer = core::allocateShared<Staging_Buffer>(m_device, size, data);
   commandBuffer->begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
   copyTransfer(commandBuffer, stagingBuffer);
   commandBuffer->end();
@@ -64,6 +64,11 @@ void Buffer::copyHost(const void* data, VkDeviceSize size) noexcept
     std::memcpy(mappedData.value(), data, size);
     m_memory->unmap();
   }
+}
+
+core::shared_ptr<Device_Memory> Buffer::getMemory()
+{
+  return m_memory;
 }
 
 Buffer::~Buffer()

@@ -51,7 +51,7 @@ struct Acceleration_Structure_Geometry_Triangles : public Acceleration_Structure
     : Acceleration_Structure_Geometry_Triangles{}
   {    
     this->geometry.triangles.vertexFormat  = vertexFormat;
-    this->geometry.triangles.vertexData    = vk::getAddress(vertices);
+    this->geometry.triangles.vertexData    = getAddress(vertices);
     this->geometry.triangles.vertexStride  = vertexStride;
     this->geometry.triangles.maxVertex     = static_cast<core::uint32>(vertices->getSize() / geometry.triangles.vertexStride) - 1;
     this->geometry.triangles.transformData = VkDeviceOrHostAddressConstKHR{};

@@ -144,11 +144,11 @@ void Image::bindMemory(core::shared_ptr<Device_Memory> memory)
 }
 
 void Image::stagedUpload(core::shared_ptr<Command_Buffer>  commandBuffer,
-                            const Mip_Data&                   mipMap,
-                            core::uint32                      mipLevel,
-                            core::uint32                      arrayLayer,
-                            VkImageLayout                     dstLayout,
-                            VkPipelineStageFlags              dstStageMask)
+                            const Mip_Data&                mipMap,
+                            core::uint32                   mipLevel,
+                            core::uint32                   arrayLayer,
+                            VkImageLayout                  dstLayout,
+                            VkPipelineStageFlags           dstStageMask)
 {
   core::shared_ptr<Staging_Buffer> stagingBuffer = core::allocateShared<Staging_Buffer>(m_device, mipMap.texels);
   commandBuffer->begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);

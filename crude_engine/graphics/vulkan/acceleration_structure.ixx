@@ -21,6 +21,8 @@ export namespace crude::gfx::vk
 
 class Acceleration_Structure : public Vulkan_Object<VkAccelerationStructureKHR>
 {
+public:
+  core::uint64 getReference();
 protected:
   explicit Acceleration_Structure(core::shared_ptr<Device>                                     device,
                                   VkAccelerationStructureTypeKHR                               structureType,

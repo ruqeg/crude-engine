@@ -41,6 +41,7 @@ public:
   void bindMemory(core::shared_ptr<Device_Memory> memory, VkDeviceSize offset = 0);
   void stagedUpload(core::shared_ptr<Command_Buffer> commandBuffer, const void* data, VkDeviceSize size) noexcept;
   void copyHost(const void* data, VkDeviceSize size) noexcept;
+  core::shared_ptr<Device_Memory> getMemory();
   VkMemoryRequirements getMemoryRequirements() const;
   VkDeviceAddress getDeviceAddress() const;
   VkDeviceSize getSize() const;

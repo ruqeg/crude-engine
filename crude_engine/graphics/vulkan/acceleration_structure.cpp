@@ -66,4 +66,18 @@ Acceleration_Structure::Acceleration_Structure(core::shared_ptr<Device>         
   }
 }
 
+core::uint64 Acceleration_Structure::getReference()
+{
+  VkAccelerationStructureDeviceAddressInfoKHR info{};
+  info.sType                 = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_DEVICE_ADDRESS_INFO_KHR;
+  info.pNext                 = nullptr;
+  info.accelerationStructure = m_handle;
+  auto vkGetAccelerationStructureDeviceAddressKHR = getDeviceExtension<PFN_vkGetAccelerationStructureDeviceAddressKHR>(m_device);
+  if (vkGetAccelerationStructureDeviceAddressKHR)
+  {
+    return vkGetAccelerationStructureDeviceAddressKHR(m_device->getHandle(), &info);
+  }
+  return 0u;
+}
+
 }

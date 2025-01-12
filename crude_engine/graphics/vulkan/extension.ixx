@@ -2,11 +2,13 @@ module;
 
 #include <vulkan/vulkan.h>
 #include <utility>
+#include <stdexcept>
 
 export module crude.gfx.vk.extension;
 
 export import crude.core.std_containers_heap;
 import crude.core.logger;
+import crude.core.assert;
 
 export namespace crude::gfx::vk
 {
@@ -23,38 +25,44 @@ PFN_vkVoidFunction getInstanceProcAddr(core::shared_ptr<const Instance> instance
 PFN_vkVoidFunction gettDeviceProcAddr(core::shared_ptr<const Device> device, const char* procName);
 
 template<class Fn>
-constexpr const char* pfnToProcAddr()
+constexpr const char* pfnToProcAddr() noexcept 
 {
+  // !TODO idk let it be for now?
   if constexpr (std::same_as<Fn, PFN_vkCreateDebugUtilsMessengerEXT>)
   {
     return "vkCreateDebugUtilsMessengerEXT";
   }
-  else if constexpr (std::same_as<Fn, PFN_vkDestroyDebugUtilsMessengerEXT>)
+  if constexpr (std::same_as<Fn, PFN_vkDestroyDebugUtilsMessengerEXT>)
   {
     return "vkDestroyDebugUtilsMessengerEXT";
   }
-  else if constexpr (std::same_as<Fn, PFN_vkCmdDrawMeshTasksEXT>)
+  if constexpr (std::same_as<Fn, PFN_vkCmdDrawMeshTasksEXT>)
   {
     return "vkCmdDrawMeshTasksEXT";
   }
-  else if constexpr (std::same_as<Fn, PFN_vkCmdPushDescriptorSetKHR>)
+  if constexpr (std::same_as<Fn, PFN_vkCmdPushDescriptorSetKHR>)
   {
     return "vkCmdPushDescriptorSetKHR";
   }
-  else if constexpr (std::same_as<Fn, PFN_vkGetBufferDeviceAddressKHR>)
+  if constexpr (std::same_as<Fn, PFN_vkGetBufferDeviceAddressKHR>)
   {
     return "vkGetBufferDeviceAddressKHR";
   }
-  else if constexpr (std::same_as<Fn, PFN_vkGetAccelerationStructureBuildSizesKHR>)
+  if constexpr (std::same_as<Fn, PFN_vkGetAccelerationStructureBuildSizesKHR>)
   {
     return "vkGetAccelerationStructureBuildSizesKHR";
   }
-  else if constexpr (std::same_as<Fn, PFN_vkCreateAccelerationStructureKHR>)
+  if constexpr (std::same_as<Fn, PFN_vkCreateAccelerationStructureKHR>)
   {
     return "vkCreateAccelerationStructureKHR";
   }
+  if constexpr (std::same_as<Fn, PFN_vkGetAccelerationStructureDeviceAddressKHR>)
+  {
+    return "vkGetAccelerationStructureDeviceAddressKHR";
+  }
   
-  core::logError(core::Debug::Channel::Graphics, "Failed to converty pfn to procAddr!");
+  core::logError(core::Debug::Channel::Graphics, "Failed to find procAddr for %s!", typeid(Fn).name());
+  core::assert(false);
   return "";
 }
 
