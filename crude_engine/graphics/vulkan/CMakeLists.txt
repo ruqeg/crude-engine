@@ -48,6 +48,7 @@ target_sources(crude_engine
   FILE_SET cxx_modules_graphics_vk TYPE CXX_MODULES FILES
   utils.ixx
   constants.ixx
+  top_level_acceleration_structure.ixx
   acceleration_structure_instance_buffer.ixx
   acceleration_structure_instance.ixx
   bottom_level_acceleration_structure.ixx

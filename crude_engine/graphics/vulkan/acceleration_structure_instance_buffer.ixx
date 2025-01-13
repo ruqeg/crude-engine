@@ -23,8 +23,9 @@ public:
   T& getInstance(core::uint32 index);
   core::uint32 getInstanceCount() const { return m_instanceCount; }
 private:
-  core::uint32 m_instanceCount;
-  T* m_instances;
+  core::shared_ptr<Staging_Buffer> m_stagingBuffer;
+  core::uint32                     m_instanceCount;
+  T*                               m_instances;
 };
 
 }
@@ -37,8 +38,8 @@ Acceleration_Structure_Instance_Buffer<T>::Acceleration_Structure_Instance_Buffe
   : Acceleration_Structure_Input_Buffer(device, instanceCount * sizeof(T))
   , m_instanceCount{ instanceCount }
 {
-  core::shared_ptr<Staging_Buffer> stagingBuffer = core::allocateShared<Staging_Buffer>(device, m_size);
-  m_instances = reinterpret_cast<T*>(stagingBuffer->getMemory()->mapUnsafe());
+  m_stagingBuffer = core::allocateShared<Staging_Buffer>(device, m_size);
+  m_instances = reinterpret_cast<T*>(m_stagingBuffer->getMemory()->mapUnsafe());
   if (m_instances)
   {
     for (core::uint32 i = 0; i < instanceCount; ++i)

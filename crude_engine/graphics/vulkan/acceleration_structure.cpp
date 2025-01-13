@@ -11,12 +11,12 @@ import crude.gfx.vk.constants;
 namespace crude::gfx::vk
 {
 
-Acceleration_Structure::Acceleration_Structure(core::shared_ptr<Device>                                     device,
-                                               VkAccelerationStructureTypeKHR                               structureType,
-                                               VkAccelerationStructureCreateFlagsKHR                        flags,
-                                               VkAccelerationStructureBuildTypeKHR                          buildType,
-                                               VkBuildAccelerationStructureFlagsKHR                         buildFlags,
-                                               core::span<const Acceleration_Structure_Geometry_Triangles>  geometries)
+Acceleration_Structure::Acceleration_Structure(core::shared_ptr<Device>                           device,
+                                               VkAccelerationStructureTypeKHR                     structureType,
+                                               VkAccelerationStructureCreateFlagsKHR              flags,
+                                               VkAccelerationStructureBuildTypeKHR                buildType,
+                                               VkBuildAccelerationStructureFlagsKHR               buildFlags,
+                                               core::span<const Acceleration_Structure_Geometry>  geometries)
   : m_device{ device }
 {
   core::vector<VkAccelerationStructureGeometryKHR> vkGeometry(geometries.begin(), geometries.end());

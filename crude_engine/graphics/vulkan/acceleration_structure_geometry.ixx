@@ -2,7 +2,7 @@ module;
 
 #include <vulkan/vulkan.h>
 
-export module crude.gfx.vk.acceleration_structure_geometry_triangles;
+export module crude.gfx.vk.acceleration_structure_geometry;
 
 export import crude.core.std_containers_heap;
 import crude.gfx.vk.acceleration_structure_input_buffer;
