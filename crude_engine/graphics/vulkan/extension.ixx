@@ -60,6 +60,10 @@ constexpr const char* pfnToProcAddr() noexcept
   {
     return "vkGetAccelerationStructureDeviceAddressKHR";
   }
+  if constexpr (std::same_as<Fn, PFN_vkCmdBuildAccelerationStructuresKHR>)
+  {
+    return "vkCmdBuildAccelerationStructuresKHR";
+  }
   
   core::logError(core::Debug::Channel::Graphics, "Failed to find procAddr for %s!", typeid(Fn).name());
   core::assert(false);

@@ -68,6 +68,7 @@ void initializeRaytracingPass(core::shared_ptr<Render_Graph> graph, flecs::world
     core::array<vk::Acceleration_Structure_Geometry, 1>{ geometryInstaces },
     VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR,
     VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR);
+
 }
 
 }

@@ -8,6 +8,9 @@ import crude.gfx.vk.device;
 import crude.gfx.vk.image;
 import crude.gfx.vk.render_pass;
 import crude.gfx.vk.framebuffer;
+import crude.gfx.vk.acceleration_structure;
+import crude.gfx.vk.acceleration_structure_geometry;
+import crude.gfx.vk.storage_buffer;
 import crude.gfx.vk.pipeline;
 import crude.gfx.vk.pipeline_layout;
 import crude.gfx.vk.image_view;
@@ -157,6 +160,38 @@ void Command_Buffer::bindPipeline(core::shared_ptr<Pipeline> pipeline)
     m_handle,
     pipeline->getBindPoint(),
     pipeline->getHandle());
+}
+
+void Command_Buffer::buildAccelerationStructures(core::shared_ptr<Acceleration_Structure> accelerationStructure, core::span<const Acceleration_Structure_Geometry> geometries, core::shared_ptr<Storage_Buffer> scratchBuffer)
+{
+  core::vector<VkAccelerationStructureGeometryKHR> vkGeometries(geometries.begin(), geometries.end());
+
+  VkAccelerationStructureBuildGeometryInfoKHR buildGeometryInfo{};
+  buildGeometryInfo.sType                     = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR;
+  buildGeometryInfo.pNext                     = nullptr;
+  buildGeometryInfo.type                      = accelerationStructure->getType();
+  buildGeometryInfo.flags                     = accelerationStructure->getBuildFlags();
+  buildGeometryInfo.mode                      = VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR;
+  buildGeometryInfo.dstAccelerationStructure  = accelerationStructure->getHandle();
+  buildGeometryInfo.geometryCount             = vkGeometries.size();
+  buildGeometryInfo.pGeometries               = vkGeometries.data();
+  buildGeometryInfo.ppGeometries              = nullptr;
+  buildGeometryInfo.scratchData.deviceAddress = scratchBuffer->getDeviceAddress();
+  buildGeometryInfo.srcAccelerationStructure  = (buildGeometryInfo.mode == VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR) ? VK_NULL_HANDLE : accelerationStructure->getHandle();
+
+  core::vector<VkAccelerationStructureBuildRangeInfoKHR> buildRangeInfos;
+  buildRangeInfos.reserve(geometries.size());
+  for (const auto& geometry : geometries)
+  {
+    buildRangeInfos.push_back(VkAccelerationStructureBuildRangeInfoKHR{ .primitiveCount = geometry.primitiveCount });
+  }
+  const VkAccelerationStructureBuildRangeInfoKHR* buildRangeInfosData = buildRangeInfos.data();
+
+  auto vkCmdBuildAccelerationStructuresKHR = getDeviceExtension<PFN_vkCmdBuildAccelerationStructuresKHR>(m_commandPool->getDevice());
+  if (vkCmdBuildAccelerationStructuresKHR)
+  {
+    vkCmdBuildAccelerationStructuresKHR(m_handle, 1, &buildGeometryInfo, &buildRangeInfosData);
+  }
 }
 
 void Command_Buffer::setViewport(const Viewport& viewport)

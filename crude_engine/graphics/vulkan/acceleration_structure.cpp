@@ -18,6 +18,8 @@ Acceleration_Structure::Acceleration_Structure(core::shared_ptr<Device>         
                                                VkBuildAccelerationStructureFlagsKHR               buildFlags,
                                                core::span<const Acceleration_Structure_Geometry>  geometries)
   : m_device{ device }
+  , m_type{ structureType }
+  , m_buildFlags{ buildFlags }
 {
   core::vector<VkAccelerationStructureGeometryKHR> vkGeometry(geometries.begin(), geometries.end());
   core::vector<core::uint32> maxPrimitiveCounts(geometries.size());
@@ -78,6 +80,16 @@ core::uint64 Acceleration_Structure::getReference()
     return vkGetAccelerationStructureDeviceAddressKHR(m_device->getHandle(), &info);
   }
   return 0u;
+}
+
+VkAccelerationStructureTypeKHR Acceleration_Structure::getType() const
+{
+  return m_type;
+}
+
+VkBuildAccelerationStructureFlagsKHR Acceleration_Structure::getBuildFlags() const
+{
+  return m_buildFlags;
 }
 
 }

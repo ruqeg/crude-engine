@@ -23,6 +23,8 @@ class Acceleration_Structure : public Vulkan_Object<VkAccelerationStructureKHR>
 {
 public:
   core::uint64 getReference();
+  VkAccelerationStructureTypeKHR getType() const;
+  VkBuildAccelerationStructureFlagsKHR getBuildFlags() const;
 protected:
   explicit Acceleration_Structure(core::shared_ptr<Device>                           device,
                                   VkAccelerationStructureTypeKHR                     structureType,
@@ -33,6 +35,8 @@ protected:
 private:
   core::shared_ptr<Device>                                 m_device;
   core::shared_ptr<Acceleration_Structure_Storage_Buffer>  m_buffer;
+  VkAccelerationStructureTypeKHR                           m_type;
+  VkBuildAccelerationStructureFlagsKHR                     m_buildFlags;
 };
 
 }

@@ -26,6 +26,9 @@ class Buffer;
 class Descriptor_Set;
 class Index_Buffer;
 class Pipeline_Layout;
+class Acceleration_Structure;
+class Storage_Buffer;
+class Acceleration_Structure_Geometry;
 
 class Command_Buffer : public Vulkan_Object<VkCommandBuffer>
 {
@@ -54,6 +57,7 @@ public:
                        const VkRect2D&                renderArea = {0, 0, 0, 0}, 
                        VkSubpassContents              contents = VK_SUBPASS_CONTENTS_INLINE);
   void bindPipeline(core::shared_ptr<Pipeline> pipeline);
+  void buildAccelerationStructures(core::shared_ptr<Acceleration_Structure> accelerationStructure, core::span<const Acceleration_Structure_Geometry> geometries, core::shared_ptr<Storage_Buffer> scratchBuffer);
   void setViewport(const Viewport& viewport);
   void setScissor(const Scissor& scissor);
   void bindVertexBuffer(core::uint32 firstBinding, core::shared_ptr<Buffer> vertexBuffer, VkDeviceSize offset = 0u);
