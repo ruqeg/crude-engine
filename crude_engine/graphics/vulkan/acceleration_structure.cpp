@@ -42,6 +42,7 @@ Acceleration_Structure::Acceleration_Structure(core::shared_ptr<Device>         
   buildGeometryInfo.scratchData.hostAddress  = nullptr;
 
   VkAccelerationStructureBuildSizesInfoKHR buildSizesInfo = { VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_SIZES_INFO_KHR };
+
   auto vkGetAccelerationStructureBuildSizesKHR = getDeviceExtension<PFN_vkGetAccelerationStructureBuildSizesKHR>(m_device);
   if (vkGetAccelerationStructureBuildSizesKHR)
   {
@@ -66,6 +67,8 @@ Acceleration_Structure::Acceleration_Structure(core::shared_ptr<Device>         
     VkResult result = vkCreateAccelerationStructureKHR(device->getHandle(), &accelerationStructureInfo, getPVkAllocationCallbacks(), &m_handle);
     vulkanHandleResult(result, "failed to create acceleration structure");
   }
+
+  m_buildScratchSize = buildSizesInfo.buildScratchSize;
 }
 
 core::uint64 Acceleration_Structure::getReference()
@@ -90,6 +93,11 @@ VkAccelerationStructureTypeKHR Acceleration_Structure::getType() const
 VkBuildAccelerationStructureFlagsKHR Acceleration_Structure::getBuildFlags() const
 {
   return m_buildFlags;
+}
+
+VkDeviceSize Acceleration_Structure::getBuildScratchSize()
+{
+  return m_buildScratchSize;
 }
 
 }

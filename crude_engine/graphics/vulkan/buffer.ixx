@@ -9,7 +9,7 @@ export module crude.gfx.vk.buffer;
 export import crude.gfx.vk.device_memory;
 export import crude.core.std_containers_stack;
 export import crude.core.std_containers_heap;
-export import crude.gfx.vk.command_buffer;
+import crude.gfx.vk.command_buffer;
 import crude.gfx.vk.vulkan_object;
 
 export namespace crude::gfx::vk
@@ -18,6 +18,7 @@ export namespace crude::gfx::vk
 class Device;
 class Device_Memory;
 class Staging_Buffer;
+class Command_Buffer;
 
 class Buffer : public Vulkan_Object<VkBuffer>, 
   public std::enable_shared_from_this<Buffer>

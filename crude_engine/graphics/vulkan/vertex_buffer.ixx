@@ -5,6 +5,7 @@ module;
 export module crude.gfx.vk.vertex_buffer;
 
 export import crude.gfx.vk.buffer;
+import crude.gfx.vk.command_buffer;
 
 export namespace crude::gfx::vk
 {

@@ -19,6 +19,7 @@ import crude.gfx.vk.device;
 import crude.gfx.vk.format_helper;
 import crude.gfx.vk.shader_module;
 import crude.gfx.vk.buffer_descriptor;
+import crude.gfx.vk.command_buffer;
 import crude.gfx.vk.image_descriptor;
 import crude.scene.mesh;
 

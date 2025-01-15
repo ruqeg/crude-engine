@@ -13,6 +13,7 @@ import crude.gfx.vk.flush;
 import crude.gfx.vk.constants;
 import crude.core.logger;
 import crude.gfx.vk.extension;
+import crude.gfx.vk.command_buffer;
 
 namespace crude::gfx::vk
 {

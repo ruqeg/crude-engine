@@ -1,6 +1,7 @@
 target_sources(crude_engine
   PRIVATE
   utils.cpp
+  acceleration_structure_geometry.cpp 
   acceleration_structure.cpp
   structure_chain.cpp
   extension.cpp

@@ -5,6 +5,7 @@ module;
 export module crude.gfx.vk.acceleration_structure_input_buffer;
 
 export import crude.gfx.vk.buffer;
+import crude.gfx.vk.command_buffer;
 
 export namespace crude::gfx::vk
 {

@@ -25,6 +25,7 @@ public:
   core::uint64 getReference();
   VkAccelerationStructureTypeKHR getType() const;
   VkBuildAccelerationStructureFlagsKHR getBuildFlags() const;
+  VkDeviceSize getBuildScratchSize();
 protected:
   explicit Acceleration_Structure(core::shared_ptr<Device>                           device,
                                   VkAccelerationStructureTypeKHR                     structureType,
@@ -37,6 +38,7 @@ private:
   core::shared_ptr<Acceleration_Structure_Storage_Buffer>  m_buffer;
   VkAccelerationStructureTypeKHR                           m_type;
   VkBuildAccelerationStructureFlagsKHR                     m_buildFlags;
+  VkDeviceSize                                             m_buildScratchSize;
 };
 
 }

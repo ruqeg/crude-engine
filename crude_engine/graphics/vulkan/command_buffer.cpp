@@ -9,7 +9,7 @@ import crude.gfx.vk.image;
 import crude.gfx.vk.render_pass;
 import crude.gfx.vk.framebuffer;
 import crude.gfx.vk.acceleration_structure;
-import crude.gfx.vk.acceleration_structure_geometry;
+import crude.gfx.vk.storage_buffer;
 import crude.gfx.vk.storage_buffer;
 import crude.gfx.vk.pipeline;
 import crude.gfx.vk.pipeline_layout;
@@ -24,6 +24,7 @@ import crude.core.algorithms;
 import crude.core.assert;
 import crude.gfx.vk.extension;
 import crude.core.logger;
+import crude.gfx.vk.acceleration_structure_geometry;
 
 namespace crude::gfx::vk
 {

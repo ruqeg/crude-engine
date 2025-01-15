@@ -10,6 +10,7 @@ import crude.gfx.vk.uniform_buffer;
 import crude.gfx.vk.semaphore;
 import crude.gfx.vk.queue;
 import crude.gfx.vk.device;
+import crude.gfx.vk.command_buffer;
 import crude.core.logger;
 
 namespace crude::gfx

@@ -26,8 +26,8 @@ class Buffer;
 class Descriptor_Set;
 class Index_Buffer;
 class Pipeline_Layout;
-class Acceleration_Structure;
 class Storage_Buffer;
+class Acceleration_Structure;
 class Acceleration_Structure_Geometry;
 
 class Command_Buffer : public Vulkan_Object<VkCommandBuffer>

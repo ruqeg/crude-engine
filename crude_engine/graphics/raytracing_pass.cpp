@@ -25,6 +25,8 @@ import crude.gfx.vk.bottom_level_acceleration_structure;
 import crude.gfx.vk.acceleration_structure_instance_buffer;
 import crude.gfx.vk.acceleration_structure_instance;
 import crude.gfx.vk.top_level_acceleration_structure;
+import crude.gfx.vk.storage_buffer;
+import crude.gfx.vk.flush;
 import crude.scene.mesh;
 
 namespace crude::gfx
@@ -68,6 +70,14 @@ void initializeRaytracingPass(core::shared_ptr<Render_Graph> graph, flecs::world
     core::array<vk::Acceleration_Structure_Geometry, 1>{ geometryInstaces },
     VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR,
     VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR);
+
+  const VkDeviceSize size = std::max(bottomLevel->getBuildScratchSize(), topLevel->getBuildScratchSize());
+  core::shared_ptr<vk::Storage_Buffer> scratchBuffer = core::allocateShared<vk::Storage_Buffer>(commandBuffer, size);
+  commandBuffer->begin();
+  commandBuffer->buildAccelerationStructures(bottomLevel, core::array<vk::Acceleration_Structure_Geometry, 1>{ geometry }, scratchBuffer);
+  commandBuffer->buildAccelerationStructures(topLevel, core::array<vk::Acceleration_Structure_Geometry, 1>{ geometryInstaces }, scratchBuffer);
+  commandBuffer->end();
+  vk::flush(commandBuffer);
 
 }
 
