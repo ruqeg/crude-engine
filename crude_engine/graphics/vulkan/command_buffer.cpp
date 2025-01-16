@@ -29,8 +29,7 @@ import crude.gfx.vk.acceleration_structure_geometry;
 namespace crude::gfx::vk
 {
 
-Command_Buffer::Command_Buffer(core::shared_ptr<Command_Pool>  commandPool,
-                               VkCommandBufferLevel            level)
+Command_Buffer::Command_Buffer(core::shared_ptr<Command_Pool> commandPool, VkCommandBufferLevel level)
   : m_commandPool(commandPool)
 {
   VkCommandBufferAllocateInfo vkAllocateInfo{};
@@ -72,16 +71,9 @@ bool Command_Buffer::end()
   return result == VK_SUCCESS;
 }
 
-void Command_Buffer::barrier(VkPipelineStageFlags         srcStage, 
-                             VkPipelineStageFlags         dstStage, 
-                             const Image_Memory_Barrier&  imageMemoryBarrier)
+void Command_Buffer::barrier(VkPipelineStageFlags srcStage, VkPipelineStageFlags dstStage, const Image_Memory_Barrier& imageMemoryBarrier)
 {
-  vkCmdPipelineBarrier(
-    m_handle, srcStage, dstStage, 0u, 
-    0u, nullptr, 
-    0u,  nullptr, 
-    1u, &imageMemoryBarrier);
-  
+  vkCmdPipelineBarrier(m_handle, srcStage, dstStage, 0u, 0u, nullptr, 0u, nullptr, 1u, &imageMemoryBarrier);
   const VkImageSubresourceRange& range = imageMemoryBarrier.subresourceRange;
   for (core::uint32 mipLevel = range.baseMipLevel; mipLevel < range.baseMipLevel + range.levelCount; ++mipLevel)
   {
@@ -116,19 +108,12 @@ bool Command_Buffer::reset(VkCommandBufferResetFlags flags)
   return result != VK_ERROR_OUT_OF_DEVICE_MEMORY;
 }
 
-void Command_Buffer::beginRenderPass(core::shared_ptr<Render_Pass>  renderPass,
-                                     core::shared_ptr<Framebuffer>  framebuffer,
-                                     const VkRect2D&                renderArea, 
-                                     VkSubpassContents              contents)
+void Command_Buffer::beginRenderPass(core::shared_ptr<Render_Pass> renderPass, core::shared_ptr<Framebuffer> framebuffer, const VkRect2D& renderArea, VkSubpassContents contents)
 {
   beginRenderPass(renderPass, framebuffer, {}, renderArea, contents);
 }
 
-void Command_Buffer::beginRenderPass(core::shared_ptr<Render_Pass>  renderPass,
-                                     core::shared_ptr<Framebuffer>  framebuffer,
-                                     core::span<VkClearValue>       clearValues,
-                                     const VkRect2D&                renderArea, 
-                                     VkSubpassContents              contents)
+void Command_Buffer::beginRenderPass(core::shared_ptr<Render_Pass> renderPass, core::shared_ptr<Framebuffer> framebuffer, core::span<VkClearValue> clearValues, const VkRect2D& renderArea, VkSubpassContents contents)
 {
   core::assert(renderPass.get());
   core::assert(framebuffer.get());
@@ -142,25 +127,17 @@ void Command_Buffer::beginRenderPass(core::shared_ptr<Render_Pass>  renderPass,
   renderPassInfo.clearValueCount  = clearValues.size();
   renderPassInfo.pClearValues     = clearValues.data();
   
-  vkCmdBeginRenderPass(
-    m_handle,
-    &renderPassInfo,
-    contents);
+  vkCmdBeginRenderPass(m_handle, &renderPassInfo, contents);
 
   m_renderPass = renderPass;
   m_framebuffer = framebuffer;
-
   m_withinRenderPass = true;
 }
 
 void Command_Buffer::bindPipeline(core::shared_ptr<Pipeline> pipeline)
 {
   core::assert(pipeline.get());
-
-  vkCmdBindPipeline(
-    m_handle,
-    pipeline->getBindPoint(),
-    pipeline->getHandle());
+  vkCmdBindPipeline(m_handle, pipeline->getBindPoint(), pipeline->getHandle());
 }
 
 void Command_Buffer::buildAccelerationStructures(core::shared_ptr<Acceleration_Structure> accelerationStructure, core::span<const Acceleration_Structure_Geometry> geometries, core::shared_ptr<Storage_Buffer> scratchBuffer)
@@ -217,16 +194,12 @@ void Command_Buffer::bindIndexBuffer(core::shared_ptr<Index_Buffer> indexBuffer,
   vkCmdBindIndexBuffer(m_handle, indexBuffer->getHandle(), offset, indexBuffer->getIndexType());
 }
 
-void Command_Buffer::copyBuffer(core::shared_ptr<const Buffer>  srcBuffer, 
-                                core::shared_ptr<Buffer>        dstBuffer, 
-                                const VkBufferCopy&             copyRegion)
+void Command_Buffer::copyBuffer(core::shared_ptr<const Buffer> srcBuffer, core::shared_ptr<Buffer> dstBuffer, const VkBufferCopy& copyRegion)
 {
   vkCmdCopyBuffer(m_handle, srcBuffer->getHandle(), dstBuffer->getHandle(), 1, &copyRegion);
 }
 
-void Command_Buffer::bindDescriptorSets(core::shared_ptr<Pipeline>                    pipeline,
-                                        core::span<const core::shared_ptr<Descriptor_Set>>  descriptorSets,
-                                        core::span<const core::uint32>                      dynamicOffsets)
+void Command_Buffer::bindDescriptorSets(core::shared_ptr<Pipeline> pipeline, core::span<const core::shared_ptr<Descriptor_Set>> descriptorSets, core::span<const core::uint32> dynamicOffsets)
 {
   constexpr core::uint32 offset = 0u;
 
@@ -260,8 +233,7 @@ void Command_Buffer::bindDescriptorSet(core::shared_ptr<Pipeline> pipeline, core
     &dynamicOffset);
 }
 
-void Command_Buffer::pushDescriptorSet(core::shared_ptr<Pipeline>                     pipeline,
-                                       const core::span<const VkWriteDescriptorSet>&  descriptorWrites)
+void Command_Buffer::pushDescriptorSet(core::shared_ptr<Pipeline> pipeline, core::span<const VkWriteDescriptorSet> descriptorWrites)
 {
   auto vkCmdPushDescriptorSetKHR = getDeviceExtension<PFN_vkCmdPushDescriptorSetKHR>(m_commandPool->getDevice());
   if (vkCmdPushDescriptorSetKHR)

@@ -38,39 +38,21 @@ public:
 public:
   bool begin(VkCommandBufferUsageFlags flags = 0u);
   bool end();
-  void barrier(VkPipelineStageFlags         srcStage, 
-               VkPipelineStageFlags         dstStage, 
-               const Image_Memory_Barrier&  imageMemoryBarrier);
-  void blitImage(const Image_Blit_Region&  blitRegion, 
-                 VkFilter                  filter);
-  void copyBufferToImage(core::shared_ptr<const Buffer>  srcBuffer,
-                         core::shared_ptr<Image>         dstImage, 
-                         const VkBufferImageCopy&        region);
+  void barrier(VkPipelineStageFlags srcStage, VkPipelineStageFlags dstStage, const Image_Memory_Barrier& imageMemoryBarrier);
+  void blitImage(const Image_Blit_Region& blitRegion, VkFilter filter);
+  void copyBufferToImage(core::shared_ptr<const Buffer> srcBuffer, core::shared_ptr<Image> dstImage, const VkBufferImageCopy& region);
   bool reset(VkCommandBufferResetFlags flags = VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
-  void beginRenderPass(core::shared_ptr<Render_Pass>  renderPass,
-                       core::shared_ptr<Framebuffer>  framebuffer,
-                       const VkRect2D&                renderArea = {0, 0, 0, 0}, 
-                       VkSubpassContents              contents = VK_SUBPASS_CONTENTS_INLINE);
-  void beginRenderPass(core::shared_ptr<Render_Pass>  renderPass,
-                       core::shared_ptr<Framebuffer>  framebuffer,
-                       core::span<VkClearValue>       clearValues,
-                       const VkRect2D&                renderArea = {0, 0, 0, 0}, 
-                       VkSubpassContents              contents = VK_SUBPASS_CONTENTS_INLINE);
+  void beginRenderPass(core::shared_ptr<Render_Pass> renderPass, core::shared_ptr<Framebuffer> framebuffer, const VkRect2D& renderArea = {0, 0, 0, 0}, VkSubpassContents contents = VK_SUBPASS_CONTENTS_INLINE);
+  void beginRenderPass(core::shared_ptr<Render_Pass> renderPass, core::shared_ptr<Framebuffer> framebuffer, core::span<VkClearValue> clearValues, const VkRect2D& renderArea = {0, 0, 0, 0}, VkSubpassContents contents = VK_SUBPASS_CONTENTS_INLINE);
   void bindPipeline(core::shared_ptr<Pipeline> pipeline);
   void buildAccelerationStructures(core::shared_ptr<Acceleration_Structure> accelerationStructure, core::span<const Acceleration_Structure_Geometry> geometries, core::shared_ptr<Storage_Buffer> scratchBuffer);
   void setViewport(const Viewport& viewport);
   void setScissor(const Scissor& scissor);
   void bindVertexBuffer(core::uint32 firstBinding, core::shared_ptr<Buffer> vertexBuffer, VkDeviceSize offset = 0u);
   void bindIndexBuffer(core::shared_ptr<Index_Buffer> indexBuffer, VkDeviceSize offset = 0u);
-  void copyBuffer(core::shared_ptr<const Buffer>  srcBuffer, 
-                  core::shared_ptr<Buffer>        dstBuffer, 
-                  const VkBufferCopy&             copyRegion);
-  
-  void pushDescriptorSet(core::shared_ptr<Pipeline>                     pipeline,
-                         const core::span<const VkWriteDescriptorSet>&  descriptorWrites);
-  void bindDescriptorSets(core::shared_ptr<Pipeline>                          pipeline,
-                          core::span<const core::shared_ptr<Descriptor_Set>>  descriptorSets,
-                          core::span<const core::uint32>                      dynamicOffsets = {});
+  void copyBuffer(core::shared_ptr<const Buffer> srcBuffer, core::shared_ptr<Buffer> dstBuffer, const VkBufferCopy& copyRegion);
+  void pushDescriptorSet(core::shared_ptr<Pipeline> pipeline, core::span<const VkWriteDescriptorSet> descriptorWrites);
+  void bindDescriptorSets(core::shared_ptr<Pipeline> pipeline, core::span<const core::shared_ptr<Descriptor_Set>> descriptorSets, core::span<const core::uint32> dynamicOffsets = {});
   void bindDescriptorSet(core::shared_ptr<Pipeline> pipeline, core::shared_ptr<Descriptor_Set> descriptorSet, core::uint32 dynamicOffset = 0u);
   template<class T>
   void pushConstant(core::shared_ptr<const Pipeline_Layout> layout, const T& constant, core::uint32 offset = 0);
