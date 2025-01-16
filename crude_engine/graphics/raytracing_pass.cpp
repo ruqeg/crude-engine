@@ -56,7 +56,6 @@ void initializeRaytracingPass(core::shared_ptr<Render_Graph> graph, flecs::world
   auto commandBuffer = core::allocateShared<gfx::vk::Command_Buffer>(graph->getRendererFrame()->getCore()->getTransferCommandPool(), VK_COMMAND_BUFFER_LEVEL_PRIMARY);
   core::shared_ptr<vk::Acceleration_Structure_Input_Buffer> vertexBuffer = core::allocateShared<vk::Acceleration_Structure_Input_Buffer>(commandBuffer, vertices);
   vk::Acceleration_Structure_Geometry_Triangles geometry = vk::Acceleration_Structure_Geometry_Triangles(VK_FORMAT_R32G32B32_SFLOAT, 3 * sizeof(core::uint32), vertexBuffer);
-  vk::Acceleration_Structure_Geometry s = geometry;
   core::shared_ptr<vk::Bottom_Level_Acceleration_Structure> bottomLevel = core::allocateShared<vk::Bottom_Level_Acceleration_Structure>(
     device,
     core::array<vk::Acceleration_Structure_Geometry, 1>{ geometry },
@@ -74,7 +73,9 @@ void initializeRaytracingPass(core::shared_ptr<Render_Graph> graph, flecs::world
   const VkDeviceSize size = std::max(bottomLevel->getBuildScratchSize(), topLevel->getBuildScratchSize());
   core::shared_ptr<vk::Storage_Buffer> scratchBuffer = core::allocateShared<vk::Storage_Buffer>(commandBuffer, size);
   commandBuffer->begin();
+  commandBuffer->barrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR, magma::barrier::memory::transferWriteAccelerationStructureRead);
   commandBuffer->buildAccelerationStructures(bottomLevel, core::array<vk::Acceleration_Structure_Geometry, 1>{ geometry }, scratchBuffer);
+  commandBuffer->barrier(VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR, VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR, magma::barrier::memory::transferWriteAccelerationStructureRead);
   commandBuffer->buildAccelerationStructures(topLevel, core::array<vk::Acceleration_Structure_Geometry, 1>{ geometryInstaces }, scratchBuffer);
   commandBuffer->end();
   vk::flush(commandBuffer);

@@ -22,6 +22,7 @@ export namespace crude::gfx::vk
 class Acceleration_Structure : public Vulkan_Object<VkAccelerationStructureKHR>
 {
 public:
+  core::shared_ptr<Acceleration_Structure_Storage_Buffer> getStructureStorageBuffer();
   core::uint64 getReference();
   VkAccelerationStructureTypeKHR getType() const;
   VkBuildAccelerationStructureFlagsKHR getBuildFlags() const;

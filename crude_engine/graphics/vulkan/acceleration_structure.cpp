@@ -32,7 +32,7 @@ Acceleration_Structure::Acceleration_Structure(core::shared_ptr<Device>         
   buildGeometryInfo.sType                    = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR;
   buildGeometryInfo.pNext                    = nullptr;
   buildGeometryInfo.type                     = structureType;
-  buildGeometryInfo.flags                    = 0;
+  buildGeometryInfo.flags                    = buildFlags;
   buildGeometryInfo.mode                     = VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR;
   buildGeometryInfo.srcAccelerationStructure = VK_NULL_HANDLE;
   buildGeometryInfo.dstAccelerationStructure = VK_NULL_HANDLE;
@@ -69,6 +69,11 @@ Acceleration_Structure::Acceleration_Structure(core::shared_ptr<Device>         
   }
 
   m_buildScratchSize = buildSizesInfo.buildScratchSize;
+}
+
+core::shared_ptr<Acceleration_Structure_Storage_Buffer> Acceleration_Structure::getStructureStorageBuffer()
+{
+  return m_buffer;
 }
 
 core::uint64 Acceleration_Structure::getReference()
