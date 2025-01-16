@@ -12,6 +12,7 @@ export namespace crude::gfx::vk
 
 class Storage_Buffer;
 class Buffer;
+class Acceleration_Buffer;
 template<class T>
 class Uniform_Buffer;
 
@@ -35,6 +36,15 @@ public:
   void update(core::shared_ptr<Storage_Buffer> buffer);
   void update(core::shared_ptr<Storage_Buffer> buffer, VkDeviceSize range, VkDeviceSize offset = 0);
 };
+
+class Acceleration_Structure_Descriptor : public Buffer_Descriptor
+{
+public:
+  explicit Acceleration_Structure_Descriptor(core::uint32 binding, VkShaderStageFlags stageFlags);
+  void update(core::shared_ptr<Storage_Buffer> buffer);
+  void update(core::shared_ptr<Storage_Buffer> buffer, VkDeviceSize range, VkDeviceSize offset = 0);
+};
+
 
 class Uniform_Buffer_Descriptor : public Buffer_Descriptor
 {

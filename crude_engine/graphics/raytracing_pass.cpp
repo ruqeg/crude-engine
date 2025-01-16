@@ -73,12 +73,17 @@ void initializeRaytracingPass(core::shared_ptr<Render_Graph> graph, flecs::world
   const VkDeviceSize size = std::max(bottomLevel->getBuildScratchSize(), topLevel->getBuildScratchSize());
   core::shared_ptr<vk::Storage_Buffer> scratchBuffer = core::allocateShared<vk::Storage_Buffer>(commandBuffer, size);
   commandBuffer->begin();
-  commandBuffer->barrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR, magma::barrier::memory::transferWriteAccelerationStructureRead);
   commandBuffer->buildAccelerationStructures(bottomLevel, core::array<vk::Acceleration_Structure_Geometry, 1>{ geometry }, scratchBuffer);
-  commandBuffer->barrier(VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR, VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR, magma::barrier::memory::transferWriteAccelerationStructureRead);
   commandBuffer->buildAccelerationStructures(topLevel, core::array<vk::Acceleration_Structure_Geometry, 1>{ geometryInstaces }, scratchBuffer);
   commandBuffer->end();
   vk::flush(commandBuffer);
+
+  core::array<vk::Descriptor_Set_Layout_Binding, 1> bindings =
+  {
+    vk::Descriptor_Set_Layout_Binding(0u, )
+  };
+  core::shared_ptr<vk::Descriptor_Set_Layout> descriptorSetLayout = core::allocateShared<vk::Descriptor_Set_Layout>();
+  core::shared_ptr<vk::Descriptor_Set> descriptorSet = core::allocateShared<vk::Descriptor_Set>(descriptorPool, poolSizes, VK_SHADER_STAGE_RAYGEN_BIT_KHR);
 
 }
 
