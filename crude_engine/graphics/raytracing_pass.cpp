@@ -27,7 +27,10 @@ import crude.gfx.vk.acceleration_structure_instance;
 import crude.gfx.vk.top_level_acceleration_structure;
 import crude.gfx.vk.storage_buffer;
 import crude.gfx.vk.flush;
+import crude.gfx.vk.descriptor_set_layout;
+import crude.gfx.vk.descriptor_set;
 import crude.scene.mesh;
+import crude.gfx.vk.acceleration_structure_descriptor;
 
 namespace crude::gfx
 {
@@ -80,10 +83,10 @@ void initializeRaytracingPass(core::shared_ptr<Render_Graph> graph, flecs::world
 
   core::array<vk::Descriptor_Set_Layout_Binding, 1> bindings =
   {
-    vk::Descriptor_Set_Layout_Binding(0u, )
+    vk::Acceleration_Structure_Descriptor(0u, VK_SHADER_STAGE_RAYGEN_BIT_KHR)
   };
-  core::shared_ptr<vk::Descriptor_Set_Layout> descriptorSetLayout = core::allocateShared<vk::Descriptor_Set_Layout>();
-  core::shared_ptr<vk::Descriptor_Set> descriptorSet = core::allocateShared<vk::Descriptor_Set>(descriptorPool, poolSizes, VK_SHADER_STAGE_RAYGEN_BIT_KHR);
+  core::shared_ptr<vk::Descriptor_Set_Layout> descriptorSetLayout = core::allocateShared<vk::Descriptor_Set_Layout>(device, bindings);
+  core::shared_ptr<vk::Descriptor_Set> descriptorSet = core::allocateShared<vk::Descriptor_Set>(descriptorPool, descriptorSetLayout);
 
 }
 
