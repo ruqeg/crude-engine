@@ -7,6 +7,7 @@ export module crude.gfx.vk.command_buffer;
 import crude.core.std_containers_stack;
 import crude.gfx.vk.vulkan_object;
 export import crude.gfx.vk.image_memory_barrier;
+export import crude.gfx.vk.memory_barrier;
 export import crude.core.std_containers_heap;
 export import crude.core.std_containers_stack;
 export import crude.gfx.vk.scissor;
@@ -39,6 +40,7 @@ public:
   bool begin(VkCommandBufferUsageFlags flags = 0u);
   bool end();
   void barrier(VkPipelineStageFlags srcStage, VkPipelineStageFlags dstStage, const Image_Memory_Barrier& imageMemoryBarrier);
+  void barrier(VkPipelineStageFlags srcStage, VkPipelineStageFlags dstStage, const Memory_Barrier& memoryBarrier);
   void blitImage(const Image_Blit_Region& blitRegion, VkFilter filter);
   void copyBufferToImage(core::shared_ptr<const Buffer> srcBuffer, core::shared_ptr<Image> dstImage, const VkBufferImageCopy& region);
   bool reset(VkCommandBufferResetFlags flags = VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);

@@ -73,12 +73,19 @@ bool Command_Buffer::end()
 
 void Command_Buffer::barrier(VkPipelineStageFlags srcStage, VkPipelineStageFlags dstStage, const Image_Memory_Barrier& imageMemoryBarrier)
 {
-  vkCmdPipelineBarrier(m_handle, srcStage, dstStage, 0u, 0u, nullptr, 0u, nullptr, 1u, &imageMemoryBarrier);
+  VkImageMemoryBarrier vkImageMemoryBarrier = imageMemoryBarrier;
+  vkCmdPipelineBarrier(m_handle, srcStage, dstStage, 0u, 0u, nullptr, 0u, nullptr, 1u, &vkImageMemoryBarrier);
   const VkImageSubresourceRange& range = imageMemoryBarrier.subresourceRange;
   for (core::uint32 mipLevel = range.baseMipLevel; mipLevel < range.baseMipLevel + range.levelCount; ++mipLevel)
   {
     imageMemoryBarrier.m_image->setMipLayout(mipLevel, imageMemoryBarrier.newLayout);
   }
+}
+
+void Command_Buffer::barrier(VkPipelineStageFlags srcStage, VkPipelineStageFlags dstStage, const Memory_Barrier& memoryBarrier)
+{
+  VkMemoryBarrier vkMemoryBarrier = memoryBarrier;
+  vkCmdPipelineBarrier(m_handle, srcStage, dstStage, 0u, 1u, &vkMemoryBarrier, 0u, nullptr, 0u, nullptr);
 }
 
 void Command_Buffer::blitImage(const Image_Blit_Region&  blitRegion,

@@ -48,6 +48,7 @@ target_sources(crude_engine
 target_sources(crude_engine
   PUBLIC
   FILE_SET cxx_modules_graphics_vk TYPE CXX_MODULES FILES
+  memory_barrier.ixx
   utils.ixx
   constants.ixx
   acceleration_structure_descriptor.ixx
