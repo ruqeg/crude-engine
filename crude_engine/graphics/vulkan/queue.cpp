@@ -9,6 +9,7 @@ import crude.gfx.vk.semaphore;
 import crude.gfx.vk.swap_chain;
 import crude.core.algorithms;
 import crude.core.std_containers_heap;
+import crude.gfx.vk.utils;
 
 namespace crude::gfx::vk
 {
@@ -57,7 +58,7 @@ bool Queue::sumbit(core::span<const core::shared_ptr<Command_Buffer>>  commandBu
   vkSumbitInfo.signalSemaphoreCount  = static_cast<core::uint32>(signalSemaphoreHandles.size());
   vkSumbitInfo.pSignalSemaphores     = signalSemaphoreHandles.data();
 
-  VkResult result = vkQueueSubmit(m_handle, 1u, &vkSumbitInfo, fence.has_value() ? fence.value()->getHandle() : VK_NULL_HANDLE);
+  VkResult result = vkQueueSubmit(m_handle, 1u, &vkSumbitInfo, getOptionalObjectHandle<VkFence>(fence));
   return result == VK_SUCCESS;
 }
 

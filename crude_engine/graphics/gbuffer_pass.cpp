@@ -13,7 +13,7 @@ import crude.gfx.render_graph;
 import crude.gfx.mesh_buffer;
 import crude.gfx.material;
 import crude.gfx.texture;
-import crude.gfx.vk.pipeline;
+import crude.gfx.vk.graphics_pipeline;
 import crude.gfx.vk.pipeline_layout;
 import crude.gfx.vk.device;
 import crude.gfx.vk.format_helper;
@@ -120,7 +120,7 @@ void initializeGbufferPass(core::shared_ptr<Render_Graph> graph, flecs::world wo
   gbuffer->build(world
     .system<core::shared_ptr<gfx::Mesh_Buffer>, core::shared_ptr<scene::Mesh>>("gbuffer_pbr_pass_system")
     .kind(0)
-    .run([rendererFrame = graph->getRendererFrame(), pipeline = gbuffer->getPipeline(), perFrameUniformBuffers, perFramesDesc, submeshesDrawsDesc, verticesDesc, meshletsDesc, primitiveIndicesDesc, vertexIndicesDesc, albedoDesc, metallicRoughnessDesc, normalDesc](flecs::iter& it) {
+    .run([rendererFrame = graph->getRendererFrame(), pipeline = gbuffer->getGraphicsPipeline(), perFrameUniformBuffers, perFramesDesc, submeshesDrawsDesc, verticesDesc, meshletsDesc, primitiveIndicesDesc, vertexIndicesDesc, albedoDesc, metallicRoughnessDesc, normalDesc](flecs::iter& it) {
       const core::uint32 currentFrame = rendererFrame->getCurrentFrame();
       perFramesDesc.get()[currentFrame].update(perFrameUniformBuffers[currentFrame]);
 

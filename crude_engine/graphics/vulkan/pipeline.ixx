@@ -18,42 +18,27 @@ export import crude.gfx.vk.dynamic_state_create_info;
 export import crude.gfx.vk.tessellation_state_create_info;
 export import crude.core.std_containers_stack;
 export import crude.core.std_containers_heap;
-export import crude.gfx.vk.pipeline_layout;
 export import crude.gfx.vk.render_pass;
 
 export namespace crude::gfx::vk
 {
 
 class Device;
+class Pipeline_Layout;
 
 class Pipeline : public Vulkan_Object<VkPipeline>
 {
-public:
-  explicit Pipeline(core::shared_ptr<const Device>                           device,
-                    core::shared_ptr<Render_Pass>                            renderPass,
-                    core::shared_ptr<const Pipeline_Layout>                  pipelineLayout,
-                    core::shared_ptr<const Pipeline>                         basePipeline,
-                    const core::span<Shader_Stage_Create_Info>&              shaderStages,
-                    const core::optional<Vertex_Input_State_Create_Info>&    vertexInputState,
-                    const core::optional<Tessellation_State_Create_Info>&    tessellationState,
-                    const core::optional<Input_Assembly_State_Create_Info>&  inputAsseblyState,
-                    const core::optional<Viewport_State_Create_Info>&        viewportState,
-                    const core::optional<Rasterization_State_Create_Info>&   rasterizationState,
-                    const core::optional<Multisample_State_Create_Info>&     multisampleState,
-                    const core::optional<Depth_Stencil_State_Create_Info>&   depthStencilState,
-                    const core::optional<Color_Blend_State_Create_Info>&     colorBlendState,
-                    const core::optional<Dynamic_State_Create_Info>&         dynamicState,
-                    core::uint32                                             subpass);
+protected:
+  explicit Pipeline(VkPipelineBindPoint bindPoint, core::shared_ptr<Pipeline_Layout> pipelineLayout);
   ~Pipeline();
-  const VkPipelineBindPoint getBindPoint() const { return m_bindPoint; }
-  core::shared_ptr<const Pipeline_Layout> getPipelineLayout() const { return m_pipelineLayout; }
-  core::shared_ptr<Render_Pass> getRenderPass() { return m_renderPass; }
-private:
-  core::shared_ptr<const Device>           m_device;
-  core::shared_ptr<Render_Pass>            m_renderPass;
-  core::shared_ptr<const Pipeline_Layout>  m_pipelineLayout;
-  core::shared_ptr<const Pipeline>         m_basePipeline;
-  const VkPipelineBindPoint                m_bindPoint;
+public:
+  core::shared_ptr<Pipeline_Layout> getPipelineLayout() const;
+  core::shared_ptr<const Device> getDevice() const;
+  VkPipelineBindPoint getBindPoint() const;
+protected:
+  core::shared_ptr<const Device>    m_device;
+  core::shared_ptr<Pipeline_Layout> m_pipelineLayout;
+  const VkPipelineBindPoint         m_bindPoint;
 };
 
 }

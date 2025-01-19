@@ -25,6 +25,8 @@ public:
                            const core::vector<core::shared_ptr<const Descriptor_Set_Layout>>&  descriptorSetLayouts,
                            const core::vector<Push_Constant_Range_Base>&                       pushConstantRanges = {});
   ~Pipeline_Layout();
+public:
+  core::shared_ptr<const Device> getDevice() const;
 private:
   core::vector<core::shared_ptr<const Descriptor_Set_Layout>>  m_setLayouts;
   core::vector<Push_Constant_Range_Base>                       m_pushConstantRanges;

@@ -1,6 +1,7 @@
 target_sources(crude_engine
   PRIVATE
   utils.cpp
+  graphics_pipeline.cpp
   ray_tracing_pipeline.cpp
   acceleration_structure_descriptor.cpp
   acceleration_structure_geometry.cpp 
@@ -49,6 +50,7 @@ target_sources(crude_engine
 target_sources(crude_engine
   PUBLIC
   FILE_SET cxx_modules_graphics_vk TYPE CXX_MODULES FILES
+  graphics_pipeline.ixx
   ray_tracing_shader_group.ixx
   memory_barrier.ixx
   utils.ixx

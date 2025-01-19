@@ -29,7 +29,7 @@ class Device;
 class Render_Pass;
 class Framebuffer;
 class Image_View;
-class Pipeline;
+class Graphics_Pipeline;
 
 }
 
@@ -60,7 +60,7 @@ public:
   void setShaderStagesInfo(const core::vector<vk::Shader_Stage_Create_Info>& shaderStagesInfo);
   void build(flecs::system renderPassSystem);
 public:
-  core::shared_ptr<vk::Pipeline> getPipeline();
+  core::shared_ptr<vk::Graphics_Pipeline> getGraphicsPipeline();
 private:
   void render();
 private:
@@ -74,7 +74,7 @@ private:
   core::string                                             m_name;
   core::vector<Attachment_Info>                            m_colorOutputs;
   core::optional<Attachment_Info>                          m_depthStencilOutput;
-  core::shared_ptr<vk::Pipeline>                           m_pipeline;
+  core::shared_ptr<vk::Graphics_Pipeline>                  m_graphicsPipeline;
   core::vector<core::shared_ptr<vk::Framebuffer>>          m_framebuffers;
   core::shared_ptr<vk::Render_Pass>                        m_renderPass;
   VkExtent2D                                               m_framebufferExtent;

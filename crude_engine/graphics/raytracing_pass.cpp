@@ -10,7 +10,7 @@ import crude.gfx.render_graph;
 import crude.gfx.mesh_buffer;
 import crude.gfx.material;
 import crude.gfx.texture;
-import crude.gfx.vk.pipeline;
+import crude.gfx.vk.graphics_pipeline;
 import crude.gfx.vk.pipeline_layout;
 import crude.gfx.vk.device;
 import crude.gfx.vk.format_helper;

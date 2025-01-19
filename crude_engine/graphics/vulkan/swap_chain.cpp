@@ -8,6 +8,7 @@ import crude.gfx.vk.surface;
 import crude.gfx.vk.swap_chain_image;
 import crude.gfx.vk.fence;
 import crude.gfx.vk.semaphore;
+import crude.gfx.vk.utils;
 
 namespace crude::gfx::vk
 {
@@ -73,7 +74,7 @@ Swap_Chain::Swap_Chain(core::shared_ptr<const Device>   device,
   vkCreateInfo.compositeAlpha         = compositeAlpha;
   vkCreateInfo.presentMode            = presentMode;
   vkCreateInfo.clipped                = clipped;
-  vkCreateInfo.oldSwapchain           = oldSwapchain ? oldSwapchain->getHandle() : VK_NULL_HANDLE;
+  vkCreateInfo.oldSwapchain           = getObjectHandle<VkSwapchainKHR>(oldSwapchain);
 
   VkResult result = vkCreateSwapchainKHR(m_device->getHandle(), &vkCreateInfo, getPVkAllocationCallbacks(), &m_handle);
   vulkanHandleResult(result, "failed to create swapchain");
@@ -125,8 +126,8 @@ Swap_Chain_Next_Image Swap_Chain::acquireNextImage(const core::optional<core::sh
     m_device->getHandle(),
     m_handle,
     timeout,
-    semaphore ? semaphore.value()->getHandle() : VK_NULL_HANDLE,
-    fence ? fence.value()->getHandle() : VK_NULL_HANDLE,
+    getOptionalObjectHandle<VkSemaphore>(semaphore),
+    getOptionalObjectHandle<VkFence>(fence),
     &imageIndex);
 
   const Swap_Chain_Next_Image nextImage(imageIndex, result);

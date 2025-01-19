@@ -9,12 +9,12 @@ import crude.gfx.vk.image_view;
 import crude.gfx.vk.attachment_description;
 import crude.gfx.vk.image_attachment;
 import crude.gfx.vk.framebuffer;
-import crude.gfx.vk.pipeline;
+import crude.gfx.vk.graphics_pipeline;
 import crude.gfx.vk.buffer_descriptor;
 import crude.gfx.vk.image_descriptor;
 import crude.gfx.vk.descriptor_set_layout;
 import crude.gfx.vk.command_buffer;
-import crude.gfx.vk.pipeline;
+import crude.gfx.vk.pipeline_layout;
 
 namespace crude::gfx
 {
@@ -77,9 +77,9 @@ void Render_Pass::build(flecs::system renderPassSystem)
   initializePipeline();
 }
 
-core::shared_ptr<vk::Pipeline> Render_Pass::getPipeline()
+core::shared_ptr<vk::Graphics_Pipeline> Render_Pass::getGraphicsPipeline()
 {
-  return m_pipeline;
+  return m_graphicsPipeline;
 }
 
 void Render_Pass::render()
@@ -107,7 +107,7 @@ void Render_Pass::render()
     .extent = m_framebufferExtent}));
 
   frame->getGraphicsCommandBuffer()->beginRenderPass(m_renderPass, m_framebuffers[frame->getSwapchainImageIndex()], clearValues, renderArea);
-  frame->getGraphicsCommandBuffer()->bindPipeline(m_pipeline);
+  frame->getGraphicsCommandBuffer()->bindPipeline(m_graphicsPipeline);
 
   m_renderPassSystem.run();
 
@@ -215,6 +215,10 @@ void Render_Pass::initializeFramebuffers()
 
 void Render_Pass::initializePipeline()
 {
+  core::array<VkDynamicState, 2> dynamicStates = {
+    VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR
+  };
+
   core::vector<vk::Pipeline_Color_Blend_Attachment_State> colorBlendAttachmentsStates;
   colorBlendAttachmentsStates.reserve(m_colorOutputs.size());
   for (auto colorAttachment : m_colorOutputs)
@@ -222,79 +226,62 @@ void Render_Pass::initializePipeline()
     colorBlendAttachmentsStates.push_back(colorAttachment.blendAttachmentState);
   }
 
-  vk::Vertex_Input_State_Create_Info vertexInputStateInfo({
-    .bindings   = {},
-    .attributes = {} });
+  vk::Graphics_Pipeline::Description description{
+    .vertexInputState = vk::Vertex_Input_State_Create_Info({
+      .bindings = {},
+      .attributes = {} }),
 
-  vk::Tessellation_State_Create_Info tesselationInfo(3u);
+    .tessellationState = vk::Tessellation_State_Create_Info(3u),
 
-  vk::Input_Assembly_State_Create_Info inputAssembly({
-    .topology               = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
-    .primitiveRestartEnable = false });
+    .inputAsseblyState = vk::Input_Assembly_State_Create_Info({
+      .topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
+      .primitiveRestartEnable = false }),
 
-  vk::Viewport_State_Create_Info viewportState(1u, 1u);
+    .viewportState = vk::Viewport_State_Create_Info{ 1u, 1u },
 
-  vk::Rasterization_State_Create_Info rasterizer({
-    .depthClampEnable        = false,
-    .rasterizerDiscardEnable = false,
-    .polygonMode             = VK_POLYGON_MODE_FILL,
-    .cullMode                = VK_CULL_MODE_BACK_BIT,
-    .frontFace               = VK_FRONT_FACE_COUNTER_CLOCKWISE,
-    .depthBiasEnable         = false,
-    .depthBiasConstantFactor = 0.0f,
-    .depthBiasClamp          = 0.0f,
-    .depthBiasSlopeFactor    = 0.0f,
-    .lineWidth               = 1.f });
+    .rasterizationState = vk::Rasterization_State_Create_Info({
+      .depthClampEnable = false,
+      .rasterizerDiscardEnable = false,
+      .polygonMode = VK_POLYGON_MODE_FILL,
+      .cullMode = VK_CULL_MODE_BACK_BIT,
+      .frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE,
+      .depthBiasEnable = false,
+      .depthBiasConstantFactor = 0.0f,
+      .depthBiasClamp = 0.0f,
+      .depthBiasSlopeFactor = 0.0f,
+      .lineWidth = 1.f }),
 
-  vk::Multisample_State_Create_Info multisampling({
-    .rasterizationSamples  = VK_SAMPLE_COUNT_1_BIT,
-    .sampleShadingEnable   = VK_FALSE,
-    .minSampleShading      = 0.2f,
-    .alphaToCoverageEnable = false,
-    .alphaToOneEnable      = false });
+    .multisampleState = vk::Multisample_State_Create_Info({
+      .rasterizationSamples = VK_SAMPLE_COUNT_1_BIT,
+      .sampleShadingEnable = VK_FALSE,
+      .minSampleShading = 0.2f,
+      .alphaToCoverageEnable = false,
+      .alphaToOneEnable = false }),
 
-  core::array<VkDynamicState, 2> dynamicStates = {
-    VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR
+    .depthStencilState = vk::Depth_Stencil_State_Create_Info({
+      .depthTestEnable = true,
+      .depthWriteEnable = true,
+      .depthCompareOp = VK_COMPARE_OP_LESS,
+      .depthBoundsTestEnable = false,
+      .stencilTestEnable = false,
+      .front = {},
+      .back = {},
+      .minDepthBounds = 0.0f,
+      .maxDepthBounds = 1.0f }),
+
+    .colorBlendState = vk::Color_Blend_State_Create_Info({
+      .attachments = colorBlendAttachmentsStates,
+      .blendConstants = { 0.f, 0.f, 0.f, 0.f },
+      .logicOpEnable = false,
+      .logicOp = VK_LOGIC_OP_COPY }),
+
+    .dynamicState = vk::Dynamic_State_Create_Info(dynamicStates),
   };
-
-  vk::Dynamic_State_Create_Info dynamicStateInfo(dynamicStates);
-
-  vk::Color_Blend_State_Create_Info colorBlendStateInfo({
-    .attachments    = colorBlendAttachmentsStates,
-    .blendConstants = { 0.f, 0.f, 0.f, 0.f },
-    .logicOpEnable  = false,
-    .logicOp        = VK_LOGIC_OP_COPY });
-
-  vk::Depth_Stencil_State_Create_Info depthStencilStateInfo({
-    .depthTestEnable       = true,
-    .depthWriteEnable      = true,
-    .depthCompareOp        = VK_COMPARE_OP_LESS,
-    .depthBoundsTestEnable = false,
-    .stencilTestEnable     = false,
-    .front                 = {},
-    .back                  = {},
-    .minDepthBounds        = 0.0f,
-    .maxDepthBounds        = 1.0f });
 
   core::shared_ptr<vk::Descriptor_Set_Layout> descriptorSetLayout = core::allocateShared<vk::Descriptor_Set_Layout>(m_graph->m_device, m_descriptorLayoutBindings, true);
   core::shared_ptr<vk::Pipeline_Layout> pipelineLayout = core::allocateShared<vk::Pipeline_Layout>(m_graph->m_device, descriptorSetLayout, m_pushConstantRange.value());
 
-  m_pipeline = core::allocateShared<vk::Pipeline>(
-    m_graph->m_device,
-    m_renderPass,
-    pipelineLayout,
-    nullptr,
-    m_shaderStagesInfo,
-    vertexInputStateInfo,
-    tesselationInfo,
-    inputAssembly,
-    viewportState,
-    rasterizer,
-    multisampling,
-    depthStencilStateInfo,
-    colorBlendStateInfo,
-    dynamicStateInfo,
-    0u);
+  m_graphicsPipeline = core::allocateShared<vk::Graphics_Pipeline>(m_renderPass, pipelineLayout, description);
 }
 
 Render_Graph::Render_Graph(core::shared_ptr<Renderer_Frame> rendererFrame, core::uint32 swapchainImagesCount)

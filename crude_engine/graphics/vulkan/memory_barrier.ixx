@@ -13,11 +13,11 @@ class Memory_Barrier : public VkMemoryBarrier
 {
 public:
   explicit Memory_Barrier(VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask)
-	: VkMemoryBarrier {
-	  .sType         = VK_STRUCTURE_TYPE_MEMORY_BARRIER,
-	  .pNext         = nullptr,
-	  .srcAccessMask = srcAccessMask,
-	  .dstAccessMask = dstAccessMask }
+  : VkMemoryBarrier {
+    .sType         = VK_STRUCTURE_TYPE_MEMORY_BARRIER,
+    .pNext         = nullptr,
+    .srcAccessMask = srcAccessMask,
+    .dstAccessMask = dstAccessMask }
   {}
 };
 

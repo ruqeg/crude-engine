@@ -51,4 +51,9 @@ Pipeline_Layout::~Pipeline_Layout()
   vkDestroyPipelineLayout(m_device->getHandle(), m_handle, getPVkAllocationCallbacks());
 }
 
+core::shared_ptr<const Device> Pipeline_Layout::getDevice() const
+{
+  return m_device;
+}
+
 }
