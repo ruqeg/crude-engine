@@ -27,7 +27,6 @@ Ray_Tracing_Pipeline::Ray_Tracing_Pipeline(core::shared_ptr<Pipeline_Layout>    
   vkCreateInfo.maxPipelineRayRecursionDepth = 1;
   vkCreateInfo.layout                       = pipelineLayout->getHandle();
 
-
   auto vkCreateRayTracingPipelinesKHR = getDeviceExtension<PFN_vkCreateRayTracingPipelinesKHR>(m_device);
   if (vkCreateRayTracingPipelinesKHR)
   {

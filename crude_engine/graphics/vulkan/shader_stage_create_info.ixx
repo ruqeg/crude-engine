@@ -42,4 +42,25 @@ public:
     : Shader_Stage_Create_Info(VK_SHADER_STAGE_FRAGMENT_BIT, shaderModule, pEntrypoint) {}
 };
 
+class Miss_Shader_Stage_Create_Info : public Shader_Stage_Create_Info
+{
+public:
+  explicit Miss_Shader_Stage_Create_Info(core::shared_ptr<const Shader_Module> shaderModule, const char* pEntrypoint)
+    : Shader_Stage_Create_Info(VK_SHADER_STAGE_MISS_BIT_KHR, shaderModule, pEntrypoint) {}
+};
+
+class Raygen_Shader_Stage_Create_Info : public Shader_Stage_Create_Info
+{
+public:
+  explicit Raygen_Shader_Stage_Create_Info(core::shared_ptr<const Shader_Module> shaderModule, const char* pEntrypoint)
+    : Shader_Stage_Create_Info(VK_SHADER_STAGE_RAYGEN_BIT_KHR, shaderModule, pEntrypoint) {}
+};
+
+class Closest_Hit_Shader_Stage_Create_Info : public Shader_Stage_Create_Info
+{
+public:
+  explicit Closest_Hit_Shader_Stage_Create_Info(core::shared_ptr<const Shader_Module> shaderModule, const char* pEntrypoint)
+    : Shader_Stage_Create_Info(VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR, shaderModule, pEntrypoint) {}
+};
+
 }

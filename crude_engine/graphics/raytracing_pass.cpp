@@ -2,6 +2,9 @@
 #include <flecs.h>
 #include <DirectXMath.h>
 
+#include <crude_shaders/miss.rmiss.inl>
+#include <crude_shaders/trace.rgen.inl>
+#include <crude_shaders/hit.rchit.inl>
 
 module crude.gfx.raytracing_pass;
 
@@ -29,6 +32,7 @@ import crude.gfx.vk.storage_buffer;
 import crude.gfx.vk.flush;
 import crude.gfx.vk.descriptor_set_layout;
 import crude.gfx.vk.descriptor_set;
+import crude.gfx.vk.ray_tracing_pipeline;
 import crude.scene.mesh;
 import crude.gfx.vk.acceleration_structure_descriptor;
 
@@ -89,6 +93,55 @@ void initializeRaytracingPass(core::shared_ptr<Render_Graph> graph, flecs::world
   };
   core::shared_ptr<vk::Descriptor_Set_Layout> descriptorSetLayout = core::allocateShared<vk::Descriptor_Set_Layout>(device, bindings);
   core::shared_ptr<vk::Descriptor_Set> descriptorSet = core::allocateShared<vk::Descriptor_Set>(descriptorPool, descriptorSetLayout);
+  core::shared_ptr<vk::Pipeline_Layout> pipelineLayout = core::allocateShared<vk::Pipeline_Layout>(device, descriptorSetLayout);
+  core::vector<vk::Ray_Tracing_Shader_Group> shaderGroups =
+  {
+    vk::General_Ray_Tracing_Shader_Group(0u),
+    vk::Triangles_Hit_Ray_Tracing_Shader_Group(1u),
+    vk::General_Ray_Tracing_Shader_Group(2u),
+  };
+  core::vector<core::shared_ptr<vk::Shader_Module>> shaderModules =
+  {
+    core::allocateShared<vk::Shader_Module>(device, crude::shaders::miss::rmiss),
+    core::allocateShared<vk::Shader_Module>(device, crude::shaders::hit::rchit),
+    core::allocateShared<vk::Shader_Module>(device, crude::shaders::trace::rgen)
+  };
+  core::vector<vk::Shader_Stage_Create_Info> shaderStages =
+  {
+    vk::Miss_Shader_Stage_Create_Info(shaderModules[0], "main"),
+    vk::Closest_Hit_Shader_Stage_Create_Info(shaderModules[1], "main"),
+    vk::Raygen_Shader_Stage_Create_Info(shaderModules[2], "main"),
+  };
+  core::shared_ptr<vk::Ray_Tracing_Pipeline> pipeline = core::allocateShared<vk::Ray_Tracing_Pipeline>(pipelineLayout, shaderStages, shaderGroups);
+
+
+  core::shared_ptr<Renderer_Frame> frame = graph->m_rendererFrame;
+
+
+  core::array<VkClearValue, 4u> clearValues;
+  clearValues[0].color = { {0.0f, 0.0f, 0.0f, 1.0f} };
+  clearValues[1].color = { {0.0f, 0.5f, 0.0f, 1.0f} };
+  clearValues[2].color = { {0.0f, 1.0f, 0.0f, 1.0f} };
+  clearValues[3].depthStencil = { 1.0f, 0 };
+
+  VkRect2D renderArea;
+  renderArea.extent = m_framebufferExtent;
+  renderArea.offset = VkOffset2D{ 0, 0 };
+
+  frame->getGraphicsCommandBuffer()->setViewport(vk::Viewport({
+    .x = 0.0f, .y = 0.0f,
+    .width = static_cast<core::float32>(m_framebufferExtent.width),
+    .height = static_cast<core::float32>(m_framebufferExtent.height),
+    .minDepth = 0.0f, .maxDepth = 1.0f }));
+
+  frame->getGraphicsCommandBuffer()->setScissor(vk::Scissor({
+    .offset = { 0, 0 },
+    .extent = m_framebufferExtent }));
+
+  frame->getGraphicsCommandBuffer()->beginRenderPass(m_renderPass, m_framebuffers[frame->getSwapchainImageIndex()], clearValues, renderArea);
+  frame->getGraphicsCommandBuffer()->bindPipeline(pipeline);
+
+  frame->getGraphicsCommandBuffer()->endRenderPass();
 
 }
 

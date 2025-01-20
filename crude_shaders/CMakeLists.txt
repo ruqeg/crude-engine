@@ -23,6 +23,10 @@ COMPILE_SHADER("${CMAKE_CURRENT_SOURCE_DIR}/source/fullscreen_pbr.frag")
 COMPILE_SHADER("${CMAKE_CURRENT_SOURCE_DIR}/source/point_shadow.mesh")
 COMPILE_SHADER("${CMAKE_CURRENT_SOURCE_DIR}/source/point_shadow.task")
 
+COMPILE_SHADER("${CMAKE_CURRENT_SOURCE_DIR}/source/hit.rchit")
+COMPILE_SHADER("${CMAKE_CURRENT_SOURCE_DIR}/source/miss.rmiss")
+COMPILE_SHADER("${CMAKE_CURRENT_SOURCE_DIR}/source/trace.rgen")
+
 set_target_properties(crude_shaders PROPERTIES LINKER_LANGUAGE CXX)
 
 target_include_directories(crude_shaders PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
