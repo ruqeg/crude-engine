@@ -45,6 +45,7 @@ struct Frame_Graph_Resource_Info
 {
   core::shared_ptr<vk::Buffer> buffer;
   core::shared_ptr<vk::Image>  image;
+  bool                         external;
 };
 
 struct Frame_Graph_Render_Pass
@@ -62,42 +63,56 @@ struct Frame_Graph_Resource
   const char* name = nullptr;
 };
 
+struct Frame_Graph_Resource_Input_Creation
+{
+  Frame_Graph_Resource_Type type;
+  Frame_Graph_Resource_Info resource_info;
+  core::string name;
+};
+
+struct Frame_Graph_Resource_Output_Creation
+{
+  Frame_Graph_Resource_Type type;
+  Frame_Graph_Resource_Info resource_info;
+  core::string              name;
+};
+
+struct Frame_Graph_Node_Creation
+{
+  core::vector<Frame_Graph_Resource_Input_Creation>  inputs;
+  core::vector<Frame_Graph_Resource_Output_Creation> outputs;
+  bool                                               enabled;
+  core::string                                       name;
+};
+
 struct Frame_Graph_Node
 {
-  core::shared_ptr<vk::Render_Pass> renderPass;
-  core::shared_ptr<vk::Framebuffer> framebuffer;
-  Frame_Graph_Render_Pass graphRenderPass;
-  core::vector<Frame_Graph_Resource_Handle> inputs;
-  core::vector<Frame_Graph_Resource_Handle> outputs;
-  core::vector<Frame_Graph_Node_Handle> edges;
-  const char* name;
+  core::shared_ptr<vk::Render_Pass>          renderPass;
+  core::shared_ptr<vk::Framebuffer>          framebuffer;
+  Frame_Graph_Render_Pass                    graphRenderPass;
+  core::vector<Frame_Graph_Resource_Handle>  inputs;
+  core::vector<Frame_Graph_Resource_Handle>  outputs;
+  core::vector<Frame_Graph_Node_Handle>      edges;
+  core::string                               name;
+  bool enabled;
 };
 
-struct Frame_Graph;
-
-class Frame_Graph_Builder
+class Frame_Graph
 {
 public:
-  friend class Frame_Graph;
-public:
-  explicit Frame_Graph_Builder(core::shared_ptr<vk::Device> device);
-private:
-  core::shared_ptr<vk::Device> m_device;
-private:
-  static constexpr core::uint64 cMaxNodesCount = 1024u;
-};
-
-struct Frame_Graph
-{
-public:
-  explicit Frame_Graph(core::shared_ptr<Renderer_Frame> rendererFrame, core::shared_ptr<Frame_Graph_Builder> builder);
+  explicit Frame_Graph(core::shared_ptr<Renderer_Frame> rendererFrame);
   // TODO: move to utils?
   void parse(core::span<const core::byte> data);
 private:
-  core::shared_ptr<Renderer_Frame>            m_rendererFrame;
-  core::shared_ptr<Frame_Graph_Builder>       m_builder;
-  const core::vector<Frame_Graph_Node_Handle> m_nodes;
-  core::string                                m_name;
+  core::shared_ptr<Frame_Graph_Node> createNode(const Frame_Graph_Node_Creation& creation);
+  Frame_Graph_Resource_Handle createNodeOutput();
+private:
+  core::shared_ptr<Renderer_Frame>                  m_rendererFrame;
+  core::vector<core::shared_ptr<Frame_Graph_Node>>  m_nodes;
+  core::unordered_map<core::string, core::uint32>   m_nodeNameToIndex;
+  core::string                                      m_name;
+private:
+  static constexpr core::uint64 cMaxNodesCount = 1024u;
 };
 
 }
