@@ -13,7 +13,7 @@ namespace crude::gfx
 
 Frame_Graph::Frame_Graph(core::shared_ptr<Renderer_Frame> rendererFrame)
   : m_rendererFrame{ rendererFrame }
-  , m_nodes{ cMaxNodesCount, Frame_Graph_Node_Handle{} }
+  , m_nodes{}
 {}
 
 void Frame_Graph::parse(core::span<const core::byte> data)
@@ -87,10 +87,15 @@ void Frame_Graph::parse(core::span<const core::byte> data)
     }
 
     nodeCreation.name = pass.value("name", core::string{});
-    nodeCreation.enabled = pass.value("enabled", true);
+    nodeCreation.enabled = pass.value("enabled", true);/*
     Frame_Graph_Node_Handle node_handle = createNode(nodeCreation);
-    m_nodes.push_back(node_handle);
+    m_nodes.push_back(node_handle);*/
   }
+}
+
+void Frame_Graph::compile()
+{
+
 }
 
 core::shared_ptr<Frame_Graph_Node> Frame_Graph::createNode(const Frame_Graph_Node_Creation& creation)
@@ -106,9 +111,9 @@ core::shared_ptr<Frame_Graph_Node> Frame_Graph::createNode(const Frame_Graph_Nod
 
   m_nodeNameToIndex[node->name] = 0;
 
-  for (const Frame_Graph_Resource_Output_Creation& outputCreation: creation.outputs)
+  /*for (const Frame_Graph_Resource_Output_Creation& outputCreation: creation.outputs)
   {
-    Frame_Graph_Resource_Handle output = create_node_output(output_creation, node_handle);
+    Frame_Graph_Resource_Handle output = createNodeOutput(output_creation, node_handle);
     node->outputs.push_back(output);
   }
 
@@ -116,34 +121,34 @@ core::shared_ptr<Frame_Graph_Node> Frame_Graph::createNode(const Frame_Graph_Nod
   {
     FrameGraphResourceHandle input_handle = create_node_input(inputsCreation);
     node->inputs.push_back(input_handle);
-  }
+  }*/
 
   return node;
 }
 
-Frame_Graph_Resource_Handle Frame_Graph::createNodeOutput()
-{
-  FrameGraphResourceHandle resource_handle{ k_invalid_index };
-  resource_handle.index = resource_cache.resources.obtain_resource();
-
-  if (resource_handle.index == k_invalid_index) {
-    return resource_handle;
-  }
-
-  FrameGraphResource* resource = resource_cache.resources.get(resource_handle.index);
-  resource->name = creation.name;
-  resource->type = creation.type;
-
-  if (creation.type != FrameGraphResourceType_Reference) {
-    resource->resource_info = creation.resource_info;
-    resource->output_handle = resource_handle;
-    resource->producer = producer;
-    resource->ref_count = 0;
-
-    resource_cache.resource_map.insert(hash_bytes((void*)resource->name, strlen(creation.name)), resource_handle.index);
-  }
-
-  return resource_handle;
-}
+//Frame_Graph_Resource_Handle Frame_Graph::createNodeOutput()
+//{
+//  FrameGraphResourceHandle resource_handle{ k_invalid_index };
+//  resource_handle.index = resource_cache.resources.obtain_resource();
+//
+//  if (resource_handle.index == k_invalid_index) {
+//    return resource_handle;
+//  }
+//
+//  Frame_Graph_Resource resource = resource_cache.resources.get(resource_handle.index);
+//  resource->name = creation.name;
+//  resource->type = creation.type;
+//
+//  if (creation.type != FrameGraphResourceType_Reference) {
+//    resource->resource_info = creation.resource_info;
+//    resource->output_handle = resource_handle;
+//    resource->producer = producer;
+//    resource->ref_count = 0;
+//
+//    resource_cache.resource_map.insert(hash_bytes((void*)resource->name, strlen(creation.name)), resource_handle.index);
+//  }
+//
+//  return resource_handle;
+//}
 
 }

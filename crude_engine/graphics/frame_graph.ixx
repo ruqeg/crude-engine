@@ -103,6 +103,7 @@ public:
   explicit Frame_Graph(core::shared_ptr<Renderer_Frame> rendererFrame);
   // TODO: move to utils?
   void parse(core::span<const core::byte> data);
+  void compile();
 private:
   core::shared_ptr<Frame_Graph_Node> createNode(const Frame_Graph_Node_Creation& creation);
   Frame_Graph_Resource_Handle createNodeOutput();
@@ -111,8 +112,6 @@ private:
   core::vector<core::shared_ptr<Frame_Graph_Node>>  m_nodes;
   core::unordered_map<core::string, core::uint32>   m_nodeNameToIndex;
   core::string                                      m_name;
-private:
-  static constexpr core::uint64 cMaxNodesCount = 1024u;
 };
 
 }

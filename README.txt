@@ -1,3 +1,8 @@
+Abstraction layer over Vulkan API, Custom Memory Allocators, ECS, Task/Mesh shaders, PBR, Scene Editor, Simple Network API...
+
+The idea for the RAII Vulkan API was based on the vcoda/magma, thanks for that :)
+
+
 TODO
 - render graph
 - vulkan api rework (span to vec/arr) | per object
